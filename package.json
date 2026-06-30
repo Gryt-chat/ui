@@ -3,6 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "description": "Workspace for @gryt/ui, the React component library for Gryt.",
+  "homepage": "https://gryt.chat",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gryt-chat/gryt-ui.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Gryt-chat/gryt/issues"
+  },
   "packageManager": "bun@1.2.0",
   "engines": {
     "node": ">=20.18.1"

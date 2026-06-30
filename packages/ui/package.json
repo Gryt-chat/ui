@@ -1,9 +1,29 @@
 {
   "name": "@gryt/ui",
   "version": "0.1.0",
-  "description": "React component library for Gryt Chat.",
+  "description": "React component library for Gryt, the open-source WebRTC voice chat platform.",
   "type": "module",
   "license": "MIT",
+  "homepage": "https://gryt.chat",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Gryt-chat/gryt-ui.git",
+    "directory": "packages/ui"
+  },
+  "bugs": {
+    "url": "https://github.com/Gryt-chat/gryt/issues"
+  },
+  "keywords": [
+    "gryt",
+    "gryt-chat",
+    "react",
+    "mui",
+    "material-ui",
+    "tailwindcss",
+    "components",
+    "design-system",
+    "voice-chat"
+  ],
   "sideEffects": [
     "./dist/styles.css"
   ],
