@@ -1,0 +1,42 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@source "./**/*.{ts,tsx,mdx}";
+
+html {
+    background: var(--gryt-bg);
+}
+
+body {
+    margin: 0;
+}
+
+.prose :where(pre):not(:where(.not-prose *)) {
+    margin: 0;
+    background: transparent;
+    padding: 0;
+}
+
+.prose :where(code):not(:where(pre code, .not-prose *)) {
+    border-radius: 0.375rem;
+    background: var(--gryt-surface-raised);
+    padding: 0.125rem 0.375rem;
+    color: var(--gryt-accent-light);
+    font-weight: 500;
+}
+
+.gryt-code-block .shiki {
+    margin: 0;
+    overflow-x: auto;
+    background: #0d0f13 !important;
+    padding: 1rem;
+    color: #e0e0e6;
+    font-size: 13px;
+    line-height: 1.5rem;
+}
+
+.gryt-code-block .shiki code {
+    display: block;
+    min-width: max-content;
+    font-family: "Atkinson Hyperlegible Mono", Menlo, Monaco, Consolas, monospace;
+}

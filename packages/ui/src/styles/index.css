@@ -1,0 +1,212 @@
+@import "tailwindcss";
+
+@source "../**/*.{ts,tsx}";
+
+@theme {
+    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+    --color-gryt-bg: #111318;
+    --color-gryt-surface: #1a1d24;
+    --color-gryt-surface-raised: #1e2028;
+    --color-gryt-border: #2b303d;
+    --color-gryt-text: #e0e0e6;
+    --color-gryt-muted: #888888;
+    --color-gryt-accent: #968ff8;
+    --color-gryt-accent-light: #b4afff;
+    --color-gryt-success: #4ade80;
+    --color-gryt-danger: #f87171;
+    --color-gryt-warning: #fbbf24;
+}
+
+:root {
+    --gryt-bg: #111318;
+    --gryt-surface: #1a1d24;
+    --gryt-surface-raised: #1e2028;
+    --gryt-border: #2b303d;
+    --gryt-text: #e0e0e6;
+    --gryt-muted: #888888;
+    --gryt-accent: #968ff8;
+    --gryt-accent-light: #b4afff;
+    --gryt-success: #4ade80;
+    --gryt-danger: #f87171;
+    --gryt-warning: #fbbf24;
+    --gryt-radius-sm: 8px;
+    --gryt-radius-md: 12px;
+    --gryt-radius-lg: 20px;
+    --gryt-radius-xl: 28px;
+    --gryt-radius-full: 999px;
+}
+
+@layer components {
+    .gryt-button {
+        @apply min-h-10 rounded-(--gryt-radius-full) px-5 normal-case font-semibold transition-colors shadow-none;
+    }
+
+    .gryt-icon-button {
+        @apply rounded-(--gryt-radius-full) transition-colors;
+    }
+
+    .gryt-surface {
+        box-shadow: 0 18px 60px rgb(0 0 0 / 0.22);
+        @apply border border-gryt-border bg-gryt-surface text-gryt-text;
+    }
+
+    .gryt-message-bubble {
+        max-width: min(42rem, 85%);
+        @apply rounded-(--gryt-radius-xl) px-4 py-3 text-sm leading-6;
+    }
+
+    .gryt-text-field .MuiOutlinedInput-root {
+        @apply rounded-(--gryt-radius-xl) bg-gryt-surface-raised text-gryt-text;
+    }
+
+    .gryt-text-field .MuiOutlinedInput-notchedOutline {
+        @apply border-gryt-border;
+    }
+
+    .gryt-text-field .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+        @apply border-gryt-accent-light;
+    }
+
+    .gryt-text-field .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+        @apply border-gryt-accent;
+    }
+
+    .gryt-text-field .MuiInputLabel-root,
+    .gryt-text-field .MuiFormHelperText-root {
+        @apply text-gryt-muted;
+    }
+
+    .gryt-composer {
+        @apply flex items-end gap-3 rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface p-3;
+    }
+
+    .gryt-composer-textarea {
+        @apply min-h-10 flex-1 resize-none bg-transparent px-2 py-2 text-sm leading-6 text-gryt-text outline-none placeholder:text-gryt-muted;
+    }
+
+    .gryt-conversation-item {
+        @apply flex w-full items-center gap-3 rounded-(--gryt-radius-xl) px-3 py-2.5 text-left transition-colors;
+    }
+
+    .gryt-avatar {
+        @apply bg-gryt-surface-raised text-gryt-text ring-1 ring-gryt-border;
+    }
+
+    .gryt-badge .MuiBadge-badge {
+        @apply bg-gryt-accent text-[#141126] ring-2 ring-gryt-bg;
+    }
+
+    .gryt-chip {
+        @apply rounded-(--gryt-radius-full) border-gryt-border bg-gryt-surface-raised text-gryt-text;
+    }
+
+    .gryt-checkbox,
+    .gryt-radio,
+    .gryt-switch {
+        @apply text-gryt-muted;
+    }
+
+    .gryt-checkbox.Mui-checked,
+    .gryt-radio.Mui-checked,
+    .gryt-switch .Mui-checked {
+        @apply text-gryt-accent;
+    }
+
+    .gryt-switch .MuiSwitch-track {
+        @apply bg-gryt-border opacity-100;
+    }
+
+    .gryt-switch .MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track {
+        @apply bg-gryt-accent opacity-100;
+    }
+
+    .gryt-slider {
+        @apply text-gryt-accent;
+    }
+
+    .gryt-slider .MuiSlider-thumb {
+        @apply ring-4 ring-gryt-accent/20;
+    }
+
+    .gryt-divider {
+        @apply border-gryt-border;
+    }
+
+    .gryt-card,
+    .gryt-dialog,
+    .gryt-drawer,
+    .gryt-menu,
+    .gryt-accordion {
+        box-shadow: 0 24px 80px rgb(0 0 0 / 0.28);
+        @apply rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface text-gryt-text;
+    }
+
+    .gryt-card-header,
+    .gryt-dialog-title {
+        @apply text-gryt-text;
+    }
+
+    .gryt-card-content,
+    .gryt-dialog-content,
+    .gryt-accordion-details {
+        @apply text-gryt-muted;
+    }
+
+    .gryt-card-actions,
+    .gryt-dialog-actions {
+        @apply gap-2 px-4 pb-4;
+    }
+
+    .gryt-alert {
+        @apply rounded-(--gryt-radius-lg) border-gryt-border bg-gryt-surface-raised text-gryt-text;
+    }
+
+    .gryt-progress {
+        @apply rounded-(--gryt-radius-full) bg-gryt-surface-raised;
+    }
+
+    .gryt-progress .MuiLinearProgress-bar {
+        @apply rounded-(--gryt-radius-full) bg-gryt-accent;
+    }
+
+    .gryt-spinner {
+        @apply text-gryt-accent;
+    }
+
+    .gryt-skeleton {
+        @apply bg-gryt-surface-raised;
+    }
+
+    .gryt-menu-item {
+        @apply mx-1 rounded-(--gryt-radius-md) text-gryt-text;
+    }
+
+    .gryt-menu-item.Mui-selected,
+    .gryt-menu-item:hover {
+        @apply bg-gryt-surface-raised;
+    }
+
+    .gryt-tabs {
+        @apply min-h-10 rounded-(--gryt-radius-full) bg-gryt-surface-raised p-1;
+    }
+
+    .gryt-tabs .MuiTabs-indicator {
+        @apply hidden;
+    }
+
+    .gryt-tab {
+        @apply min-h-8 rounded-(--gryt-radius-full) px-4 py-1.5 text-gryt-muted normal-case;
+    }
+
+    .gryt-tab.Mui-selected {
+        @apply bg-gryt-accent text-[#141126];
+    }
+
+    .gryt-accordion::before {
+        @apply hidden;
+    }
+
+    .gryt-accordion-summary {
+        @apply rounded-(--gryt-radius-xl) text-gryt-text;
+    }
+}

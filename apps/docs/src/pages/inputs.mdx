@@ -1,0 +1,31 @@
+import { TextField } from "@gryt/ui";
+import { Preview } from "../components/Preview";
+
+# Inputs
+
+Rounded Material 3-style fields built on MUI `TextField`.
+
+<Preview>
+  <div className="grid gap-4 sm:grid-cols-2">
+    <TextField label="Workspace" defaultValue="Gryt Chat" />
+    <TextField
+      label="Model"
+      placeholder="Choose model"
+      helperText="Outlined, rounded, Gryt palette."
+    />
+    <TextField
+      label="Prompt"
+      multiline
+      minRows={4}
+      className="sm:col-span-2"
+      defaultValue="Draft a concise reply."
+    />
+  </div>
+</Preview>
+
+```tsx
+import { TextField } from "@gryt/ui";
+
+<TextField label="Workspace" defaultValue="Gryt Chat" />
+<TextField label="Prompt" multiline minRows={4} />
+```
