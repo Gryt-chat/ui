@@ -16,4 +16,4 @@ jobs:
       - run: bun run test
       - run: bun run build
       - run: bunx publint packages/ui
-      - run: bunx @arethetypeswrong/cli --pack packages/ui
+      - run: bunx @arethetypeswrong/cli --pack packages/ui --exclude-entrypoints ./styles.css
