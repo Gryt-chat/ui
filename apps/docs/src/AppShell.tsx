@@ -1,4 +1,4 @@
-import { Menu, X } from "lucide-react";
+import { ArrowSquareOut, List, X } from "@phosphor-icons/react";
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { componentNavSections } from "./pages/componentDocs";
@@ -55,7 +55,7 @@ export function AppShell() {
         type="button"
         onClick={() => setDrawerOpen(true)}
       >
-        <Menu size={19} />
+        <List size={19} />
       </button>
 
       {drawerOpen ? (
@@ -158,17 +158,33 @@ function SidebarLink({
   const children = (
     <>
       <span className="truncate">{item.label}</span>
-      {item.badge ? (
-        <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-gryt-muted">
-          {item.badge}
-        </span>
-      ) : null}
+      <span className="flex shrink-0 items-center gap-2">
+        {item.badge ? (
+          <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-gryt-muted">
+            {item.badge}
+          </span>
+        ) : null}
+        {isExternal ? (
+          <ArrowSquareOut
+            aria-hidden="true"
+            className="opacity-75"
+            size={15}
+          />
+        ) : null}
+      </span>
     </>
   );
 
   if (isExternal) {
     return (
-      <a className={className} href={item.href} onClick={onNavigate}>
+      <a
+        aria-label={`${item.label} (opens in a new tab)`}
+        className={className}
+        href={item.href}
+        onClick={onNavigate}
+        rel="noreferrer"
+        target="_blank"
+      >
         {children}
       </a>
     );

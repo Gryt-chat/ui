@@ -37,8 +37,14 @@ import {
   TextField,
   Tooltip
 } from "@gryt/ui";
-import { Bell, ChevronDown, MoreHorizontal, Send } from "lucide-react";
-import { useState } from "react";
+import {
+  Bell,
+  CaretDown,
+  DotsThree,
+  PaperPlaneTilt
+} from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { CodeBlock } from "../components/CodeBlock";
 import { Preview } from "../components/Preview";
@@ -154,14 +160,21 @@ export const componentDocs: ComponentDoc[] = [
     slug: "button",
     name: "Button",
     description:
-      "Primary, neutral, and destructive actions with Gryt color and pill-shaped Material styling.",
+      "Primary, secondary, neutral, danger, and ghost actions with Gryt color and pill-shaped Material styling.",
     importName: "Button",
     preview: "button",
     code: `import { Button } from "@gryt/ui";
 
 <Button>Primary</Button>
+<Button tone="secondary">Secondary</Button>
 <Button tone="neutral">Neutral</Button>
-<Button tone="danger">Danger</Button>`
+<Button tone="danger">Danger</Button>
+<Button tone="ghost">Ghost</Button>
+
+<Button size="xsmall">Extra small</Button>
+<Button size="small">Small</Button>
+<Button size="medium">Medium</Button>
+<Button size="large">Large</Button>`
   },
   {
     slug: "icon-button",
@@ -171,10 +184,13 @@ export const componentDocs: ComponentDoc[] = [
     importName: "IconButton",
     preview: "icon-button",
     code: `import { IconButton } from "@gryt/ui";
-import { Bell } from "lucide-react";
+import { Bell, PaperPlaneTilt } from "@phosphor-icons/react";
 
 <IconButton aria-label="Notifications">
   <Bell size={18} />
+</IconButton>
+<IconButton tone="secondary" aria-label="Send">
+  <PaperPlaneTilt size={18} />
 </IconButton>`
   },
   {
@@ -186,7 +202,10 @@ import { Bell } from "lucide-react";
     preview: "text-field",
     code: `import { TextField } from "@gryt/ui";
 
-<TextField label="Workspace" defaultValue="Gryt Chat" />`
+<TextField label="Workspace" defaultValue="Gryt Chat" />
+<TextField label="Server slug" size="small" defaultValue="design-sync" />
+<TextField label="Topic" variant="filled" defaultValue="Voice settings" />
+<TextField label="Notes" multiline minRows={3} />`
   },
   {
     slug: "select",
@@ -196,12 +215,24 @@ import { Bell } from "lucide-react";
     importName: "Select",
     preview: "select",
     code: `import { Select } from "@gryt/ui";
+import { useState } from "react";
 
-<Select
-  label="Input device"
-  defaultValue="studio"
-  options={[{ label: "Studio mic", value: "studio" }]}
-/>`
+function SelectExample() {
+  const [device, setDevice] = useState("studio");
+
+  return (
+    <Select
+      label="Input device"
+      value={device}
+      onChange={(event) => setDevice(String(event.target.value))}
+      options={[
+        { label: "Studio mic", value: "studio" },
+        { label: "Headset", value: "headset" },
+        { label: "System default", value: "system" }
+      ]}
+    />
+  );
+}`
   },
   {
     slug: "checkbox",
@@ -211,7 +242,9 @@ import { Bell } from "lucide-react";
     preview: "checkbox",
     code: `import { Checkbox } from "@gryt/ui";
 
-<Checkbox defaultChecked aria-label="Enable noise suppression" />`
+<Checkbox defaultChecked color="primary" aria-label="Primary" />
+<Checkbox defaultChecked color="secondary" aria-label="Secondary" />
+<Checkbox defaultChecked color="error" aria-label="Danger" />`
   },
   {
     slug: "radio",
@@ -220,8 +253,33 @@ import { Bell } from "lucide-react";
     importName: "Radio",
     preview: "radio",
     code: `import { Radio } from "@gryt/ui";
+import { useState } from "react";
 
-<Radio defaultChecked aria-label="Selected channel" />`
+function RadioExample() {
+  const [mode, setMode] = useState("voice");
+
+  return (
+    <>
+      <label>
+        <Radio
+          checked={mode === "voice"}
+          onChange={() => setMode("voice")}
+          name="mode"
+        />
+        Voice activity
+      </label>
+      <label>
+        <Radio
+          checked={mode === "push"}
+          onChange={() => setMode("push")}
+          name="mode"
+          color="secondary"
+        />
+        Push to talk
+      </label>
+    </>
+  );
+}`
   },
   {
     slug: "switch",
@@ -232,7 +290,9 @@ import { Bell } from "lucide-react";
     preview: "switch",
     code: `import { Switch } from "@gryt/ui";
 
-<Switch defaultChecked aria-label="Voice activity" />`
+<Switch defaultChecked color="primary" aria-label="Primary" />
+<Switch defaultChecked color="secondary" aria-label="Secondary" />
+<Switch defaultChecked color="error" aria-label="Danger" />`
   },
   {
     slug: "slider",
@@ -243,7 +303,9 @@ import { Bell } from "lucide-react";
     preview: "slider",
     code: `import { Slider } from "@gryt/ui";
 
-<Slider defaultValue={64} aria-label="Input volume" />`
+<Slider defaultValue={64} color="primary" aria-label="Input volume" />
+<Slider defaultValue={42} color="secondary" aria-label="Output volume" />
+<Slider defaultValue={78} color="error" aria-label="Danger threshold" />`
   },
   {
     slug: "avatar",
@@ -276,7 +338,10 @@ import { Bell } from "lucide-react";
     preview: "chip",
     code: `import { Chip } from "@gryt/ui";
 
-<Chip label="Connected" />`
+<Chip label="Connected" color="success" />
+<Chip label="Beta" color="secondary" />
+<Chip label="Muted" color="warning" />
+<Chip label="Danger" color="error" />`
   },
   {
     slug: "tooltip",
@@ -309,7 +374,9 @@ import { Bell } from "lucide-react";
     preview: "alert",
     code: `import { Alert } from "@gryt/ui";
 
-<Alert severity="success">Connected to Gryt.</Alert>`
+<Alert severity="success">Connected to Gryt.</Alert>
+<Alert severity="warning">Input level is peaking.</Alert>
+<Alert severity="error">Connection failed.</Alert>`
   },
   {
     slug: "progress",
@@ -318,8 +385,21 @@ import { Bell } from "lucide-react";
     importName: "Progress",
     preview: "progress",
     code: `import { Progress } from "@gryt/ui";
+import { useEffect, useState } from "react";
 
-<Progress variant="determinate" value={72} />`
+function ProgressExample() {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setValue((current) => (current >= 100 ? 0 : current + 10));
+    }, 500);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return <Progress variant="determinate" value={value} />;
+}`
   },
   {
     slug: "spinner",
@@ -360,11 +440,23 @@ import { Bell } from "lucide-react";
     importName: "Tabs",
     preview: "tabs",
     code: `import { Tab, Tabs } from "@gryt/ui";
+import { useState } from "react";
 
-<Tabs value={0} aria-label="Views">
-  <Tab label="Chat" />
-  <Tab label="Voice" />
-</Tabs>`
+function TabsExample() {
+  const [value, setValue] = useState(0);
+
+  return (
+    <Tabs
+      value={value}
+      onChange={(_, nextValue) => setValue(nextValue)}
+      aria-label="Views"
+    >
+      <Tab label="Chat" />
+      <Tab label="Voice" />
+      <Tab label="Files" />
+    </Tabs>
+  );
+}`
   },
   {
     slug: "accordion",
@@ -489,49 +581,208 @@ export function ComponentDocPage() {
 function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [inputDevice, setInputDevice] = useState("studio");
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
+  const [radioMode, setRadioMode] = useState("voice");
+  const [tabValue, setTabValue] = useState(0);
 
   switch (preview) {
     case "button":
       return (
-        <div className="flex flex-wrap gap-3">
-          <Button>Primary</Button>
-          <Button tone="neutral">Neutral</Button>
-          <Button tone="danger">Danger</Button>
+        <div className="grid w-full gap-5">
+          <ExampleSection title="Tones">
+            <Button>Primary</Button>
+            <Button tone="secondary">Secondary</Button>
+            <Button tone="neutral">Neutral</Button>
+            <Button tone="danger">Danger</Button>
+            <Button tone="ghost">Ghost</Button>
+          </ExampleSection>
+          <ExampleSection title="Sizes">
+            <Button size="xsmall">Extra small</Button>
+            <Button size="small">Small</Button>
+            <Button size="medium">Medium</Button>
+            <Button size="large">Large</Button>
+          </ExampleSection>
         </div>
       );
     case "icon-button":
       return (
-        <div className="flex gap-3">
-          <IconButton aria-label="Notifications">
-            <Bell size={18} />
-          </IconButton>
-          <IconButton aria-label="Send">
-            <Send size={18} />
-          </IconButton>
+        <div className="grid w-full gap-5">
+          <ExampleSection title="Tones">
+            <IconButton tone="primary" aria-label="Notifications">
+              <Bell size={18} />
+            </IconButton>
+            <IconButton tone="secondary" aria-label="Send">
+              <PaperPlaneTilt size={18} />
+            </IconButton>
+            <IconButton tone="neutral" aria-label="More options">
+              <DotsThree size={18} />
+            </IconButton>
+            <IconButton tone="danger" aria-label="Warnings">
+              <Bell size={18} />
+            </IconButton>
+            <IconButton tone="ghost" aria-label="Ghost action">
+              <DotsThree size={18} />
+            </IconButton>
+          </ExampleSection>
+          <ExampleSection title="Sizes">
+            <IconButton size="xsmall" aria-label="Extra small">
+              <Bell size={14} />
+            </IconButton>
+            <IconButton size="small" aria-label="Small">
+              <Bell size={16} />
+            </IconButton>
+            <IconButton size="medium" aria-label="Medium">
+              <Bell size={18} />
+            </IconButton>
+            <IconButton size="large" aria-label="Large">
+              <Bell size={22} />
+            </IconButton>
+          </ExampleSection>
         </div>
       );
     case "text-field":
-      return <TextField label="Workspace" defaultValue="Gryt Chat" />;
+      return (
+        <div className="grid w-full gap-4 md:grid-cols-2">
+          <TextField label="Workspace" defaultValue="Gryt Chat" />
+          <TextField
+            label="Server slug"
+            size="small"
+            defaultValue="design-sync"
+          />
+          <TextField
+            label="Topic"
+            variant="filled"
+            defaultValue="Voice settings"
+          />
+          <TextField label="Notes" multiline minRows={3} />
+        </div>
+      );
     case "select":
       return (
-        <Select
-          label="Input device"
-          defaultValue="studio"
-          options={[
-            { label: "Studio mic", value: "studio" },
-            { label: "Headset", value: "headset" }
-          ]}
-        />
+        <div className="grid w-full gap-4 md:grid-cols-2">
+          <Select
+            label="Input device"
+            value={inputDevice}
+            onChange={(event) => setInputDevice(String(event.target.value))}
+            options={[
+              { label: "Studio mic", value: "studio" },
+              { label: "Headset", value: "headset" },
+              { label: "System default", value: "system" }
+            ]}
+          />
+          <Select
+            label="Output device"
+            defaultValue="speakers"
+            size="small"
+            options={[
+              { label: "Speakers", value: "speakers" },
+              { label: "Headphones", value: "headphones" },
+              { label: "Unavailable display", value: "display", disabled: true }
+            ]}
+          />
+        </div>
       );
     case "checkbox":
-      return <Checkbox defaultChecked aria-label="Enable noise suppression" />;
+      return (
+        <ControlGrid>
+          <ControlExample label="Primary">
+            <Checkbox defaultChecked color="primary" aria-label="Primary" />
+          </ControlExample>
+          <ControlExample label="Secondary">
+            <Checkbox defaultChecked color="secondary" aria-label="Secondary" />
+          </ControlExample>
+          <ControlExample label="Success">
+            <Checkbox defaultChecked color="success" aria-label="Success" />
+          </ControlExample>
+          <ControlExample label="Warning">
+            <Checkbox defaultChecked color="warning" aria-label="Warning" />
+          </ControlExample>
+          <ControlExample label="Danger">
+            <Checkbox defaultChecked color="error" aria-label="Danger" />
+          </ControlExample>
+        </ControlGrid>
+      );
     case "radio":
-      return <Radio defaultChecked aria-label="Selected channel" />;
+      return (
+        <div className="grid w-full gap-4">
+          <div className="grid gap-2">
+            <RadioOption
+              checked={radioMode === "voice"}
+              color="primary"
+              label="Voice activity"
+              name="input-mode"
+              onChange={() => setRadioMode("voice")}
+            />
+            <RadioOption
+              checked={radioMode === "push"}
+              color="secondary"
+              label="Push to talk"
+              name="input-mode"
+              onChange={() => setRadioMode("push")}
+            />
+            <RadioOption
+              checked={radioMode === "muted"}
+              color="error"
+              label="Muted"
+              name="input-mode"
+              onChange={() => setRadioMode("muted")}
+            />
+          </div>
+          <p className="text-sm text-gryt-muted">
+            Selected: <span className="text-gryt-text">{radioMode}</span>
+          </p>
+        </div>
+      );
     case "switch":
-      return <Switch defaultChecked aria-label="Voice activity" />;
+      return (
+        <ControlGrid>
+          <ControlExample label="Primary">
+            <Switch defaultChecked color="primary" aria-label="Primary" />
+          </ControlExample>
+          <ControlExample label="Secondary">
+            <Switch defaultChecked color="secondary" aria-label="Secondary" />
+          </ControlExample>
+          <ControlExample label="Success">
+            <Switch defaultChecked color="success" aria-label="Success" />
+          </ControlExample>
+          <ControlExample label="Warning">
+            <Switch defaultChecked color="warning" aria-label="Warning" />
+          </ControlExample>
+          <ControlExample label="Danger">
+            <Switch defaultChecked color="error" aria-label="Danger" />
+          </ControlExample>
+        </ControlGrid>
+      );
     case "slider":
-      return <Slider defaultValue={64} aria-label="Input volume" />;
+      return (
+        <div className="grid w-full gap-5">
+          <SliderExample
+            label="Input"
+            value={64}
+            color="primary"
+            ariaLabel="Input volume"
+          />
+          <SliderExample
+            label="Output"
+            value={42}
+            color="secondary"
+            ariaLabel="Output volume"
+          />
+          <SliderExample
+            label="Warning"
+            value={72}
+            color="warning"
+            ariaLabel="Warning threshold"
+          />
+          <SliderExample
+            label="Danger"
+            value={88}
+            color="error"
+            ariaLabel="Danger threshold"
+          />
+        </div>
+      );
     case "avatar":
       return <Avatar>G</Avatar>;
     case "badge":
@@ -543,8 +794,10 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
     case "chip":
       return (
         <div className="flex flex-wrap gap-3">
-          <Chip label="Connected" />
-          <Chip label="Beta" color="primary" />
+          <Chip label="Connected" color="success" />
+          <Chip label="Beta" color="secondary" />
+          <Chip label="Muted" color="warning" />
+          <Chip label="Danger" color="error" />
         </div>
       );
     case "tooltip":
@@ -564,9 +817,16 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
         </div>
       );
     case "alert":
-      return <Alert severity="success">Connected to Gryt.</Alert>;
+      return (
+        <div className="grid w-full gap-3">
+          <Alert severity="success">Connected to Gryt.</Alert>
+          <Alert severity="info">New voice region available.</Alert>
+          <Alert severity="warning">Input level is peaking.</Alert>
+          <Alert severity="error">Connection failed.</Alert>
+        </div>
+      );
     case "progress":
-      return <Progress variant="determinate" value={72} />;
+      return <AnimatedProgressPreview />;
     case "spinner":
       return <Spinner size={28} />;
     case "skeleton":
@@ -578,7 +838,7 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
             aria-label="Open menu"
             onClick={(event) => setMenuAnchor(event.currentTarget)}
           >
-            <MoreHorizontal size={18} />
+            <DotsThree size={18} />
           </IconButton>
           <Menu
             anchorEl={menuAnchor}
@@ -596,7 +856,11 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
       );
     case "tabs":
       return (
-        <Tabs value={0} aria-label="Views">
+        <Tabs
+          value={tabValue}
+          onChange={(_, nextValue) => setTabValue(nextValue)}
+          aria-label="Views"
+        >
           <Tab label="Chat" />
           <Tab label="Voice" />
           <Tab label="Files" />
@@ -605,7 +869,7 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
     case "accordion":
       return (
         <Accordion defaultExpanded>
-          <AccordionSummary expandIcon={<ChevronDown size={18} />}>
+          <AccordionSummary expandIcon={<CaretDown size={18} />}>
             Voice settings
           </AccordionSummary>
           <AccordionDetails>
@@ -698,4 +962,121 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
         </Surface>
       );
   }
+}
+
+function ExampleSection({
+  title,
+  children
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="grid gap-2">
+      <p className="text-xs font-semibold uppercase tracking-wider text-gryt-muted">
+        {title}
+      </p>
+      <div className="flex flex-wrap items-center gap-3">{children}</div>
+    </div>
+  );
+}
+
+function ControlGrid({ children }: { children: ReactNode }) {
+  return (
+    <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      {children}
+    </div>
+  );
+}
+
+function ControlExample({
+  label,
+  children
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <label className="flex min-h-14 items-center justify-between gap-3 rounded-lg border border-gryt-border bg-gryt-surface px-3 py-2 text-sm text-gryt-muted">
+      <span>{label}</span>
+      {children}
+    </label>
+  );
+}
+
+function RadioOption({
+  checked,
+  color,
+  label,
+  name,
+  onChange
+}: {
+  checked: boolean;
+  color: "primary" | "secondary" | "error";
+  label: string;
+  name: string;
+  onChange: () => void;
+}) {
+  return (
+    <label className="flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-lg border border-gryt-border bg-gryt-surface px-3 py-2 text-sm text-gryt-muted transition-colors hover:border-gryt-accent-light hover:text-gryt-text">
+      <span>{label}</span>
+      <Radio
+        checked={checked}
+        color={color}
+        name={name}
+        onChange={onChange}
+        value={label}
+      />
+    </label>
+  );
+}
+
+function SliderExample({
+  label,
+  value,
+  color,
+  ariaLabel
+}: {
+  label: string;
+  value: number;
+  color: "primary" | "secondary" | "warning" | "error";
+  ariaLabel: string;
+}) {
+  return (
+    <div className="grid gap-2">
+      <div className="flex items-center justify-between text-sm">
+        <span className="font-medium text-gryt-text">{label}</span>
+        <span className="text-gryt-muted">{value}%</span>
+      </div>
+      <Slider
+        defaultValue={value}
+        color={color}
+        aria-label={ariaLabel}
+        valueLabelDisplay="auto"
+      />
+    </div>
+  );
+}
+
+function AnimatedProgressPreview() {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setValue((current) => (current >= 100 ? 0 : current + 10));
+    }, 500);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="grid w-full gap-3">
+      <div className="flex items-center justify-between text-sm">
+        <span className="font-medium text-gryt-text">Upload progress</span>
+        <span className="text-gryt-muted">{value}%</span>
+      </div>
+      <Progress variant="determinate" value={value} />
+      <Progress />
+    </div>
+  );
 }

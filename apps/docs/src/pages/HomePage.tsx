@@ -5,7 +5,7 @@ import {
   MessageBubble,
   Surface
 } from "@gryt/ui";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 
 export function HomePage() {

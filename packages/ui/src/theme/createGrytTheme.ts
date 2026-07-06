@@ -11,6 +11,7 @@ export const grytTokens = {
     muted: "#888888",
     accent: "#968FF8",
     accentLight: "#b4afff",
+    secondary: "#7dd3fc",
     success: "#4ade80",
     danger: "#f87171",
     warning: "#fbbf24"
@@ -35,6 +36,10 @@ export function createGrytTheme(options: GrytThemeOptions = {}) {
         light: grytTokens.color.accentLight,
         dark: "#7e77df",
         contrastText: "#141126"
+      },
+      secondary: {
+        main: grytTokens.color.secondary,
+        contrastText: "#07131c"
       },
       success: {
         main: grytTokens.color.success

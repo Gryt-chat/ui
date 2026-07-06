@@ -1,4 +1,4 @@
-import { Check, Copy } from "lucide-react";
+import { Check, Copy } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import type { HTMLAttributes } from "react";
 import { createHighlighterCore } from "shiki/core";

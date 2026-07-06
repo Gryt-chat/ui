@@ -7,8 +7,10 @@ Built with MUI v7, React, Tailwind-authored compiled CSS, and the Gryt design pa
 ## Install
 
 ```sh
-bun add @gryt/ui @mui/material @mui/system @emotion/react @emotion/styled react react-dom
+bun add @gryt/ui
 ```
+
+Gryt UI includes its MUI, Emotion, and icon dependencies. Your app should provide React and React DOM.
 
 ## Usage
 

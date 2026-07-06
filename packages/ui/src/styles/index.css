@@ -26,6 +26,7 @@
     --gryt-muted: #888888;
     --gryt-accent: #968ff8;
     --gryt-accent-light: #b4afff;
+    --gryt-secondary: #7dd3fc;
     --gryt-success: #4ade80;
     --gryt-danger: #f87171;
     --gryt-warning: #fbbf24;
@@ -106,26 +107,12 @@
         @apply text-gryt-muted;
     }
 
-    .gryt-checkbox.Mui-checked,
-    .gryt-radio.Mui-checked,
-    .gryt-switch .Mui-checked {
-        @apply text-gryt-accent;
-    }
-
     .gryt-switch .MuiSwitch-track {
         @apply bg-gryt-border opacity-100;
     }
 
-    .gryt-switch .MuiSwitch-switchBase.Mui-checked+.MuiSwitch-track {
-        @apply bg-gryt-accent opacity-100;
-    }
-
-    .gryt-slider {
-        @apply text-gryt-accent;
-    }
-
     .gryt-slider .MuiSlider-thumb {
-        @apply ring-4 ring-gryt-accent/20;
+        @apply ring-4 ring-current/20;
     }
 
     .gryt-divider {
@@ -166,7 +153,7 @@
     }
 
     .gryt-progress .MuiLinearProgress-bar {
-        @apply rounded-(--gryt-radius-full) bg-gryt-accent;
+        @apply rounded-(--gryt-radius-full);
     }
 
     .gryt-spinner {
