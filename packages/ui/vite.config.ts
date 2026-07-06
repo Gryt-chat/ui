@@ -43,7 +43,7 @@ export default defineConfig({
     sourcemap: true
   },
   test: {
-    environment: "jsdom",
+    environment: "happy-dom",
     setupFiles: ["./src/test/setup.ts"],
     globals: true
   }
