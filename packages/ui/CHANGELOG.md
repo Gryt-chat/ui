@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.1.3
+
+### Patch Changes
+
+- 760830f: Improve npm README install and usage documentation.
+
 ## 0.1.2
 
 ### Patch Changes
