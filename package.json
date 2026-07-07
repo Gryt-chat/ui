@@ -7,10 +7,10 @@
   "homepage": "https://gryt.chat",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Gryt-chat/gryt-ui.git"
+    "url": "git+https://github.com/Gryt-chat/ui.git"
   },
   "bugs": {
-    "url": "https://github.com/Gryt-chat/gryt/issues"
+    "url": "https://github.com/Gryt-chat/ui/issues"
   },
   "packageManager": "bun@1.2.0",
   "engines": {

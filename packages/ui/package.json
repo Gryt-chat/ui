@@ -7,11 +7,11 @@
   "homepage": "https://gryt.chat",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Gryt-chat/gryt-ui.git",
+    "url": "git+https://github.com/Gryt-chat/ui.git",
     "directory": "packages/ui"
   },
   "bugs": {
-    "url": "https://github.com/Gryt-chat/gryt/issues"
+    "url": "https://github.com/Gryt-chat/ui/issues"
   },
   "keywords": [
     "gryt",
