@@ -15,9 +15,6 @@ import {
   Composer,
   ConversationItem,
   Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
   Drawer,
   IconButton,
@@ -501,12 +498,21 @@ function TabsExample() {
     description: "Modal surfaces for confirmations and focused tasks.",
     importName: "Dialog",
     preview: "dialog",
-    code: `import { Dialog, DialogContent, DialogTitle } from "@gryt/ui";
+    code: `import { Dialog } from "@gryt/ui";
 
-<Dialog open={open} onClose={closeDialog}>
-  <DialogTitle>Join server?</DialogTitle>
-  <DialogContent>Confirm the action.</DialogContent>
-</Dialog>`
+<Dialog.Root open={open} onOpenChange={setOpen}>
+  <Dialog.Trigger render={<Button />}>Open</Dialog.Trigger>
+  <Dialog.Portal>
+    <Dialog.Backdrop />
+    <Dialog.Popup>
+      <Dialog.Title>Join server?</Dialog.Title>
+      <Dialog.Description>Confirm the action.</Dialog.Description>
+      <Dialog.Footer>
+        <Dialog.Close render={<Button tone="neutral" />}>Cancel</Dialog.Close>
+      </Dialog.Footer>
+    </Dialog.Popup>
+  </Dialog.Portal>
+</Dialog.Root>`
   },
   {
     slug: "drawer",
@@ -901,19 +907,25 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
     case "dialog":
       return (
         <>
-          <Button onClick={() => setDialogOpen(true)}>Open dialog</Button>
-          <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-            <DialogTitle>Join Gryt server?</DialogTitle>
-            <DialogContent>
-              Rounded, themed MUI dialog with Gryt surface and border treatment.
-            </DialogContent>
-            <DialogActions>
-              <Button tone="neutral" onClick={() => setDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={() => setDialogOpen(false)}>Join</Button>
-            </DialogActions>
-          </Dialog>
+          <Dialog.Root open={dialogOpen} onOpenChange={setDialogOpen}>
+            <Dialog.Trigger render={<Button />}>Open dialog</Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Backdrop />
+              <Dialog.Popup>
+                <Dialog.Title>Join Gryt server?</Dialog.Title>
+                <Dialog.Description>
+                  Flat Gryt surface and border, no shadow, on the Base UI
+                  dialog.
+                </Dialog.Description>
+                <Dialog.Footer>
+                  <Dialog.Close render={<Button tone="neutral" />}>
+                    Cancel
+                  </Dialog.Close>
+                  <Dialog.Close render={<Button />}>Join</Dialog.Close>
+                </Dialog.Footer>
+              </Dialog.Popup>
+            </Dialog.Portal>
+          </Dialog.Root>
         </>
       );
     case "drawer":

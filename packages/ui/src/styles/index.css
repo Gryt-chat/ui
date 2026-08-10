@@ -12,9 +12,21 @@
     --color-gryt-muted: #888888;
     --color-gryt-accent: #968ff8;
     --color-gryt-accent-light: #b4afff;
+    --color-gryt-secondary: #7dd3fc;
+    --color-gryt-secondary-light: #bae6fd;
     --color-gryt-success: #4ade80;
     --color-gryt-danger: #f87171;
+    --color-gryt-danger-light: #fca5a5;
     --color-gryt-warning: #fbbf24;
+
+    /* Surface one step above --color-gryt-surface-raised, for hover states. */
+    --color-gryt-surface-hover: #334155;
+
+    /* Text drawn on top of a filled tone, dark enough to stay readable on
+       these light fills. Not derived from the fills — picked per tone. */
+    --color-gryt-on-accent: #141126;
+    --color-gryt-on-secondary: #07131c;
+    --color-gryt-on-danger: #250b0b;
 }
 
 :root {
@@ -38,9 +50,10 @@
 }
 
 @layer components {
-    .gryt-button {
-        @apply min-h-10 rounded-(--gryt-radius-full) px-5 normal-case font-semibold transition-colors shadow-none;
-    }
+    /* .gryt-button used to live here. Button now carries its own utilities, and
+       a transition-colors rule here fought the transform transition it needs
+       for the hover and press scale. The class name is still on the element as
+       a hook for consumers overriding it. */
 
     .gryt-icon-button {
         @apply rounded-(--gryt-radius-full) transition-colors;

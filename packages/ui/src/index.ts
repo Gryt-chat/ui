@@ -50,13 +50,14 @@ export type { AlertProps } from "./components/Alert/Alert";
 export { Progress, Spinner } from "./components/Progress/Progress";
 export { Skeleton } from "./components/Skeleton/Skeleton";
 export type { SkeletonProps } from "./components/Skeleton/Skeleton";
-export {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle
+export { Dialog } from "./components/Dialog/Dialog";
+export type {
+  DialogBackdropProps,
+  DialogDescriptionProps,
+  DialogFooterProps,
+  DialogPopupProps,
+  DialogTitleProps
 } from "./components/Dialog/Dialog";
-export type { DialogProps } from "./components/Dialog/Dialog";
 export { Drawer } from "./components/Drawer/Drawer";
 export type { DrawerProps } from "./components/Drawer/Drawer";
 export { Menu } from "./components/Menu/Menu";

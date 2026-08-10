@@ -1,93 +1,86 @@
-import MuiButton from "@mui/material/Button";
-import type { ButtonProps as MuiButtonProps } from "@mui/material/Button";
-import type { SxProps, Theme } from "@mui/material/styles";
+import { Button as BaseButton } from "@base-ui/react/button";
 import { forwardRef } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../utils/cn";
 
-type ButtonSize = MuiButtonProps["size"] | "xsmall";
+type ButtonTone = "primary" | "secondary" | "neutral" | "danger" | "ghost";
+type ButtonSize = "xsmall" | "small" | "medium" | "large";
 
-const buttonToneStyles: Record<
-  NonNullable<ButtonProps["tone"]>,
-  SxProps<Theme>
-> = {
-  primary: {
-    backgroundColor: "var(--gryt-accent)",
-    color: "#141126",
-    "&:hover": {
-      backgroundColor: "var(--gryt-accent-light)"
-    }
-  },
-  secondary: {
-    backgroundColor: "var(--gryt-secondary)",
-    color: "#07131c",
-    "&:hover": {
-      backgroundColor: "#bae6fd"
-    }
-  },
-  neutral: {
-    backgroundColor: "var(--gryt-surface-raised)",
-    color: "var(--gryt-text)",
-    "&:hover": {
-      backgroundColor: "#334155"
-    }
-  },
-  danger: {
-    backgroundColor: "var(--gryt-danger)",
-    color: "#250b0b",
-    "&:hover": {
-      backgroundColor: "#fca5a5"
-    }
-  },
-  ghost: {
-    backgroundColor: "transparent",
-    color: "var(--gryt-muted)",
-    "&:hover": {
-      backgroundColor: "rgb(255 255 255 / 0.08)",
-      color: "var(--gryt-text)"
-    }
-  }
+// Base UI marks a disabled button with data-disabled rather than the native
+// attribute, because it stays focusable when disabled. Hover and press styles
+// hang off not-data-disabled so they don't fire on a dead button.
+const toneStyles: Record<ButtonTone, string> = {
+  primary:
+    "bg-gryt-accent text-gryt-on-accent hover:not-data-disabled:bg-gryt-accent-light",
+  secondary:
+    "bg-gryt-secondary text-gryt-on-secondary hover:not-data-disabled:bg-gryt-secondary-light",
+  neutral:
+    "bg-gryt-surface-raised text-gryt-text hover:not-data-disabled:bg-gryt-surface-hover",
+  danger:
+    "bg-gryt-danger text-gryt-on-danger hover:not-data-disabled:bg-gryt-danger-light",
+  ghost:
+    "bg-transparent text-gryt-muted hover:not-data-disabled:bg-white/8 hover:not-data-disabled:text-gryt-text"
 };
 
-export interface ButtonProps extends Omit<MuiButtonProps, "size"> {
-  tone?: "primary" | "secondary" | "neutral" | "danger" | "ghost";
+const sizeStyles: Record<ButtonSize, string> = {
+  xsmall: "min-h-8 px-3 text-xs",
+  small: "min-h-9 px-4 text-sm",
+  medium: "min-h-10 px-5 text-sm",
+  large: "min-h-12 px-6 text-base"
+};
+
+export interface ButtonProps
+  extends Omit<ComponentPropsWithoutRef<typeof BaseButton>, "className"> {
+  tone?: ButtonTone;
   size?: ButtonSize;
+  className?: string;
+  // Carried over from the MUI-based Button. Base UI has no equivalent, but
+  // dropping them would break every existing call site for no gain — the flex
+  // gap below already spaces them correctly.
+  startIcon?: ReactNode;
+  endIcon?: ReactNode;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(
     {
+      children,
       className,
+      endIcon,
       size = "medium",
-      sx,
+      startIcon,
       tone = "primary",
-      variant = "contained",
       ...props
     },
     ref
   ) {
-    const muiSize = size === "xsmall" ? "small" : size;
-
     return (
-      <MuiButton
+      <BaseButton
         ref={ref}
-        size={muiSize}
-        variant={variant}
         className={cn(
           "gryt-button",
-          size === "xsmall" && "min-h-8 px-3 text-xs",
+          "inline-flex items-center justify-center gap-2 border-0 shadow-none",
+          "rounded-(--gryt-radius-full) font-semibold whitespace-nowrap select-none",
+          "transition-[transform,background-color,color] duration-150 ease-out",
+
+          // Grow on hover, shrink on press. Behind motion-safe so it disappears
+          // entirely for anyone who asked for reduced motion, rather than being
+          // overridden afterwards.
+          "motion-safe:hover:not-data-disabled:scale-[1.03]",
+          "motion-safe:active:not-data-disabled:scale-[0.97]",
+
+          "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light",
+          "data-disabled:cursor-not-allowed data-disabled:opacity-50",
+          sizeStyles[size],
+          toneStyles[tone],
           className
         )}
-        sx={[
-          buttonToneStyles[tone],
-          size === "xsmall" && {
-            minHeight: 32,
-            paddingInline: 12,
-            fontSize: "0.75rem"
-          },
-          ...(Array.isArray(sx) ? sx : sx ? [sx] : [])
-        ]}
         {...props}
-      />
+      >
+        {startIcon}
+        {children}
+        {endIcon}
+      </BaseButton>
     );
   }
 );
