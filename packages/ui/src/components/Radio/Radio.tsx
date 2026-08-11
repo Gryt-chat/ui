@@ -36,7 +36,9 @@ export const Radio = forwardRef<HTMLButtonElement, RadioProps>(function Radio(
       )}
       {...props}
     >
+      {/* keepMounted so there is an element to transition — see Checkbox. */}
       <BaseRadio.Indicator
+        keepMounted
         className={cn(
           "h-2.5 w-2.5 origin-center rounded-(--gryt-radius-full)",
           "transition-[scale,opacity] duration-(--gryt-dur-spring) ease-spring",

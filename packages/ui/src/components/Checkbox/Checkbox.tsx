@@ -32,9 +32,13 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
         )}
         {...props}
       >
-        {/* scale rather than hidden: an indicator that pops in has no motion
-            to spring. It stays in flow so the box never reflows. */}
+        {/* keepMounted is load-bearing: without it Base UI unmounts the
+            indicator whenever the box is unchecked, so data-unchecked never
+            applies to anything and there is no element to transition from —
+            the tick just appears. Kept in the DOM, it can scale and fade in
+            both directions. */}
         <BaseCheckbox.Indicator
+          keepMounted
           className={cn(
             "flex origin-center",
             "transition-[scale,opacity] duration-(--gryt-dur-spring) ease-spring",

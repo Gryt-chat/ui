@@ -444,6 +444,7 @@ function TabsExample() {
         <Tabs.Tab value="chat">Chat</Tabs.Tab>
         <Tabs.Tab value="voice">Voice</Tabs.Tab>
         <Tabs.Tab value="files">Files</Tabs.Tab>
+        <Tabs.Indicator />
       </Tabs.List>
     </Tabs>
   );
@@ -895,6 +896,7 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
             <Tabs.Tab value="chat">Chat</Tabs.Tab>
             <Tabs.Tab value="voice">Voice</Tabs.Tab>
             <Tabs.Tab value="files">Files</Tabs.Tab>
+            <Tabs.Indicator />
           </Tabs.List>
         </Tabs>
       );
