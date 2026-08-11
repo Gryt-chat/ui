@@ -12,9 +12,21 @@
     --color-gryt-muted: #888888;
     --color-gryt-accent: #968ff8;
     --color-gryt-accent-light: #b4afff;
+    --color-gryt-secondary: #7dd3fc;
+    --color-gryt-secondary-light: #bae6fd;
     --color-gryt-success: #4ade80;
     --color-gryt-danger: #f87171;
+    --color-gryt-danger-light: #fca5a5;
     --color-gryt-warning: #fbbf24;
+
+    /* Surface one step above --color-gryt-surface-raised, for hover states. */
+    --color-gryt-surface-hover: #334155;
+
+    /* Text drawn on top of a filled tone, dark enough to stay readable on
+       these light fills. Not derived from the fills — picked per tone. */
+    --color-gryt-on-accent: #141126;
+    --color-gryt-on-secondary: #07131c;
+    --color-gryt-on-danger: #250b0b;
 }
 
 :root {
@@ -38,43 +50,14 @@
 }
 
 @layer components {
-    .gryt-button {
-        @apply min-h-10 rounded-(--gryt-radius-full) px-5 normal-case font-semibold transition-colors shadow-none;
-    }
-
-    .gryt-icon-button {
-        @apply rounded-(--gryt-radius-full) transition-colors;
-    }
-
-    .gryt-surface {
-        box-shadow: 0 18px 60px rgb(0 0 0 / 0.22);
-        @apply border border-gryt-border bg-gryt-surface text-gryt-text;
-    }
+    /* Almost everything that used to live here moved into the components as
+       Tailwind utilities, along with every .Mui* selector it was reaching
+       through. What is left is the handful of rules that are genuinely
+       stylesheet-shaped: multi-element layouts a className cannot express. */
 
     .gryt-message-bubble {
         max-width: min(42rem, 85%);
         @apply rounded-(--gryt-radius-xl) px-4 py-3 text-sm leading-6;
-    }
-
-    .gryt-text-field .MuiOutlinedInput-root {
-        @apply rounded-(--gryt-radius-xl) bg-gryt-surface-raised text-gryt-text;
-    }
-
-    .gryt-text-field .MuiOutlinedInput-notchedOutline {
-        @apply border-gryt-border;
-    }
-
-    .gryt-text-field .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-        @apply border-gryt-accent-light;
-    }
-
-    .gryt-text-field .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-        @apply border-gryt-accent;
-    }
-
-    .gryt-text-field .MuiInputLabel-root,
-    .gryt-text-field .MuiFormHelperText-root {
-        @apply text-gryt-muted;
     }
 
     .gryt-composer {
@@ -87,113 +70,5 @@
 
     .gryt-conversation-item {
         @apply flex w-full items-center gap-3 rounded-(--gryt-radius-xl) px-3 py-2.5 text-left transition-colors;
-    }
-
-    .gryt-avatar {
-        @apply bg-gryt-surface-raised text-gryt-text ring-1 ring-gryt-border;
-    }
-
-    .gryt-badge .MuiBadge-badge {
-        @apply bg-gryt-accent text-[#141126] ring-2 ring-gryt-bg;
-    }
-
-    .gryt-chip {
-        @apply rounded-(--gryt-radius-full) border-gryt-border bg-gryt-surface-raised text-gryt-text;
-    }
-
-    .gryt-checkbox,
-    .gryt-radio,
-    .gryt-switch {
-        @apply text-gryt-muted;
-    }
-
-    .gryt-switch .MuiSwitch-track {
-        @apply bg-gryt-border opacity-100;
-    }
-
-    .gryt-slider .MuiSlider-thumb {
-        @apply ring-4 ring-current/20;
-    }
-
-    .gryt-divider {
-        @apply border-gryt-border;
-    }
-
-    .gryt-card,
-    .gryt-dialog,
-    .gryt-drawer,
-    .gryt-menu,
-    .gryt-accordion {
-        box-shadow: 0 24px 80px rgb(0 0 0 / 0.28);
-        @apply rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface text-gryt-text;
-    }
-
-    .gryt-card-header,
-    .gryt-dialog-title {
-        @apply text-gryt-text;
-    }
-
-    .gryt-card-content,
-    .gryt-dialog-content,
-    .gryt-accordion-details {
-        @apply text-gryt-muted;
-    }
-
-    .gryt-card-actions,
-    .gryt-dialog-actions {
-        @apply gap-2 px-4 pb-4;
-    }
-
-    .gryt-alert {
-        @apply rounded-(--gryt-radius-lg) border-gryt-border bg-gryt-surface-raised text-gryt-text;
-    }
-
-    .gryt-progress {
-        @apply rounded-(--gryt-radius-full) bg-gryt-surface-raised;
-    }
-
-    .gryt-progress .MuiLinearProgress-bar {
-        @apply rounded-(--gryt-radius-full);
-    }
-
-    .gryt-spinner {
-        @apply text-gryt-accent;
-    }
-
-    .gryt-skeleton {
-        @apply bg-gryt-surface-raised;
-    }
-
-    .gryt-menu-item {
-        @apply mx-1 rounded-(--gryt-radius-md) text-gryt-text;
-    }
-
-    .gryt-menu-item.Mui-selected,
-    .gryt-menu-item:hover {
-        @apply bg-gryt-surface-raised;
-    }
-
-    .gryt-tabs {
-        @apply min-h-10 rounded-(--gryt-radius-full) bg-gryt-surface-raised p-1;
-    }
-
-    .gryt-tabs .MuiTabs-indicator {
-        @apply hidden;
-    }
-
-    .gryt-tab {
-        @apply min-h-8 rounded-(--gryt-radius-full) px-4 py-1.5 text-gryt-muted normal-case;
-    }
-
-    .gryt-tab.Mui-selected {
-        @apply bg-gryt-accent text-[#141126];
-    }
-
-    .gryt-accordion::before {
-        @apply hidden;
-    }
-
-    .gryt-accordion-summary {
-        @apply rounded-(--gryt-radius-xl) text-gryt-text;
     }
 }

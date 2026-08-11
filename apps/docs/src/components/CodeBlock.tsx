@@ -100,24 +100,27 @@ export function CodeBlock({
   return (
     <div
       className={[
-        "gryt-code-block not-prose my-6 overflow-hidden rounded-[28px] border border-gryt-border bg-[#0d0f13]",
+        "gryt-code-block not-prose my-(--space-md) overflow-hidden rounded-(--gryt-radius-lg) border border-gryt-border bg-(--color-code-paper)",
         className
       ]
         .filter(Boolean)
         .join(" ")}
       {...props}
     >
-      <div className="flex min-h-11 items-center justify-between gap-3 border-b border-gryt-border bg-gryt-surface px-4">
-        <span className="text-xs font-semibold uppercase tracking-wider text-gryt-muted">
+      {/* A language label and a working copy button — not a mock title bar.
+          No traffic lights: the browser already supplies real chrome. */}
+      <div className="flex min-h-10 items-center justify-between gap-3 border-b border-gryt-border px-4">
+        <span className="font-mono text-[11px] tracking-wide text-gryt-muted">
           {label}
         </span>
         <button
           type="button"
           onClick={copyCode}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-full text-gryt-muted transition-colors hover:bg-white/8 hover:text-gryt-text"
-          aria-label="Copy code"
+          className="inline-flex h-7 items-center gap-1.5 rounded-full px-2.5 text-[11px] text-gryt-muted transition-colors hover:bg-white/8 hover:text-gryt-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light"
+          aria-label={copied ? "Copied to clipboard" : "Copy code"}
         >
-          {copied ? <Check size={16} /> : <Copy size={16} />}
+          {copied ? <Check size={13} /> : <Copy size={13} />}
+          {copied ? "Copied" : "Copy"}
         </button>
       </div>
       {highlightedHtml ? (

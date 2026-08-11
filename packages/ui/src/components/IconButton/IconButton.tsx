@@ -1,69 +1,61 @@
-import MuiIconButton from "@mui/material/IconButton";
-import type { IconButtonProps as MuiIconButtonProps } from "@mui/material/IconButton";
-import type { SxProps, Theme } from "@mui/material/styles";
+import { Button as BaseButton } from "@base-ui/react/button";
 import { forwardRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
+import { disabledState, focusRing } from "../utils/styles";
 
-type IconButtonSize = MuiIconButtonProps["size"] | "xsmall";
+type IconButtonTone = "primary" | "secondary" | "neutral" | "danger" | "ghost";
+type IconButtonSize = "xsmall" | "small" | "medium" | "large";
 
-const iconButtonToneStyles: Record<
-  NonNullable<IconButtonProps["tone"]>,
-  SxProps<Theme>
-> = {
-  primary: {
-    color: "var(--gryt-accent)",
-    "&:hover": { backgroundColor: "rgb(150 143 248 / 0.1)" }
-  },
-  secondary: {
-    color: "var(--gryt-secondary)",
-    "&:hover": { backgroundColor: "rgb(125 211 252 / 0.1)" }
-  },
-  neutral: {
-    color: "var(--gryt-muted)",
-    "&:hover": {
-      backgroundColor: "rgb(255 255 255 / 0.08)",
-      color: "var(--gryt-text)"
-    }
-  },
-  danger: {
-    color: "var(--gryt-danger)",
-    "&:hover": { backgroundColor: "rgb(248 113 113 / 0.1)" }
-  },
-  ghost: {
-    color: "var(--gryt-muted)",
-    "&:hover": {
-      backgroundColor: "rgb(255 255 255 / 0.08)",
-      color: "var(--gryt-text)"
-    }
-  }
+// The hover fills are the tone colour at low alpha, so an icon button reads as
+// a tinted target rather than a filled one.
+const toneStyles: Record<IconButtonTone, string> = {
+  primary: "text-gryt-accent hover:not-data-disabled:bg-gryt-accent/10",
+  secondary:
+    "text-gryt-secondary hover:not-data-disabled:bg-gryt-secondary/10",
+  neutral:
+    "text-gryt-muted hover:not-data-disabled:bg-white/8 hover:not-data-disabled:text-gryt-text",
+  danger: "text-gryt-danger hover:not-data-disabled:bg-gryt-danger/10",
+  ghost:
+    "text-gryt-muted hover:not-data-disabled:bg-white/8 hover:not-data-disabled:text-gryt-text"
 };
 
-export interface IconButtonProps extends Omit<MuiIconButtonProps, "size"> {
-  tone?: "primary" | "secondary" | "neutral" | "danger" | "ghost";
+const sizeStyles: Record<IconButtonSize, string> = {
+  xsmall: "h-8 w-8",
+  small: "h-9 w-9",
+  medium: "h-10 w-10",
+  large: "h-12 w-12"
+};
+
+export interface IconButtonProps
+  extends Omit<ComponentPropsWithoutRef<typeof BaseButton>, "className"> {
+  tone?: IconButtonTone;
   size?: IconButtonSize;
+  className?: string;
 }
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
   function IconButton(
-    { className, size = "medium", sx, tone = "neutral", ...props },
+    { className, size = "medium", tone = "neutral", ...props },
     ref
   ) {
-    const muiSize = size === "xsmall" ? "small" : size;
-
     return (
-      <MuiIconButton
+      <BaseButton
         ref={ref}
-        size={muiSize}
-        className={cn("gryt-icon-button", className)}
-        sx={[
-          iconButtonToneStyles[tone],
-          size === "xsmall" && {
-            height: 32,
-            width: 32,
-            padding: 0.5
-          },
-          ...(Array.isArray(sx) ? sx : sx ? [sx] : [])
-        ]}
+        className={cn(
+          "gryt-icon-button",
+          "inline-flex shrink-0 items-center justify-center border-0 bg-transparent p-0",
+          "rounded-(--gryt-radius-full) select-none",
+          // scale rather than transform — see the note in Button.
+          "transition-[scale,background-color,color] duration-150 ease-out",
+          "motion-safe:hover:not-data-disabled:scale-[1.06]",
+          "motion-safe:active:not-data-disabled:scale-[0.94]",
+          focusRing,
+          disabledState,
+          sizeStyles[size],
+          toneStyles[tone],
+          className
+        )}
         {...props}
       />
     );

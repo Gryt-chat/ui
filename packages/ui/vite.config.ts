@@ -4,14 +4,18 @@ import { resolve } from "node:path";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 
-const peerDependencies = [
+import pkg from "./package.json" with { type: "json" };
+
+// Derived rather than hand-listed. The hand-written list still named MUI and
+// Emotion after they were removed, and had never been given @base-ui/react or
+// @phosphor-icons/react — so both were being inlined, which took the bundle
+// from 200 kB to 505 kB. Reading package.json means the two cannot drift.
+const bundledExternally = [
   "react",
   "react-dom",
   "react/jsx-runtime",
-  "@emotion/react",
-  "@emotion/styled",
-  "@mui/material",
-  "@mui/system"
+  ...Object.keys(pkg.dependencies ?? {}),
+  ...Object.keys(pkg.peerDependencies ?? {})
 ];
 
 export default defineConfig({
@@ -32,7 +36,7 @@ export default defineConfig({
     },
     rollupOptions: {
       external: (id) =>
-        peerDependencies.some((dep) => id === dep || id.startsWith(`${dep}/`)),
+        bundledExternally.some((dep) => id === dep || id.startsWith(`${dep}/`)),
       output: {
         assetFileNames: (assetInfo) =>
           assetInfo.name?.endsWith(".css")

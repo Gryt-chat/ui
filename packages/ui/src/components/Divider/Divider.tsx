@@ -1,19 +1,26 @@
-import MuiDivider from "@mui/material/Divider";
-import type { DividerProps as MuiDividerProps } from "@mui/material/Divider";
+import { Separator } from "@base-ui/react/separator";
 import { forwardRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
 
-export type DividerProps = MuiDividerProps;
+export interface DividerProps
+  extends Omit<ComponentPropsWithoutRef<typeof Separator>, "className"> {
+  className?: string;
+}
 
-export const Divider = forwardRef<HTMLHRElement, DividerProps>(function Divider(
-  { className, ...props },
-  ref
-) {
-  return (
-    <MuiDivider
-      ref={ref}
-      className={cn("gryt-divider", className)}
-      {...props}
-    />
-  );
-});
+export const Divider = forwardRef<HTMLDivElement, DividerProps>(
+  function Divider({ className, orientation = "horizontal", ...props }, ref) {
+    return (
+      <Separator
+        ref={ref}
+        orientation={orientation}
+        className={cn(
+          "gryt-divider bg-gryt-border",
+          orientation === "vertical" ? "h-full w-px" : "h-px w-full",
+          className
+        )}
+        {...props}
+      />
+    );
+  }
+);

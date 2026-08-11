@@ -1,0 +1,15 @@
+[
+  {
+    "date": "2026-08-11",
+    "scope": "app",
+    "macrostructure": "Catalogue (index) / Long Document (content) / Component Playground (reference)",
+    "theme": "custom",
+    "theme_axes": "dark / grotesk-sans / cool",
+    "vibe": "flat dark dev-tool docs on the Gryt code-theme palette",
+    "genre": "modern-minimal",
+    "nav": "N13 inline cmdk pill",
+    "footer": "Ft2 inline single line",
+    "enrichment": "none",
+    "brief": "Gryt UI component library docs — apps/docs redesign"
+  }
+]

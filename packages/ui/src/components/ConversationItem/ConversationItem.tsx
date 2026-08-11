@@ -1,4 +1,4 @@
-import Avatar from "@mui/material/Avatar";
+import { Avatar } from "../Avatar/Avatar";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { forwardRef } from "react";
 import { cn } from "../utils/cn";
@@ -24,7 +24,7 @@ export const ConversationItem = forwardRef<
       className={cn(
         "gryt-conversation-item",
         active
-          ? "bg-gryt-accent text-[#141126]"
+          ? "bg-gryt-accent text-gryt-on-accent"
           : "text-gryt-text hover:bg-white/5",
         className
       )}
@@ -32,10 +32,10 @@ export const ConversationItem = forwardRef<
     >
       {avatar ?? (
         <Avatar
+          size="small"
           className={cn(
-            "h-9 w-9 text-sm",
             active
-              ? "bg-[#141126] text-gryt-accent"
+              ? "bg-gryt-on-accent text-gryt-accent ring-transparent"
               : "bg-gryt-surface-raised text-gryt-text"
           )}
         >
@@ -48,7 +48,7 @@ export const ConversationItem = forwardRef<
           <span
             className={cn(
               "block truncate text-xs",
-              active ? "text-[#302a63]" : "text-gryt-muted"
+              active ? "text-gryt-on-accent/70" : "text-gryt-muted"
             )}
           >
             {subtitle}

@@ -1,53 +1,108 @@
-import MuiAccordion from "@mui/material/Accordion";
-import MuiAccordionDetails from "@mui/material/AccordionDetails";
-import MuiAccordionSummary from "@mui/material/AccordionSummary";
-import type { AccordionProps as MuiAccordionProps } from "@mui/material/Accordion";
-import type {
-  AccordionDetailsProps,
-  AccordionSummaryProps
-} from "@mui/material";
+import { Accordion as BaseAccordion } from "@base-ui/react/accordion";
+import { CaretDown } from "@phosphor-icons/react";
 import { forwardRef } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../utils/cn";
+import { focusRing } from "../utils/styles";
 
-export type AccordionProps = MuiAccordionProps;
+export type AccordionProps = ComponentPropsWithoutRef<
+  typeof BaseAccordion.Root
+>;
+export type AccordionItemProps = ComponentPropsWithoutRef<
+  typeof BaseAccordion.Item
+>;
+export type AccordionPanelProps = ComponentPropsWithoutRef<
+  typeof BaseAccordion.Panel
+>;
 
-export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
-  function Accordion(
-    { className, disableGutters = true, elevation = 0, ...props },
-    ref
-  ) {
+const Root = forwardRef<HTMLDivElement, AccordionProps>(function AccordionRoot(
+  { className, ...props },
+  ref
+) {
+  return (
+    <BaseAccordion.Root
+      ref={ref}
+      className={cn(
+        "gryt-accordion flex w-full flex-col gap-2 rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface p-2",
+        className
+      )}
+      {...props}
+    />
+  );
+});
+
+const Item = forwardRef<HTMLDivElement, AccordionItemProps>(
+  function AccordionItem({ className, ...props }, ref) {
     return (
-      <MuiAccordion
+      <BaseAccordion.Item
         ref={ref}
-        disableGutters={disableGutters}
-        elevation={elevation}
-        className={cn("gryt-accordion", className)}
+        className={cn("gryt-accordion-item", className)}
         {...props}
       />
     );
   }
 );
 
-export function AccordionSummary({
-  className,
-  ...props
-}: AccordionSummaryProps) {
-  return (
-    <MuiAccordionSummary
-      className={cn("gryt-accordion-summary", className)}
-      {...props}
-    />
-  );
+export interface AccordionTriggerProps
+  extends ComponentPropsWithoutRef<typeof BaseAccordion.Trigger> {
+  // Defaults to a caret that rotates when the panel opens. Pass one to
+  // override it, or null for no indicator at all.
+  expandIcon?: ReactNode;
 }
 
-export function AccordionDetails({
-  className,
-  ...props
-}: AccordionDetailsProps) {
-  return (
-    <MuiAccordionDetails
-      className={cn("gryt-accordion-details", className)}
-      {...props}
-    />
-  );
-}
+const Trigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
+  function AccordionTrigger({ children, className, expandIcon, ...props }, ref) {
+    return (
+      <BaseAccordion.Header className="gryt-accordion-header m-0">
+        <BaseAccordion.Trigger
+          ref={ref}
+          className={cn(
+            "gryt-accordion-trigger flex w-full items-center justify-between gap-3",
+            "rounded-(--gryt-radius-lg) border-0 bg-transparent px-3 py-2.5",
+            "text-left text-sm font-medium text-gryt-text select-none",
+            "transition-colors duration-150 hover:bg-gryt-surface-raised",
+            focusRing,
+            className
+          )}
+          {...props}
+        >
+          {children}
+          {expandIcon === undefined ? (
+            <CaretDown
+              size={16}
+              // Base UI flags the open panel on the trigger, so the caret needs
+              // no state of its own.
+              className="shrink-0 transition-transform duration-150 ease-out data-panel-open:rotate-180 motion-reduce:transition-none"
+            />
+          ) : (
+            expandIcon
+          )}
+        </BaseAccordion.Trigger>
+      </BaseAccordion.Header>
+    );
+  }
+);
+
+const Panel = forwardRef<HTMLDivElement, AccordionPanelProps>(
+  function AccordionPanel({ children, className, ...props }, ref) {
+    return (
+      <BaseAccordion.Panel
+        ref={ref}
+        className={cn(
+          "gryt-accordion-panel overflow-hidden text-sm text-gryt-muted",
+          // Base UI measures the panel and exposes the height as a variable,
+          // which is what makes a real open and close transition possible.
+          "h-[var(--accordion-panel-height)] transition-[height] duration-150 ease-out",
+          "data-starting-style:h-0 data-ending-style:h-0",
+          "motion-reduce:transition-none",
+          className
+        )}
+        {...props}
+      >
+        <div className="px-3 pt-1 pb-3">{children}</div>
+      </BaseAccordion.Panel>
+    );
+  }
+);
+
+export const Accordion = Object.assign(Root, { Item, Trigger, Panel });

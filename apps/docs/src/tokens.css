@@ -1,0 +1,58 @@
+/* Hallmark · genre: modern-minimal · design-system: design.md · designed-as-app
+ *
+ * Tokens for the docs site. The colour values are the Gryt code-theme palette
+ * converted to OKLCH — the same palette the client ships, so the docs look like
+ * the product. @gryt/ui declares its own --color-gryt-* set; these are the docs
+ * chrome's names for the same colours plus the scale tokens the library has no
+ * opinion about.
+ */
+
+:root {
+  --color-paper: oklch(18.7% 0.011 268.1);
+  --color-paper-2: oklch(23.1% 0.014 266.9);
+  --color-paper-3: oklch(24.5% 0.016 274.2);
+  --color-ink: oklch(90.8% 0.008 286.2);
+  --color-ink-2: oklch(62.7% 0 89.9);
+  --color-rule: oklch(31% 0.024 268.5);
+  --color-accent: oklch(70.1% 0.151 284.8);
+  --color-accent-ink: oklch(19.4% 0.042 288.4);
+  --color-focus: oklch(78.8% 0.113 286.4);
+  /* One step below paper, so a code block reads as inset rather than raised —
+     the flat equivalent of the shadow this site does not use. */
+  --color-code-paper: oklch(15.9% 0.009 267.9);
+
+  --font-display: "Geist Variable", "Inter Variable", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-body: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, Menlo, Consolas,
+    monospace;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+  --space-3xl: 7rem;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.75rem;
+  --text-2xl: 2.25rem;
+  --text-display: clamp(2.25rem, 4vw + 0.75rem, 3.5rem);
+
+  --tracking-display: -0.022em;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-short: 160ms;
+  --dur-mid: 200ms;
+
+  --rule-hairline: 1px;
+  --radius-card: 20px;
+  --radius-pill: 999px;
+  --radius-input: 12px;
+}
