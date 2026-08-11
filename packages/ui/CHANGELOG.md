@@ -1,5 +1,45 @@
 # @gryt/ui
 
+## 0.4.0
+
+### Minor Changes
+
+- abc8104: Add the chat and voice Base UI primitives: `ContextMenu`, `Popover`, `Toast`, `ScrollArea`, `Toggle`, `ToggleGroup` and `Meter`.
+
+  `ContextMenu` reuses `Menu`'s styled popup and items, because Base UI builds it from Menu's own parts — the two cannot drift apart.
+
+  `Meter` is deliberately separate from `Progress`. Progress is task completion heading for 100%; a meter is a reading inside a range, where 100% is often the bad case. They also announce differently to a screen reader. Its indicator has no transition, since the common caller is a mic level updating every frame.
+
+  `useToastManager` is re-exported so raising a toast does not mean importing Base UI directly.
+
+- 68d5fa3: Rebuild `Drawer` on Base UI's `drawer` primitive, so it can be dragged away to dismiss and becomes a bottom sheet on small screens.
+
+  It was a `dialog` pinned to an edge, which looks like a drawer and does none of what one is for — it could not be dragged, did not follow the finger, and did not know which edge it belonged to.
+
+  **Breaking:** `side` moves from `Drawer.Popup` to `Drawer.Root`, because the swipe direction is Root's business and both Viewport and Popup have to agree with it. A `Drawer.Viewport` is now required between `Portal` and `Popup`.
+
+  ```diff
+  - <Drawer.Root>
+  + <Drawer.Root side="right">
+      <Drawer.Portal>
+        <Drawer.Backdrop />
+  -     <Drawer.Popup side="right">
+  +     <Drawer.Viewport>
+  +       <Drawer.Popup>
+  ```
+
+  Under 768px the panel becomes a bottom sheet regardless of `side`; pass `sheetOnMobile={false}` to keep the side at every width. Corners are rounded only on the edges away from the origin, so a sheet still reads as attached to the edge it came from. `Drawer.Grabber` renders the drag bar on top and bottom sheets.
+
+- f861f10: Style the remaining Base UI primitives, closing the gap: `AlertDialog`, `Autocomplete`, `CheckboxGroup`, `Collapsible`, `Combobox`, `Fieldset`, `Form`, `Menubar`, `NavigationMenu`, `NumberField`, `OtpField`, `PreviewCard` and `Toolbar`.
+
+  `Combobox` and `Autocomplete` share item and input styling, the way `ContextMenu` shares `Menu`'s — two lists that look different for no reason is worse than one that looks the same. The difference between them is what the value may be: Combobox requires a choice from the list, Autocomplete treats the typed text as the answer.
+
+  `AlertDialog` is styled identically to `Dialog` on purpose; the difference is behaviour, not looks. Escape and the backdrop do nothing, so answering means picking a button.
+
+  Base UI's `input` is deliberately not wrapped: `TextField` already builds on `field`, and `Field.Control` is the input.
+
+  `useMediaQuery` is now exported.
+
 ## 0.3.0
 
 ### Minor Changes
