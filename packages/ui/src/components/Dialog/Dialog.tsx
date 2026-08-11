@@ -7,7 +7,7 @@ import { cn } from "../utils/cn";
 // data-ending-style, which it sets for one frame either side of the transition.
 // The element has to carry the transition itself; there is no JS timing.
 const motion =
-  "transition-[opacity,scale,translate] duration-150 ease-out motion-reduce:transition-none";
+  "transition-[opacity,scale,translate] duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none";
 
 export type DialogBackdropProps = ComponentPropsWithoutRef<
   typeof BaseDialog.Backdrop
@@ -20,6 +20,7 @@ const Backdrop = forwardRef<HTMLDivElement, DialogBackdropProps>(
         ref={ref}
         className={cn(
           "gryt-dialog-backdrop fixed inset-0 min-h-dvh bg-black/60",
+          "backdrop-blur-(--gryt-backdrop-blur)",
           motion,
           "data-starting-style:opacity-0 data-ending-style:opacity-0",
           className

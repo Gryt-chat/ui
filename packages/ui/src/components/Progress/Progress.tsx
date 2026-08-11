@@ -24,7 +24,7 @@ export function Progress({ className, value = null, ...props }: ProgressProps) {
       {...props}
     >
       <BaseProgress.Track className="h-1.5 w-full overflow-hidden rounded-(--gryt-radius-full) bg-gryt-surface-raised">
-        <BaseProgress.Indicator className="h-full rounded-(--gryt-radius-full) bg-gryt-accent transition-[width] duration-300 ease-out motion-reduce:transition-none" />
+        <BaseProgress.Indicator className="h-full rounded-(--gryt-radius-full) bg-gryt-accent transition-[width] duration-(--gryt-dur-spring-soft) ease-spring motion-reduce:transition-none" />
       </BaseProgress.Track>
     </BaseProgress.Root>
   );

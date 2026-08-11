@@ -16,7 +16,7 @@ export const popupMotion = [
   // scale and translate are named explicitly because Tailwind v4 sets them as
   // standalone CSS properties rather than folding them into `transform`, so
   // transitioning `transform` would leave the popup snapping into place.
-  "transition-[opacity,scale,translate] duration-150 ease-out motion-reduce:transition-none",
+  "transition-[opacity,scale,translate] duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none",
   "data-starting-style:scale-[0.98] data-starting-style:opacity-0",
   "data-ending-style:scale-[0.98] data-ending-style:opacity-0"
 ].join(" ");

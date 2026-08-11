@@ -19,7 +19,11 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
         className={cn(
           "gryt-switch relative inline-flex h-6 w-10 shrink-0 items-center",
           "rounded-(--gryt-radius-full) border border-gryt-border bg-gryt-surface-raised p-0.5",
-          "transition-colors duration-150 data-checked:border-transparent",
+          "transition-[scale,background-color,border-color] duration-(--gryt-dur-spring) ease-spring",
+          "data-checked:border-transparent",
+          "hover:not-data-disabled:border-gryt-accent-light",
+          "motion-safe:hover:not-data-disabled:scale-[1.05]",
+          "motion-safe:active:not-data-disabled:scale-[0.95]",
           focusRing,
           disabledState,
           toneCheckedBg[tone],
@@ -30,7 +34,7 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
         <BaseSwitch.Thumb
           className={cn(
             "h-4.5 w-4.5 rounded-(--gryt-radius-full) bg-gryt-text",
-            "transition-transform duration-150 ease-out motion-reduce:transition-none",
+            "transition-transform duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none",
             "data-checked:translate-x-4 data-checked:bg-gryt-bg"
           )}
         />

@@ -65,7 +65,11 @@ export type { DrawerPopupProps, DrawerSide } from "./components/Drawer/Drawer";
 export { Menu } from "./components/Menu/Menu";
 export type { MenuItemProps, MenuPopupProps } from "./components/Menu/Menu";
 export { Tabs, Tab } from "./components/Tabs/Tabs";
-export type { TabProps, TabsProps } from "./components/Tabs/Tabs";
+export type {
+  TabProps,
+  TabsIndicatorProps,
+  TabsProps
+} from "./components/Tabs/Tabs";
 export { Accordion } from "./components/Accordion/Accordion";
 export type {
   AccordionItemProps,
