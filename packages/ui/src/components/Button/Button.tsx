@@ -70,8 +70,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           // Grow on hover, shrink on press. Behind motion-safe so it disappears
           // entirely for anyone who asked for reduced motion, rather than being
           // overridden afterwards.
-          "motion-safe:hover:not-data-disabled:scale-[1.08]",
-          "motion-safe:active:not-data-disabled:scale-[0.93]",
+          "motion-safe:hover:not-data-disabled:scale-[1.06]",
+          "motion-safe:active:not-data-disabled:scale-[0.95]",
 
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light",
           "data-disabled:cursor-not-allowed data-disabled:opacity-50",

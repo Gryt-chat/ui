@@ -4,14 +4,14 @@
 
 Add spring motion to the interactive components, as CSS rather than a motion library.
 
-`--ease-spring` is a damped-spring solution sampled into CSS `linear()`. It is the real curve of a spring, not an approximation of one — which is why no JS physics engine is involved. Damping 0.4746, peaking 18% past target and ringing once before it settles.
+`--ease-spring` is a damped-spring solution sampled into CSS `linear()`. It is the real curve of a spring, not an approximation of one — which is why no JS physics engine is involved. Damping 0.5591, peaking 12% past target and settling without a second visible swing.
 
 One curve, two durations — the shape is duration-invariant, so a separate "soft" curve was the same curve written twice:
 
-- **`--gryt-dur-spring` (400ms)** — Button and IconButton hover/press, Switch thumb, Slider thumb, the Accordion caret, and every popup (Dialog, Menu, Select, Tooltip).
-- **`--gryt-dur-spring-soft` (600ms)** — things that travel further: the Accordion panel height, the Drawer slide, the Progress bar.
+- **`--gryt-dur-spring` (500ms)** — Button and IconButton hover/press, Switch thumb, Slider thumb, the Accordion caret, and every popup (Dialog, Menu, Select, Tooltip).
+- **`--gryt-dur-spring-soft` (700ms)** — things that travel further: the Accordion panel height, the Drawer slide, the Progress bar.
 
-Button hover scales to 1.08 and presses to 0.93; IconButton to 1.12 and 0.90; the Slider thumb to 1.2 and 0.88. Those numbers, not the damping, are what makes the motion legible — overshoot is a percentage of the travel, so on a 93px button even 18% comes to about 1.3px. The ring is texture you feel; the scale is what you see.
+Button hover scales to 1.06 and presses to 0.95; IconButton to 1.09 and 0.93; the Slider thumb to 1.14 and 0.91. Those numbers, not the damping, are what makes the motion legible — overshoot is a percentage of the travel, so on a 93px button 12% comes to well under a pixel. The ring is texture you feel; the scale and the duration are what you see.
 
 Checkbox and Radio indicators scale in rather than toggling `hidden`, so they have motion to spring at all.
 

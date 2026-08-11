@@ -35,7 +35,7 @@ export function Slider({
             className={cn(
               "h-4 w-4 rounded-(--gryt-radius-full) bg-gryt-text select-none",
               "transition-transform duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none",
-              "motion-safe:hover:scale-[1.2] motion-safe:active:scale-[0.88]",
+              "motion-safe:hover:scale-[1.14] motion-safe:active:scale-[0.91]",
               focusRing
             )}
           />
