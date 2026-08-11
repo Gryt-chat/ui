@@ -81,7 +81,20 @@ const drawingBySlug: Record<string, DrawingKind> = {
   "context-menu": "context-menu",
   popover: "popover",
   toast: "toast",
-  "scroll-area": "scroll-area"
+  "scroll-area": "scroll-area",
+  "alert-dialog": "alert-dialog",
+  collapsible: "collapsible",
+  "checkbox-group": "checkbox-group",
+  "number-field": "number-field",
+  "otp-field": "otp-field",
+  combobox: "combobox",
+  autocomplete: "combobox",
+  "preview-card": "preview-card",
+  toolbar: "toolbar",
+  menubar: "menubar",
+  "navigation-menu": "navigation-menu",
+  form: "form",
+  fieldset: "fieldset"
 };
 
 /** First sentence, so a long description does not run past the canvas. */

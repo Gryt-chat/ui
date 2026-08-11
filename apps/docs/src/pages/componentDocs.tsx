@@ -1,10 +1,23 @@
 import {
   Accordion,
   Alert,
+  AlertDialog,
+  Autocomplete,
   Avatar,
   Badge,
   Button,
   Card,
+  CheckboxGroup,
+  Collapsible,
+  Combobox,
+  Fieldset,
+  Form,
+  Menubar,
+  NavigationMenu,
+  NumberField,
+  OtpField,
+  PreviewCard,
+  Toolbar,
   CardActions,
   CardContent,
   CardHeader,
@@ -630,8 +643,234 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
           <ScrollArea.Scrollbar orientation="vertical" />
         </ScrollArea.Root>
       );
+    case "alert-dialog":
+      return (
+        <AlertDialog.Root>
+          <AlertDialog.Trigger render={<Button tone="danger" />}>
+            Leave server
+          </AlertDialog.Trigger>
+          <AlertDialog.Portal>
+            <AlertDialog.Backdrop />
+            <AlertDialog.Popup>
+              <AlertDialog.Title>Leave this server?</AlertDialog.Title>
+              <AlertDialog.Description>
+                You will need a new invite to come back. Escape and the backdrop
+                do nothing here.
+              </AlertDialog.Description>
+              <div className="flex justify-end gap-2">
+                <AlertDialog.Close render={<Button tone="neutral" />}>
+                  Stay
+                </AlertDialog.Close>
+                <AlertDialog.Close render={<Button tone="danger" />}>
+                  Leave
+                </AlertDialog.Close>
+              </div>
+            </AlertDialog.Popup>
+          </AlertDialog.Portal>
+        </AlertDialog.Root>
+      );
+    case "collapsible":
+      return (
+        <Collapsible.Root className="w-full max-w-sm">
+          <Collapsible.Trigger>Voice channels</Collapsible.Trigger>
+          <Collapsible.Panel>
+            <div className="grid gap-1 px-2 pt-2 text-sm text-gryt-muted">
+              <span>General</span>
+              <span>Gaming</span>
+              <span>AFK</span>
+            </div>
+          </Collapsible.Panel>
+        </Collapsible.Root>
+      );
+    case "checkbox-group":
+      return (
+        <CheckboxGroup allValues={PERMISSIONS} defaultValue={["read"]}>
+          <label className="flex items-center gap-2 text-sm text-gryt-text">
+            <Checkbox parent name="all" />
+            All permissions
+          </label>
+          {PERMISSION_LABELS.map((permission) => (
+            <label
+              key={permission.name}
+              className="flex items-center gap-2 pl-6 text-sm text-gryt-muted"
+            >
+              <Checkbox name={permission.name} value={permission.name} />
+              {permission.label}
+            </label>
+          ))}
+        </CheckboxGroup>
+      );
+    case "number-field":
+      return (
+        <div className="flex flex-wrap gap-6">
+          <NumberField label="Output volume" defaultValue={80} min={0} max={100} />
+          <NumberField label="Bitrate (kbps)" defaultValue={64} step={8} scrubbable />
+        </div>
+      );
+    case "otp-field":
+      return <OtpField length={6} />;
+    case "combobox":
+      return (
+        <Combobox.Root items={MEMBERS}>
+          <Combobox.Input placeholder="Add a member" />
+          <Combobox.Portal>
+            <Combobox.Positioner>
+              <Combobox.Popup>
+                <Combobox.Empty>No members found</Combobox.Empty>
+                <Combobox.List>
+                  {(member: string) => (
+                    <Combobox.Item key={member} value={member}>
+                      {member}
+                    </Combobox.Item>
+                  )}
+                </Combobox.List>
+              </Combobox.Popup>
+            </Combobox.Positioner>
+          </Combobox.Portal>
+        </Combobox.Root>
+      );
+    case "autocomplete":
+      return (
+        <Autocomplete.Root items={SEARCHES}>
+          <Autocomplete.Input placeholder="Search messages" />
+          <Autocomplete.Portal>
+            <Autocomplete.Positioner>
+              <Autocomplete.Popup>
+                <Autocomplete.List>
+                  {(item: string) => (
+                    <Autocomplete.Item key={item} value={item}>
+                      {item}
+                    </Autocomplete.Item>
+                  )}
+                </Autocomplete.List>
+              </Autocomplete.Popup>
+            </Autocomplete.Positioner>
+          </Autocomplete.Portal>
+        </Autocomplete.Root>
+      );
+    case "preview-card":
+      return (
+        <PreviewCard.Root>
+          <PreviewCard.Trigger className="cursor-default text-gryt-accent underline-offset-4 hover:underline">
+            @sivert
+          </PreviewCard.Trigger>
+          <PreviewCard.Portal>
+            <PreviewCard.Positioner>
+              <PreviewCard.Popup>
+                <div className="flex items-center gap-3">
+                  <Avatar fallback="S" />
+                  <div>
+                    <p className="m-0 text-sm font-semibold text-gryt-text">
+                      Sivert
+                    </p>
+                    <p className="m-0 text-xs text-gryt-muted">In voice</p>
+                  </div>
+                </div>
+                <p className="mt-3 mb-0 text-sm leading-6 text-gryt-muted">
+                  Maintains Gryt. Joined the channel at 20:14.
+                </p>
+              </PreviewCard.Popup>
+            </PreviewCard.Positioner>
+          </PreviewCard.Portal>
+        </PreviewCard.Root>
+      );
+    case "toolbar":
+      return (
+        <Toolbar.Root aria-label="Call controls">
+          <Toolbar.Button render={<IconButton aria-label="Mute" />}>
+            <Bell size={18} />
+          </Toolbar.Button>
+          <Toolbar.Button render={<IconButton aria-label="More" />}>
+            <DotsThree size={18} />
+          </Toolbar.Button>
+          <Toolbar.Separator />
+          <Toolbar.Button
+            render={<IconButton aria-label="Send" tone="primary" />}
+          >
+            <PaperPlaneTilt size={18} />
+          </Toolbar.Button>
+        </Toolbar.Root>
+      );
+    case "menubar":
+      return (
+        <Menubar>
+          {MENUBAR_MENUS.map((menu) => (
+            <Menu.Root key={menu.label}>
+              <Menu.Trigger className="cursor-default rounded-(--gryt-radius-md) border-0 bg-transparent px-3 py-1.5 text-sm text-gryt-text outline-none select-none hover:bg-gryt-surface-raised data-popup-open:bg-gryt-surface-raised">
+                {menu.label}
+              </Menu.Trigger>
+              <Menu.Portal>
+                <Menu.Positioner align="start">
+                  <Menu.Popup>
+                    {menu.items.map((item) => (
+                      <Menu.Item key={item}>{item}</Menu.Item>
+                    ))}
+                  </Menu.Popup>
+                </Menu.Positioner>
+              </Menu.Portal>
+            </Menu.Root>
+          ))}
+        </Menubar>
+      );
+    case "navigation-menu":
+      return (
+        <NavigationMenu.Root>
+          <NavigationMenu.List className="flex items-center gap-1">
+            <NavigationMenu.Item>
+              <NavigationMenu.Trigger>Product</NavigationMenu.Trigger>
+              <NavigationMenu.Content className="grid w-56 gap-1 p-2">
+                <NavigationMenu.Link href="#voice">Voice</NavigationMenu.Link>
+                <NavigationMenu.Link href="#chat">Chat</NavigationMenu.Link>
+                <NavigationMenu.Link href="#servers">Servers</NavigationMenu.Link>
+              </NavigationMenu.Content>
+            </NavigationMenu.Item>
+            <NavigationMenu.Item>
+              <NavigationMenu.Trigger>Docs</NavigationMenu.Trigger>
+              <NavigationMenu.Content className="grid w-56 gap-1 p-2">
+                <NavigationMenu.Link href="#guide">Guide</NavigationMenu.Link>
+                <NavigationMenu.Link href="#api">API</NavigationMenu.Link>
+              </NavigationMenu.Content>
+            </NavigationMenu.Item>
+          </NavigationMenu.List>
+          <NavigationMenu.Portal>
+            <NavigationMenu.Positioner sideOffset={8}>
+              <NavigationMenu.Popup>
+                <NavigationMenu.Viewport />
+              </NavigationMenu.Popup>
+            </NavigationMenu.Positioner>
+          </NavigationMenu.Portal>
+        </NavigationMenu.Root>
+      );
+    case "form":
+      return (
+        <Form className="w-full max-w-sm">
+          <TextField name="displayName" label="Display name" defaultValue="Sivert" />
+          <Button type="submit">Save</Button>
+        </Form>
+      );
+    case "fieldset":
+      return (
+        <Fieldset.Root className="w-full max-w-sm">
+          <Fieldset.Legend>Server details</Fieldset.Legend>
+          <TextField name="name" label="Name" defaultValue="Gryt" />
+          <TextField name="topic" label="Topic" placeholder="What is this for?" />
+        </Fieldset.Root>
+      );
   }
 }
+
+const PERMISSIONS = ["read", "write", "manage"];
+const PERMISSION_LABELS = [
+  { name: "read", label: "Read messages" },
+  { name: "write", label: "Send messages" },
+  { name: "manage", label: "Manage channel" }
+];
+const MEMBERS = ["sivert", "kasper", "nora", "tobias", "ida"];
+const SEARCHES = ["deploy", "design tokens", "release notes", "sfu"];
+const MENUBAR_MENUS = [
+  { label: "Server", items: ["Invite people", "Server settings"] },
+  { label: "View", items: ["Compact mode", "Show member list"] }
+];
 
 const SCROLL_ROWS = [
   { title: "general", subtitle: "Sivert: pushed the OG images" },
