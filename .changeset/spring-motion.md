@@ -11,7 +11,7 @@ One curve, two durations — the shape is duration-invariant, so a separate "sof
 - **`--gryt-dur-spring` (500ms)** — Button and IconButton hover/press, Switch thumb, Slider thumb, the Accordion caret, and every popup (Dialog, Menu, Select, Tooltip).
 - **`--gryt-dur-spring-soft` (700ms)** — things that travel further: the Accordion panel height, the Drawer slide, the Progress bar.
 
-Button hover scales to 1.06 and presses to 0.98; IconButton to 1.09 and 0.96; the Slider thumb to 1.14 and 0.95. Hover and press are deliberately not mirrored — the hover is an invitation and wants to be seen, the press only has to register on something you are already touching. Those numbers, not the damping, are what makes the motion legible — overshoot is a percentage of the travel, so on a 93px button 12% comes to well under a pixel. The ring is texture you feel; the scale and the duration are what you see.
+Button hover scales to 1.03 and presses to 0.96; IconButton to 1.06 and 0.94; the Slider thumb to 1.12 and 0.94. The press travels further than the hover, so the control reads as being pushed down rather than merely acknowledging the cursor. Those numbers, not the damping, are what makes the motion legible — overshoot is a percentage of the travel, so on a 93px button 12% comes to well under a pixel. The ring is texture you feel; the scale and the duration are what you see.
 
 Checkbox and Radio indicators scale in rather than toggling `hidden`, so they have motion to spring at all.
 

@@ -67,21 +67,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           "transition-[scale,background-color,color]",
           "duration-(--gryt-dur-spring) ease-spring",
 
-          // Grow on hover, shrink on press — deliberately not mirrored. The
-          // hover is an invitation and wants to be seen; the press is a
-          // confirmation of something you are already touching, so it only
-          // needs to register. +6% against -2%.
-          //
-          // Scale rather than a pixel delta because scale is unitless and CSS
-          // cannot express "grow by 5px" without knowing the element's size.
-          // In practice it barely matters: at 1.06 the height change is
-          // 1.9-2.9px across all four sizes. Width is where it varies, since
-          // that follows the label.
-          //
-          // Behind motion-safe so it disappears entirely for anyone who asked
-          // for reduced motion, rather than being overridden afterwards.
-          "motion-safe:hover:not-data-disabled:scale-[1.06]",
-          "motion-safe:active:not-data-disabled:scale-[0.98]",
+          // Press travels further than hover, so the button reads as being
+          // pushed down rather than just acknowledging the cursor.
+          "motion-safe:hover:not-data-disabled:scale-[1.03]",
+          "motion-safe:active:not-data-disabled:scale-[0.96]",
 
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light",
           "data-disabled:cursor-not-allowed data-disabled:opacity-50",
