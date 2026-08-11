@@ -13,6 +13,10 @@ One curve, two durations — the shape is duration-invariant, so a separate "sof
 
 Button hover scales to 1.05 and presses to 0.96; IconButton to 1.08 and 0.93. Those numbers, not the damping, are what makes the motion legible: overshoot is a percentage of the travel, so at these sizes 2% is a fraction of a pixel. Overshoot only becomes visible on long travels — a 320px drawer overshoots about 6px.
 
+Checkbox and Radio indicators scale in rather than toggling `hidden`, so they have motion to spring at all.
+
+`Drawer` now overruns the viewport edge by `--gryt-drawer-bleed` (4rem), with matching padding on that side so content sits exactly where it did. A spring settles onto its target from both directions; without the bleed, the instant the panel sits a fraction short of flush you get a seam of backdrop down the edge. Overrunning means an undershoot reveals more drawer instead. Nothing shifts visually and the page gains no horizontal scroll, since the panel is `fixed`.
+
 Colour transitions stay on a plain ease. A spring on a colour overshoots the hue, which means nothing.
 
 Cost: **+0.26 kB** (37.20 kB from 36.94 kB). A motion library would have been 30–40 kB gzip for the same visual result on state transitions.

@@ -32,7 +32,16 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
         )}
         {...props}
       >
-        <BaseCheckbox.Indicator className="flex data-unchecked:hidden">
+        {/* scale rather than hidden: an indicator that pops in has no motion
+            to spring. It stays in flow so the box never reflows. */}
+        <BaseCheckbox.Indicator
+          className={cn(
+            "flex origin-center",
+            "transition-[scale,opacity] duration-(--gryt-dur-spring) ease-spring",
+            "data-unchecked:scale-0 data-unchecked:opacity-0",
+            "motion-reduce:transition-none"
+          )}
+        >
           <Check size={12} weight="bold" />
         </BaseCheckbox.Indicator>
       </BaseCheckbox.Root>

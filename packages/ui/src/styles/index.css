@@ -74,6 +74,10 @@
        changing the curve moves where the overshoot lands. */
     --gryt-dur-spring: 260ms;
     --gryt-dur-spring-soft: 420ms;
+
+    /* How far a Drawer hangs past the viewport edge. Padding on that side is
+       increased to match, so content sits where it would have without it. */
+    --gryt-drawer-bleed: 4rem;
 }
 
 @layer components {

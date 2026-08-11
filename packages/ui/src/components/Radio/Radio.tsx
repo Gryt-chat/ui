@@ -38,7 +38,10 @@ export const Radio = forwardRef<HTMLButtonElement, RadioProps>(function Radio(
     >
       <BaseRadio.Indicator
         className={cn(
-          "h-2.5 w-2.5 rounded-(--gryt-radius-full) data-unchecked:hidden",
+          "h-2.5 w-2.5 origin-center rounded-(--gryt-radius-full)",
+          "transition-[scale,opacity] duration-(--gryt-dur-spring) ease-spring",
+          "data-unchecked:scale-0 data-unchecked:opacity-0",
+          "motion-reduce:transition-none",
           toneBg[tone]
         )}
       />
