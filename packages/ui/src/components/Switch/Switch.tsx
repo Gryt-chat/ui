@@ -30,7 +30,7 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
         <BaseSwitch.Thumb
           className={cn(
             "h-4.5 w-4.5 rounded-(--gryt-radius-full) bg-gryt-text",
-            "transition-transform duration-150 ease-out motion-reduce:transition-none",
+            "transition-transform duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none",
             "data-checked:translate-x-4 data-checked:bg-gryt-bg"
           )}
         />
