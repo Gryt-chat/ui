@@ -1,4 +1,18 @@
-@import "tailwindcss";
+/* Theme and utilities, but not preflight.
+ *
+ * `@import "tailwindcss"` would bundle Tailwind's reset into dist/styles.css,
+ * and a component library has no business shipping a CSS reset — that is the
+ * consuming app's decision, made once, for its whole document. Shipping one
+ * means any app that imports us silently gets its own reset overwritten. The
+ * Gryt client is mid-migration and still resting on Radix Themes' reset, so
+ * for it this would not be a matter of taste but a broken layout.
+ *
+ * The docs app supplies its own preflight from its own entry, so nothing about
+ * this site changes.
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 
 @source "../**/*.{ts,tsx}";
 

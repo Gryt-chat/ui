@@ -21,4 +21,7 @@ jobs:
       - run: bun run test
       - run: bun run build
       - run: bunx publint packages/ui
-      - run: bunx @arethetypeswrong/cli --pack packages/ui --exclude-entrypoints ./styles.css
+      # Both CSS entrypoints are excluded: attw checks that an entrypoint
+      # resolves to type declarations or JavaScript, and a stylesheet is
+      # neither. Any future CSS export needs adding here too.
+      - run: bunx @arethetypeswrong/cli --pack packages/ui --exclude-entrypoints ./styles.css --exclude-entrypoints ./theme.css
