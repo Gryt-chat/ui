@@ -72,7 +72,7 @@ const Trigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
               size={16}
               // Base UI flags the open panel on the trigger, so the caret needs
               // no state of its own.
-              className="shrink-0 transition-transform duration-150 ease-out data-panel-open:rotate-180 motion-reduce:transition-none"
+              className="shrink-0 transition-transform duration-(--gryt-dur-spring) ease-spring data-panel-open:rotate-180 motion-reduce:transition-none"
             />
           ) : (
             expandIcon
@@ -92,7 +92,7 @@ const Panel = forwardRef<HTMLDivElement, AccordionPanelProps>(
           "gryt-accordion-panel overflow-hidden text-sm text-gryt-muted",
           // Base UI measures the panel and exposes the height as a variable,
           // which is what makes a real open and close transition possible.
-          "h-[var(--accordion-panel-height)] transition-[height] duration-150 ease-out",
+          "h-[var(--accordion-panel-height)] transition-[height] duration-(--gryt-dur-spring-soft) ease-spring-soft",
           "data-starting-style:h-0 data-ending-style:h-0",
           "motion-reduce:transition-none",
           className

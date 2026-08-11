@@ -34,7 +34,7 @@ export function Slider({
             aria-label={ariaLabel}
             className={cn(
               "h-4 w-4 rounded-(--gryt-radius-full) bg-gryt-text select-none",
-              "transition-transform duration-150 ease-out motion-reduce:transition-none",
+              "transition-transform duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none",
               "motion-safe:hover:scale-110 motion-safe:active:scale-95",
               focusRing
             )}
