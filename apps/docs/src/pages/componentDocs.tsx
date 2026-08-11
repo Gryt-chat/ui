@@ -460,21 +460,29 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
     case "drawer":
       return (
         <>
-          <Drawer.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
+          <Drawer.Root
+            open={drawerOpen}
+            onOpenChange={setDrawerOpen}
+            side="right"
+          >
             <Drawer.Trigger render={<Button />}>Open drawer</Drawer.Trigger>
             <Drawer.Portal>
               <Drawer.Backdrop />
-              <Drawer.Popup side="right">
-                <Drawer.Title className="text-lg font-semibold text-gryt-text">
-                  Gryt Drawer
-                </Drawer.Title>
-                <Drawer.Description className="text-sm text-gryt-muted">
-                  Side panel content, pinned to the edge.
-                </Drawer.Description>
-                <Drawer.Close render={<Button tone="neutral" />}>
-                  Close
-                </Drawer.Close>
-              </Drawer.Popup>
+              <Drawer.Viewport>
+                <Drawer.Popup>
+                  <Drawer.Grabber />
+                  <Drawer.Title className="text-lg font-semibold text-gryt-text">
+                    Gryt Drawer
+                  </Drawer.Title>
+                  <Drawer.Description className="text-sm text-gryt-muted">
+                    Drag it away to dismiss. Narrow the window below 768px and
+                    it becomes a bottom sheet.
+                  </Drawer.Description>
+                  <Drawer.Close render={<Button tone="neutral" />}>
+                    Close
+                  </Drawer.Close>
+                </Drawer.Popup>
+              </Drawer.Viewport>
             </Drawer.Portal>
           </Drawer.Root>
         </>

@@ -61,7 +61,12 @@ export type {
   DialogTitleProps
 } from "./components/Dialog/Dialog";
 export { Drawer } from "./components/Drawer/Drawer";
-export type { DrawerPopupProps, DrawerSide } from "./components/Drawer/Drawer";
+export type {
+  DrawerPopupProps,
+  DrawerRootProps,
+  DrawerSide,
+  DrawerViewportProps
+} from "./components/Drawer/Drawer";
 export { Menu } from "./components/Menu/Menu";
 export type { MenuItemProps, MenuPopupProps } from "./components/Menu/Menu";
 export { Tabs, Tab } from "./components/Tabs/Tabs";
