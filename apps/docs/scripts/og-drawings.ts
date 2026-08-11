@@ -25,14 +25,48 @@ export type DrawingKind =
   | "slider" | "avatar" | "badge" | "chip" | "tooltip" | "divider" | "alert"
   | "progress" | "spinner" | "skeleton" | "menu" | "tabs" | "accordion"
   | "panel" | "card" | "dialog" | "drawer" | "bubble" | "composer"
-  | "conversation-item" | "cluster" | "install" | "palette";
+  | "conversation-item" | "cluster" | "install" | "palette"
+  | "toggle" | "toggle-group" | "meter" | "context-menu" | "popover"
+  | "toast" | "scroll-area";
 
 // Satori accepts a React-like tree of plain objects.
 type Style = Record<string, string | number>;
 export interface Node {
   type: string;
-  props: { style?: Style; children?: Node[] | string };
+  props: Record<string, unknown> & {
+    style?: Style;
+    children?: Node | Node[] | string;
+  };
 }
+
+/**
+ * Icons are drawn as SVG paths, never typed as characters.
+ *
+ * The generator loads the *latin* subset of each face, which carries no ✓, ⌄,
+ * ✕ or ▸ — satori finds no glyph and resvg rasterises a tofu box. That shipped
+ * once already, in the checkbox and accordion images.
+ */
+const icon = (d: string, color: string, size: number, width = 3): Node => ({
+  type: "svg",
+  props: {
+    width: size,
+    height: size,
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: color,
+    strokeWidth: width,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    children: { type: "path", props: { d } }
+  }
+});
+
+const PATH = {
+  check: "M5 13l4 4L19 7",
+  chevronDown: "M6 9l6 6 6-6",
+  cross: "M6 6l12 12M18 6L6 18",
+  caretRight: "M9 5l7 7-7 7"
+} as const;
 
 const el = (style: Style, children?: Node[] | string): Node => ({
   type: "div",
@@ -144,10 +178,9 @@ export function drawing(kind: DrawingKind): Node {
         el(
           {
             width: 40, height: 40, borderRadius: 10,
-            backgroundColor: C.accent, alignItems: "center", justifyContent: "center",
-            fontFamily: "Inter", fontSize: 24, color: C.accentInk
+            backgroundColor: C.accent, alignItems: "center", justifyContent: "center"
           },
-          "✓"
+          [icon(PATH.check, C.accentInk, 24)]
         ),
         el({ width: 40, height: 40, borderRadius: 10, border: `1.5px solid ${C.rule}` }),
         text({ fontSize: 17 }, "Push to talk")
@@ -295,7 +328,7 @@ export function drawing(kind: DrawingKind): Node {
       return surface({ width: 300, gap: 12 }, [
         row({ justifyContent: "space-between", alignItems: "center" }, [
           bar(140, 10, C.ink2),
-          text({ fontSize: 16, color: C.accent }, "⌄")
+          icon(PATH.chevronDown, C.accent, 20)
         ]),
         el({ height: 1.5, backgroundColor: C.rule }),
         col({ gap: 9 }, [bar(250, 9, C.rule), bar(190, 9, C.rule)])
@@ -367,6 +400,106 @@ export function drawing(kind: DrawingKind): Node {
         row({ gap: 14, alignItems: "center", padding: 12 }, [
           circle(46, C.paper3, `1.5px solid ${C.rule}`),
           col({ gap: 9, flex: 1 }, [bar(100, 10, C.ink2), bar(140, 9, C.rule)])
+        ])
+      ]);
+
+    case "toggle":
+      return row({ gap: 14 }, [
+        el(
+          { height: 52, paddingLeft: 22, paddingRight: 22, borderRadius: 999,
+            backgroundColor: C.accent, color: C.accentInk, alignItems: "center",
+            fontFamily: "Inter", fontSize: 17 },
+          "Deafen"
+        ),
+        el(
+          { height: 52, paddingLeft: 22, paddingRight: 22, borderRadius: 999,
+            color: C.ink2, alignItems: "center",
+            fontFamily: "Inter", fontSize: 17 },
+          "Camera"
+        )
+      ]);
+
+    case "toggle-group":
+      return row(
+        { gap: 8, padding: 8, borderRadius: 999,
+          backgroundColor: C.paper2, border: `1.5px solid ${C.rule}` },
+        [
+          el({ height: 44, paddingLeft: 18, paddingRight: 18, borderRadius: 999,
+               backgroundColor: C.accent, color: C.accentInk, alignItems: "center",
+               fontFamily: "Inter", fontSize: 16 }, "Grid"),
+          el({ height: 44, paddingLeft: 18, paddingRight: 18, borderRadius: 999,
+               color: C.ink2, alignItems: "center",
+               fontFamily: "Inter", fontSize: 16 }, "List"),
+          el({ height: 44, paddingLeft: 18, paddingRight: 18, borderRadius: 999,
+               color: C.ink2, alignItems: "center",
+               fontFamily: "Inter", fontSize: 16 }, "Focus")
+        ]
+      );
+
+    /* Three readings rather than one, since the point of a meter is that the
+       value sits somewhere in a range — including the bad end of it. */
+    case "meter":
+      return col({ gap: 14, width: 300 }, [
+        row({}, [bar(180, 10, C.accent), bar(120, 10, C.paper3)]),
+        row({}, [bar(255, 10, C.rule), bar(45, 10, C.paper3)]),
+        row({}, [bar(290, 10, C.rule), bar(10, 10, C.paper3)])
+      ]);
+
+    case "context-menu":
+      return col({ gap: 0, width: 290 }, [
+        // The pointer, so the drawing reads as a right-click rather than a
+        // dropdown — the two menus are otherwise identical by design.
+        row({ paddingLeft: 24, paddingBottom: 4 }, [
+          icon(PATH.caretRight, C.accent, 22)
+        ]),
+        surface({ gap: 4, padding: 10 }, [
+          el({ height: 38, borderRadius: 10, backgroundColor: C.paper3, alignItems: "center", paddingLeft: 12 }, [bar(110, 9, C.ink2)]),
+          el({ height: 38, borderRadius: 10, alignItems: "center", paddingLeft: 12 }, [bar(84, 9, C.rule)]),
+          el({ height: 1.5, backgroundColor: C.rule }),
+          el({ height: 38, borderRadius: 10, alignItems: "center", paddingLeft: 12 }, [bar(64, 9, C.rule)])
+        ])
+      ]);
+
+    case "popover":
+      return col({ gap: 10, alignItems: "flex-start" }, [
+        surface({ width: 300, gap: 12 }, [
+          row({ gap: 12, alignItems: "center" }, [
+            circle(44, C.accent),
+            col({ gap: 8 }, [bar(96, 10, C.ink), bar(64, 9, C.rule)])
+          ]),
+          col({ gap: 8 }, [bar(255, 9, C.rule), bar(200, 9, C.rule)])
+        ]),
+        el({ marginLeft: 40, width: 44, height: 40, borderRadius: 999,
+             border: `1.5px solid ${C.rule}` })
+      ]);
+
+    case "toast":
+      return col({ gap: 10, alignItems: "flex-end", width: 320 }, [
+        surface({ width: 300, gap: 10 }, [
+          row({ justifyContent: "space-between", alignItems: "flex-start" }, [
+            col({ gap: 9 }, [bar(120, 10, C.ink), bar(210, 9, C.rule)]),
+            icon(PATH.cross, C.ink2, 18, 2.5)
+          ])
+        ]),
+        el({ width: 270, height: 14, borderRadius: 12, backgroundColor: C.paper2,
+             border: `1.5px solid ${C.rule}` })
+      ]);
+
+    case "scroll-area":
+      return row({ gap: 10, alignItems: "stretch" }, [
+        col(
+          { width: 280, gap: 10, padding: 14, borderRadius: 16,
+            backgroundColor: C.paper2, border: `1.5px solid ${C.rule}` },
+          [
+            row({ gap: 12, alignItems: "center" }, [circle(30, C.paper3), bar(150, 9, C.rule)]),
+            row({ gap: 12, alignItems: "center" }, [circle(30, C.paper3), bar(120, 9, C.rule)]),
+            row({ gap: 12, alignItems: "center" }, [circle(30, C.paper3), bar(160, 9, C.rule)]),
+            row({ gap: 12, alignItems: "center" }, [circle(30, C.paper3), bar(100, 9, C.rule)])
+          ]
+        ),
+        // The bar itself, sitting where it appears while you scroll.
+        col({ width: 8, justifyContent: "flex-start" }, [
+          el({ width: 8, height: 84, borderRadius: 999, backgroundColor: C.accent })
         ])
       ]);
 

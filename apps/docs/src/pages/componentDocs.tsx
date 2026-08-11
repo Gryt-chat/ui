@@ -11,6 +11,7 @@ import {
   Checkbox,
   Chip,
   Composer,
+  ContextMenu,
   ConversationItem,
   Dialog,
   Divider,
@@ -18,9 +19,12 @@ import {
   IconButton,
   Menu,
   MessageBubble,
+  Meter,
+  Popover,
   Progress,
   Radio,
   RadioGroup,
+  ScrollArea,
   Select,
   Skeleton,
   Slider,
@@ -29,7 +33,11 @@ import {
   Switch,
   Tabs,
   TextField,
-  Tooltip
+  Toast,
+  Toggle,
+  ToggleGroup,
+  Tooltip,
+  useToastManager
 } from "@gryt/ui";
 import { Bell, DotsThree, PaperPlaneTilt } from "@phosphor-icons/react";
 import type { Tone } from "@gryt/ui";
@@ -120,6 +128,8 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
   const [inputDevice, setInputDevice] = useState("studio");
   const [radioMode, setRadioMode] = useState("voice");
   const [tabValue, setTabValue] = useState("chat");
+  const [muted, setMuted] = useState(false);
+  const [layout, setLayout] = useState<string[]>(["grid"]);
 
   switch (preview) {
     case "button":
@@ -498,7 +508,199 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
           <ConversationItem title="Publishing" subtitle="npm package" />
         </Surface>
       );
+    case "toggle":
+      return (
+        <div className="grid w-full gap-5">
+          <ExampleSection title="Pressed state">
+            <Toggle tone="danger" pressed={muted} onPressedChange={setMuted}>
+              {muted ? "Unmute" : "Mute"}
+            </Toggle>
+            <Toggle tone="primary" defaultPressed>
+              Deafen
+            </Toggle>
+            <Toggle tone="neutral">Camera</Toggle>
+            <Toggle disabled>Unavailable</Toggle>
+          </ExampleSection>
+          <ExampleSection title="Sizes">
+            <Toggle size="xsmall" defaultPressed>
+              Extra small
+            </Toggle>
+            <Toggle size="small" defaultPressed>
+              Small
+            </Toggle>
+            <Toggle size="medium" defaultPressed>
+              Medium
+            </Toggle>
+            <Toggle size="large" defaultPressed>
+              Large
+            </Toggle>
+          </ExampleSection>
+        </div>
+      );
+    case "toggle-group":
+      return (
+        <ToggleGroup value={layout} onValueChange={setLayout}>
+          <Toggle value="grid" size="small">
+            Grid
+          </Toggle>
+          <Toggle value="list" size="small">
+            List
+          </Toggle>
+          <Toggle value="focus" size="small">
+            Focus
+          </Toggle>
+        </ToggleGroup>
+      );
+    case "meter":
+      return <MeterExample />;
+    case "context-menu":
+      return (
+        <ContextMenu.Root>
+          <ContextMenu.Trigger
+            render={
+              <Surface
+                className="grid h-28 w-full max-w-sm place-items-center text-sm text-gryt-muted select-none"
+                elevated
+              />
+            }
+          >
+            Right-click anywhere in here
+          </ContextMenu.Trigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Positioner>
+              <ContextMenu.Popup>
+                <ContextMenu.Item>Reply</ContextMenu.Item>
+                <ContextMenu.Item>Copy text</ContextMenu.Item>
+                <ContextMenu.Item>Pin to channel</ContextMenu.Item>
+                <ContextMenu.Separator />
+                <ContextMenu.Item>Delete</ContextMenu.Item>
+              </ContextMenu.Popup>
+            </ContextMenu.Positioner>
+          </ContextMenu.Portal>
+        </ContextMenu.Root>
+      );
+    case "popover":
+      return (
+        <Popover.Root>
+          <Popover.Trigger render={<Button tone="neutral" />}>
+            Open member card
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Positioner>
+              <Popover.Popup>
+                <div className="flex items-center gap-3">
+                  <Avatar fallback="S" />
+                  <div>
+                    <Popover.Title>Sivert</Popover.Title>
+                    <p className="m-0 text-xs text-gryt-muted">In voice</p>
+                  </div>
+                </div>
+                <Popover.Description>
+                  Joined the channel at 20:14. Speaking through a Shure SM7B.
+                </Popover.Description>
+              </Popover.Popup>
+            </Popover.Positioner>
+          </Popover.Portal>
+        </Popover.Root>
+      );
+    case "toast":
+      return <ToastExample />;
+    case "scroll-area":
+      return (
+        <ScrollArea.Root className="h-56 w-full max-w-sm rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface">
+          <ScrollArea.Viewport className="p-3">
+            <ScrollArea.Content className="grid gap-2">
+              {SCROLL_ROWS.map((row) => (
+                <ConversationItem
+                  key={row.title}
+                  title={row.title}
+                  subtitle={row.subtitle}
+                />
+              ))}
+            </ScrollArea.Content>
+          </ScrollArea.Viewport>
+          <ScrollArea.Scrollbar orientation="vertical" />
+        </ScrollArea.Root>
+      );
   }
+}
+
+const SCROLL_ROWS = [
+  { title: "general", subtitle: "Sivert: pushed the OG images" },
+  { title: "design", subtitle: "Tokens now ship as theme.css" },
+  { title: "voice-lobby", subtitle: "3 people connected" },
+  { title: "releases", subtitle: "server v1.3.1-beta.1" },
+  { title: "incidents", subtitle: "Beta tunnel returned 502" },
+  { title: "off-topic", subtitle: "Anyone up for a round?" },
+  { title: "docs", subtitle: "Key rotation is documented" },
+  { title: "sfu", subtitle: "SVC layers landed" }
+];
+
+// The mic level a client would feed from an analyser node. Driven here on an
+// interval so the meter is doing the thing it exists for rather than sitting
+// at a fixed number.
+function MeterExample() {
+  const [level, setLevel] = useState(42);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setLevel((current) => {
+        const next = current + (Math.random() * 34 - 17);
+        return Math.max(4, Math.min(96, Math.round(next)));
+      });
+    }, 420);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="grid w-full max-w-sm gap-4">
+      <Meter value={level} label="Microphone" showValue />
+      <Meter value={88} label="Server capacity" tone="warning" showValue />
+      <Meter value={97} label="Disk" tone="danger" showValue />
+    </div>
+  );
+}
+
+function ToastExample() {
+  return (
+    <Toast.Provider>
+      <ToastTrigger />
+      <Toast.Portal>
+        <Toast.Viewport>
+          <ToastList />
+        </Toast.Viewport>
+      </Toast.Portal>
+    </Toast.Provider>
+  );
+}
+
+function ToastTrigger() {
+  const toast = useToastManager();
+
+  return (
+    <Button
+      onClick={() =>
+        toast.add({
+          title: "Invite copied",
+          description: "The link expires in 24 hours."
+        })
+      }
+    >
+      Copy invite
+    </Button>
+  );
+}
+
+function ToastList() {
+  const { toasts } = useToastManager();
+
+  return toasts.map((toast) => (
+    <Toast.Root key={toast.id} toast={toast}>
+      <Toast.Title />
+      <Toast.Description />
+      <Toast.Close />
+    </Toast.Root>
+  ));
 }
 
 function ExampleSection({

@@ -41,7 +41,14 @@ export interface ComponentDoc {
     | "surface"
     | "message-bubble"
     | "composer"
-    | "conversation-item";
+    | "conversation-item"
+    | "context-menu"
+    | "popover"
+    | "toast"
+    | "scroll-area"
+    | "toggle"
+    | "toggle-group"
+    | "meter";
   code: string;
 }
 
@@ -66,7 +73,9 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "Checkbox", slug: "checkbox" },
       { name: "Radio", slug: "radio" },
       { name: "Switch", slug: "switch" },
-      { name: "Slider", slug: "slider" }
+      { name: "Slider", slug: "slider" },
+      { name: "Toggle", slug: "toggle" },
+      { name: "ToggleGroup", slug: "toggle-group" }
     ]
   },
   {
@@ -83,7 +92,9 @@ export const componentNavSections: ComponentNavSection[] = [
     title: "Feedback",
     items: [
       { name: "Alert", slug: "alert" },
+      { name: "Toast", slug: "toast" },
       { name: "Progress", slug: "progress" },
+      { name: "Meter", slug: "meter" },
       { name: "Spinner", slug: "spinner" },
       { name: "Skeleton", slug: "skeleton" }
     ]
@@ -92,6 +103,8 @@ export const componentNavSections: ComponentNavSection[] = [
     title: "Navigation",
     items: [
       { name: "Menu", slug: "menu" },
+      { name: "ContextMenu", slug: "context-menu" },
+      { name: "Popover", slug: "popover" },
       { name: "Tabs", slug: "tabs" },
       { name: "Accordion", slug: "accordion" }
     ]
@@ -102,7 +115,8 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "Surface", slug: "surface" },
       { name: "Card", slug: "card" },
       { name: "Dialog", slug: "dialog" },
-      { name: "Drawer", slug: "drawer" }
+      { name: "Drawer", slug: "drawer" },
+      { name: "ScrollArea", slug: "scroll-area" }
     ]
   },
   {
@@ -530,5 +544,156 @@ function TabsExample() {
     code: `import { ConversationItem } from "@gryt/ui";
 
 <ConversationItem title="Gryt UI" subtitle="Component system" active />`
+  },
+  {
+    slug: "toggle",
+    name: "Toggle",
+    description:
+      "A button that stays pressed, for state you switch rather than actions you fire — mute, deafen, camera off.",
+    importName: "Toggle",
+    preview: "toggle",
+    code: `import { Toggle } from "@gryt/ui";
+import { useState } from "react";
+
+function MuteToggle() {
+  const [muted, setMuted] = useState(false);
+
+  return (
+    <Toggle tone="danger" pressed={muted} onPressedChange={setMuted}>
+      {muted ? "Unmute" : "Mute"}
+    </Toggle>
+  );
+}`
+  },
+  {
+    slug: "toggle-group",
+    name: "ToggleGroup",
+    description:
+      "A rail of toggles sharing one value, with arrow-key movement and a single tab stop.",
+    importName: "ToggleGroup",
+    preview: "toggle-group",
+    code: `import { Toggle, ToggleGroup } from "@gryt/ui";
+import { useState } from "react";
+
+function LayoutPicker() {
+  const [value, setValue] = useState(["grid"]);
+
+  return (
+    <ToggleGroup value={value} onValueChange={setValue}>
+      <Toggle value="grid" size="small">Grid</Toggle>
+      <Toggle value="list" size="small">List</Toggle>
+      <Toggle value="focus" size="small">Focus</Toggle>
+    </ToggleGroup>
+  );
+}`
+  },
+  {
+    slug: "meter",
+    name: "Meter",
+    description:
+      "A reading inside a known range, such as mic input level — a measurement rather than the task completion Progress models.",
+    importName: "Meter",
+    preview: "meter",
+    code: `import { Meter } from "@gryt/ui";
+
+<Meter value={62} label="Microphone" showValue />
+<Meter value={88} label="Server capacity" tone="warning" showValue />`
+  },
+  {
+    slug: "context-menu",
+    name: "ContextMenu",
+    description:
+      "A right-click menu for a message, member or channel, sharing Menu's popup and items so the two cannot drift apart.",
+    importName: "ContextMenu",
+    preview: "context-menu",
+    code: `import { ContextMenu } from "@gryt/ui";
+
+<ContextMenu.Root>
+  <ContextMenu.Trigger>Right-click a message</ContextMenu.Trigger>
+  <ContextMenu.Portal>
+    <ContextMenu.Positioner>
+      <ContextMenu.Popup>
+        <ContextMenu.Item>Reply</ContextMenu.Item>
+        <ContextMenu.Item>Copy text</ContextMenu.Item>
+        <ContextMenu.Separator />
+        <ContextMenu.Item>Delete</ContextMenu.Item>
+      </ContextMenu.Popup>
+    </ContextMenu.Positioner>
+  </ContextMenu.Portal>
+</ContextMenu.Root>`
+  },
+  {
+    slug: "popover",
+    name: "Popover",
+    description:
+      "An anchored panel for content and controls — a member card, a permissions summary — rather than a column of items.",
+    importName: "Popover",
+    preview: "popover",
+    code: `import { Popover } from "@gryt/ui";
+
+<Popover.Root>
+  <Popover.Trigger>Open</Popover.Trigger>
+  <Popover.Portal>
+    <Popover.Positioner>
+      <Popover.Popup>
+        <Popover.Title>Sivert</Popover.Title>
+        <Popover.Description>
+          In voice since 20:14. Speaking through a Shure SM7B.
+        </Popover.Description>
+      </Popover.Popup>
+    </Popover.Positioner>
+  </Popover.Portal>
+</Popover.Root>`
+  },
+  {
+    slug: "toast",
+    name: "Toast",
+    description:
+      "A transient notice for things that happen away from where you are looking, such as losing the connection.",
+    importName: "Toast",
+    preview: "toast",
+    code: `import { Toast, useToastManager, Button } from "@gryt/ui";
+
+// Wrap the app once.
+<Toast.Provider>
+  <App />
+  <Toast.Portal>
+    <Toast.Viewport>
+      <ToastList />
+    </Toast.Viewport>
+  </Toast.Portal>
+</Toast.Provider>
+
+function ToastList() {
+  const { toasts } = useToastManager();
+
+  return toasts.map((toast) => (
+    <Toast.Root key={toast.id} toast={toast}>
+      <Toast.Title />
+      <Toast.Description />
+      <Toast.Close />
+    </Toast.Root>
+  ));
+}
+
+// Anywhere below the provider.
+const toast = useToastManager();
+toast.add({ title: "Invite copied", description: "Expires in 24 hours." });`
+  },
+  {
+    slug: "scroll-area",
+    name: "ScrollArea",
+    description:
+      "A scroll container whose bar fades in only while hovering or scrolling, and that will not hand its scroll to the page behind it.",
+    importName: "ScrollArea",
+    preview: "scroll-area",
+    code: `import { ScrollArea } from "@gryt/ui";
+
+<ScrollArea.Root className="h-64">
+  <ScrollArea.Viewport>
+    <ScrollArea.Content>{messages}</ScrollArea.Content>
+  </ScrollArea.Viewport>
+  <ScrollArea.Scrollbar orientation="vertical" />
+</ScrollArea.Root>`
   }
 ];

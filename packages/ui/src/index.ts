@@ -77,5 +77,24 @@ export type {
   AccordionProps,
   AccordionTriggerProps
 } from "./components/Accordion/Accordion";
+export { ContextMenu } from "./components/ContextMenu/ContextMenu";
+export type { ContextMenuPositionerProps } from "./components/ContextMenu/ContextMenu";
+export { Popover } from "./components/Popover/Popover";
+export type {
+  PopoverPopupProps,
+  PopoverPositionerProps
+} from "./components/Popover/Popover";
+export { Toast, useToastManager } from "./components/Toast/Toast";
+export type { ToastRootProps, ToastViewportProps } from "./components/Toast/Toast";
+export { ScrollArea } from "./components/ScrollArea/ScrollArea";
+export type {
+  ScrollAreaRootProps,
+  ScrollAreaScrollbarProps,
+  ScrollAreaViewportProps
+} from "./components/ScrollArea/ScrollArea";
+export { Toggle, ToggleGroup } from "./components/Toggle/Toggle";
+export type { ToggleGroupProps, ToggleProps } from "./components/Toggle/Toggle";
+export { Meter } from "./components/Meter/Meter";
+export type { MeterProps, MeterTone } from "./components/Meter/Meter";
 export { cn } from "./components/utils/cn";
 export type { Tone } from "./components/utils/styles";

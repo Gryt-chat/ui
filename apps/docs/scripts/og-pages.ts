@@ -74,7 +74,14 @@ const drawingBySlug: Record<string, DrawingKind> = {
   drawer: "drawer",
   "message-bubble": "bubble",
   composer: "composer",
-  "conversation-item": "conversation-item"
+  "conversation-item": "conversation-item",
+  toggle: "toggle",
+  "toggle-group": "toggle-group",
+  meter: "meter",
+  "context-menu": "context-menu",
+  popover: "popover",
+  toast: "toast",
+  "scroll-area": "scroll-area"
 };
 
 /** First sentence, so a long description does not run past the canvas. */
