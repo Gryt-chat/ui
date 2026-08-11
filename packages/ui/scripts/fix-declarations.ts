@@ -4,6 +4,8 @@ import { resolve } from "node:path";
 const distDir = resolve(import.meta.dir, "../dist");
 const indexDtsPath = resolve(distDir, "index.d.ts");
 const indexDCtsPath = resolve(distDir, "index.d.cts");
+const themeSourcePath = resolve(import.meta.dir, "../src/styles/theme.css");
+const themeDistPath = resolve(distDir, "theme.css");
 
 async function declarationFiles(directory: string): Promise<string[]> {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -45,3 +47,9 @@ for (const filePath of await declarationFiles(distDir)) {
 }
 
 await copyFile(indexDtsPath, indexDCtsPath);
+
+// Copied verbatim rather than built. dist/styles.css goes through Vite and
+// Tailwind, which resolves @theme into :root variables — useful at runtime,
+// useless as theme config. A consumer that wants bg-gryt-accent in its own app
+// needs the @theme block intact, so this one file bypasses the build.
+await copyFile(themeSourcePath, themeDistPath);

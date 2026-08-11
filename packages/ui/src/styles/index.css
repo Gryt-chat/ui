@@ -1,93 +1,23 @@
-@import "tailwindcss";
+/* Theme and utilities, but not preflight.
+ *
+ * `@import "tailwindcss"` would bundle Tailwind's reset into dist/styles.css,
+ * and a component library has no business shipping a CSS reset — that is the
+ * consuming app's decision, made once, for its whole document. Shipping one
+ * means any app that imports us silently gets its own reset overwritten. The
+ * Gryt client is mid-migration and still resting on Radix Themes' reset, so
+ * for it this would not be a matter of taste but a broken layout.
+ *
+ * The docs app supplies its own preflight from its own entry, so nothing about
+ * this site changes.
+ */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 
 @source "../**/*.{ts,tsx}";
 
-@theme {
-    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
-    --color-gryt-bg: #111318;
-    --color-gryt-surface: #1a1d24;
-    --color-gryt-surface-raised: #1e2028;
-    --color-gryt-border: #2b303d;
-    --color-gryt-text: #e0e0e6;
-    --color-gryt-muted: #888888;
-    --color-gryt-accent: #968ff8;
-    --color-gryt-accent-light: #b4afff;
-    --color-gryt-secondary: #7dd3fc;
-    --color-gryt-secondary-light: #bae6fd;
-    --color-gryt-success: #4ade80;
-    --color-gryt-danger: #f87171;
-    --color-gryt-danger-light: #fca5a5;
-    --color-gryt-warning: #fbbf24;
+@import "./theme.css";
 
-    /* Surface one step above --color-gryt-surface-raised, for hover states. */
-    --color-gryt-surface-hover: #334155;
-
-    /* Text drawn on top of a filled tone, dark enough to stay readable on
-       these light fills. Not derived from the fills — picked per tone. */
-    --color-gryt-on-accent: #141126;
-    --color-gryt-on-secondary: #07131c;
-    --color-gryt-on-danger: #250b0b;
-
-    /* A damped-spring solution sampled into linear() — the real curve of a
-       spring rather than a physics engine approximating one. Damping 0.5591,
-       peaking 12% past target and settling without a second visible swing.
-
-       Duration-invariant: the natural frequency scales with the duration, so
-       z*w*t is dimensionless and this one curve serves both tiers. Only the
-       duration tokens differ.
-
-       Read this before turning the overshoot up. Overshoot is a percentage of
-       the TRAVEL, not of the element. At scale 1.06 a 93px button travels
-       ~5.6px, so 12% of it is well under a pixel — the ring is texture you
-       feel, and the scale is what you actually see. Raising damping alone will
-       not make the motion more visible; raising the scale, or lengthening the
-       duration, will.
-
-       linear() needs Chrome/Edge 113+, Safari 17.2+, Firefox 112+. Below that
-       the declaration is invalid and the browser keeps the preceding
-       timing-function, so it degrades to a plain ease rather than breaking. */
-    --ease-spring: linear(
-        0, 0.1217, 0.3812, 0.6579, 0.883, 1.0304, 1.1034, 1.12, 1.1025, 1.0705,
-        1.0376, 1.0115, 0.9949, 0.987, 0.9857, 0.9881, 0.992, 0.9959, 0.9989,
-        1.0008, 1.0016, 1.0017, 1.0014, 1.0009, 1.0004, 1.0001, 1
-    );
-}
-
-:root {
-    --gryt-bg: #111318;
-    --gryt-surface: #1a1d24;
-    --gryt-surface-raised: #1e2028;
-    --gryt-border: #2b303d;
-    --gryt-text: #e0e0e6;
-    --gryt-muted: #888888;
-    --gryt-accent: #968ff8;
-    --gryt-accent-light: #b4afff;
-    --gryt-secondary: #7dd3fc;
-    --gryt-success: #4ade80;
-    --gryt-danger: #f87171;
-    --gryt-warning: #fbbf24;
-    --gryt-radius-sm: 8px;
-    --gryt-radius-md: 12px;
-    --gryt-radius-lg: 20px;
-    --gryt-radius-xl: 28px;
-    --gryt-radius-full: 999px;
-
-    /* Each spring curve is shaped for one length. Changing a duration without
-       changing the curve moves where the overshoot lands. */
-    --gryt-dur-spring: 500ms;
-    --gryt-dur-spring-soft: 700ms;
-
-    /* Backdrop blur behind Dialog and Drawer. Deliberately small — enough to
-       separate the panel from the page without the scrim becoming an effect of
-       its own. backdrop-filter is not free on a full-screen element, so this is
-       the one place it is used. */
-    --gryt-backdrop-blur: 3px;
-
-    /* How far a Drawer hangs past the viewport edge. Padding on that side is
-       increased to match, so content sits where it would have without it. */
-    --gryt-drawer-bleed: 4rem;
-
-}
 
 @layer components {
     /* Almost everything that used to live here moved into the components as
