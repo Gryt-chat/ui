@@ -498,19 +498,26 @@ function TabsExample() {
   {
     slug: "drawer",
     name: "Drawer",
-    description: "Side panel for navigation, details, or narrow workflows.",
+    description:
+      "An edge panel you can drag away to dismiss, which becomes a bottom sheet under 768px.",
     importName: "Drawer",
     preview: "drawer",
     code: `import { Button, Drawer } from "@gryt/ui";
 
-<Drawer.Root open={open} onOpenChange={setOpen}>
+// side lives on Root, because the swipe direction is Root's business.
+// Under 768px this becomes a bottom sheet; pass sheetOnMobile={false} to keep
+// the side at every width.
+<Drawer.Root open={open} onOpenChange={setOpen} side="right">
   <Drawer.Trigger render={<Button />}>Open drawer</Drawer.Trigger>
   <Drawer.Portal>
     <Drawer.Backdrop />
-    <Drawer.Popup side="right">
-      <Drawer.Title>Gryt Drawer</Drawer.Title>
-      <Drawer.Description>Side panel content.</Drawer.Description>
-    </Drawer.Popup>
+    <Drawer.Viewport>
+      <Drawer.Popup>
+        <Drawer.Grabber />
+        <Drawer.Title>Gryt Drawer</Drawer.Title>
+        <Drawer.Description>Drag it away to dismiss.</Drawer.Description>
+      </Drawer.Popup>
+    </Drawer.Viewport>
   </Drawer.Portal>
 </Drawer.Root>`
   },
