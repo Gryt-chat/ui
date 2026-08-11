@@ -48,8 +48,8 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
           "rounded-(--gryt-radius-full) select-none",
           // scale rather than transform — see the note in Button.
           "transition-[scale,background-color,color] duration-(--gryt-dur-spring) ease-spring",
-          "motion-safe:hover:not-data-disabled:scale-[1.06]",
-          "motion-safe:active:not-data-disabled:scale-[0.94]",
+          "motion-safe:hover:not-data-disabled:scale-[1.08]",
+          "motion-safe:active:not-data-disabled:scale-[0.93]",
           focusRing,
           disabledState,
           sizeStyles[size],

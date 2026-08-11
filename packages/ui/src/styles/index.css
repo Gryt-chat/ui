@@ -28,26 +28,26 @@
     --color-gryt-on-secondary: #07131c;
     --color-gryt-on-danger: #250b0b;
 
-    /* Damped-spring solutions sampled into linear(). These are the real curve
-       of a spring, not a JS physics engine approximating one — which is the
-       whole reason no motion library is needed for state transitions.
+    /* A damped-spring solution sampled into linear() — the actual curve of a
+       spring, not a physics engine approximating one. Damping 0.7792, peaking
+       2.00% past target before it settles.
 
-       Overshoot is deliberately tiny. --ease-spring peaks 1.09% past target,
-       --ease-spring-soft 0.30%: enough to read as spring, far short of bounce.
-       Pair each with its own duration; the curve is shaped for that length.
+       One curve, two durations. The shape is duration-invariant, so a separate
+       "soft" curve was just this one written twice; the tier is the speed.
+
+       A caution worth keeping: overshoot is a percentage of the TRAVEL, not of
+       the element. On a button scaling to 1.05 the travel is ~4.8px, so 2% is
+       ~0.1px — invisible. What reads as spring at that size is the velocity
+       profile, not the overshoot. Overshoot only becomes visible on long
+       travels: a 320px drawer overshoots ~6px, which you can see.
 
        linear() needs Chrome/Edge 113+, Safari 17.2+, Firefox 112+. Below that
        the declaration is invalid and the browser keeps the preceding
        timing-function, so it degrades to a plain ease rather than breaking. */
     --ease-spring: linear(
-        0, 0.0771, 0.2412, 0.4248, 0.5926, 0.7297, 0.8331, 0.906, 0.9542,
-        0.9838, 1.0003, 1.0082, 1.0109, 1.0107, 1.0092, 1.0071, 1.0052, 1.0035,
-        1.0022, 1.0013, 1.0007, 1.0003, 1
-    );
-    --ease-spring-soft: linear(
-        0, 0.067, 0.211, 0.375, 0.529, 0.6598, 0.7637, 0.8421, 0.8989, 0.9385,
-        0.9649, 0.9819, 0.9923, 0.9982, 1.0013, 1.0026, 1.003, 1.0028, 1.0023,
-        1.0019, 1.0014, 1.001, 1
+        0, 0.0731, 0.2326, 0.4154, 0.5862, 0.7284, 0.8371, 0.9143, 0.9653,
+        0.996, 1.0123, 1.019, 1.02, 1.0179, 1.0144, 1.0107, 1.0075, 1.0048,
+        1.0028, 1.0014, 1.0005, 1, 0.9997, 0.9996, 1
     );
 }
 

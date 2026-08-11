@@ -32,7 +32,7 @@ const Popup = forwardRef<HTMLDivElement, DrawerPopupProps>(function DrawerPopup(
       ref={ref}
       className={cn(
         "gryt-drawer fixed z-50 flex flex-col gap-4 border-gryt-border bg-gryt-surface p-5 text-gryt-text",
-        "transition-transform duration-(--gryt-dur-spring-soft) ease-spring-soft motion-reduce:transition-none",
+        "transition-transform duration-(--gryt-dur-spring-soft) ease-spring motion-reduce:transition-none",
         sideStyles[side],
         className
       )}
@@ -50,7 +50,7 @@ const Backdrop = forwardRef<
       ref={ref}
       className={cn(
         "gryt-drawer-backdrop fixed inset-0 min-h-dvh bg-black/60",
-        "transition-opacity duration-(--gryt-dur-spring-soft) ease-spring-soft motion-reduce:transition-none",
+        "transition-opacity duration-(--gryt-dur-spring-soft) ease-spring motion-reduce:transition-none",
         "data-starting-style:opacity-0 data-ending-style:opacity-0",
         className
       )}

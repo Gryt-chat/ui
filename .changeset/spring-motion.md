@@ -4,12 +4,14 @@
 
 Add spring motion to the interactive components, as CSS rather than a motion library.
 
-`--ease-spring` and `--ease-spring-soft` are damped-spring solutions sampled into CSS `linear()`. They are the real curve of a spring, not an approximation of one — which is why no JS physics engine is involved. Overshoot is deliberately small: 1.09% for the control curve, 0.30% for the panel curve. Enough to read as spring, well short of bounce.
+`--ease-spring` is a damped-spring solution sampled into CSS `linear()`. It is the real curve of a spring, not an approximation of one — which is why no JS physics engine is involved. Damping 0.7792, peaking 2.00% past target before it settles.
 
-Two tiers:
+One curve, two durations — the shape is duration-invariant, so a separate "soft" curve was the same curve written twice:
 
-- **`--ease-spring` at `--gryt-dur-spring` (260ms)** — Button and IconButton hover/press, Switch thumb, Slider thumb, the Accordion caret, and every popup (Dialog, Menu, Select, Tooltip).
-- **`--ease-spring-soft` at `--gryt-dur-spring-soft` (420ms)** — things that travel further: the Accordion panel height, the Drawer slide, the Progress bar.
+- **`--gryt-dur-spring` (260ms)** — Button and IconButton hover/press, Switch thumb, Slider thumb, the Accordion caret, and every popup (Dialog, Menu, Select, Tooltip).
+- **`--gryt-dur-spring-soft` (420ms)** — things that travel further: the Accordion panel height, the Drawer slide, the Progress bar.
+
+Button hover scales to 1.05 and presses to 0.96; IconButton to 1.08 and 0.93. Those numbers, not the damping, are what makes the motion legible: overshoot is a percentage of the travel, so at these sizes 2% is a fraction of a pixel. Overshoot only becomes visible on long travels — a 320px drawer overshoots about 6px.
 
 Colour transitions stay on a plain ease. A spring on a colour overshoots the hue, which means nothing.
 

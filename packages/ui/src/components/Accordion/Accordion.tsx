@@ -92,7 +92,7 @@ const Panel = forwardRef<HTMLDivElement, AccordionPanelProps>(
           "gryt-accordion-panel overflow-hidden text-sm text-gryt-muted",
           // Base UI measures the panel and exposes the height as a variable,
           // which is what makes a real open and close transition possible.
-          "h-[var(--accordion-panel-height)] transition-[height] duration-(--gryt-dur-spring-soft) ease-spring-soft",
+          "h-[var(--accordion-panel-height)] transition-[height] duration-(--gryt-dur-spring-soft) ease-spring",
           "data-starting-style:h-0 data-ending-style:h-0",
           "motion-reduce:transition-none",
           className
