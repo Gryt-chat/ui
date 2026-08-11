@@ -40,10 +40,14 @@ RUN printf '%s\n' \
   '    absolute_redirect off;' \
   '    # Hashed filenames, so these can never go stale.' \
   '    location /assets/ { expires 1y; add_header Cache-Control "public, immutable"; try_files $uri =404; }' \
-  '    # createBrowserRouter owns the routes, so every non-file path is the SPA.' \
-  '    # This is the difference from packages/site, which prerenders each route' \
-  '    # into a directory and 404s on anything else.' \
-  '    location / { try_files $uri $uri/ /index.html; }' \
+  '    # $uri/index.html rather than $uri/: scripts/prerender.ts writes a real' \
+  '    # directory per route so each page can carry its own og:image, and a bare' \
+  '    # $uri/ makes nginx 301 to add the trailing slash. Serving the file' \
+  '    # directly saves every crawler and visitor that redirect.' \
+  '    #' \
+  '    # The /index.html fallback stays: createBrowserRouter still owns anything' \
+  '    # that was not prerendered, and the app routes it client-side.' \
+  '    location / { try_files $uri $uri/index.html /index.html; }' \
   '    location = /index.html { add_header Cache-Control "no-cache"; }' \
   '    location /health { return 200 "healthy"; add_header Content-Type text/plain; }' \
   '  }' \
