@@ -15,4 +15,4 @@ Ship the design tokens as `@gryt/ui/theme.css`, importable into a consuming app'
 
 It carries the `--color-gryt-*` tokens and the raw `--gryt-*` names together — radius, spring durations, backdrop blur, drawer bleed — because the components reference those directly in arbitrary values (`rounded-(--gryt-radius-lg)`, `duration-(--gryt-dur-spring)`) and an app writing the same needs them too. One file, the whole token surface.
 
-Nothing changes for existing consumers: `styles.css` still contains everything it did.
+`styles.css` still carries every component style and utility it did. What it no longer carries is Tailwind's preflight. A component library has no business carrying a CSS reset — that is the consuming app's decision, made once for its whole document, and shipping one means any app importing us silently gets its own reset overwritten. The Gryt client is mid-migration and still resting on Radix Themes' reset, where this would not be a matter of taste but a broken layout. Apps that want preflight import it from their own entry, which is what the docs site does.
