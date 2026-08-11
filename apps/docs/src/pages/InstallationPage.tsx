@@ -18,7 +18,7 @@ export function App() {
       <h1>Installation</h1>
       <CodeBlock code={installCode} language="sh" />
       <p>
-        Gryt UI includes its MUI, Emotion, and icon dependencies. Your app only
+        Gryt UI brings Base UI and its icon dependency with it. Your app only
         needs React and React DOM, which are already present in most React
         projects.
       </p>

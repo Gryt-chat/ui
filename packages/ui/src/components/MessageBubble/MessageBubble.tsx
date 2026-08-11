@@ -17,7 +17,7 @@ export const MessageBubble = forwardRef<HTMLDivElement, MessageBubbleProps>(
         ref={ref}
         className={cn(
           "gryt-message-bubble",
-          from === "user" && "ml-auto bg-gryt-accent text-[#141126]",
+          from === "user" && "ml-auto bg-gryt-accent text-gryt-on-accent",
           from === "assistant" &&
             "mr-auto border border-gryt-border bg-gryt-surface text-gryt-text",
           from === "system" &&

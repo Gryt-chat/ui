@@ -2,7 +2,7 @@
 
 React component library for [Gryt](https://github.com/Gryt-chat/gryt), the open-source WebRTC voice chat platform.
 
-Built with MUI v7, React, Phosphor icons, Tailwind-authored compiled CSS, and the Gryt design palette from [Gryt-chat/code-theme](https://github.com/Gryt-chat/code-theme).
+Built with Base UI, React, Phosphor icons, Tailwind-authored compiled CSS, and the Gryt design palette from [Gryt-chat/code-theme](https://github.com/Gryt-chat/code-theme).
 
 ## Install
 
@@ -16,7 +16,7 @@ pnpm add @gryt/ui
 yarn add @gryt/ui
 ```
 
-Gryt UI includes MUI, Emotion, Phosphor icons, and its compiled CSS. Your app should provide React and React DOM.
+Gryt UI includes Base UI, Phosphor icons, and its compiled CSS. Your app should provide React and React DOM. There is no CSS-in-JS runtime.
 
 ## Usage
 
@@ -73,7 +73,7 @@ export function Actions() {
 }
 ```
 
-Form primitives are MUI-backed and inherit the Gryt theme.
+Form primitives are Base UI-backed and inherit the Gryt theme.
 
 ```tsx
 import { Select, Switch, TextField } from "@gryt/ui";
@@ -101,7 +101,7 @@ export function Preferences() {
 
 ## Components
 
-Includes MUI-backed primitives for buttons, inputs, selects, tabs, menus, dialogs, drawers, cards, feedback, data display, and Gryt chat-specific components like `Composer`, `ConversationItem`, and `MessageBubble`.
+Includes Base UI-backed primitives for buttons, inputs, selects, tabs, menus, dialogs, drawers, cards, feedback, data display, and Gryt chat-specific components like `Composer`, `ConversationItem`, and `MessageBubble`.
 
 The package also exports `GrytProvider`, `createGrytTheme`, and `grytTokens` for apps that need a consistent Gryt theme boundary.
 

@@ -1,7 +1,5 @@
 import {
   Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Alert,
   Avatar,
   Badge,
@@ -19,27 +17,22 @@ import {
   Drawer,
   IconButton,
   Menu,
-  MenuItem,
   MessageBubble,
   Progress,
   Radio,
+  RadioGroup,
   Select,
   Skeleton,
   Slider,
   Spinner,
   Surface,
   Switch,
-  Tab,
   Tabs,
   TextField,
   Tooltip
 } from "@gryt/ui";
-import {
-  Bell,
-  CaretDown,
-  DotsThree,
-  PaperPlaneTilt
-} from "@phosphor-icons/react";
+import { Bell, DotsThree, PaperPlaneTilt } from "@phosphor-icons/react";
+import type { Tone } from "@gryt/ui";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Navigate, useParams } from "react-router-dom";
@@ -157,7 +150,7 @@ export const componentDocs: ComponentDoc[] = [
     slug: "button",
     name: "Button",
     description:
-      "Primary, secondary, neutral, danger, and ghost actions with Gryt color and pill-shaped Material styling.",
+      "Primary, secondary, neutral, danger, and ghost actions, fully rounded, that grow on hover and shrink on press.",
     importName: "Button",
     preview: "button",
     code: `import { Button } from "@gryt/ui";
@@ -194,15 +187,15 @@ import { Bell, PaperPlaneTilt } from "@phosphor-icons/react";
     slug: "text-field",
     name: "TextField",
     description:
-      "Rounded MUI text fields for forms, settings, and composer-adjacent inputs.",
+      "Rounded text fields for forms, settings, and composer-adjacent inputs.",
     importName: "TextField",
     preview: "text-field",
     code: `import { TextField } from "@gryt/ui";
 
 <TextField label="Workspace" defaultValue="Gryt Chat" />
 <TextField label="Server slug" size="small" defaultValue="design-sync" />
-<TextField label="Topic" variant="filled" defaultValue="Voice settings" />
-<TextField label="Notes" multiline minRows={3} />`
+<TextField label="Notes" multiline minRows={3} />
+<TextField label="Slug" error helperText="Already taken" />`
   },
   {
     slug: "select",
@@ -221,7 +214,7 @@ function SelectExample() {
     <Select
       label="Input device"
       value={device}
-      onChange={(event) => setDevice(String(event.target.value))}
+      onValueChange={(next) => setDevice(String(next))}
       options={[
         { label: "Studio mic", value: "studio" },
         { label: "Headset", value: "headset" },
@@ -239,9 +232,9 @@ function SelectExample() {
     preview: "checkbox",
     code: `import { Checkbox } from "@gryt/ui";
 
-<Checkbox defaultChecked color="primary" aria-label="Primary" />
-<Checkbox defaultChecked color="secondary" aria-label="Secondary" />
-<Checkbox defaultChecked color="error" aria-label="Danger" />`
+<Checkbox defaultChecked tone="primary" aria-label="Primary" />
+<Checkbox defaultChecked tone="secondary" aria-label="Secondary" />
+<Checkbox defaultChecked tone="danger" aria-label="Danger" />`
   },
   {
     slug: "radio",
@@ -249,32 +242,23 @@ function SelectExample() {
     description: "Single-choice control styled with the Gryt accent color.",
     importName: "Radio",
     preview: "radio",
-    code: `import { Radio } from "@gryt/ui";
+    code: `import { Radio, RadioGroup } from "@gryt/ui";
 import { useState } from "react";
 
 function RadioExample() {
   const [mode, setMode] = useState("voice");
 
   return (
-    <>
+    <RadioGroup value={mode} onValueChange={(next) => setMode(String(next))}>
       <label>
-        <Radio
-          checked={mode === "voice"}
-          onChange={() => setMode("voice")}
-          name="mode"
-        />
+        <Radio value="voice" />
         Voice activity
       </label>
       <label>
-        <Radio
-          checked={mode === "push"}
-          onChange={() => setMode("push")}
-          name="mode"
-          color="secondary"
-        />
+        <Radio value="push" tone="secondary" />
         Push to talk
       </label>
-    </>
+    </RadioGroup>
   );
 }`
   },
@@ -287,9 +271,9 @@ function RadioExample() {
     preview: "switch",
     code: `import { Switch } from "@gryt/ui";
 
-<Switch defaultChecked color="primary" aria-label="Primary" />
-<Switch defaultChecked color="secondary" aria-label="Secondary" />
-<Switch defaultChecked color="error" aria-label="Danger" />`
+<Switch defaultChecked tone="primary" aria-label="Primary" />
+<Switch defaultChecked tone="secondary" aria-label="Secondary" />
+<Switch defaultChecked tone="danger" aria-label="Danger" />`
   },
   {
     slug: "slider",
@@ -300,9 +284,9 @@ function RadioExample() {
     preview: "slider",
     code: `import { Slider } from "@gryt/ui";
 
-<Slider defaultValue={64} color="primary" aria-label="Input volume" />
-<Slider defaultValue={42} color="secondary" aria-label="Output volume" />
-<Slider defaultValue={78} color="error" aria-label="Danger threshold" />`
+<Slider defaultValue={64} tone="primary" aria-label="Input volume" />
+<Slider defaultValue={42} tone="secondary" aria-label="Output volume" />
+<Slider defaultValue={78} tone="danger" aria-label="Danger threshold" />`
   },
   {
     slug: "avatar",
@@ -335,10 +319,10 @@ function RadioExample() {
     preview: "chip",
     code: `import { Chip } from "@gryt/ui";
 
-<Chip label="Connected" color="success" />
-<Chip label="Beta" color="secondary" />
-<Chip label="Muted" color="warning" />
-<Chip label="Danger" color="error" />`
+<Chip label="Connected" tone="success" />
+<Chip label="Beta" tone="secondary" />
+<Chip label="Muted" tone="warning" />
+<Chip label="Danger" tone="danger" />`
   },
   {
     slug: "tooltip",
@@ -421,14 +405,26 @@ function ProgressExample() {
   {
     slug: "menu",
     name: "Menu",
-    description: "Floating command lists built on MUI Menu and MenuItem.",
+    description: "Floating command lists with keyboard navigation.",
     importName: "Menu",
     preview: "menu",
-    code: `import { Menu, MenuItem } from "@gryt/ui";
+    code: `import { IconButton, Menu } from "@gryt/ui";
 
-<Menu open={open} anchorEl={anchorEl} onClose={closeMenu}>
-  <MenuItem>Edit server</MenuItem>
-</Menu>`
+<Menu.Root>
+  <Menu.Trigger render={<IconButton aria-label="Open menu" />}>
+    <DotsThree size={18} />
+  </Menu.Trigger>
+  <Menu.Portal>
+    <Menu.Positioner align="start">
+      <Menu.Popup>
+        <Menu.Item>Edit server</Menu.Item>
+        <Menu.Item>Invite people</Menu.Item>
+        <Menu.Separator />
+        <Menu.Item>Leave</Menu.Item>
+      </Menu.Popup>
+    </Menu.Positioner>
+  </Menu.Portal>
+</Menu.Root>`
   },
   {
     slug: "tabs",
@@ -436,21 +432,19 @@ function ProgressExample() {
     description: "Tabbed navigation for local panels and settings groups.",
     importName: "Tabs",
     preview: "tabs",
-    code: `import { Tab, Tabs } from "@gryt/ui";
+    code: `import { Tabs } from "@gryt/ui";
 import { useState } from "react";
 
 function TabsExample() {
-  const [value, setValue] = useState(0);
+  const [value, setValue] = useState("chat");
 
   return (
-    <Tabs
-      value={value}
-      onChange={(_, nextValue) => setValue(nextValue)}
-      aria-label="Views"
-    >
-      <Tab label="Chat" />
-      <Tab label="Voice" />
-      <Tab label="Files" />
+    <Tabs value={value} onValueChange={setValue}>
+      <Tabs.List aria-label="Views">
+        <Tabs.Tab value="chat">Chat</Tabs.Tab>
+        <Tabs.Tab value="voice">Voice</Tabs.Tab>
+        <Tabs.Tab value="files">Files</Tabs.Tab>
+      </Tabs.List>
     </Tabs>
   );
 }`
@@ -461,11 +455,13 @@ function TabsExample() {
     description: "Disclosure panels for dense settings and grouped details.",
     importName: "Accordion",
     preview: "accordion",
-    code: `import { Accordion, AccordionDetails, AccordionSummary } from "@gryt/ui";
+    code: `import { Accordion } from "@gryt/ui";
 
-<Accordion defaultExpanded>
-  <AccordionSummary>Voice settings</AccordionSummary>
-  <AccordionDetails>Input and output controls.</AccordionDetails>
+<Accordion defaultValue={["voice"]}>
+  <Accordion.Item value="voice">
+    <Accordion.Trigger>Voice settings</Accordion.Trigger>
+    <Accordion.Panel>Input and output controls.</Accordion.Panel>
+  </Accordion.Item>
 </Accordion>`
   },
   {
@@ -482,7 +478,7 @@ function TabsExample() {
     slug: "card",
     name: "Card",
     description:
-      "MUI Card wrapper with Gryt borders, surfaces, and rounded shape.",
+      "Grouped content with Gryt borders, surfaces, and rounded shape.",
     importName: "Card",
     preview: "card",
     code: `import { Card, CardContent, CardHeader } from "@gryt/ui";
@@ -520,11 +516,18 @@ function TabsExample() {
     description: "Side panel for navigation, details, or narrow workflows.",
     importName: "Drawer",
     preview: "drawer",
-    code: `import { Drawer } from "@gryt/ui";
+    code: `import { Button, Drawer } from "@gryt/ui";
 
-<Drawer open={open} onClose={closeDrawer}>
-  <div>Drawer content</div>
-</Drawer>`
+<Drawer.Root open={open} onOpenChange={setOpen}>
+  <Drawer.Trigger render={<Button />}>Open drawer</Drawer.Trigger>
+  <Drawer.Portal>
+    <Drawer.Backdrop />
+    <Drawer.Popup side="right">
+      <Drawer.Title>Gryt Drawer</Drawer.Title>
+      <Drawer.Description>Side panel content.</Drawer.Description>
+    </Drawer.Popup>
+  </Drawer.Portal>
+</Drawer.Root>`
   },
   {
     slug: "message-bubble",
@@ -534,7 +537,7 @@ function TabsExample() {
     preview: "message-bubble",
     code: `import { MessageBubble } from "@gryt/ui";
 
-<MessageBubble from="assistant">Material 3 shape is active.</MessageBubble>`
+<MessageBubble from="assistant">Rounded bubble on a Gryt surface.</MessageBubble>`
   },
   {
     slug: "composer",
@@ -588,9 +591,8 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [inputDevice, setInputDevice] = useState("studio");
-  const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const [radioMode, setRadioMode] = useState("voice");
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState("chat");
 
   switch (preview) {
     case "button":
@@ -658,7 +660,6 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
           />
           <TextField
             label="Topic"
-            variant="filled"
             defaultValue="Voice settings"
           />
           <TextField label="Notes" multiline minRows={3} />
@@ -670,7 +671,7 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
           <Select
             label="Input device"
             value={inputDevice}
-            onChange={(event) => setInputDevice(String(event.target.value))}
+            onValueChange={(next) => setInputDevice(String(next))}
             options={[
               { label: "Studio mic", value: "studio" },
               { label: "Headset", value: "headset" },
@@ -693,19 +694,19 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
       return (
         <ControlGrid>
           <ControlExample label="Primary">
-            <Checkbox defaultChecked color="primary" aria-label="Primary" />
+            <Checkbox defaultChecked tone="primary" aria-label="Primary" />
           </ControlExample>
           <ControlExample label="Secondary">
-            <Checkbox defaultChecked color="secondary" aria-label="Secondary" />
+            <Checkbox defaultChecked tone="secondary" aria-label="Secondary" />
           </ControlExample>
           <ControlExample label="Success">
-            <Checkbox defaultChecked color="success" aria-label="Success" />
+            <Checkbox defaultChecked tone="success" aria-label="Success" />
           </ControlExample>
           <ControlExample label="Warning">
-            <Checkbox defaultChecked color="warning" aria-label="Warning" />
+            <Checkbox defaultChecked tone="warning" aria-label="Warning" />
           </ControlExample>
           <ControlExample label="Danger">
-            <Checkbox defaultChecked color="error" aria-label="Danger" />
+            <Checkbox defaultChecked tone="danger" aria-label="Danger" />
           </ControlExample>
         </ControlGrid>
       );
@@ -713,27 +714,14 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
       return (
         <div className="grid w-full gap-4">
           <div className="grid gap-2">
-            <RadioOption
-              checked={radioMode === "voice"}
-              color="primary"
-              label="Voice activity"
-              name="input-mode"
-              onChange={() => setRadioMode("voice")}
-            />
-            <RadioOption
-              checked={radioMode === "push"}
-              color="secondary"
-              label="Push to talk"
-              name="input-mode"
-              onChange={() => setRadioMode("push")}
-            />
-            <RadioOption
-              checked={radioMode === "muted"}
-              color="error"
-              label="Muted"
-              name="input-mode"
-              onChange={() => setRadioMode("muted")}
-            />
+            <RadioGroup
+              value={radioMode}
+              onValueChange={(next) => setRadioMode(String(next))}
+            >
+              <RadioOption tone="primary" label="Voice activity" value="voice" />
+              <RadioOption tone="secondary" label="Push to talk" value="push" />
+              <RadioOption tone="danger" label="Muted" value="muted" />
+            </RadioGroup>
           </div>
           <p className="text-sm text-gryt-muted">
             Selected: <span className="text-gryt-text">{radioMode}</span>
@@ -744,19 +732,19 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
       return (
         <ControlGrid>
           <ControlExample label="Primary">
-            <Switch defaultChecked color="primary" aria-label="Primary" />
+            <Switch defaultChecked tone="primary" aria-label="Primary" />
           </ControlExample>
           <ControlExample label="Secondary">
-            <Switch defaultChecked color="secondary" aria-label="Secondary" />
+            <Switch defaultChecked tone="secondary" aria-label="Secondary" />
           </ControlExample>
           <ControlExample label="Success">
-            <Switch defaultChecked color="success" aria-label="Success" />
+            <Switch defaultChecked tone="success" aria-label="Success" />
           </ControlExample>
           <ControlExample label="Warning">
-            <Switch defaultChecked color="warning" aria-label="Warning" />
+            <Switch defaultChecked tone="warning" aria-label="Warning" />
           </ControlExample>
           <ControlExample label="Danger">
-            <Switch defaultChecked color="error" aria-label="Danger" />
+            <Switch defaultChecked tone="danger" aria-label="Danger" />
           </ControlExample>
         </ControlGrid>
       );
@@ -766,25 +754,25 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
           <SliderExample
             label="Input"
             value={64}
-            color="primary"
+            tone="primary"
             ariaLabel="Input volume"
           />
           <SliderExample
             label="Output"
             value={42}
-            color="secondary"
+            tone="secondary"
             ariaLabel="Output volume"
           />
           <SliderExample
             label="Warning"
             value={72}
-            color="warning"
+            tone="warning"
             ariaLabel="Warning threshold"
           />
           <SliderExample
             label="Danger"
             value={88}
-            color="error"
+            tone="danger"
             ariaLabel="Danger threshold"
           />
         </div>
@@ -800,10 +788,10 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
     case "chip":
       return (
         <div className="flex flex-wrap gap-3">
-          <Chip label="Connected" color="success" />
-          <Chip label="Beta" color="secondary" />
-          <Chip label="Muted" color="warning" />
-          <Chip label="Danger" color="error" />
+          <Chip label="Connected" tone="success" />
+          <Chip label="Beta" tone="secondary" />
+          <Chip label="Muted" tone="warning" />
+          <Chip label="Danger" tone="danger" />
         </div>
       );
     case "tooltip":
@@ -840,47 +828,50 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
     case "menu":
       return (
         <div>
-          <IconButton
-            aria-label="Open menu"
-            onClick={(event) => setMenuAnchor(event.currentTarget)}
-          >
-            <DotsThree size={18} />
-          </IconButton>
-          <Menu
-            anchorEl={menuAnchor}
-            open={Boolean(menuAnchor)}
-            onClose={() => setMenuAnchor(null)}
-          >
-            <MenuItem onClick={() => setMenuAnchor(null)}>Edit server</MenuItem>
-            <MenuItem onClick={() => setMenuAnchor(null)}>
-              Invite people
-            </MenuItem>
-            <Divider />
-            <MenuItem onClick={() => setMenuAnchor(null)}>Leave</MenuItem>
-          </Menu>
+          <Menu.Root>
+            <Menu.Trigger
+              render={<IconButton aria-label="Open menu" />}
+            >
+              <DotsThree size={18} />
+            </Menu.Trigger>
+            <Menu.Portal>
+              <Menu.Positioner align="start">
+                <Menu.Popup>
+                  <Menu.Item>Edit server</Menu.Item>
+                  <Menu.Item>Invite people</Menu.Item>
+                  <Menu.Separator />
+                  <Menu.Item>Leave</Menu.Item>
+                </Menu.Popup>
+              </Menu.Positioner>
+            </Menu.Portal>
+          </Menu.Root>
         </div>
       );
     case "tabs":
       return (
-        <Tabs
-          value={tabValue}
-          onChange={(_, nextValue) => setTabValue(nextValue)}
-          aria-label="Views"
-        >
-          <Tab label="Chat" />
-          <Tab label="Voice" />
-          <Tab label="Files" />
+        <Tabs value={tabValue} onValueChange={setTabValue}>
+          <Tabs.List aria-label="Views">
+            <Tabs.Tab value="chat">Chat</Tabs.Tab>
+            <Tabs.Tab value="voice">Voice</Tabs.Tab>
+            <Tabs.Tab value="files">Files</Tabs.Tab>
+          </Tabs.List>
         </Tabs>
       );
     case "accordion":
       return (
-        <Accordion defaultExpanded>
-          <AccordionSummary expandIcon={<CaretDown size={18} />}>
-            Voice settings
-          </AccordionSummary>
-          <AccordionDetails>
-            Input, output, threshold, and suppression controls belong here.
-          </AccordionDetails>
+        <Accordion defaultValue={["voice"]}>
+          <Accordion.Item value="voice">
+            <Accordion.Trigger>Voice settings</Accordion.Trigger>
+            <Accordion.Panel>
+              Input, output, threshold, and suppression controls belong here.
+            </Accordion.Panel>
+          </Accordion.Item>
+          <Accordion.Item value="video">
+            <Accordion.Trigger>Video settings</Accordion.Trigger>
+            <Accordion.Panel>
+              Camera, resolution, and background blur belong here.
+            </Accordion.Panel>
+          </Accordion.Item>
         </Accordion>
       );
     case "surface":
@@ -931,24 +922,30 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
     case "drawer":
       return (
         <>
-          <Button onClick={() => setDrawerOpen(true)}>Open drawer</Button>
-          <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-            <div className="w-72 p-5">
-              <h2 className="text-lg font-semibold text-gryt-text">
-                Gryt Drawer
-              </h2>
-              <p className="mt-2 text-sm text-gryt-muted">
-                Side panel content.
-              </p>
-            </div>
-          </Drawer>
+          <Drawer.Root open={drawerOpen} onOpenChange={setDrawerOpen}>
+            <Drawer.Trigger render={<Button />}>Open drawer</Drawer.Trigger>
+            <Drawer.Portal>
+              <Drawer.Backdrop />
+              <Drawer.Popup side="right">
+                <Drawer.Title className="text-lg font-semibold text-gryt-text">
+                  Gryt Drawer
+                </Drawer.Title>
+                <Drawer.Description className="text-sm text-gryt-muted">
+                  Side panel content, pinned to the edge.
+                </Drawer.Description>
+                <Drawer.Close render={<Button tone="neutral" />}>
+                  Close
+                </Drawer.Close>
+              </Drawer.Popup>
+            </Drawer.Portal>
+          </Drawer.Root>
         </>
       );
     case "message-bubble":
       return (
         <div className="space-y-3">
           <MessageBubble from="assistant">
-            Material 3-style shape is active.
+            Rounded bubble on a Gryt surface.
           </MessageBubble>
           <MessageBubble from="user">
             Use the Gryt code-theme colors.
@@ -1017,28 +1014,18 @@ function ControlExample({
 }
 
 function RadioOption({
-  checked,
-  color,
+  tone,
   label,
-  name,
-  onChange
+  value
 }: {
-  checked: boolean;
-  color: "primary" | "secondary" | "error";
+  tone: Tone;
   label: string;
-  name: string;
-  onChange: () => void;
+  value: string;
 }) {
   return (
     <label className="flex min-h-12 cursor-pointer items-center justify-between gap-3 rounded-lg border border-gryt-border bg-gryt-surface px-3 py-2 text-sm text-gryt-muted transition-colors hover:border-gryt-accent-light hover:text-gryt-text">
       <span>{label}</span>
-      <Radio
-        checked={checked}
-        color={color}
-        name={name}
-        onChange={onChange}
-        value={label}
-      />
+      <Radio tone={tone} value={value} />
     </label>
   );
 }
@@ -1046,12 +1033,12 @@ function RadioOption({
 function SliderExample({
   label,
   value,
-  color,
+  tone,
   ariaLabel
 }: {
   label: string;
   value: number;
-  color: "primary" | "secondary" | "warning" | "error";
+  tone: Tone;
   ariaLabel: string;
 }) {
   return (
@@ -1060,12 +1047,7 @@ function SliderExample({
         <span className="font-medium text-gryt-text">{label}</span>
         <span className="text-gryt-muted">{value}%</span>
       </div>
-      <Slider
-        defaultValue={value}
-        color={color}
-        aria-label={ariaLabel}
-        valueLabelDisplay="auto"
-      />
+      <Slider defaultValue={value} tone={tone} aria-label={ariaLabel} />
     </div>
   );
 }
@@ -1087,7 +1069,7 @@ function AnimatedProgressPreview() {
         <span className="font-medium text-gryt-text">Upload progress</span>
         <span className="text-gryt-muted">{value}%</span>
       </div>
-      <Progress variant="determinate" value={value} />
+      <Progress value={value} />
       <Progress />
     </div>
   );

@@ -1,41 +1,80 @@
-import MuiCard from "@mui/material/Card";
-import MuiCardActions from "@mui/material/CardActions";
-import MuiCardContent from "@mui/material/CardContent";
-import MuiCardHeader from "@mui/material/CardHeader";
-import type { CardProps as MuiCardProps } from "@mui/material/Card";
-import type {
-  CardActionsProps,
-  CardContentProps,
-  CardHeaderProps
-} from "@mui/material";
 import { forwardRef } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "../utils/cn";
 
-export type CardProps = MuiCardProps;
+export type CardProps = HTMLAttributes<HTMLDivElement>;
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   { className, ...props },
   ref
 ) {
   return (
-    <MuiCard ref={ref} className={cn("gryt-card", className)} {...props} />
+    <div
+      ref={ref}
+      className={cn(
+        "gryt-card rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface text-gryt-text",
+        className
+      )}
+      {...props}
+    />
   );
 });
 
-export function CardHeader({ className, ...props }: CardHeaderProps) {
+export interface CardHeaderProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, "title"> {
+  title?: ReactNode;
+  subheader?: ReactNode;
+}
+
+export function CardHeader({
+  children,
+  className,
+  subheader,
+  title,
+  ...props
+}: CardHeaderProps) {
   return (
-    <MuiCardHeader className={cn("gryt-card-header", className)} {...props} />
+    <div
+      className={cn("gryt-card-header flex flex-col gap-1 p-4", className)}
+      {...props}
+    >
+      {title ? (
+        <span className="text-base font-semibold text-gryt-text">{title}</span>
+      ) : null}
+      {subheader ? (
+        <span className="text-sm text-gryt-muted">{subheader}</span>
+      ) : null}
+      {children}
+    </div>
   );
 }
 
-export function CardContent({ className, ...props }: CardContentProps) {
+export function CardContent({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
   return (
-    <MuiCardContent className={cn("gryt-card-content", className)} {...props} />
+    <div
+      className={cn(
+        "gryt-card-content px-4 pb-4 text-sm text-gryt-muted",
+        className
+      )}
+      {...props}
+    />
   );
 }
 
-export function CardActions({ className, ...props }: CardActionsProps) {
+export function CardActions({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
   return (
-    <MuiCardActions className={cn("gryt-card-actions", className)} {...props} />
+    <div
+      className={cn(
+        "gryt-card-actions flex items-center gap-2 px-4 pb-4",
+        className
+      )}
+      {...props}
+    />
   );
 }

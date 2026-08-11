@@ -2,7 +2,7 @@
 
 React component library for Gryt, the open-source WebRTC voice chat platform from [Gryt-chat](https://github.com/Gryt-chat).
 
-`@gryt/ui` wraps MUI v7 components with Gryt colors, rounded Material 3-style shapes, chat-focused primitives, and compiled Tailwind CSS. It is designed for the Gryt desktop/web client and reusable by Gryt-adjacent apps.
+`@gryt/ui` builds on [Base UI](https://base-ui.com) — the MUI team's headless component library — styled with Tailwind on the Gryt palette. Flat surfaces, fully rounded controls, chat-focused primitives. Designed for the Gryt desktop/web client and reusable by Gryt-adjacent apps.
 
 ## Install
 
@@ -16,7 +16,7 @@ pnpm add @gryt/ui
 yarn add @gryt/ui
 ```
 
-`@gryt/ui` includes MUI, Emotion, Phosphor icons, and the compiled Gryt styles. Your app provides `react` and `react-dom`.
+`@gryt/ui` includes Base UI, Phosphor icons, and the compiled Gryt styles. Your app provides `react` and `react-dom`. There is no CSS-in-JS runtime.
 
 ## Usage
 

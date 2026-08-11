@@ -2,18 +2,20 @@ import { createGrytTheme, GrytProvider, Button } from "@gryt/ui";
 import { CodeBlock } from "../components/CodeBlock";
 
 const themeCode = `const theme = createGrytTheme({
-  palette: {
-    primary: {
-      main: "#b4afff"
-    }
+  color: {
+    accent: "#b4afff"
   }
-});`;
+});
 
+<GrytProvider theme={theme}>
+  <Button>Custom primary</Button>
+</GrytProvider>`;
+
+// createGrytTheme returns CSS custom properties rather than a theme object,
+// so overriding one token leaves the rest of the palette alone.
 const theme = createGrytTheme({
-  palette: {
-    primary: {
-      main: "#b4afff"
-    }
+  color: {
+    accent: "#b4afff"
   }
 });
 
@@ -46,9 +48,9 @@ export function ThemePage() {
           </div>
         ))}
       </div>
-      <p>Use MUI theme overrides when Gryt tokens need app-specific changes.</p>
+      <p>Override individual tokens when an app needs to depart from the defaults.</p>
       <div className="not-prose my-6 rounded-[28px] border border-gryt-border bg-gryt-surface p-6">
-        <GrytProvider theme={theme} disableBaseline>
+        <GrytProvider theme={theme}>
           <Button>Custom primary</Button>
         </GrytProvider>
       </div>

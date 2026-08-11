@@ -61,7 +61,10 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           "gryt-button",
           "inline-flex items-center justify-center gap-2 border-0 shadow-none",
           "rounded-(--gryt-radius-full) font-semibold whitespace-nowrap select-none",
-          "transition-[transform,background-color,color] duration-150 ease-out",
+          // scale, not transform: Tailwind v4's scale-* utilities set the
+          // standalone `scale` property, so transitioning `transform` alone
+          // leaves the hover grow snapping instantly.
+          "transition-[scale,background-color,color] duration-150 ease-out",
 
           // Grow on hover, shrink on press. Behind motion-safe so it disappears
           // entirely for anyone who asked for reduced motion, rather than being

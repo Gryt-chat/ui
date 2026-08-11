@@ -17,7 +17,7 @@ export function HomePage() {
             React components for Gryt Chat
           </p>
           <h2 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight">
-            Material 3 shape, Gryt code-theme colors.
+            Flat shapes, Gryt code-theme colors.
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-7 text-gryt-muted">
             Build desktop chat interfaces with reusable components, rounded
@@ -38,7 +38,7 @@ export function HomePage() {
           <div className="space-y-1">
             <ConversationItem
               title="Design sync"
-              subtitle="Material 3 components"
+              subtitle="Base UI components"
               active
             />
             <ConversationItem
@@ -51,7 +51,7 @@ export function HomePage() {
               Code-theme palette applied.
             </MessageBubble>
             <MessageBubble from="user">
-              Make controls more Material 3.
+              Keep the controls flat.
             </MessageBubble>
           </div>
           <Composer submitLabel="Send" aria-label="Message preview" />
