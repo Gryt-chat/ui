@@ -27,7 +27,10 @@ export type DrawingKind =
   | "panel" | "card" | "dialog" | "drawer" | "bubble" | "composer"
   | "conversation-item" | "cluster" | "install" | "palette"
   | "toggle" | "toggle-group" | "meter" | "context-menu" | "popover"
-  | "toast" | "scroll-area";
+  | "toast" | "scroll-area"
+  | "alert-dialog" | "collapsible" | "checkbox-group" | "number-field"
+  | "otp-field" | "combobox" | "preview-card" | "toolbar" | "menubar"
+  | "navigation-menu" | "form" | "fieldset";
 
 // Satori accepts a React-like tree of plain objects.
 type Style = Record<string, string | number>;
@@ -501,6 +504,176 @@ export function drawing(kind: DrawingKind): Node {
         col({ width: 8, justifyContent: "flex-start" }, [
           el({ width: 8, height: 84, borderRadius: 999, backgroundColor: C.accent })
         ])
+      ]);
+
+    case "alert-dialog":
+      return surface({ width: 320, gap: 14 }, [
+        bar(190, 11, C.ink2),
+        bar(270, 9, C.rule),
+        row({ gap: 10, justifyContent: "flex-end", marginTop: 4 }, [
+          pill("Stay", false),
+          el(
+            { height: 46, paddingLeft: 22, paddingRight: 22, borderRadius: 999,
+              backgroundColor: "#e5484d", color: C.paper, alignItems: "center",
+              fontFamily: "Inter", fontSize: 17 },
+            "Leave"
+          )
+        ])
+      ]);
+
+    case "collapsible":
+      return col({ gap: 10, width: 300 }, [
+        row({ justifyContent: "space-between", alignItems: "center",
+              backgroundColor: C.paper2, borderRadius: 12, padding: 12 }, [
+          bar(130, 10, C.ink), icon(PATH.chevronDown, C.accent, 20)
+        ]),
+        col({ gap: 9, paddingLeft: 14 }, [
+          bar(180, 9, C.rule), bar(140, 9, C.rule), bar(160, 9, C.rule)
+        ])
+      ]);
+
+    case "checkbox-group":
+      return col({ gap: 12 }, [
+        row({ gap: 12, alignItems: "center" }, [
+          // Indeterminate: the parent state that makes a group worth having.
+          el({ width: 32, height: 32, borderRadius: 9, backgroundColor: C.accent,
+               alignItems: "center", justifyContent: "center" },
+             [bar(14, 3, C.accentInk)]),
+          bar(140, 10, C.ink)
+        ]),
+        row({ gap: 12, alignItems: "center", paddingLeft: 26 }, [
+          el({ width: 30, height: 30, borderRadius: 9, backgroundColor: C.accent,
+               alignItems: "center", justifyContent: "center" },
+             [icon(PATH.check, C.accentInk, 18)]),
+          bar(120, 9, C.rule)
+        ]),
+        row({ gap: 12, alignItems: "center", paddingLeft: 26 }, [
+          el({ width: 30, height: 30, borderRadius: 9, border: `1.5px solid ${C.rule}` }),
+          bar(100, 9, C.rule)
+        ])
+      ]);
+
+    case "number-field":
+      return row(
+        { borderRadius: 999, border: `1.5px solid ${C.rule}`,
+          backgroundColor: C.paper3, alignItems: "center", padding: 4 },
+        [
+          el({ width: 44, height: 44, borderRadius: 999, alignItems: "center",
+               justifyContent: "center" }, [bar(16, 3, C.ink2)]),
+          el({ width: 76, alignItems: "center", justifyContent: "center",
+               fontFamily: "Mono", fontSize: 20, color: C.ink }, "64"),
+          el({ width: 44, height: 44, borderRadius: 999, alignItems: "center",
+               justifyContent: "center", backgroundColor: C.accent },
+             [icon("M12 5v14M5 12h14", C.accentInk, 20)])
+        ]
+      );
+
+    case "otp-field":
+      return row({ gap: 10 }, [
+        ...["4", "9", "2"].map((digit) =>
+          el(
+            { width: 52, height: 62, borderRadius: 12, border: `1.5px solid ${C.accent}`,
+              backgroundColor: C.paper3, alignItems: "center", justifyContent: "center",
+              fontFamily: "Mono", fontSize: 26, color: C.ink },
+            digit
+          )
+        ),
+        ...[0, 1, 2].map(() =>
+          el({ width: 52, height: 62, borderRadius: 12, border: `1.5px solid ${C.rule}`,
+               backgroundColor: C.paper3 })
+        )
+      ]);
+
+    case "combobox":
+      return col({ gap: 8, width: 300 }, [
+        row({ height: 46, borderRadius: 12, border: `1.5px solid ${C.accent}`,
+              backgroundColor: C.paper3, alignItems: "center", paddingLeft: 14 },
+            [bar(110, 9, C.ink2)]),
+        surface({ gap: 4, padding: 8 }, [
+          el({ height: 34, borderRadius: 9, backgroundColor: C.paper3, alignItems: "center", paddingLeft: 10 }, [bar(120, 9, C.ink2)]),
+          el({ height: 34, borderRadius: 9, alignItems: "center", paddingLeft: 10 }, [bar(90, 9, C.rule)]),
+          el({ height: 34, borderRadius: 9, alignItems: "center", paddingLeft: 10 }, [bar(140, 9, C.rule)])
+        ])
+      ]);
+
+    case "preview-card":
+      return col({ gap: 10, alignItems: "flex-start" }, [
+        text({ fontSize: 18, color: C.accent }, "@sivert"),
+        surface({ width: 280, gap: 12 }, [
+          row({ gap: 12, alignItems: "center" }, [
+            circle(42, C.accent),
+            col({ gap: 8 }, [bar(88, 10, C.ink), bar(56, 9, C.rule)])
+          ]),
+          bar(230, 9, C.rule)
+        ])
+      ]);
+
+    case "toolbar":
+      return row(
+        { gap: 8, padding: 8, borderRadius: 999,
+          backgroundColor: C.paper2, border: `1.5px solid ${C.rule}` },
+        [
+          circle(44, "transparent", `1.5px solid ${C.rule}`),
+          circle(44, "transparent", `1.5px solid ${C.rule}`),
+          el({ width: 1.5, height: 28, backgroundColor: C.rule, marginLeft: 4, marginRight: 4 }),
+          circle(44, C.accent)
+        ]
+      );
+
+    case "menubar":
+      return col({ gap: 8, alignItems: "flex-start" }, [
+        row({ gap: 6, padding: 6, borderRadius: 10,
+              backgroundColor: C.paper2, border: `1.5px solid ${C.rule}` }, [
+          el({ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 8,
+               backgroundColor: C.paper3, alignItems: "center",
+               fontFamily: "Inter", fontSize: 15, color: C.ink }, "Server"),
+          el({ height: 34, paddingLeft: 14, paddingRight: 14, borderRadius: 8,
+               alignItems: "center", fontFamily: "Inter", fontSize: 15, color: C.ink2 }, "View")
+        ]),
+        surface({ width: 210, gap: 4, padding: 8, marginLeft: 6 }, [
+          el({ height: 32, borderRadius: 8, alignItems: "center", paddingLeft: 10 }, [bar(110, 9, C.rule)]),
+          el({ height: 32, borderRadius: 8, alignItems: "center", paddingLeft: 10 }, [bar(130, 9, C.rule)])
+        ])
+      ]);
+
+    case "navigation-menu":
+      return col({ gap: 10, alignItems: "flex-start" }, [
+        row({ gap: 10 }, [
+          el({ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 9,
+               backgroundColor: C.paper3, alignItems: "center",
+               fontFamily: "Inter", fontSize: 15, color: C.ink }, "Product"),
+          el({ height: 38, paddingLeft: 14, paddingRight: 14, borderRadius: 9,
+               alignItems: "center", fontFamily: "Inter", fontSize: 15, color: C.ink2 }, "Docs")
+        ]),
+        surface({ width: 300, gap: 6, padding: 10 }, [
+          el({ height: 34, borderRadius: 9, backgroundColor: C.paper3, alignItems: "center", paddingLeft: 12 }, [bar(90, 9, C.ink2)]),
+          el({ height: 34, borderRadius: 9, alignItems: "center", paddingLeft: 12 }, [bar(70, 9, C.rule)]),
+          el({ height: 34, borderRadius: 9, alignItems: "center", paddingLeft: 12 }, [bar(110, 9, C.rule)])
+        ])
+      ]);
+
+    /* An error sitting on the field that caused it, which is the point. */
+    case "form":
+      return col({ gap: 14, width: 300 }, [
+        col({ gap: 8 }, [
+          bar(90, 9, C.ink2),
+          el({ height: 46, borderRadius: 12, border: `1.5px solid #e5484d`,
+               backgroundColor: C.paper3, alignItems: "center", paddingLeft: 14 },
+             [bar(120, 9, C.ink2)]),
+          bar(150, 8, "#e5484d")
+        ]),
+        row({}, [pill("Save", true)])
+      ]);
+
+    case "fieldset":
+      return col({ gap: 12, width: 300 }, [
+        bar(120, 11, C.ink),
+        el({ height: 44, borderRadius: 12, border: `1.5px solid ${C.rule}`,
+             backgroundColor: C.paper3, alignItems: "center", paddingLeft: 14 },
+           [bar(110, 9, C.ink2)]),
+        el({ height: 44, borderRadius: 12, border: `1.5px solid ${C.rule}`,
+             backgroundColor: C.paper3, alignItems: "center", paddingLeft: 14 },
+           [bar(80, 9, C.rule)])
       ]);
 
     /* Root: several at once, because breadth is the point. */

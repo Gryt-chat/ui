@@ -48,7 +48,20 @@ export interface ComponentDoc {
     | "scroll-area"
     | "toggle"
     | "toggle-group"
-    | "meter";
+    | "meter"
+    | "alert-dialog"
+    | "autocomplete"
+    | "checkbox-group"
+    | "collapsible"
+    | "combobox"
+    | "fieldset"
+    | "form"
+    | "menubar"
+    | "navigation-menu"
+    | "number-field"
+    | "otp-field"
+    | "preview-card"
+    | "toolbar";
   code: string;
 }
 
@@ -75,7 +88,19 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "Switch", slug: "switch" },
       { name: "Slider", slug: "slider" },
       { name: "Toggle", slug: "toggle" },
-      { name: "ToggleGroup", slug: "toggle-group" }
+      { name: "ToggleGroup", slug: "toggle-group" },
+      { name: "CheckboxGroup", slug: "checkbox-group" },
+      { name: "NumberField", slug: "number-field" },
+      { name: "OtpField", slug: "otp-field" },
+      { name: "Combobox", slug: "combobox" },
+      { name: "Autocomplete", slug: "autocomplete" }
+    ]
+  },
+  {
+    title: "Forms",
+    items: [
+      { name: "Form", slug: "form" },
+      { name: "Fieldset", slug: "fieldset" }
     ]
   },
   {
@@ -104,9 +129,14 @@ export const componentNavSections: ComponentNavSection[] = [
     items: [
       { name: "Menu", slug: "menu" },
       { name: "ContextMenu", slug: "context-menu" },
+      { name: "Menubar", slug: "menubar" },
+      { name: "NavigationMenu", slug: "navigation-menu" },
+      { name: "Toolbar", slug: "toolbar" },
       { name: "Popover", slug: "popover" },
+      { name: "PreviewCard", slug: "preview-card" },
       { name: "Tabs", slug: "tabs" },
-      { name: "Accordion", slug: "accordion" }
+      { name: "Accordion", slug: "accordion" },
+      { name: "Collapsible", slug: "collapsible" }
     ]
   },
   {
@@ -115,6 +145,7 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "Surface", slug: "surface" },
       { name: "Card", slug: "card" },
       { name: "Dialog", slug: "dialog" },
+      { name: "AlertDialog", slug: "alert-dialog" },
       { name: "Drawer", slug: "drawer" },
       { name: "ScrollArea", slug: "scroll-area" }
     ]
@@ -702,5 +733,259 @@ toast.add({ title: "Invite copied", description: "Expires in 24 hours." });`
   </ScrollArea.Viewport>
   <ScrollArea.Scrollbar orientation="vertical" />
 </ScrollArea.Root>`
+  },
+  {
+    slug: "alert-dialog",
+    name: "AlertDialog",
+    description:
+      "A dialog you cannot dismiss by accident, for decisions that need an answer rather than an escape.",
+    importName: "AlertDialog",
+    preview: "alert-dialog",
+    code: `import { AlertDialog, Button } from "@gryt/ui";
+
+// Escape and the backdrop do nothing here — answering means picking a button.
+<AlertDialog.Root>
+  <AlertDialog.Trigger render={<Button tone="danger" />}>Leave server</AlertDialog.Trigger>
+  <AlertDialog.Portal>
+    <AlertDialog.Backdrop />
+    <AlertDialog.Popup>
+      <AlertDialog.Title>Leave this server?</AlertDialog.Title>
+      <AlertDialog.Description>
+        You will need a new invite to come back.
+      </AlertDialog.Description>
+      <AlertDialog.Close render={<Button tone="neutral" />}>Stay</AlertDialog.Close>
+    </AlertDialog.Popup>
+  </AlertDialog.Portal>
+</AlertDialog.Root>`
+  },
+  {
+    slug: "collapsible",
+    name: "Collapsible",
+    description:
+      "One region that opens and closes, for a channel category or an advanced section.",
+    importName: "Collapsible",
+    preview: "collapsible",
+    code: `import { Collapsible } from "@gryt/ui";
+
+<Collapsible.Root>
+  <Collapsible.Trigger>Voice channels</Collapsible.Trigger>
+  <Collapsible.Panel>{channels}</Collapsible.Panel>
+</Collapsible.Root>`
+  },
+  {
+    slug: "checkbox-group",
+    name: "CheckboxGroup",
+    description:
+      "Checkboxes sharing one value, with a parent that goes indeterminate when only some children are checked.",
+    importName: "CheckboxGroup",
+    preview: "checkbox-group",
+    code: `import { Checkbox, CheckboxGroup } from "@gryt/ui";
+
+const permissions = ["read", "write", "manage"];
+
+// Checkbox renders the box only, so the label is yours to place.
+<CheckboxGroup allValues={permissions} defaultValue={["read"]}>
+  <label>
+    <Checkbox parent name="all" /> All permissions
+  </label>
+  <label>
+    <Checkbox name="read" value="read" /> Read messages
+  </label>
+</CheckboxGroup>`
+  },
+  {
+    slug: "number-field",
+    name: "NumberField",
+    description:
+      "A numeric input with steppers, and an optional label you can drag sideways for coarse adjustment.",
+    importName: "NumberField",
+    preview: "number-field",
+    code: `import { NumberField } from "@gryt/ui";
+
+<NumberField label="Output volume" defaultValue={80} min={0} max={100} />
+<NumberField label="Bitrate (kbps)" defaultValue={64} step={8} scrubbable />`
+  },
+  {
+    slug: "otp-field",
+    name: "OtpField",
+    description:
+      "A one-time code, one box per character, where pasting the whole code fills every box.",
+    importName: "OtpField",
+    preview: "otp-field",
+    code: `import { OtpField } from "@gryt/ui";
+
+<OtpField length={6} onValueChange={setCode} />`
+  },
+  {
+    slug: "combobox",
+    name: "Combobox",
+    description:
+      "Pick from a list narrowed by typing, with optional chips for multiple selection.",
+    importName: "Combobox",
+    preview: "combobox",
+    code: `import { Combobox } from "@gryt/ui";
+
+<Combobox.Root items={members}>
+  <Combobox.Input placeholder="Add a member" />
+  <Combobox.Portal>
+    <Combobox.Positioner>
+      <Combobox.Popup>
+        <Combobox.Empty>No members found</Combobox.Empty>
+        <Combobox.List>
+          {(member) => (
+            <Combobox.Item key={member} value={member}>{member}</Combobox.Item>
+          )}
+        </Combobox.List>
+      </Combobox.Popup>
+    </Combobox.Positioner>
+  </Combobox.Portal>
+</Combobox.Root>`
+  },
+  {
+    slug: "autocomplete",
+    name: "Autocomplete",
+    description:
+      "A text input that suggests as you type, where the typed text is the answer and the list is only a hint.",
+    importName: "Autocomplete",
+    preview: "autocomplete",
+    code: `import { Autocomplete } from "@gryt/ui";
+
+// Combobox is for when the value must come from the list. Here it need not.
+<Autocomplete.Root items={recentSearches}>
+  <Autocomplete.Input placeholder="Search messages" />
+  <Autocomplete.Portal>
+    <Autocomplete.Positioner>
+      <Autocomplete.Popup>
+        <Autocomplete.List>
+          {(item) => (
+            <Autocomplete.Item key={item} value={item}>{item}</Autocomplete.Item>
+          )}
+        </Autocomplete.List>
+      </Autocomplete.Popup>
+    </Autocomplete.Positioner>
+  </Autocomplete.Portal>
+</Autocomplete.Root>`
+  },
+  {
+    slug: "preview-card",
+    name: "PreviewCard",
+    description:
+      "What appears when you hover a username — content, not a label, so it waits before opening.",
+    importName: "PreviewCard",
+    preview: "preview-card",
+    code: `import { PreviewCard } from "@gryt/ui";
+
+<PreviewCard.Root>
+  <PreviewCard.Trigger>@sivert</PreviewCard.Trigger>
+  <PreviewCard.Portal>
+    <PreviewCard.Positioner>
+      <PreviewCard.Popup>Maintains Gryt. In voice since 20:14.</PreviewCard.Popup>
+    </PreviewCard.Positioner>
+  </PreviewCard.Portal>
+</PreviewCard.Root>`
+  },
+  {
+    slug: "toolbar",
+    name: "Toolbar",
+    description:
+      "A strip of controls sharing one tab stop, so a call bar costs one stop rather than eight.",
+    importName: "Toolbar",
+    preview: "toolbar",
+    code: `import { IconButton, Toolbar } from "@gryt/ui";
+
+<Toolbar.Root aria-label="Call controls">
+  <Toolbar.Button render={<IconButton aria-label="Mute" />}>{micIcon}</Toolbar.Button>
+  <Toolbar.Button render={<IconButton aria-label="Deafen" />}>{headphonesIcon}</Toolbar.Button>
+  <Toolbar.Separator />
+  <Toolbar.Button render={<IconButton aria-label="Leave" tone="danger" />}>{leaveIcon}</Toolbar.Button>
+</Toolbar.Root>`
+  },
+  {
+    slug: "menubar",
+    name: "Menubar",
+    description:
+      "A bar of menus that behave as one, so moving along it opens the next without a second click.",
+    importName: "Menubar",
+    preview: "menubar",
+    code: `import { Menu, Menubar } from "@gryt/ui";
+
+<Menubar>
+  <Menu.Root>
+    <Menu.Trigger>Server</Menu.Trigger>
+    <Menu.Portal>
+      <Menu.Positioner align="start">
+        <Menu.Popup>
+          <Menu.Item>Invite people</Menu.Item>
+          <Menu.Item>Server settings</Menu.Item>
+        </Menu.Popup>
+      </Menu.Positioner>
+    </Menu.Portal>
+  </Menu.Root>
+</Menubar>`
+  },
+  {
+    slug: "navigation-menu",
+    name: "NavigationMenu",
+    description:
+      "Site-level navigation whose items open panels of links, resizing between them rather than reopening.",
+    importName: "NavigationMenu",
+    preview: "navigation-menu",
+    code: `import { NavigationMenu } from "@gryt/ui";
+
+<NavigationMenu.Root>
+  <NavigationMenu.List>
+    <NavigationMenu.Item>
+      <NavigationMenu.Trigger>Product</NavigationMenu.Trigger>
+      <NavigationMenu.Content>
+        <NavigationMenu.Link href="/voice">Voice</NavigationMenu.Link>
+        <NavigationMenu.Link href="/chat">Chat</NavigationMenu.Link>
+      </NavigationMenu.Content>
+    </NavigationMenu.Item>
+  </NavigationMenu.List>
+  <NavigationMenu.Portal>
+    <NavigationMenu.Positioner>
+      <NavigationMenu.Popup>
+        <NavigationMenu.Viewport />
+      </NavigationMenu.Popup>
+    </NavigationMenu.Positioner>
+  </NavigationMenu.Portal>
+</NavigationMenu.Root>`
+  },
+  {
+    slug: "form",
+    name: "Form",
+    description:
+      "Routes server-side errors back to the fields that caused them, instead of a paragraph at the top.",
+    importName: "Form",
+    preview: "form",
+    code: `import { Button, Form, TextField } from "@gryt/ui";
+
+<Form
+  errors={errors}
+  onClearErrors={setErrors}
+  onSubmit={async (event) => {
+    event.preventDefault();
+    // Keys match each field's name, so the message lands on the input.
+    setErrors(await save(new FormData(event.currentTarget)));
+  }}
+>
+  <TextField name="displayName" label="Display name" />
+  <Button type="submit">Save</Button>
+</Form>`
+  },
+  {
+    slug: "fieldset",
+    name: "Fieldset",
+    description:
+      "Groups related fields under a legend, so a screen reader announces what the group is for.",
+    importName: "Fieldset",
+    preview: "fieldset",
+    code: `import { Fieldset, TextField } from "@gryt/ui";
+
+<Fieldset.Root>
+  <Fieldset.Legend>Server details</Fieldset.Legend>
+  <TextField name="name" label="Name" />
+  <TextField name="topic" label="Topic" />
+</Fieldset.Root>`
   }
 ];
