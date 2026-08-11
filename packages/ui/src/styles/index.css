@@ -28,26 +28,28 @@
     --color-gryt-on-secondary: #07131c;
     --color-gryt-on-danger: #250b0b;
 
-    /* A damped-spring solution sampled into linear() — the actual curve of a
-       spring, not a physics engine approximating one. Damping 0.7792, peaking
-       2.00% past target before it settles.
+    /* A damped-spring solution sampled into linear() — the real curve of a
+       spring rather than a physics engine approximating one. Damping 0.4746,
+       peaking 18% past target and ringing once before it settles.
 
-       One curve, two durations. The shape is duration-invariant, so a separate
-       "soft" curve was just this one written twice; the tier is the speed.
+       Duration-invariant: the natural frequency scales with the duration, so
+       z*w*t is dimensionless and this one curve serves both tiers. Only the
+       duration tokens differ.
 
-       A caution worth keeping: overshoot is a percentage of the TRAVEL, not of
-       the element. On a button scaling to 1.05 the travel is ~4.8px, so 2% is
-       ~0.1px — invisible. What reads as spring at that size is the velocity
-       profile, not the overshoot. Overshoot only becomes visible on long
-       travels: a 320px drawer overshoots ~6px, which you can see.
+       Read this before turning the overshoot up. Overshoot is a percentage of
+       the TRAVEL, not of the element. At scale 1.08 a 93px button travels
+       ~7.4px, so 18% of it is ~1.3px — the ring is texture you feel, and the
+       scale below is what you actually see. Raising damping alone will not
+       make the motion more visible; raising the scale will.
 
        linear() needs Chrome/Edge 113+, Safari 17.2+, Firefox 112+. Below that
        the declaration is invalid and the browser keeps the preceding
        timing-function, so it degrades to a plain ease rather than breaking. */
     --ease-spring: linear(
-        0, 0.0731, 0.2326, 0.4154, 0.5862, 0.7284, 0.8371, 0.9143, 0.9653,
-        0.996, 1.0123, 1.019, 1.02, 1.0179, 1.0144, 1.0107, 1.0075, 1.0048,
-        1.0028, 1.0014, 1.0005, 1, 0.9997, 0.9996, 1
+        0, 0.1298, 0.4134, 0.7196, 0.9661, 1.1187, 1.18, 1.173, 1.1277, 1.0707,
+        1.0204, 0.986, 0.9692, 0.9667, 0.9731, 0.9833, 0.9933, 1.0007, 1.0049,
+        1.0062, 1.0055, 1.0038, 1.0018, 1.0003, 0.9993, 0.9989, 0.9989, 0.9992,
+        0.9995, 0.9999, 1
     );
 }
 
@@ -72,8 +74,8 @@
 
     /* Each spring curve is shaped for one length. Changing a duration without
        changing the curve moves where the overshoot lands. */
-    --gryt-dur-spring: 260ms;
-    --gryt-dur-spring-soft: 420ms;
+    --gryt-dur-spring: 400ms;
+    --gryt-dur-spring-soft: 600ms;
 
     /* How far a Drawer hangs past the viewport edge. Padding on that side is
        increased to match, so content sits where it would have without it. */
