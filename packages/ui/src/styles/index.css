@@ -77,6 +77,12 @@
     --gryt-dur-spring: 500ms;
     --gryt-dur-spring-soft: 700ms;
 
+    /* Backdrop blur behind Dialog and Drawer. Deliberately small — enough to
+       separate the panel from the page without the scrim becoming an effect of
+       its own. backdrop-filter is not free on a full-screen element, so this is
+       the one place it is used. */
+    --gryt-backdrop-blur: 3px;
+
     /* How far a Drawer hangs past the viewport edge. Padding on that side is
        increased to match, so content sits where it would have without it. */
     --gryt-drawer-bleed: 4rem;

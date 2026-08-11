@@ -11,7 +11,7 @@ One curve, two durations — the shape is duration-invariant, so a separate "sof
 - **`--gryt-dur-spring` (500ms)** — Button and IconButton hover/press, Switch thumb, Slider thumb, the Accordion caret, and every popup (Dialog, Menu, Select, Tooltip).
 - **`--gryt-dur-spring-soft` (700ms)** — things that travel further: the Accordion panel height, the Drawer slide, the Progress bar.
 
-Button hover scales to 1.06 and presses to 0.95; IconButton to 1.09 and 0.93; the Slider thumb to 1.14 and 0.91. Those numbers, not the damping, are what makes the motion legible — overshoot is a percentage of the travel, so on a 93px button 12% comes to well under a pixel. The ring is texture you feel; the scale and the duration are what you see.
+Button hover scales to 1.06 and presses to 0.98; IconButton to 1.09 and 0.96; the Slider thumb to 1.14 and 0.95. Hover and press are deliberately not mirrored — the hover is an invitation and wants to be seen, the press only has to register on something you are already touching. Those numbers, not the damping, are what makes the motion legible — overshoot is a percentage of the travel, so on a 93px button 12% comes to well under a pixel. The ring is texture you feel; the scale and the duration are what you see.
 
 Checkbox and Radio indicators scale in rather than toggling `hidden`, so they have motion to spring at all.
 
@@ -24,3 +24,5 @@ Cost: **+0.26 kB** (37.20 kB from 36.94 kB). A motion library would have been 30
 `linear()` needs Chrome/Edge 113+, Safari 17.2+, Firefox 112+. Below that the declaration is invalid and the browser keeps the preceding timing function, so it degrades to a plain ease rather than breaking. Everything stays behind `motion-safe` / `motion-reduce`.
 
 Gesture-driven work — drag-to-dismiss sheets, swipe, shared-layout transitions — is not covered by this and is where a motion library would genuinely earn its place.
+
+Dialog and Drawer backdrops gain a 3px `backdrop-blur`, behind `--gryt-backdrop-blur`. Small enough to separate the panel from the page without the scrim becoming an effect of its own.

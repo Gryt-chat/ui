@@ -20,6 +20,7 @@ const Backdrop = forwardRef<HTMLDivElement, DialogBackdropProps>(
         ref={ref}
         className={cn(
           "gryt-dialog-backdrop fixed inset-0 min-h-dvh bg-black/60",
+          "backdrop-blur-(--gryt-backdrop-blur)",
           motion,
           "data-starting-style:opacity-0 data-ending-style:opacity-0",
           className

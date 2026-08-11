@@ -55,6 +55,7 @@ const Backdrop = forwardRef<
       ref={ref}
       className={cn(
         "gryt-drawer-backdrop fixed inset-0 min-h-dvh bg-black/60",
+        "backdrop-blur-(--gryt-backdrop-blur)",
         "transition-opacity duration-(--gryt-dur-spring-soft) ease-spring motion-reduce:transition-none",
         "data-starting-style:opacity-0 data-ending-style:opacity-0",
         className

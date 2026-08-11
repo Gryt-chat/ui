@@ -49,7 +49,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
           // scale rather than transform — see the note in Button.
           "transition-[scale,background-color,color] duration-(--gryt-dur-spring) ease-spring",
           "motion-safe:hover:not-data-disabled:scale-[1.09]",
-          "motion-safe:active:not-data-disabled:scale-[0.93]",
+          "motion-safe:active:not-data-disabled:scale-[0.96]",
           focusRing,
           disabledState,
           sizeStyles[size],
