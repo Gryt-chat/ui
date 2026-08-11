@@ -27,7 +27,10 @@ export const Radio = forwardRef<HTMLButtonElement, RadioProps>(function Radio(
       className={cn(
         "gryt-radio flex h-5 w-5 shrink-0 items-center justify-center",
         "rounded-(--gryt-radius-full) border border-gryt-border bg-gryt-surface-raised",
-        "transition-colors duration-150",
+        "transition-[scale,background-color,border-color] duration-(--gryt-dur-spring) ease-spring",
+        "hover:not-data-disabled:border-gryt-accent-light",
+        "motion-safe:hover:not-data-disabled:scale-[1.08]",
+        "motion-safe:active:not-data-disabled:scale-[0.92]",
         focusRing,
         disabledState,
         // Border takes the tone when selected; the dot inside carries the fill.
@@ -42,6 +45,7 @@ export const Radio = forwardRef<HTMLButtonElement, RadioProps>(function Radio(
         className={cn(
           "h-2.5 w-2.5 origin-center rounded-(--gryt-radius-full)",
           "transition-[scale,opacity] duration-(--gryt-dur-spring) ease-spring",
+          // From 0, for the same reason as the Checkbox tick — see the note there.
           "data-unchecked:scale-0 data-unchecked:opacity-0",
           "motion-reduce:transition-none",
           toneBg[tone]
