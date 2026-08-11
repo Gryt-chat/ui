@@ -1,62 +1,189 @@
 import {
+  Alert,
+  Avatar,
+  Badge,
   Button,
-  Composer,
-  ConversationItem,
+  Checkbox,
+  Chip,
+  Divider,
+  IconButton,
   MessageBubble,
-  Surface
+  Progress,
+  Radio,
+  RadioGroup,
+  Skeleton,
+  Slider,
+  Spinner,
+  Switch,
+  TextField
 } from "@gryt/ui";
-import { ArrowRight } from "@phosphor-icons/react";
+import { Bell, DotsThree } from "@phosphor-icons/react";
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { CodeBlock } from "../components/CodeBlock";
+import { componentDocs, componentNavSections } from "./componentDocs";
+
+// A specimen per card. Every one is the real component rendered inert — for the
+// overlay components (Dialog, Menu, Drawer, Select, Tooltip) the specimen is the
+// control that opens them, which is still the real thing. Drawing a fake popup
+// here would be re-drawn chrome, and a screenshot would go stale.
+const specimens: Record<string, ReactNode> = {
+  button: <Button size="xsmall">Send</Button>,
+  "icon-button": (
+    <IconButton size="xsmall" aria-label="Notifications">
+      <Bell size={15} />
+    </IconButton>
+  ),
+  "text-field": <TextField placeholder="Workspace" size="small" />,
+  select: <Button size="xsmall" tone="neutral">Input device ⌄</Button>,
+  checkbox: <Checkbox defaultChecked aria-label="Checkbox specimen" />,
+  radio: (
+    <RadioGroup defaultValue="a">
+      <Radio value="a" aria-label="Radio specimen" />
+    </RadioGroup>
+  ),
+  switch: <Switch defaultChecked aria-label="Switch specimen" />,
+  slider: (
+    <div className="w-28">
+      <Slider defaultValue={62} aria-label="Slider specimen" />
+    </div>
+  ),
+  avatar: <Avatar size="small">G</Avatar>,
+  badge: (
+    <Badge badgeContent={3}>
+      <Avatar size="small">G</Avatar>
+    </Badge>
+  ),
+  chip: <Chip label="Connected" tone="success" />,
+  tooltip: (
+    <IconButton size="xsmall" aria-label="Tooltip specimen">
+      <Bell size={15} />
+    </IconButton>
+  ),
+  divider: (
+    <div className="w-24">
+      <Divider />
+    </div>
+  ),
+  alert: (
+    <Alert severity="success" className="px-2.5 py-1.5 text-xs">
+      Connected
+    </Alert>
+  ),
+  progress: (
+    <div className="w-28">
+      <Progress value={64} />
+    </div>
+  ),
+  spinner: <Spinner size={20} />,
+  skeleton: <Skeleton variant="rounded" width={112} height={20} />,
+  dialog: <Button size="xsmall" tone="neutral">Open dialog</Button>,
+  drawer: <Button size="xsmall" tone="neutral">Open drawer</Button>,
+  menu: (
+    <IconButton size="xsmall" aria-label="Menu specimen">
+      <DotsThree size={15} />
+    </IconButton>
+  ),
+  tabs: (
+    <div className="flex items-center gap-1 rounded-full bg-gryt-surface-raised p-1">
+      <span className="rounded-full bg-gryt-accent px-2.5 py-1 text-[11px] font-medium text-gryt-on-accent">
+        Chat
+      </span>
+      <span className="px-2.5 py-1 text-[11px] text-gryt-muted">Voice</span>
+    </div>
+  ),
+  accordion: <Button size="xsmall" tone="ghost">Voice settings ⌄</Button>,
+  surface: (
+    <div className="h-8 w-28 rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface-raised" />
+  ),
+  card: (
+    <div className="h-8 w-28 rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface" />
+  ),
+  "message-bubble": (
+    <MessageBubble from="user" className="px-3 py-1.5 text-xs">
+      Ready
+    </MessageBubble>
+  ),
+  composer: (
+    <div className="flex w-32 items-center justify-between rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface px-3 py-1.5 text-[11px] text-gryt-muted">
+      Message Gryt
+    </div>
+  ),
+  "conversation-item": (
+    <div className="flex w-32 items-center gap-2 rounded-(--gryt-radius-xl) bg-gryt-accent px-2.5 py-1.5">
+      <Avatar size="small" className="size-6 text-[10px]">
+        D
+      </Avatar>
+      <span className="truncate text-[11px] font-semibold text-gryt-on-accent">
+        Design sync
+      </span>
+    </div>
+  )
+};
 
 export function HomePage() {
+  const bySlug = new Map(componentDocs.map((doc) => [doc.slug, doc]));
+
   return (
-    <div className="space-y-10">
-      <section className="grid gap-8 lg:grid-cols-[1fr_24rem] lg:items-center">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wider text-gryt-accent">
-            React components for Gryt Chat
-          </p>
-          <h2 className="mt-3 max-w-3xl text-4xl font-semibold leading-tight">
-            Flat shapes, Gryt code-theme colors.
-          </h2>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-gryt-muted">
-            Build desktop chat interfaces with reusable components, rounded
-            controls, purple accent tokens, and live MDX docs.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link to="/components/button">
-              <Button endIcon={<ArrowRight size={18} />}>
-                Browse components
-              </Button>
-            </Link>
-            <Link to="/installation">
-              <Button tone="neutral">Install</Button>
-            </Link>
-          </div>
+    <div>
+      <header className="pb-(--space-lg)">
+        <p className="m-0 font-mono text-xs tracking-wide text-gryt-accent">
+          @gryt/ui
+        </p>
+        <h1 className="mt-3 max-w-2xl font-display text-[length:var(--text-2xl)] font-semibold leading-[1.1] tracking-[-0.022em] text-gryt-text">
+          {componentDocs.length} components, on Base UI and Tailwind.
+        </h1>
+        <p className="mt-3 max-w-xl text-[length:var(--text-md)] leading-7 text-gryt-muted">
+          The component library behind the Gryt client. Flat surfaces, fully
+          rounded controls, keyboard behaviour from Base UI, and no CSS-in-JS
+          runtime.
+        </p>
+        <div className="mt-5 max-w-md">
+          <CodeBlock code="bun add @gryt/ui" language="sh" />
         </div>
-        <Surface className="space-y-4 p-4" elevated>
-          <div className="space-y-1">
-            <ConversationItem
-              title="Design sync"
-              subtitle="Base UI components"
-              active
-            />
-            <ConversationItem
-              title="Release notes"
-              subtitle="npm package ready"
-            />
-          </div>
-          <div className="space-y-3">
-            <MessageBubble from="assistant">
-              Code-theme palette applied.
-            </MessageBubble>
-            <MessageBubble from="user">
-              Keep the controls flat.
-            </MessageBubble>
-          </div>
-          <Composer submitLabel="Send" aria-label="Message preview" />
-        </Surface>
-      </section>
+      </header>
+
+      {componentNavSections.map((section) => (
+        <section
+          key={section.title}
+          className="border-t border-gryt-border py-(--space-lg)"
+        >
+          <h2 className="m-0 pb-(--space-sm) text-[11px] font-semibold uppercase tracking-wider text-gryt-muted">
+            {section.title}
+          </h2>
+          <ul className="grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 xl:grid-cols-3">
+            {section.items.map((item) => {
+              const doc = bySlug.get(item.slug);
+
+              return (
+                <li key={item.slug}>
+                  <Link
+                    to={`/components/${item.slug}`}
+                    className="group flex h-full flex-col gap-3 rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-4 transition-colors duration-200 hover:border-gryt-accent-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none flex h-14 items-center justify-center overflow-hidden rounded-(--gryt-radius-md) bg-gryt-bg px-3"
+                    >
+                      {specimens[item.slug] ?? null}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block font-display text-base font-semibold tracking-tight text-gryt-text">
+                        {item.name}
+                      </span>
+                      {doc ? (
+                        <span className="mt-1 block text-sm leading-6 text-gryt-muted">
+                          {doc.description}
+                        </span>
+                      ) : null}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
     </div>
   );
 }

@@ -1,14 +1,49 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@import "./tokens.css";
 
 @source "./**/*.{ts,tsx,mdx}";
 
+@theme {
+    --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Geist Variable", "Inter Variable", ui-sans-serif, system-ui,
+        sans-serif;
+    --font-mono: "JetBrains Mono Variable", ui-monospace, Menlo, Consolas,
+        monospace;
+}
+
 html {
     background: var(--gryt-bg);
+    /* clip, not hidden — hidden on the root kills position: sticky in the
+       sidebar and the header. */
+    overflow-x: clip;
 }
 
 body {
     margin: 0;
+    overflow-x: clip;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Long-word wrapping so a display heading cannot push the page sideways at
+   320px. */
+h1,
+h2,
+h3 {
+    overflow-wrap: anywhere;
+    min-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
 
 .prose :where(pre):not(:where(.not-prose *)) {
@@ -22,21 +57,28 @@ body {
     background: var(--gryt-surface-raised);
     padding: 0.125rem 0.375rem;
     color: var(--gryt-accent-light);
-    font-weight: 500;
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    font-weight: 400;
+}
+
+.prose :where(code):not(:where(pre code, .not-prose *))::before,
+.prose :where(code):not(:where(pre code, .not-prose *))::after {
+    content: "";
 }
 
 .gryt-code-block .shiki {
     margin: 0;
     overflow-x: auto;
-    background: #0d0f13 !important;
-    padding: 1rem;
-    color: #e0e0e6;
+    background: transparent !important;
+    padding: 1rem 1.125rem;
+    color: var(--gryt-text);
     font-size: 13px;
-    line-height: 1.5rem;
+    line-height: 1.6;
 }
 
 .gryt-code-block .shiki code {
     display: block;
     min-width: max-content;
-    font-family: "Atkinson Hyperlegible Mono", Menlo, Monaco, Consolas, monospace;
+    font-family: var(--font-mono);
 }

@@ -1,6 +1,18 @@
+/* Hallmark · genre: modern-minimal · macrostructure: Catalogue (index) /
+ * Long Document (content) / Component Playground (reference)
+ * theme: custom (Gryt code-theme, OKLCH) · nav: N13 inline ⌘K search pill
+ * footer: Ft2 inline single line · enrichment: none
+ * design-system: design.md · designed-as-app
+ */
 import { ArrowSquareOut, List, X } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import {
+  CommandPalette,
+  SearchPill,
+  type PaletteEntry
+} from "./components/CommandPalette";
+import { DocsFooter } from "./components/DocsFooter";
 import { componentNavSections } from "./pages/componentDocs";
 
 interface NavItem {
@@ -44,34 +56,48 @@ const navSections: NavSection[] = [
   }
 ];
 
+const paletteEntries: PaletteEntry[] = navSections
+  .filter((section) => section.title !== "Resources")
+  .flatMap((section) =>
+    section.items.map((item) => ({
+      group: section.title,
+      label: item.label,
+      href: item.href
+    }))
+  );
+
 export function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setPaletteOpen((open) => !open);
+      }
+    }
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gryt-bg text-gryt-text">
-      <button
-        aria-label="Open navigation"
-        className="fixed left-4 top-4 z-40 grid size-11 place-items-center rounded-full border border-gryt-border bg-gryt-surface/95 text-gryt-muted shadow-[0_16px_48px_rgb(0_0_0/0.28)] backdrop-blur transition-colors hover:bg-white/5 hover:text-gryt-text lg:hidden"
-        type="button"
-        onClick={() => setDrawerOpen(true)}
-      >
-        <List size={19} />
-      </button>
-
       {drawerOpen ? (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-[60] lg:hidden">
           <button
             aria-label="Close navigation overlay"
-            className="absolute inset-0 bg-black/55"
+            className="absolute inset-0 bg-black/65"
             type="button"
             onClick={() => setDrawerOpen(false)}
           />
-          <aside className="relative h-full w-[min(22rem,calc(100vw-2rem))] overflow-y-auto border-r border-gryt-border bg-gryt-bg px-4 py-4 shadow-[0_24px_80px_rgb(0_0_0/0.42)]">
-            <div className="mb-4 flex items-center justify-between px-2">
+          <aside className="relative h-full w-[min(21rem,calc(100vw-3rem))] overflow-y-auto border-r border-gryt-border bg-gryt-bg px-3 py-4">
+            <div className="mb-4 flex items-center justify-between gap-2 px-2">
               <BrandBlock />
               <button
                 aria-label="Close navigation"
-                className="grid size-10 place-items-center rounded-full text-gryt-muted transition-colors hover:bg-white/5 hover:text-gryt-text"
+                className="grid size-10 shrink-0 place-items-center rounded-full text-gryt-muted transition-colors hover:bg-white/5 hover:text-gryt-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light"
                 type="button"
                 onClick={() => setDrawerOpen(false)}
               >
@@ -83,22 +109,46 @@ export function AppShell() {
         </div>
       ) : null}
 
-      <div className="mx-auto grid w-full max-w-384 grid-cols-1 px-4 lg:grid-cols-[18rem_minmax(0,1fr)] lg:gap-10 lg:px-8 2xl:max-w-[104rem]">
+      <div className="mx-auto grid w-full max-w-[92rem] grid-cols-1 px-4 lg:grid-cols-[16.5rem_minmax(0,1fr)] lg:gap-12 lg:px-8">
         <aside className="hidden lg:block">
-          <div className="sticky top-0 h-dvh overflow-y-auto border-r border-gryt-border/80 py-6 pr-5">
-            <div className="mb-7 px-2">
+          <div className="sticky top-0 flex h-dvh flex-col border-r border-gryt-border py-6 pr-6">
+            <div className="mb-6 px-2">
               <BrandBlock />
             </div>
-            <Sidebar />
+            <div className="min-h-0 flex-1 overflow-y-auto pb-6">
+              <Sidebar />
+            </div>
           </div>
         </aside>
 
-        <main className="min-w-0 py-10 lg:py-14">
-          <div className="mx-auto w-full max-w-6xl">
-            <Outlet />
-          </div>
-        </main>
+        <div className="flex min-w-0 flex-col">
+          <header className="sticky top-0 z-40 -mx-4 flex items-center gap-3 border-b border-gryt-border bg-gryt-bg/90 px-4 py-3 backdrop-blur lg:mx-0 lg:px-0">
+            <button
+              aria-label="Open navigation"
+              className="grid size-10 shrink-0 place-items-center rounded-full border border-gryt-border text-gryt-muted transition-colors hover:text-gryt-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light lg:hidden"
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+            >
+              <List size={18} />
+            </button>
+            <SearchPill onOpen={() => setPaletteOpen(true)} />
+          </header>
+
+          <main className="min-w-0 flex-1 py-(--space-xl)">
+            <div className="mx-auto w-full max-w-5xl">
+              <Outlet />
+              <DocsFooter />
+            </div>
+          </main>
+        </div>
       </div>
+
+      {paletteOpen ? (
+        <CommandPalette
+          entries={paletteEntries}
+          onClose={() => setPaletteOpen(false)}
+        />
+      ) : null}
     </div>
   );
 }
@@ -106,14 +156,14 @@ export function AppShell() {
 function BrandBlock() {
   return (
     <Link
-      className="block rounded-xl px-2 py-1 transition-colors hover:bg-white/5"
+      className="block min-w-0 rounded-(--gryt-radius-md) px-2 py-1 transition-colors hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light"
       to="/"
     >
-      <span className="block text-xs font-semibold uppercase tracking-wider text-gryt-muted">
-        Gryt Chat
-      </span>
-      <span className="mt-0.5 block text-2xl font-semibold tracking-normal text-gryt-text">
+      <span className="block font-display text-xl font-semibold tracking-tight text-gryt-text">
         Gryt UI
+      </span>
+      <span className="block text-xs text-gryt-muted">
+        Components for Gryt Chat
       </span>
     </Link>
   );
@@ -121,13 +171,13 @@ function BrandBlock() {
 
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
-    <nav aria-label="Documentation navigation" className="space-y-1 text-sm">
+    <nav aria-label="Documentation navigation" className="text-sm">
       {navSections.map((section) => (
-        <section key={section.title} className="py-1">
-          <h2 className="px-4 py-2 text-xs font-semibold uppercase tracking-wider text-gryt-muted">
+        <section key={section.title} className="pb-4">
+          <h2 className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-gryt-muted">
             {section.title}
           </h2>
-          <ul className="space-y-0.5">
+          <ul>
             {section.items.map((item) => (
               <li key={item.href}>
                 <SidebarLink item={item} onNavigate={onNavigate} />
@@ -149,27 +199,29 @@ function SidebarLink({
 }) {
   const isExternal = item.href.startsWith("http");
   const isActive = useIsActive(item.href);
+
+  // The active row is marked with an accent rule and a colour shift rather than
+  // a filled pill. At 27 rows a filled pill is a block of accent in the corner
+  // of every screen, which spends the whole accent budget on "you are here".
   const className = [
-    "flex min-h-10 items-center justify-between gap-3 rounded-lg px-4 py-2 text-sm transition-colors",
+    "flex min-h-9 items-center justify-between gap-3 rounded-(--gryt-radius-md) border-l-2 px-3 py-1.5 transition-colors duration-200",
+    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light",
     isActive
-      ? "bg-gryt-accent text-[#141126]"
-      : "text-gryt-muted hover:bg-white/5 hover:text-gryt-text"
+      ? "border-l-gryt-accent bg-gryt-surface font-medium text-gryt-text"
+      : "border-l-transparent text-gryt-muted hover:bg-white/4 hover:text-gryt-text"
   ].join(" ");
+
   const children = (
     <>
       <span className="truncate">{item.label}</span>
       <span className="flex shrink-0 items-center gap-2">
         {item.badge ? (
-          <span className="rounded-full bg-white/10 px-2 py-0.5 text-[11px] text-gryt-muted">
+          <span className="rounded-full border border-gryt-border px-2 py-0.5 text-[10px] text-gryt-muted">
             {item.badge}
           </span>
         ) : null}
         {isExternal ? (
-          <ArrowSquareOut
-            aria-hidden="true"
-            className="opacity-75"
-            size={15}
-          />
+          <ArrowSquareOut aria-hidden="true" className="opacity-70" size={14} />
         ) : null}
       </span>
     </>
@@ -191,7 +243,12 @@ function SidebarLink({
   }
 
   return (
-    <Link className={className} to={item.href} onClick={onNavigate}>
+    <Link
+      className={className}
+      to={item.href}
+      onClick={onNavigate}
+      aria-current={isActive ? "page" : undefined}
+    >
       {children}
     </Link>
   );
@@ -199,15 +256,11 @@ function SidebarLink({
 
 function useIsActive(href: string) {
   const location = useLocation();
-  const [path, hash = ""] = href.split("#");
 
-  if (href.startsWith("http")) {
-    return false;
-  }
-
-  if (hash) {
-    return location.pathname === path && location.hash === `#${hash}`;
-  }
-
-  return location.pathname === path;
+  return useMemo(() => {
+    if (href.startsWith("http")) {
+      return false;
+    }
+    return location.pathname === href;
+  }, [href, location.pathname]);
 }

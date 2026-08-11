@@ -35,7 +35,7 @@ import { Bell, DotsThree, PaperPlaneTilt } from "@phosphor-icons/react";
 import type { Tone } from "@gryt/ui";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { CodeBlock } from "../components/CodeBlock";
 import { Preview } from "../components/Preview";
 
@@ -572,20 +572,61 @@ export function ComponentDocPage() {
     return <Navigate replace to="/components/button" />;
   }
 
+  const index = componentDocs.findIndex((entry) => entry.slug === doc.slug);
+  const previous = componentDocs[index - 1];
+  const next = componentDocs[index + 1];
+
   return (
-    <article className="prose prose-invert max-w-none">
-      <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-gryt-muted">
-        {doc.importName}
-      </p>
-      <h1>{doc.name}</h1>
-      <p>{doc.description}</p>
+    <article>
+      {/* Label stacks above the heading in the same column. The tag-left /
+          heading-right split is the templated-editorial tell. */}
+      <header className="pb-(--space-md)">
+        <p className="m-0 font-mono text-xs tracking-wide text-gryt-accent">
+          {doc.importName}
+        </p>
+        <h1 className="mt-2 font-display text-[length:var(--text-2xl)] font-semibold leading-tight tracking-[-0.022em] text-gryt-text">
+          {doc.name}
+        </h1>
+        <p className="mt-2 max-w-[62ch] text-[length:var(--text-md)] leading-7 text-gryt-muted">
+          {doc.description}
+        </p>
+      </header>
+
       <Preview>
         <ComponentPreview preview={doc.preview} />
       </Preview>
       <CodeBlock code={doc.code} language="tsx" title={`${doc.name}.tsx`} />
+
+      <nav
+        aria-label="Component pagination"
+        className="mt-(--space-lg) flex flex-col gap-2 border-t border-gryt-border pt-(--space-md) sm:flex-row sm:justify-between"
+      >
+        {previous ? (
+          <Link className={pagerClass} to={`/components/${previous.slug}`}>
+            <span className="block text-xs text-gryt-muted">Previous</span>
+            <span className="block font-medium text-gryt-text">
+              {previous.name}
+            </span>
+          </Link>
+        ) : (
+          <span />
+        )}
+        {next ? (
+          <Link
+            className={`${pagerClass} sm:text-right`}
+            to={`/components/${next.slug}`}
+          >
+            <span className="block text-xs text-gryt-muted">Next</span>
+            <span className="block font-medium text-gryt-text">{next.name}</span>
+          </Link>
+        ) : null}
+      </nav>
     </article>
   );
 }
+
+const pagerClass =
+  "min-w-0 rounded-(--gryt-radius-md) border border-gryt-border px-4 py-2.5 text-sm transition-colors hover:border-gryt-accent-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light";
 
 function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
   const [dialogOpen, setDialogOpen] = useState(false);

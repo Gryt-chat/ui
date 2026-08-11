@@ -1,4 +1,4 @@
-import { createGrytTheme, GrytProvider, Button } from "@gryt/ui";
+import { Button, createGrytTheme, GrytProvider, grytTokens } from "@gryt/ui";
 import { CodeBlock } from "../components/CodeBlock";
 
 const themeCode = `const theme = createGrytTheme({
@@ -19,42 +19,107 @@ const theme = createGrytTheme({
   }
 });
 
+const swatchGroups: Array<{
+  title: string;
+  swatches: Array<{ name: string; value: string }>;
+}> = [
+  {
+    title: "Surfaces",
+    swatches: [
+      { name: "bg", value: grytTokens.color.bg },
+      { name: "surface", value: grytTokens.color.surface },
+      { name: "surfaceRaised", value: grytTokens.color.surfaceRaised },
+      { name: "border", value: grytTokens.color.border }
+    ]
+  },
+  {
+    title: "Text",
+    swatches: [
+      { name: "text", value: grytTokens.color.text },
+      { name: "muted", value: grytTokens.color.muted },
+      { name: "onAccent", value: grytTokens.color.onAccent }
+    ]
+  },
+  {
+    title: "Accent and status",
+    swatches: [
+      { name: "accent", value: grytTokens.color.accent },
+      { name: "accentLight", value: grytTokens.color.accentLight },
+      { name: "secondary", value: grytTokens.color.secondary },
+      { name: "success", value: grytTokens.color.success },
+      { name: "warning", value: grytTokens.color.warning },
+      { name: "danger", value: grytTokens.color.danger }
+    ]
+  }
+];
+
 export function ThemePage() {
   return (
-    <article className="prose prose-invert max-w-none">
+    <article className="prose prose-invert max-w-[68ch] prose-headings:font-display prose-headings:tracking-[-0.022em] prose-h1:text-[length:var(--text-2xl)] prose-h2:mt-(--space-xl) prose-h2:text-[length:var(--text-lg)] prose-p:text-gryt-muted prose-p:leading-7">
       <h1>Theme</h1>
-      <p>Base tokens mirror the Gryt code-theme palette.</p>
-      <div className="not-prose my-6 grid gap-3 rounded-[28px] border border-gryt-border bg-gryt-surface p-6 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          ["Background", "#111318"],
-          ["Raised", "#1a1d24"],
-          ["Card", "#1e2028"],
-          ["Accent", "#968FF8"],
-          ["Accent light", "#b4afff"],
-          ["Text", "#e0e0e6"],
-          ["Dim text", "#888888"],
-          ["Border", "#2b303d"]
-        ].map(([label, color]) => (
-          <div
-            key={label}
-            className="rounded-[20px] border border-gryt-border bg-gryt-bg p-3"
-          >
-            <div
-              className="mb-3 h-10 rounded-full border border-gryt-border"
-              style={{ backgroundColor: color }}
-            />
-            <div className="text-sm font-semibold">{label}</div>
-            <div className="text-xs text-gryt-muted">{color}</div>
-          </div>
-        ))}
-      </div>
-      <p>Override individual tokens when an app needs to depart from the defaults.</p>
-      <div className="not-prose my-6 rounded-[28px] border border-gryt-border bg-gryt-surface p-6">
+      <p className="lead text-[length:var(--text-md)]">
+        The palette comes from{" "}
+        <a
+          className="text-gryt-text decoration-gryt-border underline-offset-4 hover:decoration-gryt-accent"
+          href="https://github.com/Gryt-chat/code-theme"
+          rel="noreferrer"
+          target="_blank"
+        >
+          Gryt code-theme
+        </a>
+        , so the components match the editor theme and the client that ships
+        them. Every value below is read straight from{" "}
+        <code>grytTokens</code> — this page cannot drift from the library.
+      </p>
+
+      {swatchGroups.map((group) => (
+        <section key={group.title} className="not-prose mt-(--space-lg)">
+          <h2 className="m-0 pb-(--space-sm) text-[11px] font-semibold uppercase tracking-wider text-gryt-muted">
+            {group.title}
+          </h2>
+          <ul className="grid list-none grid-cols-2 gap-2 p-0 sm:grid-cols-3 lg:grid-cols-4">
+            {group.swatches.map((swatch) => (
+              <li
+                key={swatch.name}
+                className="overflow-hidden rounded-(--gryt-radius-md) border border-gryt-border"
+              >
+                <div
+                  className="h-12 w-full"
+                  style={{ backgroundColor: swatch.value }}
+                />
+                <div className="bg-gryt-surface px-3 py-2">
+                  <p className="m-0 text-sm font-medium text-gryt-text">
+                    {swatch.name}
+                  </p>
+                  <p className="m-0 font-mono text-xs text-gryt-muted">
+                    {swatch.value}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+
+      <h2>Overriding a token</h2>
+      <p>
+        <code>createGrytTheme</code> returns CSS custom properties, not a theme
+        object. Pass the ones you want to change; the rest of the palette stays
+        as it is.
+      </p>
+      <div className="not-prose my-(--space-md) rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-5">
         <GrytProvider theme={theme}>
           <Button>Custom primary</Button>
         </GrytProvider>
       </div>
-      <CodeBlock code={themeCode} language="ts" />
+      <CodeBlock code={themeCode} language="tsx" />
+
+      <h2>Radius</h2>
+      <p>
+        Five steps, from <code>sm</code> at {grytTokens.radius.sm}px to{" "}
+        <code>full</code> at {grytTokens.radius.full}px. Controls use{" "}
+        <code>full</code>; surfaces use <code>lg</code> or <code>xl</code>.
+      </p>
     </article>
   );
 }
