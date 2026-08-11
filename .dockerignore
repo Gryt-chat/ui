@@ -5,12 +5,15 @@
 .github
 .changeset
 .hallmark
-node_modules
-dist
-build
-coverage
-test-results
-playwright-report
+# **/ matters: a bare "node_modules" only excludes the top-level one, so
+# COPY . . would drop the host's apps/docs/node_modules over the install done
+# inside the image — symlinks into a store path that does not exist here.
+**/node_modules
+**/dist
+**/build
+**/coverage
+**/test-results
+**/playwright-report
 *.log
 *.md
 LICENSE
