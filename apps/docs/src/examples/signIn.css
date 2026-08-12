@@ -1,0 +1,300 @@
+/* Page-level styling for the sign-in screen — the split canvas.
+ *
+ * Copied from the Keycloak login theme in Gryt-chat/auth, which is what this
+ * example is a copy of. Deliberately small: everything with a component behind
+ * it — buttons, fields, surfaces, the palette, the spring — comes from
+ * @gryt/ui. What is left here is the page itself, which no component owns: the
+ * two columns, the brand panel, and how both collapse on a phone.
+ *
+ * Colours come from @gryt/ui's tokens. Spacing is literal: the library ships
+ * no --gryt-space-* scale, and inventing one here would be a second system.
+ *
+ * Two things differ from the theme, both so the screen can render inside a
+ * docs page as well as full-bleed:
+ *
+ * - The theme puts these properties on <body> and pins the backdrop with
+ *   position: fixed. Here they are on .gryt-auth-stage and the backdrop is
+ *   absolute, so the screen fills whatever box it is given. Give the stage the
+ *   viewport and you are back to the theme's behaviour exactly.
+ * - The one-column breakpoint is a container query rather than a media query,
+ *   so the layout reflows when the stage is narrow instead of only when the
+ *   window is. At full width the two are the same rule.
+ */
+
+.gryt-auth-stage {
+  position: relative;
+  container-type: inline-size;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--gryt-bg);
+  color: var(--gryt-text);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.gryt-auth-stage *,
+.gryt-auth-stage *::before,
+.gryt-auth-stage *::after {
+  box-sizing: border-box;
+}
+
+/* The card sits above the backdrop. Without this the backdrop paints over it,
+   because both are positioned and the later one wins. */
+.gryt-auth-layout {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 48rem;
+  /* Bounded, not full-height. Tall pages (register has five fields) scroll
+     inside the right column rather than stretching the card down the screen. */
+  max-height: min(92cqh, 40rem);
+  display: grid;
+  /* 38/62, not 50/50. The brand panel holds three things and the form holds
+     five or more once alternatives are offered, so an even split leaves one
+     side airy and the other tight. Splitting by content weight is what stops
+     the card reading as wide. */
+  grid-template-columns: 38fr 62fr;
+  border: 1px solid var(--gryt-border);
+  border-radius: var(--gryt-radius-xl);
+  overflow: hidden;
+  background: var(--gryt-surface);
+}
+
+/* ── left: what Gryt is ─────────────────────────────────────── */
+
+.gryt-auth-brand {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 3rem;
+  padding: 2.5rem;
+  background: var(--gryt-surface-raised);
+  border-right: 1px solid var(--gryt-border);
+}
+
+.gryt-auth-wordmark {
+  font-size: 1.1875rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--gryt-text);
+}
+
+.gryt-auth-pitch {
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--gryt-text);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.gryt-auth-pitch-sub {
+  margin: 0.875rem 0 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--gryt-muted);
+  max-width: 22rem;
+}
+
+.gryt-auth-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gryt-auth-chips li {
+  display: flex;
+  align-items: center;
+  height: 1.875rem;
+  padding: 0 0.8125rem;
+  border: 1px solid var(--gryt-border);
+  border-radius: var(--gryt-radius-full);
+  font-size: 0.78125rem;
+  color: var(--gryt-muted);
+}
+
+/* ── right: the form ────────────────────────────────────────── */
+
+.gryt-auth-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 2rem;
+  overflow-y: auto;
+}
+
+.gryt-auth-shell {
+  width: 100%;
+  max-width: 22rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.gryt-auth-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gryt-auth-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  color: var(--gryt-text);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.gryt-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* The row holding "remember me" and "forgot password". Wraps rather than
+   letting the two collide, which is what happens at 320px otherwise. */
+.gryt-auth-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--gryt-muted);
+}
+
+.gryt-auth-remember {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: default;
+  /* Move to the next line as one piece rather than splitting the label from
+     its checkbox, which is what happens at 375px otherwise. */
+  white-space: nowrap;
+}
+
+.gryt-auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Alternative ways in — passkeys, OTP, an identity provider.
+ *
+ * Keycloak decides at runtime whether any exist, so this region appears and
+ * disappears between visits. It sits below the primary action behind a rule,
+ * so the page reads "sign in, or if you cannot, here are other routes" rather
+ * than presenting several equal options. The rule is on the region, not a
+ * separate element, so nothing is left behind when there are no alternatives. */
+.gryt-auth-alternatives {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--gryt-border);
+}
+
+.gryt-auth-alternatives form {
+  display: flex;
+  flex-direction: column;
+}
+
+.gryt-auth-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  font-size: 0.875rem;
+  color: var(--gryt-muted);
+}
+
+.gryt-auth-link {
+  color: var(--gryt-accent);
+  text-decoration: none;
+}
+
+.gryt-auth-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.gryt-auth-error {
+  display: block;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--gryt-danger);
+}
+
+/* ── one column ─────────────────────────────────────────────
+   Below 768px the split becomes a compact masthead over the form. The pitch
+   and the chips are dropped rather than stacked: on a phone they push the
+   thing you came for below the fold, and someone signing in on their phone
+   has already decided. */
+
+@container (max-width: 767px) {
+  .gryt-auth-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .gryt-auth-brand {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--gryt-border);
+  }
+
+  .gryt-auth-pitch-block,
+  .gryt-auth-chips {
+    display: none;
+  }
+
+  .gryt-auth-main {
+    padding: 2rem 1.5rem 3rem;
+    align-items: flex-start;
+  }
+}
+
+/* ── the animated backdrop ───────────────────────────────────
+ *
+ * Behind the card, never interactive. The gradient below is not decoration for
+ * its own sake: it is what shows when WebGL is unavailable or the shader fails
+ * to compile, in which case ShaderBackground removes the canvas and this is all
+ * that is left. It is in the same colours, so that failure looks like a quieter
+ * version of the design rather than a broken one.
+ */
+
+.gryt-auth-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      70% 60% at 25% 20%,
+      rgba(150, 143, 248, 0.18),
+      transparent 70%
+    ),
+    radial-gradient(60% 55% at 80% 85%, rgba(125, 211, 252, 0.1), transparent 70%),
+    var(--gryt-bg);
+}
+
+.gryt-auth-shader {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

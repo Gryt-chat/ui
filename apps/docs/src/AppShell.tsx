@@ -14,6 +14,7 @@ import {
 } from "./components/CommandPalette";
 import { DocsFooter } from "./components/DocsFooter";
 import { componentNavSections } from "./pages/componentDocs";
+import { exampleNavSection } from "./pages/examples";
 
 interface NavItem {
   href: string;
@@ -34,6 +35,16 @@ const navSections: NavSection[] = [
       { href: "/installation", label: "Installation" },
       { href: "/theme", label: "Theme" }
     ]
+  },
+  // Above the components, not below them. Someone arriving at a component
+  // library wants to see it built into something before they read the props
+  // table for Button.
+  {
+    title: exampleNavSection.title,
+    items: exampleNavSection.items.map((item) => ({
+      href: `/examples/${item.slug}`,
+      label: item.name
+    }))
   },
   ...componentNavSections.map((section) => ({
     title: section.title,

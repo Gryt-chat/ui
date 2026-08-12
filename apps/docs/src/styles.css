@@ -67,9 +67,11 @@ h3 {
     content: "";
 }
 
+/* No overflow of its own: the block is wrapped in a ScrollArea, and two
+   scrollers on the same box means the outer one never sees the overflow and
+   never shows a bar. */
 .gryt-code-block .shiki {
     margin: 0;
-    overflow-x: auto;
     background: transparent !important;
     padding: 1rem 1.125rem;
     color: var(--gryt-text);
