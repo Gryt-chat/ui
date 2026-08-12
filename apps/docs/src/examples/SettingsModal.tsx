@@ -8,6 +8,7 @@ import {
   Select,
   Slider,
   Switch,
+  Tabs,
   TextField
 } from "@gryt/ui";
 import {
@@ -88,12 +89,22 @@ export function SettingsBody({ onClose }: { onClose?: () => void }) {
     DESTINATIONS.find((destination) => destination.value === active) ??
     DESTINATIONS[0];
 
+  // Filtered-out tabs are hidden, not unmounted. The indicator measures the
+  // active tab to place itself, so removing tabs from the DOM as you type
+  // makes the pill jump around behind the search field. When the active one is
+  // itself filtered out there is nothing to point at, and the pill goes rather
+  // than parking at zero height in the corner.
+  const matched = new Set(matches.map((destination) => destination.value));
+  const activeIsVisible = matched.has(active);
+
   return (
-    <div className="grid h-full min-h-0 grid-cols-[minmax(0,14rem)_minmax(0,1fr)]">
-      <nav
-        aria-label="Settings sections"
-        className="flex min-w-0 flex-col gap-3 border-r border-gryt-border bg-gryt-surface p-3"
-      >
+    <Tabs
+      className="grid h-full min-h-0 grid-cols-[minmax(0,14rem)_minmax(0,1fr)]"
+      orientation="vertical"
+      value={active}
+      onValueChange={(value) => setActive(String(value))}
+    >
+      <div className="flex min-w-0 flex-col gap-3 border-r border-gryt-border bg-gryt-surface p-3">
         <TextField
           size="small"
           placeholder="Search settings"
@@ -102,40 +113,33 @@ export function SettingsBody({ onClose }: { onClose?: () => void }) {
           onChange={(event) => setQuery(event.target.value)}
         />
 
-        <ul className="m-0 flex min-w-0 list-none flex-col gap-0.5 p-0">
-          {matches.map((destination) => {
+        <Tabs.List
+          aria-label="Settings sections"
+          className="min-w-0 gap-0.5 bg-transparent p-0"
+        >
+          {DESTINATIONS.map((destination) => {
             const Icon = destination.icon;
-            const isActive = destination.value === active;
 
             return (
-              <li key={destination.value}>
-                <button
-                  type="button"
-                  aria-current={isActive ? "page" : undefined}
-                  onClick={() => setActive(destination.value)}
-                  className={[
-                    "flex w-full min-w-0 items-center gap-2.5 rounded-(--gryt-radius-md) px-2.5 py-2 text-left text-sm",
-                    "transition-colors duration-150",
-                    "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light",
-                    isActive
-                      ? "bg-gryt-surface-raised text-gryt-text"
-                      : "text-gryt-muted hover:bg-white/5 hover:text-gryt-text"
-                  ].join(" ")}
-                >
-                  <Icon size={17} />
-                  <span className="truncate">{destination.label}</span>
-                </button>
-              </li>
+              <Tabs.Tab
+                key={destination.value}
+                value={destination.value}
+                className={matched.has(destination.value) ? undefined : "hidden"}
+              >
+                <Icon size={17} />
+                <span className="truncate">{destination.label}</span>
+              </Tabs.Tab>
             );
           })}
+          {activeIsVisible ? <Tabs.Indicator /> : null}
+        </Tabs.List>
 
-          {matches.length === 0 ? (
-            <li className="px-2.5 py-2 text-sm text-gryt-muted">
-              Nothing matches “{query}”.
-            </li>
-          ) : null}
-        </ul>
-      </nav>
+        {matches.length === 0 ? (
+          <p className="m-0 px-2.5 text-sm text-gryt-muted">
+            Nothing matches “{query}”.
+          </p>
+        ) : null}
+      </div>
 
       <div className="flex min-w-0 flex-col">
         {/* Plain elements, not Dialog.Title and Dialog.Close. This body is
@@ -158,17 +162,29 @@ export function SettingsBody({ onClose }: { onClose?: () => void }) {
         </header>
 
         {/* One scroll region, on the right. The rail is short enough to fit,
-            and scrolling both at once is how you lose your place. */}
+            and scrolling both at once is how you lose your place.
+
+            The scroll region wraps the panels rather than sitting inside each
+            one: it is the same box whichever destination you are on, so
+            switching does not rebuild the scroller and lose your position. */}
         <ScrollArea.Root className="min-h-0 flex-1">
           <ScrollArea.Viewport className="px-5 py-5">
-            <ScrollArea.Content className="flex flex-col gap-5">
-              {panel.panel}
+            <ScrollArea.Content>
+              {DESTINATIONS.map((destination) => (
+                <Tabs.Panel
+                  key={destination.value}
+                  value={destination.value}
+                  className="flex flex-col gap-5 p-0"
+                >
+                  {destination.panel}
+                </Tabs.Panel>
+              ))}
             </ScrollArea.Content>
           </ScrollArea.Viewport>
           <ScrollArea.Scrollbar orientation="vertical" />
         </ScrollArea.Root>
       </div>
-    </div>
+    </Tabs>
   );
 }
 

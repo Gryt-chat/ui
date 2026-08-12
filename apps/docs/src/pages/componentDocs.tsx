@@ -399,14 +399,42 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
       );
     case "tabs":
       return (
-        <Tabs value={tabValue} onValueChange={setTabValue}>
-          <Tabs.List aria-label="Views">
-            <Tabs.Tab value="chat">Chat</Tabs.Tab>
-            <Tabs.Tab value="voice">Voice</Tabs.Tab>
-            <Tabs.Tab value="files">Files</Tabs.Tab>
-            <Tabs.Indicator />
-          </Tabs.List>
-        </Tabs>
+        <div className="grid w-full gap-6">
+          <ExampleSection title="Horizontal">
+            <Tabs value={tabValue} onValueChange={setTabValue}>
+              <Tabs.List aria-label="Views">
+                <Tabs.Tab value="chat">Chat</Tabs.Tab>
+                <Tabs.Tab value="voice">Voice</Tabs.Tab>
+                <Tabs.Tab value="files">Files</Tabs.Tab>
+                <Tabs.Indicator />
+              </Tabs.List>
+            </Tabs>
+          </ExampleSection>
+          <ExampleSection title="Vertical">
+            <Tabs
+              className="w-full max-w-md"
+              orientation="vertical"
+              value={tabValue}
+              onValueChange={setTabValue}
+            >
+              <Tabs.List aria-label="Views" className="w-40">
+                <Tabs.Tab value="chat">Chat</Tabs.Tab>
+                <Tabs.Tab value="voice">Voice</Tabs.Tab>
+                <Tabs.Tab value="files">Files</Tabs.Tab>
+                <Tabs.Indicator />
+              </Tabs.List>
+              <Tabs.Panel value="chat">
+                Messages, threads and pins.
+              </Tabs.Panel>
+              <Tabs.Panel value="voice">
+                Input, output and suppression.
+              </Tabs.Panel>
+              <Tabs.Panel value="files">
+                Uploads shared in this channel.
+              </Tabs.Panel>
+            </Tabs>
+          </ExampleSection>
+        </div>
       );
     case "accordion":
       return (
