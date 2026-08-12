@@ -1,3 +1,4 @@
+import { ScrollArea } from "@gryt/ui";
 import { Check, Copy } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import type { HTMLAttributes } from "react";
@@ -49,6 +50,12 @@ export interface CodeBlockProps extends HTMLAttributes<HTMLDivElement> {
   code: string;
   language?: string;
   title?: string;
+  /**
+   * How tall the block is allowed to get before it scrolls instead. Any CSS
+   * length. The examples ship two hundred lines of source apiece, and a block
+   * that just keeps going buries the rest of the page under it.
+   */
+  maxHeight?: string;
 }
 
 export function CodeBlock({
@@ -56,6 +63,7 @@ export function CodeBlock({
   language = "text",
   title,
   className,
+  maxHeight = "30rem",
   ...props
 }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
@@ -123,13 +131,24 @@ export function CodeBlock({
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
-      {highlightedHtml ? (
-        <div dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
-      ) : (
-        <pre className="m-0 overflow-x-auto p-4 text-[13px] leading-6 text-gryt-text">
-          <code className="font-mono">{code}</code>
-        </pre>
-      )}
+      {/* The library's own ScrollArea rather than the browser's bars: a code
+          block on a dark surface is exactly where a default macOS scrollbar
+          looks pasted on, and both axes scroll here. */}
+      <ScrollArea.Root style={{ maxHeight }}>
+        <ScrollArea.Viewport style={{ maxHeight }}>
+          <ScrollArea.Content>
+            {highlightedHtml ? (
+              <div dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
+            ) : (
+              <pre className="m-0 p-4 text-[13px] leading-6 text-gryt-text">
+                <code className="font-mono">{code}</code>
+              </pre>
+            )}
+          </ScrollArea.Content>
+        </ScrollArea.Viewport>
+        <ScrollArea.Scrollbar orientation="vertical" />
+        <ScrollArea.Scrollbar orientation="horizontal" />
+      </ScrollArea.Root>
     </div>
   );
 }

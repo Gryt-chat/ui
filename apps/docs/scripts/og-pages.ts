@@ -7,6 +7,7 @@
  */
 
 import { componentDocs } from "../src/componentMeta";
+import { exampleDocs } from "../src/exampleMeta";
 import type { DrawingKind } from "./og-drawings";
 import { C } from "./og-drawings";
 
@@ -140,8 +141,29 @@ const staticPages: OgPage[] = [
   }
 ];
 
+/** Which drawing stands in for each example. */
+const drawingBySlugExample: Record<string, DrawingKind> = {
+  "sign-in": "form",
+  "settings-modal": "dialog",
+  "chat-panel": "bubble",
+  "voice-panel": "panel",
+  "server-sidebar": "conversation-item"
+};
+
 export const ogPages: OgPage[] = [
   ...staticPages,
+  ...exampleDocs.map(
+    (doc): OgPage => ({
+      route: `examples/${doc.slug}`,
+      title: `${doc.name} — Gryt UI`,
+      description: doc.description,
+      // The example's own import line, which is the copy-pasteable thing on
+      // the page. Truncated at three names so it fits the canvas.
+      hero: namedImport(doc.uses.slice(0, 3).join(", ")),
+      caption: firstSentence(doc.description),
+      drawing: drawingBySlugExample[doc.slug] ?? "panel"
+    })
+  ),
   ...componentDocs.map(
     (doc): OgPage => ({
       route: `components/${doc.slug}`,

@@ -17,6 +17,7 @@ import { GrytProvider } from "@gryt/ui";
 import { AppShell } from "./AppShell";
 import { mdxComponents } from "./components/MdxComponents";
 import { ComponentDocPage } from "./pages/componentDocs";
+import { ExampleFullPage, ExamplePage, exampleDocs } from "./pages/examples";
 import { HomePage } from "./pages/HomePage";
 import { InstallationPage } from "./pages/InstallationPage";
 import { ThemePage } from "./pages/ThemePage";
@@ -33,9 +34,17 @@ const router = createBrowserRouter([
         path: "components",
         element: <Navigate replace to="/components/button" />
       },
-      { path: "components/:component", element: <ComponentDocPage /> }
+      { path: "components/:component", element: <ComponentDocPage /> },
+      {
+        path: "examples",
+        element: <Navigate replace to={`/examples/${exampleDocs[0].slug}`} />
+      },
+      { path: "examples/:example", element: <ExamplePage /> }
     ]
-  }
+  },
+  // Outside the shell on purpose: these are whole screens, and a sidebar next
+  // to a sign-in page is not the thing being shown.
+  { path: "/examples/:example/full", element: <ExampleFullPage /> }
 ]);
 
 createRoot(document.getElementById("root")!).render(

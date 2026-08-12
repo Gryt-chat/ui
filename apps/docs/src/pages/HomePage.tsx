@@ -22,6 +22,7 @@ import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { CodeBlock } from "../components/CodeBlock";
 import { componentDocs, componentNavSections } from "./componentDocs";
+import { exampleDocs } from "../exampleMeta";
 
 // A specimen per card. Every one is the real component rendered inert — for the
 // overlay components (Dialog, Menu, Drawer, Select, Tooltip) the specimen is the
@@ -142,6 +143,35 @@ export function HomePage() {
           <CodeBlock code="bun add @gryt/ui" language="sh" />
         </div>
       </header>
+
+      {/* Ahead of the component grid: the examples are the fastest way to see
+          whether this library builds the kind of thing you are building. */}
+      <section className="border-t border-gryt-border py-(--space-lg)">
+        <h2 className="m-0 pb-(--space-sm) text-[11px] font-semibold uppercase tracking-wider text-gryt-muted">
+          Examples
+        </h2>
+        <p className="m-0 max-w-[62ch] pb-(--space-sm) text-sm leading-6 text-gryt-muted">
+          Whole screens, built only out of the components below. Each one runs
+          on its page and ships its own source.
+        </p>
+        <ul className="grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2">
+          {exampleDocs.map((doc) => (
+            <li key={doc.slug}>
+              <Link
+                to={`/examples/${doc.slug}`}
+                className="flex h-full flex-col gap-1 rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-4 transition-colors duration-200 hover:border-gryt-accent-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light"
+              >
+                <span className="font-display text-base font-semibold tracking-tight text-gryt-text">
+                  {doc.name}
+                </span>
+                <span className="text-sm leading-6 text-gryt-muted">
+                  {doc.description}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       {componentNavSections.map((section) => (
         <section
