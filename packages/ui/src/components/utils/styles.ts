@@ -5,6 +5,13 @@
 export const focusRing =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light";
 
+// The same ring, for a control whose focusable element is a child rather than
+// itself. Base UI's Slider is the case: the thumb you can see is a div, and
+// the thing that takes focus is a visually hidden input inside it, so
+// focus-visible on the thumb never matches and the ring never appears.
+export const focusRingWithin =
+  "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gryt-accent-light";
+
 // Every floating surface: menu, select list, tooltip, dialog, drawer. Flat —
 // a border rather than a shadow.
 export const popupSurface =

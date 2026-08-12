@@ -57,6 +57,25 @@
         1.0376, 1.0115, 0.9949, 0.987, 0.9857, 0.9881, 0.992, 0.9959, 0.9989,
         1.0008, 1.0016, 1.0017, 1.0014, 1.0009, 1.0004, 1.0001, 1
     );
+
+    /* The same spring at damping 1 — critically damped, so it settles at the
+       target without ever passing it.
+
+       This exists because of the note above: overshoot is a percentage of the
+       travel. That is what makes it right for a control that scales in place,
+       where 12% of a few pixels is texture you feel rather than see. It is
+       also what makes it wrong for anything whose travel is the width of its
+       own container. Measured on a slider: a full-track jump on --ease-spring
+       puts the thumb 110% along a 919px track, 96px outside the control it
+       belongs to, before it comes back.
+
+       So: --ease-spring for things that scale, this for things that travel
+       inside bounds. Same shape leaving, same settle arriving, no overshoot. */
+    --ease-spring-tight: linear(
+        0, 0.0496, 0.1585, 0.2869, 0.4135, 0.5279, 0.6263, 0.7079, 0.7741,
+        0.8268, 0.8681, 0.9002, 0.9249, 0.9437, 0.958, 0.9688, 0.9768, 0.9829,
+        0.9874, 0.9907, 0.9932, 0.995, 0.9963, 0.9973, 0.9981, 0.9986, 1
+    );
 }
 
 /* The same values under their raw names. Utilities generated from @theme above
