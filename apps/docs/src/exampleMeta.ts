@@ -43,7 +43,7 @@ export const exampleDocs: ExampleDoc[] = [
     description:
       "The client's settings dialog — search, a destination rail, one scroll region.",
     blurb:
-      "The Gryt client's settings, rebuilt on @gryt/ui. Five destinations named for what you are trying to do rather than which subsystem owns the setting, a search field that filters the rail rather than the panel, and a single scroll region on the right so the rail stays where you left it.",
+      "The Gryt client's settings, rebuilt on @gryt/ui. Five destinations named for what you are trying to do rather than which subsystem owns the setting, a search field that filters the rail rather than the panel, and a single scroll region on the right so the rail stays where you left it. The rail is Tabs in its vertical orientation, so the arrow keys walk it and the accent pill slides between destinations.",
     uses: [
       "Button",
       "Dialog",
@@ -54,6 +54,7 @@ export const exampleDocs: ExampleDoc[] = [
       "Select",
       "Slider",
       "Switch",
+      "Tabs",
       "TextField"
     ],
     stage: "medium"

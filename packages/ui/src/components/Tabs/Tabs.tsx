@@ -9,6 +9,19 @@ export type TabsListProps = ComponentPropsWithoutRef<typeof BaseTabs.List>;
 export type TabProps = ComponentPropsWithoutRef<typeof BaseTabs.Tab>;
 export type TabsPanelProps = ComponentPropsWithoutRef<typeof BaseTabs.Panel>;
 
+/**
+ * Orientation is Base UI's `orientation` prop on Root, and every part below
+ * styles itself from the `data-orientation` it puts on the DOM rather than from
+ * a prop of ours. That is why none of these take an orientation of their own:
+ * setting it in two places is how a list ends up vertical and its indicator
+ * still travelling sideways.
+ *
+ * Vertical is the same visual language turned ninety degrees — the accent pill
+ * still slides between rows. It suits a rail of five or six destinations. Past
+ * about a dozen the filled pill becomes a block of accent parked in the corner
+ * of the screen, and a quieter marker is the better call; the docs sidebar is
+ * that case and deliberately does not use this.
+ */
 const Root = forwardRef<HTMLDivElement, TabsProps>(function TabsRoot(
   { className, ...props },
   ref
@@ -16,7 +29,14 @@ const Root = forwardRef<HTMLDivElement, TabsProps>(function TabsRoot(
   return (
     <BaseTabs.Root
       ref={ref}
-      className={cn("gryt-tabs", className)}
+      className={cn(
+        "gryt-tabs",
+        // Vertical puts the rail and the panel side by side. min-w-0 on the
+        // panel does the rest; without the flex here the panel lands under the
+        // rail and the layout reads as a very tall accordion.
+        "data-[orientation=vertical]:flex data-[orientation=vertical]:items-stretch",
+        className
+      )}
       {...props}
     />
   );
@@ -31,6 +51,11 @@ const List = forwardRef<HTMLDivElement, TabsListProps>(function TabsList(
       ref={ref}
       className={cn(
         "gryt-tabs-list relative inline-flex items-center gap-1 rounded-(--gryt-radius-full) bg-gryt-surface-raised p-1",
+        // A rail, not a pill: rows are full width and the corner radius drops
+        // to lg, because a 999px radius on a tall box bows its short edges.
+        "data-[orientation=vertical]:flex data-[orientation=vertical]:shrink-0",
+        "data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch",
+        "data-[orientation=vertical]:rounded-(--gryt-radius-lg)",
         className
       )}
       {...props}
@@ -54,6 +79,11 @@ const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab(
         // The fill moved to Indicator so it can travel between tabs; the tab
         // itself only changes its text colour.
         "data-active:text-gryt-on-accent",
+        // Left-aligned and taller in a rail. Centred labels in a vertical list
+        // leave the text edge ragged, which is what makes a rail look untidy.
+        "data-[orientation=vertical]:min-h-9 data-[orientation=vertical]:justify-start",
+        "data-[orientation=vertical]:gap-2.5 data-[orientation=vertical]:px-3",
+        "data-[orientation=vertical]:rounded-(--gryt-radius-md)",
         focusRing,
         className
       )}
@@ -67,9 +97,14 @@ export type TabsIndicatorProps = ComponentPropsWithoutRef<
 >;
 
 // Base UI measures the active tab and publishes --active-tab-left and
-// --active-tab-width, which is what lets the pill slide rather than jump.
-// renderBeforeHydration keeps it positioned on the first paint instead of
-// animating in from the left edge.
+// --active-tab-width, plus --active-tab-top and --active-tab-height, which is
+// what lets the pill slide rather than jump. renderBeforeHydration keeps it
+// positioned on the first paint instead of animating in from the left edge.
+//
+// The vertical rules hang off the ancestor's data-orientation rather than the
+// indicator's own. Root is the part guaranteed to carry it, and an indicator
+// that reads its orientation from somewhere other than the root it belongs to
+// is a bug waiting for someone to nest two sets of tabs.
 const Indicator = forwardRef<HTMLSpanElement, TabsIndicatorProps>(
   function TabsIndicator({ className, ...props }, ref) {
     return (
@@ -82,6 +117,14 @@ const Indicator = forwardRef<HTMLSpanElement, TabsIndicatorProps>(
           "rounded-(--gryt-radius-full) bg-gryt-accent",
           "transition-[translate,width] duration-(--gryt-dur-spring) ease-spring",
           "motion-reduce:transition-none",
+          // Same pill, travelling down the rail instead of across the row.
+          "[[data-orientation=vertical]_&]:top-0 [[data-orientation=vertical]_&]:left-1",
+          "[[data-orientation=vertical]_&]:h-(--active-tab-height)",
+          "[[data-orientation=vertical]_&]:w-[calc(100%-0.5rem)]",
+          "[[data-orientation=vertical]_&]:translate-x-0",
+          "[[data-orientation=vertical]_&]:translate-y-(--active-tab-top)",
+          "[[data-orientation=vertical]_&]:rounded-(--gryt-radius-md)",
+          "[[data-orientation=vertical]_&]:transition-[translate,height]",
           className
         )}
         {...props}
@@ -97,7 +140,14 @@ const Panel = forwardRef<HTMLDivElement, TabsPanelProps>(function TabsPanel(
   return (
     <BaseTabs.Panel
       ref={ref}
-      className={cn("gryt-tabs-panel pt-3 text-sm text-gryt-text", className)}
+      className={cn(
+        "gryt-tabs-panel pt-3 text-sm text-gryt-text",
+        // Beside the rail rather than under it, and allowed to shrink so long
+        // content wraps instead of pushing the rail off screen.
+        "data-[orientation=vertical]:min-w-0 data-[orientation=vertical]:flex-1",
+        "data-[orientation=vertical]:pt-0 data-[orientation=vertical]:pl-4",
+        className
+      )}
       {...props}
     />
   );

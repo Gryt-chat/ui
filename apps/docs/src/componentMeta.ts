@@ -444,7 +444,8 @@ function ProgressExample() {
   {
     slug: "tabs",
     name: "Tabs",
-    description: "Tabbed navigation for local panels and settings groups.",
+    description:
+      "Tabbed navigation for local panels and settings groups, in a row or down a rail.",
     importName: "Tabs",
     preview: "tabs",
     code: `import { Tabs } from "@gryt/ui";
@@ -461,6 +462,27 @@ function TabsExample() {
         <Tabs.Tab value="files">Files</Tabs.Tab>
         <Tabs.Indicator />
       </Tabs.List>
+    </Tabs>
+  );
+}
+
+// orientation goes on the root and nowhere else. Every part styles itself
+// from the data-orientation Base UI puts on the DOM, and the arrow keys
+// follow it too — up and down rather than left and right.
+function VerticalTabsExample() {
+  const [value, setValue] = useState("chat");
+
+  return (
+    <Tabs orientation="vertical" value={value} onValueChange={setValue}>
+      <Tabs.List aria-label="Views" className="w-40">
+        <Tabs.Tab value="chat">Chat</Tabs.Tab>
+        <Tabs.Tab value="voice">Voice</Tabs.Tab>
+        <Tabs.Tab value="files">Files</Tabs.Tab>
+        <Tabs.Indicator />
+      </Tabs.List>
+      <Tabs.Panel value="chat">Messages, threads and pins.</Tabs.Panel>
+      <Tabs.Panel value="voice">Input, output and suppression.</Tabs.Panel>
+      <Tabs.Panel value="files">Uploads shared in this channel.</Tabs.Panel>
     </Tabs>
   );
 }`
