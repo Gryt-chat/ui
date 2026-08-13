@@ -14,6 +14,8 @@ import {
   type PaletteEntry
 } from "./components/CommandPalette";
 import { DocsFooter } from "./components/DocsFooter";
+import { ThemeSwitcher } from "./components/ThemeSwitcher";
+import { useApplySiteTheme } from "./lib/theme/siteTheme";
 import { componentNavSections } from "./pages/componentDocs";
 import { exampleNavSection } from "./pages/examples";
 
@@ -21,6 +23,12 @@ interface NavItem {
   href: string;
   label: string;
   badge?: string;
+  /**
+   * The version this page arrived in. It wears a New tag until the library has
+   * moved on a minor — so a patch keeps it and 0.12 clears it, without anybody
+   * having to remember to take the tag off.
+   */
+  since?: string;
 }
 
 interface NavSection {
@@ -35,7 +43,7 @@ const navSections: NavSection[] = [
       { href: "/", label: "Overview" },
       { href: "/installation", label: "Installation" },
       { href: "/theme", label: "Theme" },
-      { href: "/theme/generator", label: "Theme generator" }
+      { href: "/theme/generator", label: "Theme generator", since: "0.11.0" }
     ]
   },
   // Above the components, not below them. Someone arriving at a component
@@ -82,11 +90,29 @@ const paletteEntries: PaletteEntry[] = navSections
 /** Routes that render a tool rather than a document, and want the full width. */
 const WIDE_ROUTES = ["/theme/generator"];
 
+/**
+ * Whether a page added in `since` is still new.
+ *
+ * Same major and minor as the version being documented, so a patch keeps the
+ * tag and the next minor takes it off. Nobody has to remember, which is the
+ * only way a "New" tag stays honest — the alternative is the one that is still
+ * on the page a year later.
+ */
+function isNewIn(since: string | undefined, version: string): boolean {
+  if (since === undefined) return false;
+  const minor = (value: string) => value.split(".").slice(0, 2).join(".");
+  return minor(since) === minor(version);
+}
+
 export function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { pathname } = useLocation();
   const wide = WIDE_ROUTES.includes(pathname);
+
+  // The whole site wears whatever the header is set to, root element and all,
+  // so overlays get it too.
+  useApplySiteTheme();
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -162,6 +188,11 @@ export function AppShell() {
               <List size={18} />
             </button>
             <SearchPill onOpen={() => setPaletteOpen(true)} />
+            {/* Not decoration. A component library that can only be read in
+                its own colours is asking to be taken on trust. */}
+            <div className="ml-auto hidden shrink-0 sm:block">
+              <ThemeSwitcher />
+            </div>
           </header>
 
           <main className="min-w-0 flex-1 py-(--space-xl)">
@@ -319,6 +350,20 @@ function SidebarLink({
     <>
       <span className="truncate">{item.label}</span>
       <span className="flex shrink-0 items-center gap-2">
+        {isNewIn(item.since, __UI_VERSION__) ? (
+          <span
+            className={[
+              "rounded-full px-2 py-0.5 text-[10px] font-medium",
+              // On the accent pill the row already carries when it is current,
+              // a filled tag would be a second fill on top of a fill.
+              isActive
+                ? "bg-gryt-on-accent/15 text-gryt-on-accent"
+                : "bg-gryt-accent-3 text-gryt-accent-11"
+            ].join(" ")}
+          >
+            New
+          </span>
+        ) : null}
         {item.badge ? (
           <span className="rounded-full border border-gryt-border px-2 py-0.5 text-[10px] text-gryt-muted">
             {item.badge}

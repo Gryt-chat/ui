@@ -10,11 +10,13 @@ import {
   Slider,
   Tabs,
   TextField,
+  grytPresets,
+  grytPresetsById,
   Toggle,
   ToggleGroup
 } from "@gryt/ui";
 import { ArrowsClockwise, Link as LinkIcon } from "@phosphor-icons/react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
 import { CodeBlock } from "../components/CodeBlock";
@@ -37,7 +39,6 @@ import {
   themeStyle
 } from "../lib/theme/draft";
 import type {
-  Appearance,
   DraftPath,
   HueKey,
   NeutralKey,
@@ -50,7 +51,11 @@ import {
   repairDraft,
   withAutoLabels
 } from "../lib/theme/generate";
-import { presets, presetsById } from "../lib/theme/presets";
+import {
+  setSiteAppearance,
+  setSiteCustomTheme,
+  useSiteTheme
+} from "../lib/theme/siteTheme";
 import {
   decodeGrytTheme,
   encodeDraft,
@@ -91,9 +96,11 @@ export function ThemeGeneratorPage() {
   const [shared] = useState(() => decodeGrytTheme(searchParams.toString()));
 
   const [draft, setDraft] = useState<ThemeDraft>(shared?.theme ?? grytDraft);
-  const [appearance, setAppearance] = useState<Appearance>(
-    shared?.appearance ?? "dark"
-  );
+  // The appearance is the site's, not this page's. Editing the light half and
+  // reading the docs around it in dark would be looking at two themes.
+  const site = useSiteTheme();
+  const appearance = site.appearance;
+  const setAppearance = setSiteAppearance;
   /**
    * Whether the label colours follow their fills.
    *
@@ -119,6 +126,26 @@ export function ThemeGeneratorPage() {
     () => themeStyle(draft, appearance),
     [draft, appearance]
   );
+
+  /**
+   * The site wears what is being built, as it is being built.
+   *
+   * The panel on the right was always the smaller half of the answer: what
+   * somebody wants to know is whether a whole page survives their palette, and
+   * the whole page is right here. It lands in the header's Custom option too,
+   * so it survives walking off to another page.
+   */
+  // Not on arrival, though — opening the generator should not take over a
+  // theme somebody chose in the header. The exception is a shared link, which
+  // is somebody handing you a theme and expecting to see it.
+  const untouched = useRef(shared === null);
+  useEffect(() => {
+    if (untouched.current) {
+      untouched.current = false;
+      return;
+    }
+    setSiteCustomTheme(draft);
+  }, [draft]);
   const checks = useMemo(
     () => contrastChecks(draft, theme, appearance),
     [draft, theme, appearance]
@@ -138,7 +165,7 @@ export function ThemeGeneratorPage() {
 
   const signature = draftSignature(draft);
   const activePreset =
-    presets.find((preset) => draftSignature(preset.draft) === signature)?.id ??
+    grytPresets.find((preset) => draftSignature(preset.theme) === signature)?.id ??
     "custom";
 
   const neutrals = draft[appearance];
@@ -281,11 +308,11 @@ export function ThemeGeneratorPage() {
           <Select
             label="Preset"
             onValueChange={(value) => {
-              const preset = presetsById.get(String(value));
-              if (preset) adopt(preset.draft);
+              const preset = grytPresetsById.get(String(value));
+              if (preset) adopt(preset.theme);
             }}
             options={[
-              ...presets.map((preset) => ({
+              ...grytPresets.map((preset) => ({
                 label: preset.name,
                 value: preset.id
               })),
