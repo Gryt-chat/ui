@@ -5,9 +5,11 @@
 import {
   Button,
   Checkbox,
+  GRYT_THEME_NAME_MAX,
   Select,
   Slider,
   Tabs,
+  TextField,
   Toggle,
   ToggleGroup
 } from "@gryt/ui";
@@ -210,6 +212,15 @@ export function ThemeGeneratorPage() {
     }));
   }
 
+  function setName(value: string) {
+    // Kept as typed and tidied on the way out, so a trailing space while
+    // somebody is still typing does not disappear under the cursor.
+    commit((current) => ({
+      ...current,
+      name: value === "" ? undefined : value
+    }));
+  }
+
   function setRadius(key: RadiusKey, value: number) {
     commit((current) => ({
       ...current,
@@ -284,6 +295,21 @@ export function ThemeGeneratorPage() {
             ]}
             size="small"
             value={activePreset}
+          />
+        </div>
+
+        {/* Named here rather than by whoever receives it. The name rides in
+            the link, so a theme arrives at the client already called
+            something, and the person importing it is not asked a question its
+            author already answered. */}
+        <div className="w-48">
+          <TextField
+            label="Name"
+            maxLength={GRYT_THEME_NAME_MAX}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="Untitled theme"
+            size="small"
+            value={draft.name ?? ""}
           />
         </div>
 

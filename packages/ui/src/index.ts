@@ -26,6 +26,7 @@ export {
   GRYT_HUE_KEYS,
   GRYT_NEUTRAL_KEYS,
   GRYT_RADIUS_KEYS,
+  GRYT_THEME_NAME_MAX,
   cloneGrytTheme,
   decodeGrytTheme,
   encodeGrytTheme,
@@ -33,7 +34,8 @@ export {
   grytThemeHues,
   grytThemeToOptions,
   isHexColor,
-  normalizeHexColor
+  normalizeHexColor,
+  normalizeThemeName
 } from "./theme/theme";
 export type {
   DecodedGrytTheme,
