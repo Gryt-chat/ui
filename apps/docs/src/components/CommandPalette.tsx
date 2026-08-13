@@ -15,7 +15,7 @@ export function SearchPill({ onOpen }: { onOpen: () => void }) {
   return (
     <button
       type="button"
-      aria-label="Search documentation (Command K)"
+      aria-label="Search components (Command K)"
       onClick={onOpen}
       className="group flex h-10 w-full max-w-80 items-center gap-2.5 rounded-full border border-gryt-border bg-gryt-surface px-3.5 text-left text-sm text-gryt-muted transition-colors duration-200 hover:border-gryt-accent-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light"
     >

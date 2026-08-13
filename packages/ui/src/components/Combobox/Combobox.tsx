@@ -21,7 +21,7 @@ export const listboxItemClass = [
   // Base UI drives keyboard and pointer highlight through one attribute, so
   // arrow keys and the mouse land on identical styling.
   "data-highlighted:bg-gryt-surface-raised",
-  "data-selected:text-gryt-accent",
+  "data-selected:text-gryt-accent-11",
   "data-disabled:cursor-not-allowed data-disabled:opacity-50"
 ].join(" ");
 

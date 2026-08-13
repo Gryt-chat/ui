@@ -128,7 +128,7 @@ export function HomePage() {
   return (
     <div>
       <header className="pb-(--space-lg)">
-        <p className="m-0 font-mono text-xs tracking-wide text-gryt-accent">
+        <p className="m-0 font-mono text-xs tracking-wide text-gryt-accent-11">
           @gryt/ui
         </p>
         <h1 className="mt-3 max-w-2xl font-display text-[length:var(--text-2xl)] font-semibold leading-[1.1] tracking-[-0.022em] text-gryt-text">
@@ -191,8 +191,13 @@ export function HomePage() {
                     to={`/components/${item.slug}`}
                     className="group flex h-full flex-col gap-3 rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-4 transition-colors duration-200 hover:border-gryt-accent-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light"
                   >
+                    {/* inert as well as aria-hidden: the thumbnail is a live
+                        component, and hiding a focusable thing from the
+                        accessibility tree while leaving it in the tab order is
+                        worse than not hiding it. inert takes it out of both. */}
                     <span
                       aria-hidden="true"
+                      inert
                       className="pointer-events-none flex h-14 items-center justify-center overflow-hidden rounded-(--gryt-radius-md) bg-gryt-bg px-3"
                     >
                       {specimens[item.slug] ?? null}

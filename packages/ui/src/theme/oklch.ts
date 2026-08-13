@@ -245,7 +245,11 @@ export function hueScaleLight(solid: string): string[] {
   );
   steps.push(solid);
   steps.push(oklchToHex({ l: Math.max(0, l - 0.07), c, h }));
-  steps.push(oklchToHex({ l: 0.5, c: 0.15, h }));
+  // 0.46 rather than 0.5, which is where this started. Step 11 has to carry
+  // text on step 3 as well as on the page — a Chip, an Alert and a Toast are
+  // all that pairing — and at 0.5 the secondary hue measured 4.48:1 against its
+  // own tint. Four hundredths of lightness is not visible; failing AA is.
+  steps.push(oklchToHex({ l: 0.46, c: 0.15, h }));
   steps.push(oklchToHex({ l: 0.33, c: 0.1, h }));
   return steps;
 }

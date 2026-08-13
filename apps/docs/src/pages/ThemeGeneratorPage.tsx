@@ -261,7 +261,7 @@ export function ThemeGeneratorPage() {
   return (
     <article className="flex min-w-0 flex-col gap-(--space-md)">
       <header className="max-w-[68ch]">
-        <p className="m-0 font-mono text-xs tracking-wide text-gryt-accent">
+        <p className="m-0 font-mono text-xs tracking-wide text-gryt-accent-11">
           createGrytTheme
         </p>
         <h1 className="mt-2 font-display text-[length:var(--text-2xl)] font-semibold leading-tight tracking-[-0.022em] text-gryt-text">
@@ -563,7 +563,7 @@ export function ThemeGeneratorPage() {
                 </Button>
               </div>
               {importError ? (
-                <p className="m-0 pt-2 text-sm text-gryt-danger">{importError}</p>
+                <p className="m-0 pt-2 text-sm text-gryt-danger-11">{importError}</p>
               ) : null}
             </div>
           </div>

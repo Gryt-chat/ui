@@ -15,9 +15,9 @@ const ICONS = {
 };
 
 const TONES = {
-  pass: "text-gryt-success",
-  tight: "text-gryt-warning",
-  fail: "text-gryt-danger"
+  pass: "text-gryt-success-11",
+  tight: "text-gryt-warning-11",
+  fail: "text-gryt-danger-11"
 };
 
 /**
@@ -40,7 +40,7 @@ export function ContrastReport({ checks, onRepair }: ContrastReportProps) {
           Contrast
         </h2>
         {failures > 0 ? (
-          <span className="text-xs text-gryt-danger">
+          <span className="text-xs text-gryt-danger-11">
             {failures} of {checks.length}
           </span>
         ) : (
@@ -73,7 +73,7 @@ export function ContrastReport({ checks, onRepair }: ContrastReportProps) {
                     note rather than a verdict. Worth showing because it is the
                     difference people ask about. */}
                 {!item.advisory && item.ratio >= 7 ? (
-                  <span className="pl-1.5 text-[10px] text-gryt-success">AAA</span>
+                  <span className="pl-1.5 text-[10px] text-gryt-success-11">AAA</span>
                 ) : null}
               </span>
             </li>

@@ -10,12 +10,12 @@ type IconButtonSize = "xsmall" | "small" | "medium" | "large";
 // The hover fills are the tone colour at low alpha, so an icon button reads as
 // a tinted target rather than a filled one.
 const toneStyles: Record<IconButtonTone, string> = {
-  primary: "text-gryt-accent hover:not-data-disabled:bg-gryt-accent/10",
+  primary: "text-gryt-accent-11 hover:not-data-disabled:bg-gryt-accent-3",
   secondary:
-    "text-gryt-secondary hover:not-data-disabled:bg-gryt-secondary/10",
+    "text-gryt-secondary-11 hover:not-data-disabled:bg-gryt-secondary-3",
   neutral:
     "text-gryt-muted hover:not-data-disabled:bg-white/8 hover:not-data-disabled:text-gryt-text",
-  danger: "text-gryt-danger hover:not-data-disabled:bg-gryt-danger/10",
+  danger: "text-gryt-danger-11 hover:not-data-disabled:bg-gryt-danger-3",
   ghost:
     "text-gryt-muted hover:not-data-disabled:bg-white/8 hover:not-data-disabled:text-gryt-text"
 };
