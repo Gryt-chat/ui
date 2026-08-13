@@ -5,14 +5,12 @@
  * of the page background is this one string. Nothing outside reads it apart
  * from ShaderBackground.tsx.
  *
- * Colours are @gryt/ui's, converted to 0-1 floats because GLSL has no idea what
- * a hex triplet is:
- *   #111318 background   -> vec3(0.067, 0.075, 0.094)
- *   #968ff8 accent       -> vec3(0.588, 0.561, 0.973)
- *   #7dd3fc secondary    -> vec3(0.490, 0.827, 0.988)
- *
- * If those tokens ever move, these move with them — there is no import that
- * would catch the drift for us.
+ * The three colours are uniforms rather than literals. They used to be baked in
+ * as vec3s with a comment asking whoever changed the tokens to remember to
+ * change these too, which is the kind of arrangement that holds right up until
+ * somebody themes the library — and then the page is Gryt purple whatever
+ * palette the app is actually using. ShaderBackground reads them off the CSS
+ * custom properties, so the background follows the theme it is sitting in.
  */
 
 /** A fullscreen triangle. No transforms; the fragment shader does the work. */
@@ -29,6 +27,11 @@ precision highp float;
 
 uniform vec2 resolution;
 uniform float time;
+
+// The palette, as linear 0-1 floats. GLSL has no idea what a hex triplet is.
+uniform vec3 pageColour;
+uniform vec3 accentColour;
+uniform vec3 secondaryColour;
 
 // Hash-based value noise. Cheap, and good enough at this scale — nobody is
 // inspecting the gradient of a login background.
@@ -70,9 +73,9 @@ void main() {
   float f = fbm(uv * 1.7 + vec2(time * 0.035, time * 0.022));
   f = fbm(uv * 1.9 + vec2(f * 1.1, -time * 0.028));
 
-  vec3 colour = vec3(0.067, 0.075, 0.094);
-  colour = mix(colour, vec3(0.588, 0.561, 0.973), smoothstep(0.35, 0.95, f) * 0.55);
-  colour = mix(colour, vec3(0.490, 0.827, 0.988), smoothstep(0.55, 1.05, f) * 0.18);
+  vec3 colour = pageColour;
+  colour = mix(colour, accentColour, smoothstep(0.35, 0.95, f) * 0.55);
+  colour = mix(colour, secondaryColour, smoothstep(0.55, 1.05, f) * 0.18);
 
   // A little noise, because eight-bit output banding is very visible across a
   // gradient this smooth and this dark.
@@ -84,3 +87,14 @@ void main() {
 
 /** Seconds into the animation to freeze at when motion is not wanted. */
 export const REDUCED_MOTION_TIME = 8.0;
+
+/** Which custom property each uniform reads, and what to use if it is missing. */
+export const SHADER_PALETTE = [
+  { uniform: "pageColour", property: "--gryt-bg", fallback: "#111318" },
+  { uniform: "accentColour", property: "--gryt-accent", fallback: "#968ff8" },
+  {
+    uniform: "secondaryColour",
+    property: "--gryt-secondary",
+    fallback: "#7dd3fc"
+  }
+] as const;

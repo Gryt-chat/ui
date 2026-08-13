@@ -2,6 +2,7 @@ import { Alert, Button, Checkbox, TextField } from "@gryt/ui";
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { ShaderBackground } from "./ShaderBackground";
+import type { ShaderPalette } from "./ShaderBackground";
 import "./signIn.css";
 
 /**
@@ -21,8 +22,12 @@ import "./signIn.css";
  *   the field names — `username`, `password`, `rememberMe` — are its contract,
  *   so they are kept exactly. Wire them to your own endpoint and the markup
  *   does not change.
+ *
+ * The `palette` prop is for the theme generator, which changes the theme
+ * without remounting this. Leave it off and the background reads the colours
+ * off the CSS custom properties itself.
  */
-export function SignInScreen() {
+export function SignInScreen({ palette }: { palette?: ShaderPalette } = {}) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +52,7 @@ export function SignInScreen() {
 
   return (
     <div className="gryt-auth-stage">
-      <ShaderBackground />
+      <ShaderBackground palette={palette} />
 
       <div className="gryt-auth-layout">
         {/* The brand panel. This is often the first Gryt surface someone sees —

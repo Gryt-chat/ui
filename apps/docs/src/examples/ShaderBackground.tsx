@@ -1,5 +1,36 @@
 import { useEffect, useRef } from "react";
-import { FRAGMENT_SHADER, REDUCED_MOTION_TIME, VERTEX_SHADER } from "./shader";
+import {
+  FRAGMENT_SHADER,
+  REDUCED_MOTION_TIME,
+  SHADER_PALETTE,
+  VERTEX_SHADER
+} from "./shader";
+
+export interface ShaderPalette {
+  page: string;
+  accent: string;
+  secondary: string;
+}
+
+/** #abc or #aabbcc to three 0-1 floats. Anything else falls back. */
+function toRgb(value: string, fallback: string): [number, number, number] {
+  const hex = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(value.trim())
+    ? value.trim()
+    : fallback;
+  const body = hex.slice(1);
+  const full =
+    body.length === 3
+      ? body
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : body;
+  return [
+    parseInt(full.slice(0, 2), 16) / 255,
+    parseInt(full.slice(2, 4), 16) / 255,
+    parseInt(full.slice(4, 6), 16) / 255
+  ];
+}
 
 /**
  * The animated page background.
@@ -9,15 +40,30 @@ import { FRAGMENT_SHADER, REDUCED_MOTION_TIME, VERTEX_SHADER } from "./shader";
  * gzipped to the page standing between someone and the product. The look lives
  * entirely in ./shader.ts, so changing it later is one file.
  *
+ * The colours come from the theme. With no `palette` prop it reads
+ * --gryt-bg, --gryt-accent and --gryt-secondary off its own element, so a
+ * screen inside a themed provider gets a background that matches it. Pass the
+ * prop when the theme changes without remounting — reading a custom property
+ * is a one-off at setup, not something the draw loop watches.
+ *
  * It degrades rather than breaks:
  * - No WebGL, or a shader that fails to compile, leaves the canvas absent and
  *   the CSS gradient underneath shows instead. Nobody sees a black rectangle.
+ * - A custom property that is missing, or is some notation this cannot parse,
+ *   falls back to the Gryt value rather than to black.
  * - prefers-reduced-motion renders a single frame and stops.
  * - A hidden tab stops drawing, because a login page left open in a background
  *   tab has no business spinning the GPU.
  */
-export function ShaderBackground() {
+export function ShaderBackground({ palette }: { palette?: ShaderPalette }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const paletteRef = useRef<ShaderPalette | undefined>(palette);
+  const refreshRef = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    paletteRef.current = palette;
+    refreshRef.current?.();
+  }, [palette]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -95,6 +141,22 @@ export function ShaderBackground() {
 
     const resolutionLocation = gl.getUniformLocation(program, "resolution");
     const timeLocation = gl.getUniformLocation(program, "time");
+    const colourLocations = SHADER_PALETTE.map((entry) =>
+      gl.getUniformLocation(program, entry.uniform)
+    );
+
+    const readColours = (): Array<[number, number, number]> => {
+      const provided = paletteRef.current;
+      const styles = provided ? null : getComputedStyle(canvas);
+      return SHADER_PALETTE.map((entry, index) => {
+        const value = provided
+          ? [provided.page, provided.accent, provided.secondary][index]
+          : (styles?.getPropertyValue(entry.property) ?? "");
+        return toRgb(value, entry.fallback);
+      });
+    };
+
+    let colours = readColours();
 
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -120,6 +182,10 @@ export function ShaderBackground() {
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
       gl.uniform1f(timeLocation, seconds);
+      colourLocations.forEach((location, index) => {
+        const [r, g, b] = colours[index];
+        gl.uniform3f(location, r, g, b);
+      });
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     };
 
@@ -152,6 +218,13 @@ export function ShaderBackground() {
       else startOrDrawOnce();
     };
 
+    // A theme change repaints even when the loop is stopped, which is the
+    // reduced-motion case: the still has to be the still of the new palette.
+    refreshRef.current = () => {
+      colours = readColours();
+      if (frame === 0) draw(REDUCED_MOTION_TIME);
+    };
+
     startOrDrawOnce();
 
     const observer = new ResizeObserver(() => {
@@ -164,6 +237,7 @@ export function ShaderBackground() {
 
     return () => {
       stop();
+      refreshRef.current = null;
       observer.disconnect();
       prefersReducedMotion.removeEventListener("change", startOrDrawOnce);
       document.removeEventListener("visibilitychange", onVisibility);
@@ -171,9 +245,16 @@ export function ShaderBackground() {
       gl.deleteShader(vertex);
       gl.deleteShader(fragment);
       gl.deleteBuffer(buffer);
-      // Frees the GPU context immediately rather than waiting for collection,
-      // which matters because StrictMode mounts this twice in development.
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      // The context itself is left to be collected with the canvas.
+      //
+      // This used to call loseContext here, to free the GPU immediately rather
+      // than wait for collection. It had the opposite effect of the one
+      // intended: getContext on a canvas whose context was released hands the
+      // same, still-lost context back, so StrictMode's second mount in
+      // development got a dead context, every shader "failed to compile", and
+      // the canvas removed itself. The background has been the CSS fallback in
+      // development ever since — visible in the console, invisible on the page,
+      // because the fallback is in the same colours by design.
     };
   }, []);
 

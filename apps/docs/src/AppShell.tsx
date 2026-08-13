@@ -34,7 +34,8 @@ const navSections: NavSection[] = [
     items: [
       { href: "/", label: "Overview" },
       { href: "/installation", label: "Installation" },
-      { href: "/theme", label: "Theme" }
+      { href: "/theme", label: "Theme" },
+      { href: "/theme/generator", label: "Theme generator" }
     ]
   },
   // Above the components, not below them. Someone arriving at a component
@@ -78,9 +79,14 @@ const paletteEntries: PaletteEntry[] = navSections
     }))
   );
 
+/** Routes that render a tool rather than a document, and want the full width. */
+const WIDE_ROUTES = ["/theme/generator"];
+
 export function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const { pathname } = useLocation();
+  const wide = WIDE_ROUTES.includes(pathname);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -159,7 +165,15 @@ export function AppShell() {
           </header>
 
           <main className="min-w-0 flex-1 py-(--space-xl)">
-            <div className="mx-auto w-full max-w-5xl">
+            {/* Prose wants a measure; a two-pane tool wants the room. The
+                generator is the only page where the column cap is the wrong
+                shape, so it opts out by name rather than every page carrying a
+                width prop it does not need. */}
+            <div
+              className={
+                wide ? "w-full" : "mx-auto w-full max-w-5xl"
+              }
+            >
               <Outlet />
               <DocsFooter />
             </div>
