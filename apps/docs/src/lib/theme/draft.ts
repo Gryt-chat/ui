@@ -1,142 +1,70 @@
 /* What a theme is, on this page.
  *
- * createGrytTheme takes a flat bag of colours and an appearance. That is the
- * right shape for a caller who wants one theme; it is the wrong shape for an
- * editor, because two of its inputs behave differently from the rest:
+ * The document itself — two sets of neutrals, one or two sets of hues, five
+ * radii — belongs to the library now, next to createGrytTheme, because the
+ * client reads the same format when somebody pastes a link into it. What is
+ * left here is what only an editor needs: the labels beside each field, what
+ * each radius step is actually on, and the small helpers this page reaches for.
  *
- * - The neutral six are appearance-specific. Dark and light do not derive from
- *   each other — a light surface is whiter than the page while a dark one is
- *   lighter than it, which is a different arrangement rather than an inverted
- *   one.
- * - The hues are usually shared. Step 9 is the same colour in both appearances
- *   by design, so a filled button does not change colour when somebody
- *   switches.
- *
- * So a draft holds two sets of neutrals and one set of hues, and building a
- * theme is picking the neutrals for the appearance you are rendering. That is
- * also what makes light and dark previews of the same theme meaningful rather
- * than two unrelated themes that happen to sit side by side.
- *
- * `lightHue` is the escape hatch, and it exists because the ported presets need
- * it. Catppuccin's mauve is #cba6f7 in Mocha and #8839ef in Latte; GitHub's
- * blue is #1f6feb dark and #0969da light. Sharing one hue would make those
- * presets wrong in one half, and "wrong in one half" is not a preset of
- * somebody's theme, it is a theme that reminds you of theirs. Null means
- * shared, which is what a theme built here starts as.
+ * Why the document has that shape is in packages/ui/src/theme/theme.ts. The
+ * short version: dark and light neutrals do not derive from each other, and the
+ * hues are shared because step 9 is the same colour in both appearances by
+ * design.
  */
 
-import { createGrytTheme, grytLightTokens, grytScalesLight, grytTokens } from "@gryt/ui";
+import {
+  GRYT_HUE_KEYS,
+  GRYT_NEUTRAL_KEYS,
+  GRYT_RADIUS_KEYS,
+  createGrytTheme,
+  grytTheme,
+  grytThemeHues,
+  grytThemeToOptions,
+  isHexColor,
+  normalizeHexColor
+} from "@gryt/ui";
+import type {
+  GrytAppearance,
+  GrytHueKey,
+  GrytHues,
+  GrytNeutralKey,
+  GrytNeutrals,
+  GrytRadiusKey,
+  GrytTheme
+} from "@gryt/ui";
 import type { CSSProperties } from "react";
 
-export type Appearance = "dark" | "light";
+export type Appearance = GrytAppearance;
+export type HueKey = GrytHueKey;
+export type NeutralKey = GrytNeutralKey;
+export type RadiusKey = GrytRadiusKey;
+export type HueSet = GrytHues;
+export type NeutralSet = GrytNeutrals;
+export type ThemeDraft = GrytTheme;
 
-export const HUE_KEYS = [
-  "accent",
-  "accentLight",
-  "secondary",
-  "secondaryLight",
-  "success",
-  "danger",
-  "dangerLight",
-  "warning",
-  "onAccent",
-  "onSecondary",
-  "onDanger"
-] as const;
+export const HUE_KEYS = GRYT_HUE_KEYS;
+export const NEUTRAL_KEYS = GRYT_NEUTRAL_KEYS;
+export const RADIUS_KEYS = GRYT_RADIUS_KEYS;
 
-export const NEUTRAL_KEYS = [
-  "bg",
-  "surface",
-  "surfaceRaised",
-  "surfaceHover",
-  "border",
-  "muted",
-  "text"
-] as const;
+export { isHexColor as isHex, normalizeHexColor as normalizeHex };
 
-export const RADIUS_KEYS = ["sm", "md", "lg", "xl", "full"] as const;
-
-export type HueKey = (typeof HUE_KEYS)[number];
-export type NeutralKey = (typeof NEUTRAL_KEYS)[number];
-export type RadiusKey = (typeof RADIUS_KEYS)[number];
-
-export type HueSet = Record<HueKey, string>;
-export type NeutralSet = Record<NeutralKey, string>;
-
-export interface ThemeDraft {
-  hue: HueSet;
-  /** Null when light borrows the hues above, which is the usual case. */
-  lightHue: HueSet | null;
-  dark: NeutralSet;
-  light: NeutralSet;
-  radius: Record<RadiusKey, number>;
-}
-
-/** Which field a warning or an edit points at. */
+/** Where this appearance's hues live, which is what an edit has to write to. */
 export type DraftPath =
   | `hue.${HueKey}`
   | `lightHue.${HueKey}`
   | `dark.${NeutralKey}`
   | `light.${NeutralKey}`;
 
-/** Where this appearance's hues live, which is what an edit has to write to. */
-export function hueSlot(draft: ThemeDraft, appearance: Appearance): "hue" | "lightHue" {
+export const grytDraft: ThemeDraft = grytTheme;
+
+export function hueSlot(
+  draft: ThemeDraft,
+  appearance: Appearance
+): "hue" | "lightHue" {
   return appearance === "light" && draft.lightHue !== null ? "lightHue" : "hue";
 }
 
-export function huesFor(draft: ThemeDraft, appearance: Appearance): HueSet {
-  return appearance === "light" && draft.lightHue !== null
-    ? draft.lightHue
-    : draft.hue;
-}
-
-/**
- * The light surface-hover the library does not ship.
- *
- * grytLightTokens names six anchors and surfaceHover is not one of them, so
- * createGrytTheme({ appearance: "light" }) falls through to the dark #334155 —
- * a slate block where a light hover should be. Step 4 is the step that means
- * "component background, hovered", so that is what it should have been, and
- * setting it here means a theme exported from this page is right in light even
- * on today's release. GRYT-240 fixes it in the library.
- */
-const LIGHT_SURFACE_HOVER = grytScalesLight.neutral[3];
-
-export const grytDraft: ThemeDraft = {
-  hue: {
-    accent: grytTokens.color.accent,
-    accentLight: grytTokens.color.accentLight,
-    secondary: grytTokens.color.secondary,
-    secondaryLight: grytTokens.color.secondaryLight,
-    success: grytTokens.color.success,
-    danger: grytTokens.color.danger,
-    dangerLight: grytTokens.color.dangerLight,
-    warning: grytTokens.color.warning,
-    onAccent: grytTokens.color.onAccent,
-    onSecondary: grytTokens.color.onSecondary,
-    onDanger: grytTokens.color.onDanger
-  },
-  lightHue: null,
-  dark: {
-    bg: grytTokens.color.bg,
-    surface: grytTokens.color.surface,
-    surfaceRaised: grytTokens.color.surfaceRaised,
-    surfaceHover: grytTokens.color.surfaceHover,
-    border: grytTokens.color.border,
-    muted: grytTokens.color.muted,
-    text: grytTokens.color.text
-  },
-  light: {
-    bg: grytLightTokens.bg,
-    surface: grytLightTokens.surface,
-    surfaceRaised: grytLightTokens.surfaceRaised,
-    surfaceHover: LIGHT_SURFACE_HOVER,
-    border: grytLightTokens.border,
-    muted: grytLightTokens.muted,
-    text: grytLightTokens.text
-  },
-  radius: { ...grytTokens.radius }
-};
+export const huesFor = grytThemeHues;
 
 export function cloneDraft(draft: ThemeDraft): ThemeDraft {
   return {
@@ -161,18 +89,11 @@ export function themeStyle(
   draft: ThemeDraft,
   appearance: Appearance
 ): CSSProperties {
-  return createGrytTheme({
-    appearance,
-    color: colorsFor(draft, appearance),
-    radius: draft.radius
-  });
+  return createGrytTheme(grytThemeToOptions(draft, appearance));
 }
 
 /** A generated scale, read back off the built theme rather than regenerated. */
-export function scaleFrom(
-  theme: CSSProperties,
-  family: string
-): string[] {
+export function scaleFrom(theme: CSSProperties, family: string): string[] {
   const vars = theme as unknown as Record<string, string>;
   return Array.from(
     { length: 12 },
@@ -192,25 +113,6 @@ export const SCALE_FAMILIES = [
 /** Changes anywhere in the draft, as one string. Cheap memo key. */
 export function draftSignature(draft: ThemeDraft): string {
   return JSON.stringify(draft);
-}
-
-export function draftsEqual(a: ThemeDraft, b: ThemeDraft): boolean {
-  return draftSignature(a) === draftSignature(b);
-}
-
-const HEX = /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i;
-
-export function isHex(value: string): boolean {
-  return HEX.test(value.trim());
-}
-
-/** #abc to #aabbcc, and everything lower case, so comparisons work. */
-export function normalizeHex(value: string): string {
-  const hex = value.trim().toLowerCase();
-  if (hex.length === 4) {
-    return `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`;
-  }
-  return hex;
 }
 
 /** Human labels, used by the editor and by the contrast report alike. */

@@ -28,6 +28,7 @@ import {
   RADIUS_KEYS,
   RADIUS_LABELS,
   draftSignature,
+  grytDraft,
   hueSlot,
   huesFor,
   scaleFrom,
@@ -49,7 +50,7 @@ import {
 } from "../lib/theme/generate";
 import { presets, presetsById } from "../lib/theme/presets";
 import {
-  decodeDraft,
+  decodeGrytTheme,
   encodeDraft,
   importTheme,
   themeCode,
@@ -85,10 +86,12 @@ const TEXT_KEYS: NeutralKey[] = ["text", "muted"];
 export function ThemeGeneratorPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   // Read once. Re-reading would fight the editor every time the link is copied.
-  const [shared] = useState(() => decodeDraft(searchParams));
+  const [shared] = useState(() => decodeGrytTheme(searchParams.toString()));
 
-  const [draft, setDraft] = useState<ThemeDraft>(shared.draft);
-  const [appearance, setAppearance] = useState<Appearance>(shared.appearance);
+  const [draft, setDraft] = useState<ThemeDraft>(shared?.theme ?? grytDraft);
+  const [appearance, setAppearance] = useState<Appearance>(
+    shared?.appearance ?? "dark"
+  );
   /**
    * Whether the label colours follow their fills.
    *
@@ -98,10 +101,13 @@ export function ThemeGeneratorPage() {
    * a theme arrives carrying labels somebody else chose, which is every ported
    * preset: overwriting Dracula's ink would make it not Dracula.
    */
-  const [autoLabels, setAutoLabels] = useState(
-    labelsAreAuto(shared.draft.hue) &&
-      (shared.draft.lightHue === null || labelsAreAuto(shared.draft.lightHue))
-  );
+  const [autoLabels, setAutoLabels] = useState(() => {
+    const start = shared?.theme ?? grytDraft;
+    return (
+      labelsAreAuto(start.hue) &&
+      (start.lightHue === null || labelsAreAuto(start.lightHue))
+    );
+  });
   const [exportTab, setExportTab] = useState("code");
   const [importText, setImportText] = useState("");
   const [importError, setImportError] = useState<string | null>(null);

@@ -19,6 +19,32 @@ export type { GrytThemeOptions, GrytTokens } from "./theme/createGrytTheme";
 // matrices somewhere, which is exactly what one generator was meant to avoid.
 export { contrast, hexToOklch, oklchToHex } from "./theme/oklch";
 export type { Oklch } from "./theme/oklch";
+// A whole theme as a document, and the link it travels in. Two apps read this
+// now — the generator on the docs site writes them, the client imports them —
+// so the format lives with createGrytTheme rather than in either of them.
+export {
+  GRYT_HUE_KEYS,
+  GRYT_NEUTRAL_KEYS,
+  GRYT_RADIUS_KEYS,
+  cloneGrytTheme,
+  decodeGrytTheme,
+  encodeGrytTheme,
+  grytTheme,
+  grytThemeHues,
+  grytThemeToOptions,
+  isHexColor,
+  normalizeHexColor
+} from "./theme/theme";
+export type {
+  DecodedGrytTheme,
+  GrytAppearance,
+  GrytHueKey,
+  GrytHues,
+  GrytNeutralKey,
+  GrytNeutrals,
+  GrytRadiusKey,
+  GrytTheme
+} from "./theme/theme";
 
 export { Button } from "./components/Button/Button";
 export type { ButtonProps } from "./components/Button/Button";
