@@ -110,3 +110,36 @@ describe("the theme document", () => {
     }
   });
 });
+
+describe("a theme's name", () => {
+  it("travels in the link and in the JSON", () => {
+    const named = { ...cloneGrytTheme(grytTheme), name: "Ember" };
+    expect(decodeGrytTheme(encodeGrytTheme(named).toString())?.theme.name).toBe(
+      "Ember"
+    );
+    expect(decodeGrytTheme(JSON.stringify(named))?.theme.name).toBe("Ember");
+  });
+
+  it("is enough on its own to be a theme", () => {
+    // A link carrying only a name is somebody's palette that happens to match
+    // Gryt's. Dropping it would turn a named theme into nothing at all.
+    expect(decodeGrytTheme("?name=Just%20the%20name")?.theme.name).toBe(
+      "Just the name"
+    );
+  });
+
+  it("is trimmed, collapsed and capped", () => {
+    const long = decodeGrytTheme(`?name=${encodeURIComponent("  a".repeat(80))}`);
+    expect(long?.theme.name?.length).toBeLessThanOrEqual(60);
+    expect(decodeGrytTheme("?name=%20%20Two%20%20words%20%20")?.theme.name).toBe(
+      "Two words"
+    );
+  });
+
+  it("is not a colour, so it never reaches createGrytTheme", () => {
+    const named = { ...cloneGrytTheme(grytTheme), name: "Ember" };
+    expect(grytThemeToOptions(named, "dark")).toEqual(
+      grytThemeToOptions(grytTheme, "dark")
+    );
+  });
+});

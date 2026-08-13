@@ -57,12 +57,28 @@ export type GrytHues = Record<GrytHueKey, string>;
 export type GrytNeutrals = Record<GrytNeutralKey, string>;
 
 export interface GrytTheme {
+  /**
+   * What its author called it, if they called it anything.
+   *
+   * Metadata rather than a colour: nothing about how a theme looks depends on
+   * it, and grytThemeToOptions drops it. It exists because a link full of hex
+   * values says nothing about what it is, and the person who made it already
+   * knew — so the receiving end should not have to ask.
+   */
+  name?: string;
   hue: GrytHues;
   /** Null when light borrows the hues above, which is the usual case. */
   lightHue: GrytHues | null;
   dark: GrytNeutrals;
   light: GrytNeutrals;
   radius: Record<GrytRadiusKey, number>;
+}
+
+/** Long enough for a name, short enough not to be a payload. */
+export const GRYT_THEME_NAME_MAX = 60;
+
+export function normalizeThemeName(value: string): string {
+  return value.replace(/\s+/g, " ").trim().slice(0, GRYT_THEME_NAME_MAX);
 }
 
 /** What the library ships, as a document. */
@@ -104,6 +120,7 @@ export const grytTheme: GrytTheme = {
 
 export function cloneGrytTheme(theme: GrytTheme): GrytTheme {
   return {
+    ...(theme.name === undefined ? {} : { name: theme.name }),
     hue: { ...theme.hue },
     lightHue: theme.lightHue === null ? null : { ...theme.lightHue },
     dark: { ...theme.dark },
@@ -122,7 +139,12 @@ export function grytThemeHues(
     : theme.hue;
 }
 
-/** One appearance of a theme, in the shape createGrytTheme takes. */
+/**
+ * One appearance of a theme, in the shape createGrytTheme takes.
+ *
+ * The name does not come along: createGrytTheme returns CSS variables, and a
+ * name is not one.
+ */
 export function grytThemeToOptions(
   theme: GrytTheme,
   appearance: GrytAppearance
@@ -187,6 +209,9 @@ export function encodeGrytTheme(
 ): URLSearchParams {
   const params = new URLSearchParams();
   const bare = (hex: string) => normalizeHexColor(hex).slice(1);
+
+  const name = normalizeThemeName(theme.name ?? "");
+  if (name !== "") params.set("name", name);
 
   for (const key of GRYT_HUE_KEYS) {
     if (theme.hue[key] !== grytTheme.hue[key]) {
@@ -255,6 +280,12 @@ function decodeParams(params: URLSearchParams): DecodedGrytTheme | null {
     return normalizeHexColor(hex);
   };
 
+  const name = normalizeThemeName(params.get("name") ?? "");
+  if (name !== "") {
+    theme.name = name;
+    present = true;
+  }
+
   for (const key of GRYT_HUE_KEYS) {
     const value = read(HUE_PARAM[key]);
     if (value !== null) theme.hue[key] = value;
@@ -313,6 +344,14 @@ function decodeJson(text: string): DecodedGrytTheme | null {
       }
     }
   };
+
+  if (typeof source.name === "string") {
+    const named = normalizeThemeName(source.name);
+    if (named !== "") {
+      theme.name = named;
+      present = true;
+    }
+  }
 
   colors(source.hue, theme.hue);
   colors(source.dark, theme.dark);

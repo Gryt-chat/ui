@@ -68,6 +68,7 @@ export const presets: ThemePreset[] = [
     note: "Warm all the way down — the neutrals are brown, not blue.",
     group: "Gryt",
     draft: {
+      name: "Ember",
       hue: {
         accent: "#f0803c",
         accentLight: "#ff9f66",
@@ -109,6 +110,7 @@ export const presets: ThemePreset[] = [
     note: "Near-monochrome. One quiet slate accent and nothing else.",
     group: "Gryt",
     draft: {
+      name: "Paper",
       hue: {
         accent: "#8390a8",
         accentLight: "#a3aec2",
@@ -150,6 +152,7 @@ export const presets: ThemePreset[] = [
     note: "Black, white, and a yellow that cannot be missed.",
     group: "Gryt",
     draft: {
+      name: "Signal",
       hue: {
         accent: "#ffd400",
         accentLight: "#ffe454",
@@ -196,6 +199,7 @@ export const presets: ThemePreset[] = [
     group: "Ported",
     source: "draculatheme.com, MIT",
     draft: {
+      name: "Dracula",
       hue: {
         accent: "#bd93f9",
         accentLight: "#d0b3fb",
@@ -253,6 +257,7 @@ export const presets: ThemePreset[] = [
     group: "Ported",
     source: "nordtheme.com, MIT",
     draft: {
+      name: "Nord",
       hue: {
         accent: "#88c0d0",
         accentLight: "#8fbcbb",
@@ -311,6 +316,7 @@ export const presets: ThemePreset[] = [
     group: "Ported",
     source: "catppuccin/palette, MIT",
     draft: {
+      name: "Catppuccin",
       hue: {
         accent: "#cba6f7",
         accentLight: "#dcc0fa",
@@ -370,6 +376,7 @@ export const presets: ThemePreset[] = [
     group: "Ported",
     source: "@primer/primitives",
     draft: {
+      name: "GitHub",
       hue: {
         accent: "#1f6feb",
         accentLight: "#4493f8",
@@ -429,6 +436,7 @@ export const presets: ThemePreset[] = [
     group: "Ported",
     source: "anthropic.com — a likeness, not a published palette",
     draft: {
+      name: "Claude",
       hue: {
         accent: "#d97757",
         accentLight: "#e59275",
@@ -477,6 +485,7 @@ export const presets: ThemePreset[] = [
     group: "Ported",
     source: "ui.shadcn.com, MIT — accent adapted",
     draft: {
+      name: "shadcn/ui",
       hue: {
         accent: "#a1a1aa",
         accentLight: "#d4d4d8",
@@ -535,6 +544,7 @@ export const presets: ThemePreset[] = [
     group: "Ported",
     source: "ethanschoonover.com/solarized, MIT",
     draft: {
+      name: "Solarized",
       hue: {
         accent: "#268bd2",
         accentLight: "#4ba3e3",
