@@ -3,6 +3,7 @@ import {
   createGrytTheme,
   GrytProvider,
   grytScales,
+  grytScalesLight,
   grytTokens
 } from "@gryt/ui";
 import { CodeBlock } from "../components/CodeBlock";
@@ -136,6 +137,41 @@ export function ThemePage() {
           </h3>
           <ol className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-12">
             {grytScales[name].map((value, index) => (
+              <li key={value + index} className="min-w-0">
+                <div
+                  className="h-12 w-full rounded-(--gryt-radius-sm) border border-gryt-border"
+                  style={{ backgroundColor: value }}
+                />
+                <p className="m-0 pt-1 text-center font-mono text-[10px] text-gryt-muted">
+                  {index + 1}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
+
+      <h2>Light</h2>
+      <p>
+        Dark is what <code>:root</code> carries. An app offering a light
+        appearance puts <code>.light</code> on an ancestor — the root element,
+        usually, since overlays portal to <code>document.body</code> and would
+        otherwise miss it — and every value swaps underneath it.
+      </p>
+      <p>
+        It is not the dark ramp inverted. In dark a surface sits lighter than
+        the page; in light it is white and the page is the grey one, so steps 1
+        and 2 run light-grey then white. Step 9 is the same brand colour in both,
+        so a filled button does not change colour when somebody switches, and
+        step 10 darkens on hover where the dark set lightens.
+      </p>
+      {SCALE_NAMES.map((name) => (
+        <section key={name} className="not-prose mt-(--space-md)">
+          <h3 className="m-0 pb-(--space-sm) text-[11px] font-semibold uppercase tracking-wider text-gryt-muted">
+            {name}
+          </h3>
+          <ol className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-12">
+            {grytScalesLight[name].map((value, index) => (
               <li key={value + index} className="min-w-0">
                 <div
                   className="h-12 w-full rounded-(--gryt-radius-sm) border border-gryt-border"

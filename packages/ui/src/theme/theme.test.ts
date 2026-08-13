@@ -4,7 +4,12 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { grytAlphaScales, grytScales } from "./createGrytTheme";
+import {
+  createGrytTheme,
+  grytAlphaScales,
+  grytScales,
+  grytScalesLight
+} from "./createGrytTheme";
 import { contrast } from "./oklch";
 
 const css = readFileSync(
@@ -75,5 +80,58 @@ describe("contrast", () => {
       if (name === "neutral") continue;
       expect(contrast(steps[10], n[0])).toBeGreaterThan(contrast(steps[9], n[0]));
     }
+  });
+});
+
+describe("the light set", () => {
+  const l = grytScalesLight;
+
+  it("is in theme.css under .light", () => {
+    const block = css.slice(css.indexOf(".light {"));
+    for (const [name, steps] of Object.entries(l)) {
+      steps.forEach((value, index) => {
+        expect(block).toContain(`--gryt-${name}-${index + 1}: ${value};`);
+      });
+    }
+  });
+
+  it("puts white above the page rather than below it", () => {
+    // The one place the ramp is deliberately not monotonic: in a light theme a
+    // raised surface is whiter than the page, so step 2 is lighter than step 1.
+    expect(contrast(l.neutral[1], "#000000")).toBeGreaterThan(
+      contrast(l.neutral[0], "#000000")
+    );
+  });
+
+  it("carries text on the page and on a white panel", () => {
+    for (const background of [l.neutral[0], l.neutral[1]]) {
+      expect(contrast(l.neutral[10], background)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(l.neutral[11], background)).toBeGreaterThanOrEqual(7);
+      for (const name of ["accent", "secondary", "success", "danger", "warning"] as const) {
+        expect(contrast(l[name][10], background)).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+
+  it("keeps the brand colour on step 9 in both appearances", () => {
+    // A filled button should be the same colour whichever way the app is set,
+    // or Gryt stops looking like Gryt when someone switches.
+    for (const name of ["accent", "secondary", "success", "danger", "warning"] as const) {
+      expect(l[name][8]).toBe(grytScales[name][8]);
+    }
+  });
+
+  it("darkens on hover, where the dark set lightens", () => {
+    for (const name of ["accent", "danger"] as const) {
+      expect(contrast(l[name][9], "#ffffff")).toBeGreaterThan(
+        contrast(l[name][8], "#ffffff")
+      );
+    }
+  });
+
+  it("regenerates the light set when asked for it", () => {
+    const theme = createGrytTheme({ appearance: "light" }) as Record<string, string>;
+    expect(theme["--gryt-neutral-2"]).toBe("#ffffff");
+    expect(theme["--gryt-accent-11"]).toBe(l.accent[10]);
   });
 });
