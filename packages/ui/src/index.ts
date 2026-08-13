@@ -2,7 +2,12 @@ import "./styles/index.css";
 
 export { GrytProvider } from "./GrytProvider";
 export type { GrytProviderProps } from "./GrytProvider";
-export { createGrytTheme, grytTokens } from "./theme/createGrytTheme";
+export {
+  createGrytTheme,
+  grytAlphaScales,
+  grytScales,
+  grytTokens
+} from "./theme/createGrytTheme";
 export type { GrytThemeOptions, GrytTokens } from "./theme/createGrytTheme";
 
 export { Button } from "./components/Button/Button";

@@ -1,4 +1,10 @@
-import { Button, createGrytTheme, GrytProvider, grytTokens } from "@gryt/ui";
+import {
+  Button,
+  createGrytTheme,
+  GrytProvider,
+  grytScales,
+  grytTokens
+} from "@gryt/ui";
 import { CodeBlock } from "../components/CodeBlock";
 
 const themeCode = `const theme = createGrytTheme({
@@ -129,7 +135,7 @@ export function ThemePage() {
             {name}
           </h3>
           <ol className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-12">
-            {grytTokens.scale[name].map((value, index) => (
+            {grytScales[name].map((value, index) => (
               <li key={value + index} className="min-w-0">
                 <div
                   className="h-12 w-full rounded-(--gryt-radius-sm) border border-gryt-border"

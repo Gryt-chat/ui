@@ -54,6 +54,7 @@
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build && bun scripts/fix-declarations.ts",
+    "generate-theme": "bun scripts/generate-theme.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "prepublishOnly": "bun run typecheck && bun run test && bun run build"

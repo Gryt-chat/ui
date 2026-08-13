@@ -1,97 +1,7 @@
 import type { CSSProperties } from "react";
+import { alphaScale, hueScale, neutralScale } from "./oklch";
 
 export const grytTokens = {
-  /**
-   * The scales, so a consumer can read them rather than restating them.
-   * Same values as the CSS variables — theme.css and this come out of one
-   * generator.
-   */
-  scale: {
-    neutral: [
-      "#111318",
-      "#1a1d24",
-      "#1e2028",
-      "#22262f",
-      "#272b36",
-      "#2b303d",
-      "#363b4a",
-      "#494e5d",
-      "#646975",
-      "#74777f",
-      "#888888",
-      "#e0e0e6",
-    ],
-    accent: [
-      "#14141b",
-      "#1e1e2b",
-      "#242439",
-      "#2b2a47",
-      "#323054",
-      "#3c3a64",
-      "#4b487c",
-      "#6360a0",
-      "#968ff8",
-      "#b4afff",
-      "#c4c3ff",
-      "#e5e5ff",
-    ],
-    secondary: [
-      "#0e161a",
-      "#122229",
-      "#0f2a36",
-      "#0b3243",
-      "#063b4f",
-      "#04465e",
-      "#055775",
-      "#0f7397",
-      "#7dd3fc",
-      "#bae6fd",
-      "#9ff9ff",
-      "#d7ffff",
-    ],
-    success: [
-      "#101712",
-      "#162319",
-      "#172c1d",
-      "#183520",
-      "#193e25",
-      "#1e4a2c",
-      "#275d38",
-      "#36794b",
-      "#4ade80",
-      "#86efac",
-      "#aaf7be",
-      "#dbffe4",
-    ],
-    danger: [
-      "#1b1212",
-      "#2b1a1a",
-      "#381e1d",
-      "#442322",
-      "#512727",
-      "#602f2e",
-      "#773b3a",
-      "#9a504e",
-      "#f87171",
-      "#fca5a5",
-      "#ffb4b1",
-      "#ffdedb",
-    ],
-    warning: [
-      "#18140e",
-      "#251e11",
-      "#30250e",
-      "#3a2b0a",
-      "#443207",
-      "#513c06",
-      "#654b09",
-      "#846313",
-      "#fbbf24",
-      "#fcd34d",
-      "#ffdf8c",
-      "#fff6cf",
-    ],
-  },
   color: {
     bg: "#111318",
     surface: "#1a1d24",
@@ -100,7 +10,7 @@ export const grytTokens = {
     border: "#2b303d",
     text: "#e0e0e6",
     muted: "#888888",
-    accent: "#968FF8",
+    accent: "#968ff8",
     accentLight: "#b4afff",
     secondary: "#7dd3fc",
     secondaryLight: "#bae6fd",
@@ -135,11 +45,84 @@ export interface GrytThemeOptions {
 // components read CSS custom properties, so a theme is the set of variables to
 // put on an element. Returning CSSProperties means it drops straight into a
 // style prop, and overriding one token does not require reproducing the rest.
+/**
+ * The scales, computed rather than written down.
+ *
+ * There is one generator, and this is it — theme.css is emitted from these same
+ * functions by scripts/generate-theme.ts, and a test asserts the stylesheet
+ * still matches. Two hand-maintained copies of a twelve-step ramp would drift
+ * the first time somebody nudged a colour.
+ */
+export const grytScales = {
+  neutral: neutralScale({
+    bg: grytTokens.color.bg,
+    surface: grytTokens.color.surface,
+    surfaceRaised: grytTokens.color.surfaceRaised,
+    border: grytTokens.color.border,
+    muted: grytTokens.color.muted,
+    text: grytTokens.color.text
+  }),
+  accent: hueScale(grytTokens.color.accent, grytTokens.color.accentLight),
+  secondary: hueScale(
+    grytTokens.color.secondary,
+    grytTokens.color.secondaryLight
+  ),
+  success: hueScale(grytTokens.color.success, grytTokens.color.success),
+  danger: hueScale(grytTokens.color.danger, grytTokens.color.dangerLight),
+  warning: hueScale(grytTokens.color.warning, grytTokens.color.warning)
+} as const;
+
+export const grytAlphaScales = {
+  neutral: alphaScale(grytScales.neutral, grytTokens.color.bg),
+  accent: alphaScale(grytScales.accent, grytTokens.color.bg)
+} as const;
+
 export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
   const color = { ...grytTokens.color, ...options.color };
   const radius = { ...grytTokens.radius, ...options.radius };
 
+  /**
+   * Overriding a colour regenerates its scale.
+   *
+   * The components read the scale, not the flat name — bg-gryt-neutral-4 for a
+   * hover, text-gryt-accent-11 for a link — so a theme that set --gryt-accent
+   * and stopped there would change almost nothing on screen. The same
+   * generator that produced the defaults runs here on whatever anchors the
+   * caller passed, which is what makes one line of override recolour the app
+   * coherently rather than in patches.
+   */
+  const scales: Record<string, string[]> = {
+    neutral: neutralScale({
+      bg: color.bg,
+      surface: color.surface,
+      surfaceRaised: color.surfaceRaised,
+      border: color.border,
+      muted: color.muted,
+      text: color.text
+    }),
+    accent: hueScale(color.accent, color.accentLight),
+    secondary: hueScale(color.secondary, color.secondaryLight),
+    success: hueScale(color.success, color.success),
+    danger: hueScale(color.danger, color.dangerLight),
+    warning: hueScale(color.warning, color.warning)
+  };
+
+  const scaleVars: Record<string, string> = {};
+  for (const [name, steps] of Object.entries(scales)) {
+    steps.forEach((value, index) => {
+      scaleVars[`--gryt-${name}-${index + 1}`] = value;
+      scaleVars[`--color-gryt-${name}-${index + 1}`] = value;
+    });
+  }
+  for (const name of ["neutral", "accent"] as const) {
+    alphaScale(scales[name], color.bg).forEach((value, index) => {
+      scaleVars[`--gryt-${name}-a${index + 1}`] = value;
+      scaleVars[`--color-gryt-${name}-a${index + 1}`] = value;
+    });
+  }
+
   return {
+    ...scaleVars,
     "--gryt-bg": color.bg,
     "--gryt-surface": color.surface,
     "--gryt-surface-raised": color.surfaceRaised,

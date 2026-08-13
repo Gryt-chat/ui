@@ -28,14 +28,16 @@
     /* The scales as Tailwind colours: bg-gryt-neutral-3, text-gryt-accent-11,
        border-gryt-neutral-7. The same values as the raw names below — both
        lists come out of one generator, so they cannot drift apart. */
+    /* GENERATED: scales — bun scripts/generate-theme.ts --color-gryt */
+    /* neutral */
     --color-gryt-neutral-1: #111318;
     --color-gryt-neutral-2: #1a1d24;
     --color-gryt-neutral-3: #1e2028;
     --color-gryt-neutral-4: #22262f;
-    --color-gryt-neutral-5: #272b36;
+    --color-gryt-neutral-5: #262b36;
     --color-gryt-neutral-6: #2b303d;
-    --color-gryt-neutral-7: #363b4a;
-    --color-gryt-neutral-8: #494e5d;
+    --color-gryt-neutral-7: #363c4a;
+    --color-gryt-neutral-8: #484e5d;
     --color-gryt-neutral-9: #646975;
     --color-gryt-neutral-10: #74777f;
     --color-gryt-neutral-11: #888888;
@@ -52,8 +54,8 @@
     --color-gryt-accent-8: #6360a0;
     --color-gryt-accent-9: #968ff8;
     --color-gryt-accent-10: #b4afff;
-    --color-gryt-accent-11: #c4c3ff;
-    --color-gryt-accent-12: #e5e5ff;
+    --color-gryt-accent-11: #c3c1ff;
+    --color-gryt-accent-12: #e3e4ff;
 
     /* secondary */
     --color-gryt-secondary-1: #0e161a;
@@ -66,8 +68,8 @@
     --color-gryt-secondary-8: #0f7397;
     --color-gryt-secondary-9: #7dd3fc;
     --color-gryt-secondary-10: #bae6fd;
-    --color-gryt-secondary-11: #9ff9ff;
-    --color-gryt-secondary-12: #d7ffff;
+    --color-gryt-secondary-11: #9afaff;
+    --color-gryt-secondary-12: #d4ffff;
 
     /* success */
     --color-gryt-success-1: #101712;
@@ -79,9 +81,9 @@
     --color-gryt-success-7: #275d38;
     --color-gryt-success-8: #36794b;
     --color-gryt-success-9: #4ade80;
-    --color-gryt-success-10: #86efac;
-    --color-gryt-success-11: #aaf7be;
-    --color-gryt-success-12: #dbffe4;
+    --color-gryt-success-10: #4ade80;
+    --color-gryt-success-11: #93e0a7;
+    --color-gryt-success-12: #cef3d6;
 
     /* danger */
     --color-gryt-danger-1: #1b1212;
@@ -94,8 +96,8 @@
     --color-gryt-danger-8: #9a504e;
     --color-gryt-danger-9: #f87171;
     --color-gryt-danger-10: #fca5a5;
-    --color-gryt-danger-11: #ffb4b1;
-    --color-gryt-danger-12: #ffdedb;
+    --color-gryt-danger-11: #ffb0ac;
+    --color-gryt-danger-12: #ffdad7;
 
     /* warning */
     --color-gryt-warning-1: #18140e;
@@ -107,23 +109,18 @@
     --color-gryt-warning-7: #654b09;
     --color-gryt-warning-8: #846313;
     --color-gryt-warning-9: #fbbf24;
-    --color-gryt-warning-10: #fcd34d;
-    --color-gryt-warning-11: #ffdf8c;
-    --color-gryt-warning-12: #fff6cf;
+    --color-gryt-warning-10: #fbbf24;
+    --color-gryt-warning-11: #f8d17f;
+    --color-gryt-warning-12: #fce8c1;
 
-    /* The same steps as translucent overlays, solved so each one composites
-       over step 1 to exactly its solid twin. That is what keeps a tinted hover
-       reading correctly on top of an avatar or a video tile rather than only on
-       the app background. Neutral and accent only — the hues have no call sites
-       that need them yet. */
     --color-gryt-neutral-a1: transparent;
     --color-gryt-neutral-a2: rgb(190 212 255 / 5.2%);
     --color-gryt-neutral-a3: rgb(205 207 255 / 6.9%);
     --color-gryt-neutral-a4: rgb(188 210 255 / 10.0%);
-    --color-gryt-neutral-a5: rgb(186 204 255 / 13.0%);
+    --color-gryt-neutral-a5: rgb(179 204 255 / 13.0%);
     --color-gryt-neutral-a6: rgb(179 200 255 / 16.0%);
-    --color-gryt-neutral-a7: rgb(188 204 255 / 21.6%);
-    --color-gryt-neutral-a8: rgb(204 217 255 / 29.9%);
+    --color-gryt-neutral-a7: rgb(188 208 255 / 21.6%);
+    --color-gryt-neutral-a8: rgb(201 217 255 / 29.9%);
     --color-gryt-neutral-a9: rgb(223 233 255 / 40.3%);
     --color-gryt-neutral-a10: rgb(239 243 255 / 44.6%);
     --color-gryt-neutral-a11: rgb(255 253 248 / 50.0%);
@@ -139,9 +136,9 @@
     --color-gryt-accent-a8: rgb(156 150 255 / 58.9%);
     --color-gryt-accent-a9: rgb(154 147 255 / 97.0%);
     --color-gryt-accent-a10: rgb(180 175 255 / 100.0%);
-    --color-gryt-accent-a11: rgb(196 195 255 / 100.0%);
-    --color-gryt-accent-a12: rgb(229 229 255 / 100.0%);
-
+    --color-gryt-accent-a11: rgb(195 193 255 / 100.0%);
+    --color-gryt-accent-a12: rgb(227 228 255 / 100.0%);
+    /* END GENERATED */
     /* Surface one step above --color-gryt-surface-raised, for hover states. */
     --color-gryt-surface-hover: #334155;
 
@@ -243,16 +240,16 @@
        and 3 (5.24, 4.76, 4.58); neutral 12 clears 12:1 on all three; every
        hue's step 11 clears 11:1 on the app background. AA for body text
        everywhere the scale is meant to carry it. */
-
+    /* GENERATED: scales — bun scripts/generate-theme.ts --gryt */
     /* neutral */
     --gryt-neutral-1: #111318;
     --gryt-neutral-2: #1a1d24;
     --gryt-neutral-3: #1e2028;
     --gryt-neutral-4: #22262f;
-    --gryt-neutral-5: #272b36;
+    --gryt-neutral-5: #262b36;
     --gryt-neutral-6: #2b303d;
-    --gryt-neutral-7: #363b4a;
-    --gryt-neutral-8: #494e5d;
+    --gryt-neutral-7: #363c4a;
+    --gryt-neutral-8: #484e5d;
     --gryt-neutral-9: #646975;
     --gryt-neutral-10: #74777f;
     --gryt-neutral-11: #888888;
@@ -269,8 +266,8 @@
     --gryt-accent-8: #6360a0;
     --gryt-accent-9: #968ff8;
     --gryt-accent-10: #b4afff;
-    --gryt-accent-11: #c4c3ff;
-    --gryt-accent-12: #e5e5ff;
+    --gryt-accent-11: #c3c1ff;
+    --gryt-accent-12: #e3e4ff;
 
     /* secondary */
     --gryt-secondary-1: #0e161a;
@@ -283,8 +280,8 @@
     --gryt-secondary-8: #0f7397;
     --gryt-secondary-9: #7dd3fc;
     --gryt-secondary-10: #bae6fd;
-    --gryt-secondary-11: #9ff9ff;
-    --gryt-secondary-12: #d7ffff;
+    --gryt-secondary-11: #9afaff;
+    --gryt-secondary-12: #d4ffff;
 
     /* success */
     --gryt-success-1: #101712;
@@ -296,9 +293,9 @@
     --gryt-success-7: #275d38;
     --gryt-success-8: #36794b;
     --gryt-success-9: #4ade80;
-    --gryt-success-10: #86efac;
-    --gryt-success-11: #aaf7be;
-    --gryt-success-12: #dbffe4;
+    --gryt-success-10: #4ade80;
+    --gryt-success-11: #93e0a7;
+    --gryt-success-12: #cef3d6;
 
     /* danger */
     --gryt-danger-1: #1b1212;
@@ -311,8 +308,8 @@
     --gryt-danger-8: #9a504e;
     --gryt-danger-9: #f87171;
     --gryt-danger-10: #fca5a5;
-    --gryt-danger-11: #ffb4b1;
-    --gryt-danger-12: #ffdedb;
+    --gryt-danger-11: #ffb0ac;
+    --gryt-danger-12: #ffdad7;
 
     /* warning */
     --gryt-warning-1: #18140e;
@@ -324,23 +321,18 @@
     --gryt-warning-7: #654b09;
     --gryt-warning-8: #846313;
     --gryt-warning-9: #fbbf24;
-    --gryt-warning-10: #fcd34d;
-    --gryt-warning-11: #ffdf8c;
-    --gryt-warning-12: #fff6cf;
+    --gryt-warning-10: #fbbf24;
+    --gryt-warning-11: #f8d17f;
+    --gryt-warning-12: #fce8c1;
 
-    /* The same steps as translucent overlays, solved so each one composites
-       over step 1 to exactly its solid twin. That is what keeps a tinted hover
-       reading correctly on top of an avatar or a video tile rather than only on
-       the app background. Neutral and accent only — the hues have no call sites
-       that need them yet. */
     --gryt-neutral-a1: transparent;
     --gryt-neutral-a2: rgb(190 212 255 / 5.2%);
     --gryt-neutral-a3: rgb(205 207 255 / 6.9%);
     --gryt-neutral-a4: rgb(188 210 255 / 10.0%);
-    --gryt-neutral-a5: rgb(186 204 255 / 13.0%);
+    --gryt-neutral-a5: rgb(179 204 255 / 13.0%);
     --gryt-neutral-a6: rgb(179 200 255 / 16.0%);
-    --gryt-neutral-a7: rgb(188 204 255 / 21.6%);
-    --gryt-neutral-a8: rgb(204 217 255 / 29.9%);
+    --gryt-neutral-a7: rgb(188 208 255 / 21.6%);
+    --gryt-neutral-a8: rgb(201 217 255 / 29.9%);
     --gryt-neutral-a9: rgb(223 233 255 / 40.3%);
     --gryt-neutral-a10: rgb(239 243 255 / 44.6%);
     --gryt-neutral-a11: rgb(255 253 248 / 50.0%);
@@ -356,9 +348,9 @@
     --gryt-accent-a8: rgb(156 150 255 / 58.9%);
     --gryt-accent-a9: rgb(154 147 255 / 97.0%);
     --gryt-accent-a10: rgb(180 175 255 / 100.0%);
-    --gryt-accent-a11: rgb(196 195 255 / 100.0%);
-    --gryt-accent-a12: rgb(229 229 255 / 100.0%);
-
+    --gryt-accent-a11: rgb(195 193 255 / 100.0%);
+    --gryt-accent-a12: rgb(227 228 255 / 100.0%);
+    /* END GENERATED */
     --gryt-radius-sm: 8px;
     --gryt-radius-md: 12px;
     --gryt-radius-lg: 20px;
