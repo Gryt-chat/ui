@@ -22,13 +22,11 @@
   --color-accent: var(--gryt-accent);
   --color-accent-ink: var(--gryt-on-accent);
   --color-focus: var(--gryt-accent-light);
-  /* A code block keeps the dark half of whatever theme is on, in both
-     appearances — Shiki writes its colours inline, one theme's worth, so a
-     light surface under them puts near-white keywords on near-white paper.
-     Set from the header's theme; these are the fallbacks for a page that has
-     not run yet. */
-  --color-code-paper: var(--gryt-neutral-1);
-  --color-code-ink: var(--gryt-neutral-12);
+  /* Inset rather than raised — the flat equivalent of the shadow this site
+     does not use. Which direction "inset" is depends on the appearance: in
+     dark it is below the page, in light it is below a white panel, and there
+     is no single step that means both. */
+  --color-code-paper: color-mix(in oklab, var(--gryt-bg) 92%, black);
 
   --font-display: "Geist Variable", "Inter Variable", ui-sans-serif, system-ui,
     sans-serif;
@@ -64,4 +62,11 @@
   --radius-card: 20px;
   --radius-pill: 999px;
   --radius-input: 12px;
+}
+
+.light {
+  /* Step 3 is the component background, which against a white panel is the
+     inset one wants here. Mixing toward black, as dark does, would make a
+     grey slab in the middle of a light page. */
+  --color-code-paper: var(--gryt-neutral-3);
 }

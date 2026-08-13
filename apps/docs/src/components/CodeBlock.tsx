@@ -12,11 +12,11 @@ import json from "shiki/langs/json.mjs";
 import markdown from "shiki/langs/markdown.mjs";
 import tsx from "shiki/langs/tsx.mjs";
 import typescript from "shiki/langs/typescript.mjs";
-import { grytShikiTheme } from "../lib/grytShikiTheme";
+import { grytShikiTheme, grytShikiThemeLight } from "../lib/grytShikiTheme";
 
 const highlighterPromise = createHighlighterCore({
   engine: createJavaScriptRegexEngine(),
-  themes: [grytShikiTheme],
+  themes: [grytShikiTheme, grytShikiThemeLight],
   langs: [tsx, typescript, javascript, bash, css, json, markdown, html],
   langAlias: {
     js: "javascript",
@@ -80,7 +80,12 @@ export function CodeBlock({
 
         return highlighter.codeToHtml(code, {
           lang: loadedLanguages.includes(lang) ? lang : "text",
-          theme: "gryt-dark"
+          // Both, as custom properties rather than a colour. defaultColor off
+          // means neither wins in the markup and the stylesheet decides, which
+          // is what lets the header's toggle change a hundred code blocks
+          // without re-highlighting one of them.
+          themes: { light: "gryt-light", dark: "gryt-dark" },
+          defaultColor: false
         });
       })
       .then((html) => {
