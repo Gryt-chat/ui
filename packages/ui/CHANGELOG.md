@@ -1,5 +1,29 @@
 # @gryt/ui
 
+## 0.7.0
+
+### Minor Changes
+
+- b42eeb6: Twelve-step colour scales — `neutral`, `accent`, `secondary`, `success`, `danger`, `warning` — plus alpha scales for neutral and accent.
+
+  The library shipped about a dozen flat tokens, which covered backgrounds, borders and text but had no way to say "this component, hovered" or "this border, hovered". Each family now has the twelve steps those states need, as CSS variables (`--gryt-neutral-4`), as Tailwind colours (`bg-gryt-neutral-4`, `text-gryt-accent-11`), and readable from `grytScales`.
+
+  Generated in OKLCH from the tokens already shipped, so the ramp is perceptually even. **Nothing that ships today moves:** every step an existing token covered is that token unchanged, and the flat names are aliases onto the scale — `surface` is `neutral-2`, `accent` is `accent-9`.
+
+  **`createGrytTheme` regenerates a whole scale from an overridden anchor.** `createGrytTheme({ color: { accent: "#ff5c00" } })` now emits all twelve accent steps and their alphas in the new hue, not just `--gryt-accent`. Without that, a theme would have moved the flat token and left the components — which read the scale — on the old colour.
+
+  Contrast is measured, not assumed, and a test fails the build if it regresses: neutral 11 clears 4.5:1 on steps 1, 2 and 3; every hue's text step clears 4.5:1 on the app background; every hue ramps in one direction.
+
+- d28e66c: A light palette. `.light` on an ancestor swaps every scale value; `:root` stays dark.
+
+  The library shipped one palette and it was dark, which only became visible when the client dropped Radix Themes and light mode lost its colours entirely — the class landed on the DOM and every surface stayed dark.
+
+  It is not the dark ramp inverted. In dark a surface sits lighter than the page; in light it is white and the page is the grey one, so neutral 1 and 2 run light-grey then white and the ramp is deliberately not monotonic across them. Step 9 is the same brand colour in both appearances, so a filled button does not change colour when somebody switches, and step 10 darkens on hover where the dark set lightens.
+
+  `createGrytTheme({ appearance: "light" })` builds the light set, and an overridden anchor regenerates it the same way the dark one does. `grytScalesLight`, `grytAlphaScalesLight` and `grytLightTokens` are exported for reading.
+
+  Contrast is measured on this set rather than assumed from the other, and tested: neutral 11 clears 4.5:1 on both the page and a white panel, neutral 12 clears 7:1 on both, and every hue's step 11 clears 4.5:1 on both.
+
 ## 0.6.0
 
 ### Minor Changes
