@@ -5,7 +5,10 @@ export type { GrytProviderProps } from "./GrytProvider";
 export {
   createGrytTheme,
   grytAlphaScales,
+  grytAlphaScalesLight,
+  grytLightTokens,
   grytScales,
+  grytScalesLight,
   grytTokens
 } from "./theme/createGrytTheme";
 export type { GrytThemeOptions, GrytTokens } from "./theme/createGrytTheme";

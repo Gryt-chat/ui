@@ -185,6 +185,71 @@ export function alphaScale(scale: string[], background: string): string[] {
   });
 }
 
+/* ── light ──────────────────────────────────────────────────────────────
+   Not a mirror of the dark ramps, because elevation does not mirror. In dark,
+   a surface sitting on the page is lighter than the page; in light it is
+   whiter and the page is the grey one. So step 1 is a light grey page and step
+   2 is white, and the ramp is deliberately not monotonic across those two —
+   that non-monotonicity *is* the elevation.
+
+   The text steps are the ones that had to be measured. In dark they need to be
+   light enough on near-black; here they need to be dark enough on white, which
+   is a different and tighter constraint because step 2 is pure white. */
+
+const LIGHT_NEUTRAL_L = [
+  0.962, 1.0, 0.978, 0.952, 0.928, 0.898, 0.855, 0.79, 0.66, 0.61, 0.48, 0.25
+];
+const LIGHT_NEUTRAL_C = [
+  0.006, 0.0, 0.004, 0.007, 0.01, 0.013, 0.016, 0.018, 0.016, 0.014, 0.012,
+  0.014
+];
+
+const LIGHT_HUE_L = [0.975, 0.955, 0.93, 0.905, 0.878, 0.845, 0.795, 0.72];
+const LIGHT_HUE_C = [0.012, 0.024, 0.038, 0.05, 0.062, 0.074, 0.09, 0.11];
+
+/** Twelve light neutral steps. Anchors are kept exactly, as in the dark set. */
+export function neutralScaleLight(anchors: {
+  bg: string;
+  surface: string;
+  surfaceRaised: string;
+  border: string;
+  muted: string;
+  text: string;
+}): string[] {
+  const fixed: Record<number, string> = {
+    0: anchors.bg,
+    1: anchors.surface,
+    2: anchors.surfaceRaised,
+    5: anchors.border,
+    10: anchors.muted,
+    11: anchors.text
+  };
+  const hue = hexToOklch(anchors.border).h;
+  return LIGHT_NEUTRAL_L.map(
+    (l, i) => fixed[i] ?? oklchToHex({ l, c: LIGHT_NEUTRAL_C[i], h: hue })
+  );
+}
+
+/**
+ * Twelve light steps for a hue.
+ *
+ * Step 9 stays the brand colour, so a filled button is the same colour in both
+ * appearances and Gryt looks like Gryt either way. 10 goes *darker* for hover,
+ * which is the light-mode direction — the dark set goes lighter. 11 and 12 are
+ * text, dark enough to read on white.
+ */
+export function hueScaleLight(solid: string): string[] {
+  const { l, c, h } = hexToOklch(solid);
+  const steps = LIGHT_HUE_L.map((sl, i) =>
+    oklchToHex({ l: sl, c: LIGHT_HUE_C[i], h })
+  );
+  steps.push(solid);
+  steps.push(oklchToHex({ l: Math.max(0, l - 0.07), c, h }));
+  steps.push(oklchToHex({ l: 0.5, c: 0.15, h }));
+  steps.push(oklchToHex({ l: 0.33, c: 0.1, h }));
+  return steps;
+}
+
 /** WCAG relative luminance, for asserting contrast rather than eyeballing it. */
 function luminance(hex: string): number {
   const [r, g, b] = hexToRgb(hex).map(srgbToLinear);

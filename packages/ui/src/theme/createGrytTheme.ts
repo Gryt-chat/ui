@@ -1,5 +1,11 @@
 import type { CSSProperties } from "react";
-import { alphaScale, hueScale, neutralScale } from "./oklch";
+import {
+  alphaScale,
+  hueScale,
+  hueScaleLight,
+  neutralScale,
+  neutralScaleLight
+} from "./oklch";
 
 export const grytTokens = {
   color: {
@@ -39,6 +45,12 @@ export type GrytTokens = typeof grytTokens;
 export interface GrytThemeOptions {
   color?: Partial<Record<keyof GrytTokens["color"], string>>;
   radius?: Partial<Record<keyof GrytTokens["radius"], number>>;
+  /**
+   * Which set of ramps to build. Dark is the default because it is what the
+   * library ships on :root; an app toggling appearance calls this twice and
+   * puts each result behind its own selector.
+   */
+  appearance?: "dark" | "light";
 }
 
 // This used to return a MUI theme object. There is no theme object now — the
@@ -53,6 +65,22 @@ export interface GrytThemeOptions {
  * still matches. Two hand-maintained copies of a twelve-step ramp would drift
  * the first time somebody nudged a colour.
  */
+/**
+ * The light anchors.
+ *
+ * Picked for this palette rather than computed from the dark ones. The page is
+ * a light grey and panels are white, which is the arrangement the client
+ * already used and the one people expect of a light UI.
+ */
+export const grytLightTokens = {
+  bg: "#f1f2f7",
+  surface: "#ffffff",
+  surfaceRaised: "#f7f8fb",
+  border: "#dadde6",
+  muted: "#5b5d65",
+  text: "#1f2129"
+} as const;
+
 export const grytScales = {
   neutral: neutralScale({
     bg: grytTokens.color.bg,
@@ -72,13 +100,32 @@ export const grytScales = {
   warning: hueScale(grytTokens.color.warning, grytTokens.color.warning)
 } as const;
 
+/** The same six families, light. */
+export const grytScalesLight = {
+  neutral: neutralScaleLight(grytLightTokens),
+  accent: hueScaleLight(grytTokens.color.accent),
+  secondary: hueScaleLight(grytTokens.color.secondary),
+  success: hueScaleLight(grytTokens.color.success),
+  danger: hueScaleLight(grytTokens.color.danger),
+  warning: hueScaleLight(grytTokens.color.warning)
+} as const;
+
 export const grytAlphaScales = {
   neutral: alphaScale(grytScales.neutral, grytTokens.color.bg),
   accent: alphaScale(grytScales.accent, grytTokens.color.bg)
 } as const;
 
+export const grytAlphaScalesLight = {
+  neutral: alphaScale(grytScalesLight.neutral, grytLightTokens.bg),
+  accent: alphaScale(grytScalesLight.accent, grytLightTokens.bg)
+} as const;
+
 export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
-  const color = { ...grytTokens.color, ...options.color };
+  const light = options.appearance === "light";
+  const defaults = light
+    ? { ...grytTokens.color, ...grytLightTokens }
+    : grytTokens.color;
+  const color = { ...defaults, ...options.color };
   const radius = { ...grytTokens.radius, ...options.radius };
 
   /**
@@ -91,21 +138,31 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
    * caller passed, which is what makes one line of override recolour the app
    * coherently rather than in patches.
    */
-  const scales: Record<string, string[]> = {
-    neutral: neutralScale({
-      bg: color.bg,
-      surface: color.surface,
-      surfaceRaised: color.surfaceRaised,
-      border: color.border,
-      muted: color.muted,
-      text: color.text
-    }),
-    accent: hueScale(color.accent, color.accentLight),
-    secondary: hueScale(color.secondary, color.secondaryLight),
-    success: hueScale(color.success, color.success),
-    danger: hueScale(color.danger, color.dangerLight),
-    warning: hueScale(color.warning, color.warning)
+  const anchors = {
+    bg: color.bg,
+    surface: color.surface,
+    surfaceRaised: color.surfaceRaised,
+    border: color.border,
+    muted: color.muted,
+    text: color.text
   };
+  const scales: Record<string, string[]> = light
+    ? {
+        neutral: neutralScaleLight(anchors),
+        accent: hueScaleLight(color.accent),
+        secondary: hueScaleLight(color.secondary),
+        success: hueScaleLight(color.success),
+        danger: hueScaleLight(color.danger),
+        warning: hueScaleLight(color.warning)
+      }
+    : {
+        neutral: neutralScale(anchors),
+        accent: hueScale(color.accent, color.accentLight),
+        secondary: hueScale(color.secondary, color.secondaryLight),
+        success: hueScale(color.success, color.success),
+        danger: hueScale(color.danger, color.dangerLight),
+        warning: hueScale(color.warning, color.warning)
+      };
 
   const scaleVars: Record<string, string> = {};
   for (const [name, steps] of Object.entries(scales)) {
