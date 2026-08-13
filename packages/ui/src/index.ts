@@ -37,6 +37,8 @@ export {
   normalizeHexColor,
   normalizeThemeName
 } from "./theme/theme";
+export { grytPresets, grytPresetsById } from "./theme/presets";
+export type { GrytThemePreset } from "./theme/presets";
 export type {
   DecodedGrytTheme,
   GrytAppearance,

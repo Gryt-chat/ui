@@ -33,18 +33,20 @@ bloom, no glow, no gradient meshes. Flat surfaces separated by hairlines.
 
 ## Theme
 
-Converted from the code-theme hex values. Both notations ship — `--gryt-*` for
-raw use, `--color-gryt-*` for Tailwind utilities — and they must move together.
+The chrome has no palette of its own. `tokens.css` names the docs' colours and
+aliases every one of them onto `@gryt/ui`'s, so the site wears whatever theme is
+selected in the header rather than a second copy of Gryt's:
 
-- `--color-paper`    oklch(18.7% 0.011 268.1)  /* #111318 */
-- `--color-paper-2`  oklch(23.1% 0.014 266.9)  /* #1a1d24 */
-- `--color-paper-3`  oklch(24.5% 0.016 274.2)  /* #1e2028 */
-- `--color-ink`      oklch(90.8% 0.008 286.2)  /* #e0e0e6 */
-- `--color-ink-2`    oklch(62.7% 0.000  89.9)  /* #888888 */
-- `--color-rule`     oklch(31.0% 0.024 268.5)  /* #2b303d */
-- `--color-accent`   oklch(70.1% 0.151 284.8)  /* #968ff8 */
-- `--color-accent-ink` oklch(19.4% 0.042 288.4) /* #141126 */
-- `--color-focus`    oklch(78.8% 0.113 286.4)  /* #b4afff */
+- `--color-paper`      → `--gryt-bg`
+- `--color-paper-2`    → `--gryt-surface`
+- `--color-paper-3`    → `--gryt-surface-raised`
+- `--color-ink`        → `--gryt-text`
+- `--color-ink-2`      → `--gryt-muted`
+- `--color-rule`       → `--gryt-border`
+- `--color-accent`     → `--gryt-accent`
+- `--color-accent-ink` → `--gryt-on-accent`
+- `--color-focus`      → `--gryt-accent-light`
+- `--color-code-paper` and `--color-code-ink` → the **dark** half, always
 
 Accent budget: **≤ 5 % of any viewport.** It marks the active nav item, the focus
 ring, inline code, and one primary action per page. It is not a decoration.
@@ -105,6 +107,32 @@ Motion-cut project: no motion library is installed and none should be added.
   document — `input[type=color]` is the only one so far, because the platform
   picker is the one every OS already has an eyedropper behind.
 - No page uses enrichment. There is no illustration budget here.
+
+## The header's theme controls
+
+The site is themeable from its own header: a preset picker carrying everything
+`grytPresets` ships, plus **Custom** — whatever is currently in the generator —
+and a dark/light toggle. Both write to one store, applied as CSS custom
+properties on the root element, because overlays portal to `document.body` and
+anything lower would leave every dialog on the old palette.
+
+Two consequences the system has to live with:
+
+- **The chrome has no palette of its own.** `tokens.css` aliases `--color-paper`,
+  `--color-ink`, `--color-rule` and the rest onto the `--gryt-*` tokens. They
+  were the same values written twice; now they are one.
+- **Code blocks keep the dark half of whatever theme is on, in both
+  appearances.** Shiki writes its colours inline, one theme's worth, so a light
+  surface under them puts near-white keywords on near-white paper. A second
+  Shiki theme is the thorough answer and this is not it — but a dark block on a
+  light page is a deliberate look, not an oversight, and it is *that theme's*
+  dark rather than Gryt's.
+
+## New pages
+
+A nav item can declare the version it arrived in. It wears a **New** tag while
+the library is still on that minor, and the next minor takes it off — nobody has
+to remember, which is the only way a "New" tag stays true.
 
 ## What pages MUST share
 

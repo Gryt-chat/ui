@@ -113,7 +113,7 @@ h3 {
     margin: 0;
     background: transparent !important;
     padding: 1rem 1.125rem;
-    color: var(--gryt-text);
+    color: var(--color-code-ink);
     font-size: 13px;
     line-height: 1.6;
 }

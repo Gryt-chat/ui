@@ -8,18 +8,27 @@
  */
 
 :root {
-  --color-paper: oklch(18.7% 0.011 268.1);
-  --color-paper-2: oklch(23.1% 0.014 266.9);
-  --color-paper-3: oklch(24.5% 0.016 274.2);
-  --color-ink: oklch(90.8% 0.008 286.2);
-  --color-ink-2: oklch(62.7% 0 89.9);
-  --color-rule: oklch(31% 0.024 268.5);
-  --color-accent: oklch(70.1% 0.151 284.8);
-  --color-accent-ink: oklch(19.4% 0.042 288.4);
-  --color-focus: oklch(78.8% 0.113 286.4);
-  /* One step below paper, so a code block reads as inset rather than raised —
-     the flat equivalent of the shadow this site does not use. */
-  --color-code-paper: oklch(15.9% 0.009 267.9);
+  /* Aliases onto @gryt/ui's tokens rather than a second copy of the palette.
+     They were the same values written twice, which was survivable while the
+     site was one colour scheme and is not now: the header can put the site in
+     Nord or in light, and a chrome that held its own literals would have
+     stayed dark around a light page. */
+  --color-paper: var(--gryt-bg);
+  --color-paper-2: var(--gryt-surface);
+  --color-paper-3: var(--gryt-surface-raised);
+  --color-ink: var(--gryt-text);
+  --color-ink-2: var(--gryt-muted);
+  --color-rule: var(--gryt-border);
+  --color-accent: var(--gryt-accent);
+  --color-accent-ink: var(--gryt-on-accent);
+  --color-focus: var(--gryt-accent-light);
+  /* A code block keeps the dark half of whatever theme is on, in both
+     appearances — Shiki writes its colours inline, one theme's worth, so a
+     light surface under them puts near-white keywords on near-white paper.
+     Set from the header's theme; these are the fallbacks for a page that has
+     not run yet. */
+  --color-code-paper: var(--gryt-neutral-1);
+  --color-code-ink: var(--gryt-neutral-12);
 
   --font-display: "Geist Variable", "Inter Variable", ui-sans-serif, system-ui,
     sans-serif;

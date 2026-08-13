@@ -28,12 +28,17 @@
  *
  * Names belong to their projects. Dracula, Nord, Catppuccin, Solarized and
  * shadcn/ui are MIT-licensed; the rest are referenced by name only.
+ *
+ * These ship with the library rather than with the docs site, because the docs
+ * site is not the only thing that lists them: the client offers the same set,
+ * and it should get a new one by taking a newer @gryt/ui rather than by
+ * somebody copying eleven palettes across by hand.
  */
 
-import type { HueSet, RadiusKey, ThemeDraft } from "./draft";
-import { grytDraft } from "./draft";
+import type { GrytRadiusKey, GrytTheme } from "./theme";
+import { grytTheme } from "./theme";
 
-export interface ThemePreset {
+export interface GrytThemePreset {
   id: string;
   name: string;
   /** One line under the name: what makes this one different. */
@@ -41,10 +46,10 @@ export interface ThemePreset {
   group: "Gryt" | "Ported";
   /** Where the values came from. Shown as the attribution line. */
   source?: string;
-  draft: ThemeDraft;
+  theme: GrytTheme;
 }
 
-type Radius = Record<RadiusKey, number>;
+type Radius = Record<GrytRadiusKey, number>;
 
 const ROUND: Radius = { sm: 8, md: 12, lg: 20, xl: 28, full: 999 };
 const SOFT: Radius = { sm: 6, md: 8, lg: 14, xl: 18, full: 999 };
@@ -53,21 +58,21 @@ const CRISP: Radius = { sm: 4, md: 6, lg: 10, xl: 14, full: 6 };
 const SHADCN: Radius = { sm: 6, md: 8, lg: 10, xl: 14, full: 10 };
 const SQUARE: Radius = { sm: 2, md: 4, lg: 6, xl: 8, full: 4 };
 
-export const presets: ThemePreset[] = [
+export const grytPresets: GrytThemePreset[] = [
   {
     id: "gryt",
     name: "Gryt",
     note: "What the library ships, from the Gryt code-theme.",
     group: "Gryt",
     source: "github.com/Gryt-chat/code-theme",
-    draft: grytDraft
+    theme: grytTheme
   },
   {
     id: "ember",
     name: "Ember",
     note: "Warm all the way down — the neutrals are brown, not blue.",
     group: "Gryt",
-    draft: {
+    theme: {
       name: "Ember",
       hue: {
         accent: "#f0803c",
@@ -109,7 +114,7 @@ export const presets: ThemePreset[] = [
     name: "Paper",
     note: "Near-monochrome. One quiet slate accent and nothing else.",
     group: "Gryt",
-    draft: {
+    theme: {
       name: "Paper",
       hue: {
         accent: "#8390a8",
@@ -151,7 +156,7 @@ export const presets: ThemePreset[] = [
     name: "Signal",
     note: "Black, white, and a yellow that cannot be missed.",
     group: "Gryt",
-    draft: {
+    theme: {
       name: "Signal",
       hue: {
         accent: "#ffd400",
@@ -198,7 +203,7 @@ export const presets: ThemePreset[] = [
     note: "The purple-and-pink dark theme, with Alucard as its light half.",
     group: "Ported",
     source: "draculatheme.com, MIT",
-    draft: {
+    theme: {
       name: "Dracula",
       hue: {
         accent: "#bd93f9",
@@ -256,7 +261,7 @@ export const presets: ThemePreset[] = [
     note: "Polar Night and Snow Storm, with Frost on top.",
     group: "Ported",
     source: "nordtheme.com, MIT",
-    draft: {
+    theme: {
       name: "Nord",
       hue: {
         accent: "#88c0d0",
@@ -315,7 +320,7 @@ export const presets: ThemePreset[] = [
     note: "Mocha for dark, Latte for light. Mauve does the accent work.",
     group: "Ported",
     source: "catppuccin/palette, MIT",
-    draft: {
+    theme: {
       name: "Catppuccin",
       hue: {
         accent: "#cba6f7",
@@ -375,7 +380,7 @@ export const presets: ThemePreset[] = [
     note: "Primer's own tokens, six-pixel corners included.",
     group: "Ported",
     source: "@primer/primitives",
-    draft: {
+    theme: {
       name: "GitHub",
       hue: {
         accent: "#1f6feb",
@@ -435,7 +440,7 @@ export const presets: ThemePreset[] = [
     note: "Anthropic's clay orange on cream and near-black.",
     group: "Ported",
     source: "anthropic.com — a likeness, not a published palette",
-    draft: {
+    theme: {
       name: "Claude",
       hue: {
         accent: "#d97757",
@@ -484,7 +489,7 @@ export const presets: ThemePreset[] = [
     note: "Zinc neutrals and a ten-pixel radius. No pills anywhere.",
     group: "Ported",
     source: "ui.shadcn.com, MIT — accent adapted",
-    draft: {
+    theme: {
       name: "shadcn/ui",
       hue: {
         accent: "#a1a1aa",
@@ -543,7 +548,7 @@ export const presets: ThemePreset[] = [
     note: "Both halves on one set of accents, as designed.",
     group: "Ported",
     source: "ethanschoonover.com/solarized, MIT",
-    draft: {
+    theme: {
       name: "Solarized",
       hue: {
         accent: "#268bd2",
@@ -582,9 +587,6 @@ export const presets: ThemePreset[] = [
   }
 ];
 
-export const presetsById = new Map(presets.map((preset) => [preset.id, preset]));
-
-/** A hue set to fork from when somebody splits light off from dark. */
-export function forkHues(hues: HueSet): HueSet {
-  return { ...hues };
-}
+export const grytPresetsById = new Map(
+  grytPresets.map((preset) => [preset.id, preset])
+);

@@ -6,3 +6,5 @@ declare module "*.mdx" {
   const MDXComponent: ComponentType;
   export default MDXComponent;
 }
+/** The @gryt/ui version this site documents, from its package.json. */
+declare const __UI_VERSION__: string;
