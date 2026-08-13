@@ -1,3 +1,5 @@
+// Read off disk rather than imported: Vite's CSS plugin claims .css before
+// ?raw can, and hands back an empty string.
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
