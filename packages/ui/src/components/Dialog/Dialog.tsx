@@ -35,6 +35,12 @@ export type DialogPopupProps = ComponentPropsWithoutRef<
   typeof BaseDialog.Popup
 >;
 
+// 32rem, not the 24rem this used to be. Radix Themes, which the client is
+// migrating off, gives Dialog.Content 600px, so a dialog ported across to this
+// one shrank by a third for no reason anybody chose — and the client had grown
+// a w-[27rem]..w-[30rem] override on every dialog to claw some of it back.
+// tailwind-merge means those overrides still win, so this only moves the ones
+// that never said anything. AlertDialog carries the same width deliberately.
 const Popup = forwardRef<HTMLDivElement, DialogPopupProps>(
   function DialogPopup({ className, ...props }, ref) {
     return (
@@ -42,7 +48,7 @@ const Popup = forwardRef<HTMLDivElement, DialogPopupProps>(
         ref={ref}
         className={cn(
           "gryt-dialog fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-          "flex w-96 max-w-[calc(100vw-3rem)] flex-col gap-4",
+          "flex w-[32rem] max-w-[calc(100vw-3rem)] flex-col gap-4",
           "rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-5 text-gryt-text",
           motion,
           "data-starting-style:scale-[0.98] data-starting-style:opacity-0",
