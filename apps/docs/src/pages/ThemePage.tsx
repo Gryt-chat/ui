@@ -19,6 +19,15 @@ const theme = createGrytTheme({
   }
 });
 
+const SCALE_NAMES = [
+  "neutral",
+  "accent",
+  "secondary",
+  "success",
+  "danger",
+  "warning"
+] as const;
+
 const swatchGroups: Array<{
   title: string;
   swatches: Array<{ name: string; value: string }>;
@@ -98,6 +107,40 @@ export function ThemePage() {
               </li>
             ))}
           </ul>
+        </section>
+      ))}
+
+      <h2>Scales</h2>
+      <p>
+        Twelve steps per family, each step meaning the same thing wherever it
+        appears. The flat names above are aliases onto these — <code>surface</code>{" "}
+        is <code>neutral-2</code>, <code>accent</code> is <code>accent-9</code> —
+        so a colour has one definition and it lives here.
+      </p>
+      <p>
+        Steps 1 and 2 are backgrounds, 3 to 5 are a component and its hover and
+        active states, 6 to 8 are borders, 9 and 10 are solid fills, and 11 and
+        12 are text. That is what makes them worth having: the flat tokens could
+        not say &ldquo;this surface, but hovered&rdquo; at all.
+      </p>
+      {SCALE_NAMES.map((name) => (
+        <section key={name} className="not-prose mt-(--space-md)">
+          <h3 className="m-0 pb-(--space-sm) text-[11px] font-semibold uppercase tracking-wider text-gryt-muted">
+            {name}
+          </h3>
+          <ol className="m-0 grid list-none grid-cols-6 gap-1 p-0 lg:grid-cols-12">
+            {grytTokens.scale[name].map((value, index) => (
+              <li key={value + index} className="min-w-0">
+                <div
+                  className="h-12 w-full rounded-(--gryt-radius-sm) border border-gryt-border"
+                  style={{ backgroundColor: value }}
+                />
+                <p className="m-0 pt-1 text-center font-mono text-[10px] text-gryt-muted">
+                  {index + 1}
+                </p>
+              </li>
+            ))}
+          </ol>
         </section>
       ))}
 

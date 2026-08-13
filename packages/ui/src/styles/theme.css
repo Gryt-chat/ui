@@ -25,6 +25,123 @@
     --color-gryt-danger-light: #fca5a5;
     --color-gryt-warning: #fbbf24;
 
+    /* The scales as Tailwind colours: bg-gryt-neutral-3, text-gryt-accent-11,
+       border-gryt-neutral-7. The same values as the raw names below — both
+       lists come out of one generator, so they cannot drift apart. */
+    --color-gryt-neutral-1: #111318;
+    --color-gryt-neutral-2: #1a1d24;
+    --color-gryt-neutral-3: #1e2028;
+    --color-gryt-neutral-4: #22262f;
+    --color-gryt-neutral-5: #272b36;
+    --color-gryt-neutral-6: #2b303d;
+    --color-gryt-neutral-7: #363b4a;
+    --color-gryt-neutral-8: #494e5d;
+    --color-gryt-neutral-9: #646975;
+    --color-gryt-neutral-10: #74777f;
+    --color-gryt-neutral-11: #888888;
+    --color-gryt-neutral-12: #e0e0e6;
+
+    /* accent */
+    --color-gryt-accent-1: #14141b;
+    --color-gryt-accent-2: #1e1e2b;
+    --color-gryt-accent-3: #242439;
+    --color-gryt-accent-4: #2b2a47;
+    --color-gryt-accent-5: #323054;
+    --color-gryt-accent-6: #3c3a64;
+    --color-gryt-accent-7: #4b487c;
+    --color-gryt-accent-8: #6360a0;
+    --color-gryt-accent-9: #968ff8;
+    --color-gryt-accent-10: #b4afff;
+    --color-gryt-accent-11: #c4c3ff;
+    --color-gryt-accent-12: #e5e5ff;
+
+    /* secondary */
+    --color-gryt-secondary-1: #0e161a;
+    --color-gryt-secondary-2: #122229;
+    --color-gryt-secondary-3: #0f2a36;
+    --color-gryt-secondary-4: #0b3243;
+    --color-gryt-secondary-5: #063b4f;
+    --color-gryt-secondary-6: #04465e;
+    --color-gryt-secondary-7: #055775;
+    --color-gryt-secondary-8: #0f7397;
+    --color-gryt-secondary-9: #7dd3fc;
+    --color-gryt-secondary-10: #bae6fd;
+    --color-gryt-secondary-11: #9ff9ff;
+    --color-gryt-secondary-12: #d7ffff;
+
+    /* success */
+    --color-gryt-success-1: #101712;
+    --color-gryt-success-2: #162319;
+    --color-gryt-success-3: #172c1d;
+    --color-gryt-success-4: #183520;
+    --color-gryt-success-5: #193e25;
+    --color-gryt-success-6: #1e4a2c;
+    --color-gryt-success-7: #275d38;
+    --color-gryt-success-8: #36794b;
+    --color-gryt-success-9: #4ade80;
+    --color-gryt-success-10: #86efac;
+    --color-gryt-success-11: #aaf7be;
+    --color-gryt-success-12: #dbffe4;
+
+    /* danger */
+    --color-gryt-danger-1: #1b1212;
+    --color-gryt-danger-2: #2b1a1a;
+    --color-gryt-danger-3: #381e1d;
+    --color-gryt-danger-4: #442322;
+    --color-gryt-danger-5: #512727;
+    --color-gryt-danger-6: #602f2e;
+    --color-gryt-danger-7: #773b3a;
+    --color-gryt-danger-8: #9a504e;
+    --color-gryt-danger-9: #f87171;
+    --color-gryt-danger-10: #fca5a5;
+    --color-gryt-danger-11: #ffb4b1;
+    --color-gryt-danger-12: #ffdedb;
+
+    /* warning */
+    --color-gryt-warning-1: #18140e;
+    --color-gryt-warning-2: #251e11;
+    --color-gryt-warning-3: #30250e;
+    --color-gryt-warning-4: #3a2b0a;
+    --color-gryt-warning-5: #443207;
+    --color-gryt-warning-6: #513c06;
+    --color-gryt-warning-7: #654b09;
+    --color-gryt-warning-8: #846313;
+    --color-gryt-warning-9: #fbbf24;
+    --color-gryt-warning-10: #fcd34d;
+    --color-gryt-warning-11: #ffdf8c;
+    --color-gryt-warning-12: #fff6cf;
+
+    /* The same steps as translucent overlays, solved so each one composites
+       over step 1 to exactly its solid twin. That is what keeps a tinted hover
+       reading correctly on top of an avatar or a video tile rather than only on
+       the app background. Neutral and accent only — the hues have no call sites
+       that need them yet. */
+    --color-gryt-neutral-a1: transparent;
+    --color-gryt-neutral-a2: rgb(190 212 255 / 5.2%);
+    --color-gryt-neutral-a3: rgb(205 207 255 / 6.9%);
+    --color-gryt-neutral-a4: rgb(188 210 255 / 10.0%);
+    --color-gryt-neutral-a5: rgb(186 204 255 / 13.0%);
+    --color-gryt-neutral-a6: rgb(179 200 255 / 16.0%);
+    --color-gryt-neutral-a7: rgb(188 204 255 / 21.6%);
+    --color-gryt-neutral-a8: rgb(204 217 255 / 29.9%);
+    --color-gryt-neutral-a9: rgb(223 233 255 / 40.3%);
+    --color-gryt-neutral-a10: rgb(239 243 255 / 44.6%);
+    --color-gryt-neutral-a11: rgb(255 253 248 / 50.0%);
+    --color-gryt-neutral-a12: rgb(249 249 255 / 89.2%);
+
+    --color-gryt-accent-a1: rgb(248 96 255 / 1.3%);
+    --color-gryt-accent-a2: rgb(175 153 255 / 8.2%);
+    --color-gryt-accent-a3: rgb(150 138 255 / 14.3%);
+    --color-gryt-accent-a4: rgb(145 132 255 / 20.3%);
+    --color-gryt-accent-a5: rgb(144 131 255 / 26.0%);
+    --color-gryt-accent-a6: rgb(148 138 255 / 32.9%);
+    --color-gryt-accent-a7: rgb(151 141 255 / 43.3%);
+    --color-gryt-accent-a8: rgb(156 150 255 / 58.9%);
+    --color-gryt-accent-a9: rgb(154 147 255 / 97.0%);
+    --color-gryt-accent-a10: rgb(180 175 255 / 100.0%);
+    --color-gryt-accent-a11: rgb(196 195 255 / 100.0%);
+    --color-gryt-accent-a12: rgb(229 229 255 / 100.0%);
+
     /* Surface one step above --color-gryt-surface-raised, for hover states. */
     --color-gryt-surface-hover: #334155;
 
@@ -84,18 +201,164 @@
    and so will any app that writes the same. Keeping both here makes this one
    file the whole token surface. */
 :root {
-    --gryt-bg: #111318;
-    --gryt-surface: #1a1d24;
-    --gryt-surface-raised: #1e2028;
-    --gryt-border: #2b303d;
-    --gryt-text: #e0e0e6;
-    --gryt-muted: #888888;
-    --gryt-accent: #968ff8;
-    --gryt-accent-light: #b4afff;
-    --gryt-secondary: #7dd3fc;
-    --gryt-success: #4ade80;
-    --gryt-danger: #f87171;
-    --gryt-warning: #fbbf24;
+    /* The flat names are aliases onto the scale now. They are what most call
+       sites use and what the docs document, so they stay — but a colour has one
+       definition, and it lives on the scale. */
+    --gryt-bg: var(--gryt-neutral-1);
+    --gryt-surface: var(--gryt-neutral-2);
+    --gryt-surface-raised: var(--gryt-neutral-3);
+    --gryt-border: var(--gryt-neutral-6);
+    --gryt-text: var(--gryt-neutral-12);
+    --gryt-muted: var(--gryt-neutral-11);
+    --gryt-accent: var(--gryt-accent-9);
+    --gryt-accent-light: var(--gryt-accent-10);
+    --gryt-secondary: var(--gryt-secondary-9);
+    --gryt-success: var(--gryt-success-9);
+    --gryt-danger: var(--gryt-danger-9);
+    --gryt-warning: var(--gryt-warning-9);
+    /* ── the scales ─────────────────────────────────────────────
+       Twelve steps per family, each step meaning the same thing wherever it
+       appears:
+
+         1  app background        7  border
+         2  subtle background     8  border, hovered
+         3  component background  9  solid
+         4  component, hovered   10  solid, hovered
+         5  component, active    11  low-contrast text
+         6  subtle border        12  high-contrast text
+
+       Generated in OKLCH from the tokens this library already shipped, not
+       copied from anywhere: every step an existing token covered *is* that
+       token, unchanged — 1, 2, 3, 6, 11 and 12 on the neutral scale, 9 and 10
+       on each hue — and the rest are interpolated so the ramp is perceptually
+       even rather than evenly spaced in hex.
+
+       Steps 11 and 12 are placed relative to 10 rather than at a fixed
+       lightness. The -light tokens differ family to family (accent's sits at
+       L 0.79, secondary's at 0.90), so a fixed value put the text step above
+       the fill in one scale and below it in another, and the ramp changed
+       direction depending on the hue.
+
+       Contrast is measured, not assumed. Neutral 11 clears 4.5:1 on steps 1, 2
+       and 3 (5.24, 4.76, 4.58); neutral 12 clears 12:1 on all three; every
+       hue's step 11 clears 11:1 on the app background. AA for body text
+       everywhere the scale is meant to carry it. */
+
+    /* neutral */
+    --gryt-neutral-1: #111318;
+    --gryt-neutral-2: #1a1d24;
+    --gryt-neutral-3: #1e2028;
+    --gryt-neutral-4: #22262f;
+    --gryt-neutral-5: #272b36;
+    --gryt-neutral-6: #2b303d;
+    --gryt-neutral-7: #363b4a;
+    --gryt-neutral-8: #494e5d;
+    --gryt-neutral-9: #646975;
+    --gryt-neutral-10: #74777f;
+    --gryt-neutral-11: #888888;
+    --gryt-neutral-12: #e0e0e6;
+
+    /* accent */
+    --gryt-accent-1: #14141b;
+    --gryt-accent-2: #1e1e2b;
+    --gryt-accent-3: #242439;
+    --gryt-accent-4: #2b2a47;
+    --gryt-accent-5: #323054;
+    --gryt-accent-6: #3c3a64;
+    --gryt-accent-7: #4b487c;
+    --gryt-accent-8: #6360a0;
+    --gryt-accent-9: #968ff8;
+    --gryt-accent-10: #b4afff;
+    --gryt-accent-11: #c4c3ff;
+    --gryt-accent-12: #e5e5ff;
+
+    /* secondary */
+    --gryt-secondary-1: #0e161a;
+    --gryt-secondary-2: #122229;
+    --gryt-secondary-3: #0f2a36;
+    --gryt-secondary-4: #0b3243;
+    --gryt-secondary-5: #063b4f;
+    --gryt-secondary-6: #04465e;
+    --gryt-secondary-7: #055775;
+    --gryt-secondary-8: #0f7397;
+    --gryt-secondary-9: #7dd3fc;
+    --gryt-secondary-10: #bae6fd;
+    --gryt-secondary-11: #9ff9ff;
+    --gryt-secondary-12: #d7ffff;
+
+    /* success */
+    --gryt-success-1: #101712;
+    --gryt-success-2: #162319;
+    --gryt-success-3: #172c1d;
+    --gryt-success-4: #183520;
+    --gryt-success-5: #193e25;
+    --gryt-success-6: #1e4a2c;
+    --gryt-success-7: #275d38;
+    --gryt-success-8: #36794b;
+    --gryt-success-9: #4ade80;
+    --gryt-success-10: #86efac;
+    --gryt-success-11: #aaf7be;
+    --gryt-success-12: #dbffe4;
+
+    /* danger */
+    --gryt-danger-1: #1b1212;
+    --gryt-danger-2: #2b1a1a;
+    --gryt-danger-3: #381e1d;
+    --gryt-danger-4: #442322;
+    --gryt-danger-5: #512727;
+    --gryt-danger-6: #602f2e;
+    --gryt-danger-7: #773b3a;
+    --gryt-danger-8: #9a504e;
+    --gryt-danger-9: #f87171;
+    --gryt-danger-10: #fca5a5;
+    --gryt-danger-11: #ffb4b1;
+    --gryt-danger-12: #ffdedb;
+
+    /* warning */
+    --gryt-warning-1: #18140e;
+    --gryt-warning-2: #251e11;
+    --gryt-warning-3: #30250e;
+    --gryt-warning-4: #3a2b0a;
+    --gryt-warning-5: #443207;
+    --gryt-warning-6: #513c06;
+    --gryt-warning-7: #654b09;
+    --gryt-warning-8: #846313;
+    --gryt-warning-9: #fbbf24;
+    --gryt-warning-10: #fcd34d;
+    --gryt-warning-11: #ffdf8c;
+    --gryt-warning-12: #fff6cf;
+
+    /* The same steps as translucent overlays, solved so each one composites
+       over step 1 to exactly its solid twin. That is what keeps a tinted hover
+       reading correctly on top of an avatar or a video tile rather than only on
+       the app background. Neutral and accent only — the hues have no call sites
+       that need them yet. */
+    --gryt-neutral-a1: transparent;
+    --gryt-neutral-a2: rgb(190 212 255 / 5.2%);
+    --gryt-neutral-a3: rgb(205 207 255 / 6.9%);
+    --gryt-neutral-a4: rgb(188 210 255 / 10.0%);
+    --gryt-neutral-a5: rgb(186 204 255 / 13.0%);
+    --gryt-neutral-a6: rgb(179 200 255 / 16.0%);
+    --gryt-neutral-a7: rgb(188 204 255 / 21.6%);
+    --gryt-neutral-a8: rgb(204 217 255 / 29.9%);
+    --gryt-neutral-a9: rgb(223 233 255 / 40.3%);
+    --gryt-neutral-a10: rgb(239 243 255 / 44.6%);
+    --gryt-neutral-a11: rgb(255 253 248 / 50.0%);
+    --gryt-neutral-a12: rgb(249 249 255 / 89.2%);
+
+    --gryt-accent-a1: rgb(248 96 255 / 1.3%);
+    --gryt-accent-a2: rgb(175 153 255 / 8.2%);
+    --gryt-accent-a3: rgb(150 138 255 / 14.3%);
+    --gryt-accent-a4: rgb(145 132 255 / 20.3%);
+    --gryt-accent-a5: rgb(144 131 255 / 26.0%);
+    --gryt-accent-a6: rgb(148 138 255 / 32.9%);
+    --gryt-accent-a7: rgb(151 141 255 / 43.3%);
+    --gryt-accent-a8: rgb(156 150 255 / 58.9%);
+    --gryt-accent-a9: rgb(154 147 255 / 97.0%);
+    --gryt-accent-a10: rgb(180 175 255 / 100.0%);
+    --gryt-accent-a11: rgb(196 195 255 / 100.0%);
+    --gryt-accent-a12: rgb(229 229 255 / 100.0%);
+
     --gryt-radius-sm: 8px;
     --gryt-radius-md: 12px;
     --gryt-radius-lg: 20px;
