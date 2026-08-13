@@ -8,10 +8,10 @@ export type AlertSeverity = "info" | "success" | "warning" | "error";
 // fill — an alert should read as a note on the surface, not a block on top of
 // it.
 const severityStyles: Record<AlertSeverity, string> = {
-  info: "border-gryt-secondary/40 bg-gryt-secondary/10 text-gryt-secondary",
-  success: "border-gryt-success/40 bg-gryt-success/10 text-gryt-success",
-  warning: "border-gryt-warning/40 bg-gryt-warning/10 text-gryt-warning",
-  error: "border-gryt-danger/40 bg-gryt-danger/10 text-gryt-danger"
+  info: "border-gryt-secondary-6 bg-gryt-secondary-3 text-gryt-secondary-11",
+  success: "border-gryt-success-6 bg-gryt-success-3 text-gryt-success-11",
+  warning: "border-gryt-warning-6 bg-gryt-warning-3 text-gryt-warning-11",
+  error: "border-gryt-danger-6 bg-gryt-danger-3 text-gryt-danger-11"
 };
 
 export interface AlertProps extends HTMLAttributes<HTMLDivElement> {

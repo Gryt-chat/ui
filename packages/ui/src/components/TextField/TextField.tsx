@@ -74,7 +74,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
           <Field.Description
             className={cn(
               "text-xs",
-              error ? "text-gryt-danger" : "text-gryt-muted"
+              error ? "text-gryt-danger-11" : "text-gryt-muted"
             )}
           >
             {helperText}

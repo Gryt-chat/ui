@@ -48,14 +48,14 @@ export function ColorField({
   }
 
   return (
-    <div className={disabled ? "min-w-0 opacity-60" : "min-w-0"}>
+    <div className="min-w-0">
       <span
         className="mb-1 flex items-center gap-1.5 text-xs font-medium text-gryt-muted"
         id={`${id}-label`}
       >
         <span className="truncate">{label}</span>
         {warning ? (
-          <span className="inline-flex shrink-0 text-gryt-warning" title={warning}>
+          <span className="inline-flex shrink-0 text-gryt-warning-11" title={warning}>
             <Warning aria-label={warning} size={13} />
           </span>
         ) : null}
@@ -63,7 +63,7 @@ export function ColorField({
       <span className="flex items-center gap-2">
         <input
           aria-label={`${label}, colour picker`}
-          className="docs-swatch"
+          className="docs-swatch disabled:cursor-not-allowed disabled:opacity-60"
           disabled={disabled}
           onChange={(event) => commit(event.target.value)}
           type="color"

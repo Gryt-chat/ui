@@ -422,7 +422,7 @@
   --gryt-accent-8: #9d9be7;
   --gryt-accent-9: #968ff8;
   --gryt-accent-10: #8179e0;
-  --gryt-accent-11: #5d52b4;
+  --gryt-accent-11: #5246a7;
   --gryt-accent-12: #322b66;
 
   /* secondary */
@@ -436,7 +436,7 @@
   --gryt-secondary-8: #50b1dc;
   --gryt-secondary-9: #7dd3fc;
   --gryt-secondary-10: #66bce4;
-  --gryt-secondary-11: #006fa7;
+  --gryt-secondary-11: #00639b;
   --gryt-secondary-12: #003c5e;
 
   /* success */
@@ -450,7 +450,7 @@
   --gryt-success-8: #6db882;
   --gryt-success-9: #4ade80;
   --gryt-success-10: #28c76a;
-  --gryt-success-11: #007a33;
+  --gryt-success-11: #006e27;
   --gryt-success-12: #004318;
 
   /* danger */
@@ -464,7 +464,7 @@
   --gryt-danger-8: #e18885;
   --gryt-danger-9: #f87171;
   --gryt-danger-10: #df5b5c;
-  --gryt-danger-11: #a8353a;
+  --gryt-danger-11: #9a282f;
   --gryt-danger-12: #5f1a1c;
 
   /* warning */
@@ -478,7 +478,7 @@
   --gryt-warning-8: #c59f4d;
   --gryt-warning-9: #fbbf24;
   --gryt-warning-10: #e3a800;
-  --gryt-warning-11: #8a5800;
+  --gryt-warning-11: #7e4c00;
   --gryt-warning-12: #4d2f00;
 
   --gryt-neutral-a1: transparent;
@@ -504,7 +504,7 @@
   --gryt-accent-a8: rgb(7 0 202 / 36.0%);
   --gryt-accent-a9: rgb(19 0 249 / 40.9%);
   --gryt-accent-a10: rgb(17 0 201 / 50.0%);
-  --gryt-accent-a11: rgb(17 0 146 / 66.1%);
+  --gryt-accent-a11: rgb(17 0 134 / 71.1%);
   --gryt-accent-a12: rgb(9 0 71 / 82.2%);
 
   /* neutral */
@@ -532,7 +532,7 @@
   --color-gryt-accent-8: #9d9be7;
   --color-gryt-accent-9: #968ff8;
   --color-gryt-accent-10: #8179e0;
-  --color-gryt-accent-11: #5d52b4;
+  --color-gryt-accent-11: #5246a7;
   --color-gryt-accent-12: #322b66;
 
   /* secondary */
@@ -546,7 +546,7 @@
   --color-gryt-secondary-8: #50b1dc;
   --color-gryt-secondary-9: #7dd3fc;
   --color-gryt-secondary-10: #66bce4;
-  --color-gryt-secondary-11: #006fa7;
+  --color-gryt-secondary-11: #00639b;
   --color-gryt-secondary-12: #003c5e;
 
   /* success */
@@ -560,7 +560,7 @@
   --color-gryt-success-8: #6db882;
   --color-gryt-success-9: #4ade80;
   --color-gryt-success-10: #28c76a;
-  --color-gryt-success-11: #007a33;
+  --color-gryt-success-11: #006e27;
   --color-gryt-success-12: #004318;
 
   /* danger */
@@ -574,7 +574,7 @@
   --color-gryt-danger-8: #e18885;
   --color-gryt-danger-9: #f87171;
   --color-gryt-danger-10: #df5b5c;
-  --color-gryt-danger-11: #a8353a;
+  --color-gryt-danger-11: #9a282f;
   --color-gryt-danger-12: #5f1a1c;
 
   /* warning */
@@ -588,7 +588,7 @@
   --color-gryt-warning-8: #c59f4d;
   --color-gryt-warning-9: #fbbf24;
   --color-gryt-warning-10: #e3a800;
-  --color-gryt-warning-11: #8a5800;
+  --color-gryt-warning-11: #7e4c00;
   --color-gryt-warning-12: #4d2f00;
 
   --color-gryt-neutral-a1: transparent;
@@ -614,7 +614,7 @@
   --color-gryt-accent-a8: rgb(7 0 202 / 36.0%);
   --color-gryt-accent-a9: rgb(19 0 249 / 40.9%);
   --color-gryt-accent-a10: rgb(17 0 201 / 50.0%);
-  --color-gryt-accent-a11: rgb(17 0 146 / 66.1%);
+  --color-gryt-accent-a11: rgb(17 0 134 / 71.1%);
   --color-gryt-accent-a12: rgb(9 0 71 / 82.2%);
 
   --gryt-bg: var(--gryt-neutral-1);

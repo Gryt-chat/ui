@@ -82,7 +82,7 @@ export function Select({
                   )}
                 >
                   <BaseSelect.ItemText>{option.label}</BaseSelect.ItemText>
-                  <BaseSelect.ItemIndicator className="text-gryt-accent">
+                  <BaseSelect.ItemIndicator className="text-gryt-accent-11">
                     <Check size={14} weight="bold" />
                   </BaseSelect.ItemIndicator>
                 </BaseSelect.Item>

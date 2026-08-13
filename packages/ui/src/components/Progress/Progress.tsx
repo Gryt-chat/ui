@@ -56,7 +56,7 @@ export function Spinner({
       size={size}
       weight="bold"
       className={cn(
-        "gryt-spinner text-gryt-accent motion-safe:animate-spin",
+        "gryt-spinner text-gryt-accent-11 motion-safe:animate-spin",
         className
       )}
     />

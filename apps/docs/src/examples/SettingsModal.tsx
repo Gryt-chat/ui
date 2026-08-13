@@ -19,8 +19,8 @@ import {
   VideoCamera,
   X
 } from "@phosphor-icons/react";
-import { useMemo, useState } from "react";
-import type { ComponentType, ReactNode } from "react";
+import { cloneElement, isValidElement, useId, useMemo, useState } from "react";
+import type { ComponentType, ReactElement, ReactNode } from "react";
 
 /**
  * The Gryt settings modal.
@@ -209,6 +209,14 @@ function Section({
 
 /** A labelled row. The description carries the caveat, so the label can stay
     short enough to scan down the column. */
+/**
+ * A labelled row.
+ *
+ * The label is wired to the control with aria-labelledby rather than a <label>
+ * element, because Base UI's Switch is a span with role="switch" and a <label>
+ * does not name one. Without it, every switch here announced as "switch" and
+ * nothing else — which an audit will tell you, and a screen reader will not.
+ */
 function Row({
   label,
   description,
@@ -218,15 +226,25 @@ function Row({
   description?: string;
   children: ReactNode;
 }) {
+  const id = useId();
+
   return (
     <div className="flex items-center justify-between gap-6">
       <div className="min-w-0">
-        <p className="m-0 text-sm text-gryt-text">{label}</p>
+        <p className="m-0 text-sm text-gryt-text" id={id}>
+          {label}
+        </p>
         {description ? (
           <p className="m-0 text-xs leading-5 text-gryt-muted">{description}</p>
         ) : null}
       </div>
-      <div className="flex shrink-0 items-center">{children}</div>
+      <div className="flex shrink-0 items-center">
+        {isValidElement(children)
+          ? cloneElement(children as ReactElement<{ "aria-labelledby"?: string }>, {
+              "aria-labelledby": id
+            })
+          : children}
+      </div>
     </div>
   );
 }

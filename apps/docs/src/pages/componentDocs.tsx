@@ -88,7 +88,7 @@ export function ComponentDocPage() {
       {/* Label stacks above the heading in the same column. The tag-left /
           heading-right split is the templated-editorial tell. */}
       <header className="pb-(--space-md)">
-        <p className="m-0 font-mono text-xs tracking-wide text-gryt-accent">
+        <p className="m-0 font-mono text-xs tracking-wide text-gryt-accent-11">
           {doc.importName}
         </p>
         <h1 className="mt-2 font-display text-[length:var(--text-2xl)] font-semibold leading-tight tracking-[-0.022em] text-gryt-text">
@@ -844,7 +844,7 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
           <ExampleSection title="Sides">
             {SIDES.map((side) => (
               <PreviewCard.Root key={side}>
-                <PreviewCard.Trigger className="cursor-default text-gryt-accent underline-offset-4 hover:underline">
+                <PreviewCard.Trigger className="cursor-default text-gryt-accent-11 underline-offset-4 hover:underline">
                   @{side}
                 </PreviewCard.Trigger>
                 <PreviewCard.Portal>
@@ -1194,7 +1194,7 @@ function PopoverMember() {
 function PreviewCardMember() {
   return (
     <PreviewCard.Root>
-      <PreviewCard.Trigger className="cursor-default text-gryt-accent underline-offset-4 hover:underline">
+      <PreviewCard.Trigger className="cursor-default text-gryt-accent-11 underline-offset-4 hover:underline">
         @sivert
       </PreviewCard.Trigger>
       <PreviewCard.Portal>
@@ -1315,8 +1315,10 @@ function AnimatedProgressPreview() {
         <span className="font-medium text-gryt-text">Upload progress</span>
         <span className="text-gryt-muted">{value}%</span>
       </div>
-      <Progress value={value} />
-      <Progress />
+      {/* A progressbar with no name is a bar nothing can announce. Base UI
+          leaves naming to the caller, so the caller names it. */}
+      <Progress aria-label="Upload progress" value={value} />
+      <Progress aria-label="Working" />
     </div>
   );
 }

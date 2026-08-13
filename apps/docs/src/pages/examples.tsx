@@ -123,7 +123,7 @@ export function ExamplePage() {
   return (
     <article>
       <header className="pb-(--space-md)">
-        <p className="m-0 font-mono text-xs tracking-wide text-gryt-accent">
+        <p className="m-0 font-mono text-xs tracking-wide text-gryt-accent-11">
           Example
         </p>
         <h1 className="mt-2 font-display text-[length:var(--text-2xl)] font-semibold leading-tight tracking-[-0.022em] text-gryt-text">

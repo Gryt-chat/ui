@@ -72,13 +72,16 @@ export type Tone =
   | "success"
   | "warning";
 
+// Step 11, the text step, not the flat name. The flat name is step 9 — the
+// solid fill, the same colour in both appearances — which reads on a dark page
+// and disappears on a white one.
 export const toneAccent: Record<Tone, string> = {
-  primary: "text-gryt-accent",
-  secondary: "text-gryt-secondary",
+  primary: "text-gryt-accent-11",
+  secondary: "text-gryt-secondary-11",
   neutral: "text-gryt-muted",
-  danger: "text-gryt-danger",
-  success: "text-gryt-success",
-  warning: "text-gryt-warning"
+  danger: "text-gryt-danger-11",
+  success: "text-gryt-success-11",
+  warning: "text-gryt-warning-11"
 };
 
 // Filled backgrounds, for the checked state of a control.

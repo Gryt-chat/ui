@@ -22,10 +22,10 @@ export type ToastSeverity =
  */
 const severityStyles: Record<ToastSeverity, string> = {
   neutral: "border-white/8 bg-gryt-surface",
-  info: "border-gryt-secondary/30 bg-gryt-secondary/8",
-  success: "border-gryt-success/30 bg-gryt-success/8",
-  warning: "border-gryt-warning/30 bg-gryt-warning/8",
-  danger: "border-gryt-danger/30 bg-gryt-danger/8"
+  info: "border-gryt-secondary-6 bg-gryt-secondary-2",
+  success: "border-gryt-success-6 bg-gryt-success-2",
+  warning: "border-gryt-warning-6 bg-gryt-warning-2",
+  danger: "border-gryt-danger-6 bg-gryt-danger-2"
 };
 
 export interface ToastRootProps

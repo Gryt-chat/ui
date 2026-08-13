@@ -211,13 +211,13 @@ function Tile({
 
       <span className="flex h-5 items-center gap-1.5 text-gryt-muted">
         {participant.deafened ? (
-          <SpeakerSlash aria-label="Deafened" className="text-gryt-danger" size={15} />
+          <SpeakerSlash aria-label="Deafened" className="text-gryt-danger-11" size={15} />
         ) : null}
         {participant.muted ? (
-          <MicrophoneSlash aria-label="Muted" className="text-gryt-danger" size={15} />
+          <MicrophoneSlash aria-label="Muted" className="text-gryt-danger-11" size={15} />
         ) : null}
         {participant.sharing ? (
-          <Monitor aria-label="Sharing a screen" className="text-gryt-accent" size={15} />
+          <Monitor aria-label="Sharing a screen" className="text-gryt-accent-11" size={15} />
         ) : null}
       </span>
     </div>

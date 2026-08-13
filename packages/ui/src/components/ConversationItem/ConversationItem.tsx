@@ -35,7 +35,10 @@ export const ConversationItem = forwardRef<
           size="small"
           className={cn(
             active
-              ? "bg-gryt-on-accent text-gryt-accent ring-transparent"
+              // Step 9 by number rather than by its flat name: this is the
+              // filled-button pair inverted — the accent as ink on the ink
+              // colour it normally carries — and naming the step says so.
+              ? "bg-gryt-on-accent text-gryt-accent-9 ring-transparent"
               : "bg-gryt-surface-raised text-gryt-text"
           )}
         >
@@ -48,7 +51,7 @@ export const ConversationItem = forwardRef<
           <span
             className={cn(
               "block truncate text-xs",
-              active ? "text-gryt-on-accent/70" : "text-gryt-muted"
+              active ? "text-gryt-on-accent/85" : "text-gryt-muted"
             )}
           >
             {subtitle}
