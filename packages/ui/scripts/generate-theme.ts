@@ -66,15 +66,31 @@ function main() {
     if (from === -1 || to === -1) {
       throw new Error("generate-theme: no light block in theme.css");
     }
-    const flat = Object.entries({
-      "--gryt-bg": "neutral-1",
-      "--gryt-surface": "neutral-2",
-      "--gryt-surface-raised": "neutral-3",
-      "--gryt-border": "neutral-6",
-      "--gryt-muted": "neutral-11",
-      "--gryt-text": "neutral-12"
-    })
-      .map(([token, step]) => `  ${token}: var(--gryt-${step});`)
+    /* Both prefixes. The utilities compile against --color-gryt-*, so a light
+       block that aliased only the raw names left bg-gryt-surface on the dark
+       literal from @theme — which is how the settings dialog came out dark on
+       a light page. */
+    const aliases: Record<string, string> = {
+      bg: "neutral-1",
+      surface: "neutral-2",
+      "surface-raised": "neutral-3",
+      border: "neutral-6",
+      muted: "neutral-11",
+      text: "neutral-12",
+      accent: "accent-9",
+      "accent-light": "accent-10",
+      secondary: "secondary-9",
+      "secondary-light": "secondary-10",
+      success: "success-9",
+      danger: "danger-9",
+      "danger-light": "danger-10",
+      warning: "warning-9"
+    };
+    const flat = Object.entries(aliases)
+      .flatMap(([token, step]) => [
+        `  --gryt-${token}: var(--gryt-${step});`,
+        `  --color-gryt-${token}: var(--gryt-${step});`
+      ])
       .join("\n");
     out =
       out.slice(0, from + start.length) +
