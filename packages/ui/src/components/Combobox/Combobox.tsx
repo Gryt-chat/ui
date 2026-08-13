@@ -2,7 +2,13 @@ import { Combobox as BaseCombobox } from "@base-ui/react/combobox";
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
-import { focusRing, popupMotion, popupSurface } from "../utils/styles";
+import {
+  fieldControl,
+  fieldSizes,
+  focusRing,
+  popupMotion,
+  popupSurface
+} from "../utils/styles";
 
 /**
  * Shared with Autocomplete, which is the same list wearing different
@@ -19,9 +25,19 @@ export const listboxItemClass = [
   "data-disabled:cursor-not-allowed data-disabled:opacity-50"
 ].join(" ");
 
+/**
+ * The typeahead input on both Combobox and Autocomplete.
+ *
+ * This is TextField's control, through the same shared constant, so the three
+ * places you can type in this library are the same shape. It used to be its own
+ * class list asking for `rounded-(--gryt-radius-input)` — a token that has never
+ * existed — so it rendered with square corners next to a fully rounded
+ * TextField.
+ */
 export const listboxInputClass = [
-  "w-full rounded-(--gryt-radius-input) border border-gryt-border bg-gryt-surface-raised",
-  "px-3 py-2 text-sm text-gryt-text outline-none placeholder:text-gryt-muted",
+  fieldControl,
+  fieldSizes.medium,
+  "border-gryt-border",
   focusRing
 ].join(" ");
 

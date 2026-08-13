@@ -69,8 +69,14 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
           // Press travels further than hover, so the button reads as being
           // pushed down rather than just acknowledging the cursor.
-          "motion-safe:hover:not-data-disabled:scale-[1.03]",
-          "motion-safe:active:not-data-disabled:scale-[0.96]",
+          // A button that opens something does not grow under the cursor.
+          // Base UI positions the popup against the trigger's measured box, and
+          // it keeps measuring while the popup is open — so a trigger that
+          // scales on hover drags its own menu a pixel or two sideways every
+          // time the pointer crosses it. aria-haspopup is how the trigger says
+          // that is what it is; Base UI puts it there, nothing to pass.
+          "motion-safe:not-[[aria-haspopup]]:hover:not-data-disabled:scale-[1.03]",
+          "motion-safe:not-[[aria-haspopup]]:active:not-data-disabled:scale-[0.96]",
 
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light",
           "data-disabled:cursor-not-allowed data-disabled:opacity-50",

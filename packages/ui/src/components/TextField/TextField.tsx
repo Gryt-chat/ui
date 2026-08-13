@@ -2,13 +2,11 @@ import { Field } from "@base-ui/react/field";
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../utils/cn";
+import { fieldControl, fieldSizes } from "../utils/styles";
 
+// The two sizes live in utils/styles, shared with the Combobox and
+// Autocomplete inputs so all three keep the same shape.
 export type TextFieldSize = "small" | "medium";
-
-const sizeStyles: Record<TextFieldSize, string> = {
-  small: "min-h-9 px-3 py-1.5 text-sm",
-  medium: "min-h-11 px-4 py-2.5 text-sm"
-};
 
 export interface TextFieldProps
   extends Omit<
@@ -48,14 +46,11 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         // aria-describedby survive the switch to a textarea.
         render={multiline ? <textarea rows={minRows} /> : undefined}
         className={cn(
-          "gryt-text-field-control w-full rounded-(--gryt-radius-xl) border bg-gryt-surface-raised",
-          "text-gryt-text outline-none placeholder:text-gryt-muted",
-          "transition-colors duration-150",
-          "hover:border-gryt-accent-light focus:border-gryt-accent",
-          "disabled:cursor-not-allowed disabled:opacity-60",
+          "gryt-text-field-control",
+          fieldControl,
           multiline && "resize-y leading-6",
           error ? "border-gryt-danger" : "border-gryt-border",
-          sizeStyles[size],
+          fieldSizes[size],
           className
         )}
         {...props}

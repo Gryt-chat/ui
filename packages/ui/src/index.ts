@@ -90,7 +90,11 @@ export type {
   PopoverPositionerProps
 } from "./components/Popover/Popover";
 export { Toast, useToastManager } from "./components/Toast/Toast";
-export type { ToastRootProps, ToastViewportProps } from "./components/Toast/Toast";
+export type {
+  ToastRootProps,
+  ToastSeverity,
+  ToastViewportProps
+} from "./components/Toast/Toast";
 export { ScrollArea } from "./components/ScrollArea/ScrollArea";
 export type {
   ScrollAreaRootProps,

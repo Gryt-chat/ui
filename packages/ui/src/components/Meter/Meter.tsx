@@ -33,9 +33,14 @@ export interface MeterProps
  * 100% is often the bad case rather than the finished one. They also announce
  * differently to a screen reader, which is the part that actually matters.
  *
- * No transition on the indicator: the common caller is a mic level updating
- * every animation frame, and easing a value that already changes 60 times a
- * second only makes it lag behind the sound.
+ * The indicator moves rather than snapping, but only just — 120ms and ease-out,
+ * no spring. This used to have no transition at all, on the grounds that the
+ * common caller is a mic level updating every animation frame and easing a
+ * value that changes 60 times a second only makes it lag behind the sound.
+ * That reasoning holds for the mic and nothing else: disk used, server
+ * capacity, a level polled a few times a second all read as broken when they
+ * teleport. 120ms is shorter than the gap between polls at 4Hz, so a fast feed
+ * still lands on every value it is handed.
  */
 export function Meter({
   className,
@@ -66,9 +71,18 @@ export function Meter({
         </div>
       )}
       <BaseMeter.Track className="h-1.5 w-full overflow-hidden rounded-(--gryt-radius-full) bg-gryt-surface-raised">
+        {/* Short and linear-ish, so the bar moves rather than snapping.
+            The note above says no transition, and that was written for a mic
+            level updating every frame — easing a value that changes 60 times a
+            second only makes it lag. But most meters are not that: disk used,
+            how full a server is, a level polled a few times a second, and those
+            all read as broken when they teleport. 120ms is under the gap
+            between polls at 4Hz, so a fast feed still lands on every value it
+            is given; it just gets there over two frames instead of one. */}
         <BaseMeter.Indicator
           className={cn(
             "h-full rounded-(--gryt-radius-full)",
+            "transition-[width] duration-120 ease-out motion-reduce:transition-none",
             toneFill[tone]
           )}
         />

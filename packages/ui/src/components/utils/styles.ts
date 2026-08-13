@@ -12,6 +12,36 @@ export const focusRing =
 export const focusRingWithin =
   "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gryt-accent-light";
 
+/**
+ * What a text input looks like: TextField, and the typeahead inputs on
+ * Combobox and Autocomplete.
+ *
+ * Shared because they had already drifted. The listbox inputs asked for
+ * `rounded-(--gryt-radius-input)`, a token that does not exist — the library
+ * ships sm, md, lg, xl and full — so the declaration was invalid and both
+ * rendered with square corners in a library where every other control is
+ * rounded. That is the kind of thing a shared constant makes impossible rather
+ * than merely unlikely.
+ *
+ * The border *colour* is left to the caller: TextField swaps it for danger when
+ * the field is invalid, and baking one in here would mean fighting it back off.
+ */
+export const fieldControl = [
+  "w-full rounded-(--gryt-radius-xl) border bg-gryt-surface-raised",
+  "text-gryt-text outline-none placeholder:text-gryt-muted",
+  "transition-colors duration-150 motion-reduce:transition-none",
+  "hover:border-gryt-accent-light focus:border-gryt-accent",
+  "disabled:cursor-not-allowed disabled:opacity-60"
+].join(" ");
+
+/** Matching heights and padding for the two sizes a field comes in. */
+export const fieldSizes = {
+  small: "min-h-9 px-3 py-1.5 text-sm",
+  medium: "min-h-11 px-4 py-2.5 text-sm"
+} as const;
+
+export type FieldSize = keyof typeof fieldSizes;
+
 // Every floating surface: menu, select list, tooltip, dialog, drawer. Flat —
 // a border rather than a shadow.
 export const popupSurface =

@@ -34,7 +34,13 @@ export function Skeleton({
     <div
       aria-hidden="true"
       className={cn(
-        "gryt-skeleton bg-gryt-surface-raised motion-safe:animate-pulse",
+        // Not bg-gryt-surface-raised. #1e2028 against #1a1d24 is four points of
+        // luminance, which is invisible on a laptop screen at an angle — the
+        // placeholder that is meant to say "something is coming" said nothing.
+        // A white wash instead of a fixed colour, so it stays visible on any of
+        // the surfaces it can land on rather than only the one it was picked
+        // against, and it dims rather than brightens as it pulses.
+        "gryt-skeleton bg-white/9 motion-safe:animate-pulse",
         variantStyles[variant],
         className
       )}

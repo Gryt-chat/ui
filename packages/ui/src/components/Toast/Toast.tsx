@@ -3,9 +3,36 @@ import { X } from "@phosphor-icons/react";
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
-import { popupSurface } from "../utils/styles";
 
-export type ToastRootProps = ComponentPropsWithoutRef<typeof BaseToast.Root>;
+export type ToastSeverity =
+  | "neutral"
+  | "info"
+  | "success"
+  | "warning"
+  | "danger";
+
+/**
+ * Severity is a tinted edge and a wash, not a filled card.
+ *
+ * Alert tints its whole surface, and that is right for something sitting in
+ * the page where it has to compete with the content around it. A toast is
+ * already floating over everything with nothing to compete with, so the same
+ * treatment reads as shouting. The border carries the colour and the fill stays
+ * near the surface underneath.
+ */
+const severityStyles: Record<ToastSeverity, string> = {
+  neutral: "border-white/8 bg-gryt-surface",
+  info: "border-gryt-secondary/30 bg-gryt-secondary/8",
+  success: "border-gryt-success/30 bg-gryt-success/8",
+  warning: "border-gryt-warning/30 bg-gryt-warning/8",
+  danger: "border-gryt-danger/30 bg-gryt-danger/8"
+};
+
+export interface ToastRootProps
+  extends Omit<ComponentPropsWithoutRef<typeof BaseToast.Root>, "className"> {
+  severity?: ToastSeverity;
+  className?: string;
+}
 export type ToastViewportProps = ComponentPropsWithoutRef<
   typeof BaseToast.Viewport
 >;
@@ -34,7 +61,7 @@ const Viewport = forwardRef<HTMLDivElement, ToastViewportProps>(
 );
 
 const Root = forwardRef<HTMLDivElement, ToastRootProps>(function ToastRoot(
-  { className, ...props },
+  { className, severity = "neutral", ...props },
   ref
 ) {
   return (
@@ -42,7 +69,13 @@ const Root = forwardRef<HTMLDivElement, ToastRootProps>(function ToastRoot(
       ref={ref}
       className={cn(
         "gryt-toast relative flex flex-col p-3 pr-9",
-        popupSurface,
+        // Not popupSurface. That border is --gryt-border, a solid slate line
+        // that is right for a menu anchored to the thing that opened it and too
+        // heavy for a card floating in the corner with nothing behind it. A
+        // white hairline separates it from the page without drawing a box
+        // around it.
+        "rounded-(--gryt-radius-xl) border text-gryt-text",
+        severityStyles[severity],
         // Swiping is a pointer gesture, so the toast follows the finger
         // through Base UI's swipe variables before it animates out.
         "transition-[opacity,transform] duration-(--gryt-dur-spring) ease-spring",

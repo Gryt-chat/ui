@@ -24,7 +24,12 @@ export function Progress({ className, value = null, ...props }: ProgressProps) {
       {...props}
     >
       <BaseProgress.Track className="h-1.5 w-full overflow-hidden rounded-(--gryt-radius-full) bg-gryt-surface-raised">
-        <BaseProgress.Indicator className="h-full rounded-(--gryt-radius-full) bg-gryt-accent transition-[width] duration-(--gryt-dur-spring-soft) ease-spring motion-reduce:transition-none" />
+        {/* ease-out, not the spring.
+            A progress bar is a reading, and the spring overshoots 12% of the
+            travel — so a jump to 100% ran past the end of the track and came
+            back, which says the job finished, then unfinished, then finished.
+            Bouncing is for controls the user just pushed. */}
+        <BaseProgress.Indicator className="h-full rounded-(--gryt-radius-full) bg-gryt-accent transition-[width] duration-300 ease-out motion-reduce:transition-none" />
       </BaseProgress.Track>
     </BaseProgress.Root>
   );
