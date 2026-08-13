@@ -611,10 +611,32 @@
   --color-gryt-accent-a12: rgb(9 0 71 / 82.2%);
 
   --gryt-bg: var(--gryt-neutral-1);
+  --color-gryt-bg: var(--gryt-neutral-1);
   --gryt-surface: var(--gryt-neutral-2);
+  --color-gryt-surface: var(--gryt-neutral-2);
   --gryt-surface-raised: var(--gryt-neutral-3);
+  --color-gryt-surface-raised: var(--gryt-neutral-3);
   --gryt-border: var(--gryt-neutral-6);
+  --color-gryt-border: var(--gryt-neutral-6);
   --gryt-muted: var(--gryt-neutral-11);
+  --color-gryt-muted: var(--gryt-neutral-11);
   --gryt-text: var(--gryt-neutral-12);
+  --color-gryt-text: var(--gryt-neutral-12);
+  --gryt-accent: var(--gryt-accent-9);
+  --color-gryt-accent: var(--gryt-accent-9);
+  --gryt-accent-light: var(--gryt-accent-10);
+  --color-gryt-accent-light: var(--gryt-accent-10);
+  --gryt-secondary: var(--gryt-secondary-9);
+  --color-gryt-secondary: var(--gryt-secondary-9);
+  --gryt-secondary-light: var(--gryt-secondary-10);
+  --color-gryt-secondary-light: var(--gryt-secondary-10);
+  --gryt-success: var(--gryt-success-9);
+  --color-gryt-success: var(--gryt-success-9);
+  --gryt-danger: var(--gryt-danger-9);
+  --color-gryt-danger: var(--gryt-danger-9);
+  --gryt-danger-light: var(--gryt-danger-10);
+  --color-gryt-danger-light: var(--gryt-danger-10);
+  --gryt-warning: var(--gryt-warning-9);
+  --color-gryt-warning: var(--gryt-warning-9);
   /* END GENERATED */
 }

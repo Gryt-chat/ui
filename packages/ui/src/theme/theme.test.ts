@@ -129,6 +129,18 @@ describe("the light set", () => {
     }
   });
 
+  it("aliases both prefixes, not just the raw names", () => {
+    // The utilities compile against --color-gryt-*. A light block that aliased
+    // only --gryt-* left bg-gryt-surface pointing at the dark literal in
+    // @theme, so a dialog came out dark on a light page while every scale
+    // value around it had switched correctly.
+    const block = css.slice(css.indexOf(".light {"));
+    for (const token of ["bg", "surface", "surface-raised", "border", "muted", "text", "accent"]) {
+      expect(block).toContain(`--gryt-${token}: var(--gryt-`);
+      expect(block).toContain(`--color-gryt-${token}: var(--gryt-`);
+    }
+  });
+
   it("regenerates the light set when asked for it", () => {
     const theme = createGrytTheme({ appearance: "light" }) as Record<string, string>;
     expect(theme["--gryt-neutral-2"]).toBe("#ffffff");
