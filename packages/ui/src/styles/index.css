@@ -41,4 +41,53 @@
     .gryt-conversation-item {
         @apply flex w-full items-center gap-3 rounded-(--gryt-radius-xl) px-3 py-2.5 text-left transition-colors;
     }
+
+    /* A control reacts to its label as if it were the control.
+     *
+     * Clicking the label already toggled the control — that is what a label is
+     * for — but only the 20px box itself grew on hover and pressed on click,
+     * so the whole row was clickable and none of it looked it. The hit target
+     * and the thing that responds to the pointer were different shapes.
+     *
+     * Stylesheet-shaped rather than a utility on the component: the trigger is
+     * an ancestor, and a class on the checkbox cannot select upwards. It has to
+     * be a rule that starts at the label. That also means it works for any
+     * wrapping label, including Base UI's Field.Label, with no prop to pass and
+     * nothing for a caller to remember.
+     *
+     * These live in the components layer, so the control's own hover and press
+     * utilities still win when the pointer is actually on it. The values match
+     * them on purpose: the same scale from either direction, or the control
+     * jumps when the cursor crosses from the text onto the box.
+     *
+     * :not([data-disabled]) because Base UI marks a disabled control that way,
+     * and a disabled control that bounces is a lie about what a click will do. */
+    @media (prefers-reduced-motion: no-preference) {
+        label:hover .gryt-checkbox:not([data-disabled]),
+        label:hover .gryt-radio:not([data-disabled]) {
+            scale: 1.08;
+        }
+
+        label:active .gryt-checkbox:not([data-disabled]),
+        label:active .gryt-radio:not([data-disabled]) {
+            scale: 0.92;
+        }
+
+        /* The switch is wider, so it moves less — same values it uses itself. */
+        label:hover .gryt-switch:not([data-disabled]) {
+            scale: 1.05;
+        }
+
+        label:active .gryt-switch:not([data-disabled]) {
+            scale: 0.95;
+        }
+    }
+
+    /* The border follows too, and unlike the scale it is not motion-gated:
+       it is a state, not an animation. */
+    label:hover .gryt-checkbox:not([data-disabled]):not([data-checked]),
+    label:hover .gryt-radio:not([data-disabled]):not([data-checked]),
+    label:hover .gryt-switch:not([data-disabled]):not([data-checked]) {
+        @apply border-gryt-accent-light;
+    }
 }

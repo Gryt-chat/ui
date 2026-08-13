@@ -4,8 +4,9 @@
  * footer: Ft2 inline single line · enrichment: none
  * design-system: design.md · designed-as-app
  */
+import { ScrollArea } from "@gryt/ui";
 import { ArrowSquareOut, List, X } from "@phosphor-icons/react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   CommandPalette,
@@ -103,7 +104,7 @@ export function AppShell() {
             type="button"
             onClick={() => setDrawerOpen(false)}
           />
-          <aside className="relative h-full w-[min(21rem,calc(100vw-3rem))] overflow-y-auto border-r border-gryt-border bg-gryt-bg px-3 py-4">
+          <aside className="relative flex h-full w-[min(21rem,calc(100vw-3rem))] flex-col border-r border-gryt-border bg-gryt-bg px-3 py-4">
             <div className="mb-4 flex items-center justify-between gap-2 px-2">
               <BrandBlock />
               <button
@@ -115,7 +116,14 @@ export function AppShell() {
                 <X size={18} />
               </button>
             </div>
-            <Sidebar onNavigate={() => setDrawerOpen(false)} />
+            <ScrollArea.Root className="min-h-0 flex-1">
+              <ScrollArea.Viewport>
+                <ScrollArea.Content>
+                  <Sidebar onNavigate={() => setDrawerOpen(false)} />
+                </ScrollArea.Content>
+              </ScrollArea.Viewport>
+              <ScrollArea.Scrollbar orientation="vertical" />
+            </ScrollArea.Root>
           </aside>
         </div>
       ) : null}
@@ -126,9 +134,14 @@ export function AppShell() {
             <div className="mb-6 px-2">
               <BrandBlock />
             </div>
-            <div className="min-h-0 flex-1 overflow-y-auto pb-6">
-              <Sidebar />
-            </div>
+            <ScrollArea.Root className="min-h-0 flex-1">
+              <ScrollArea.Viewport className="pb-6">
+                <ScrollArea.Content>
+                  <Sidebar />
+                </ScrollArea.Content>
+              </ScrollArea.Viewport>
+              <ScrollArea.Scrollbar orientation="vertical" />
+            </ScrollArea.Root>
           </div>
         </aside>
 
@@ -180,9 +193,74 @@ function BrandBlock() {
   );
 }
 
+/**
+ * The sidebar, with the accent pill from vertical Tabs sliding between rows.
+ *
+ * Not the Tabs component itself, though it is the same effect and the same
+ * spring. These are links: they change the URL, and a screen reader announcing
+ * "tab" for something you can middle-click into a new window is a worse trade
+ * than reimplementing thirty lines of measurement. So the pill is measured off
+ * whichever row is current, the same way Base UI measures its own.
+ */
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
+  const navRef = useRef<HTMLElement | null>(null);
+  const { pathname } = useLocation();
+  const [pill, setPill] = useState<{ top: number; height: number } | null>(null);
+  // The first placement jumps rather than animating. Without this the pill
+  // flies down from the top of the list on every page load, which reads as the
+  // page still loading. State rather than a ref, because it decides what gets
+  // rendered and a ref read during render is a stale read waiting to happen.
+  const [animate, setAnimate] = useState(false);
+
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    if (nav === null) return;
+
+    const measure = () => {
+      const active = nav.querySelector<HTMLElement>('[data-active="true"]');
+      if (active === null) {
+        setPill(null);
+        setAnimate(false);
+        return;
+      }
+      setPill({ top: active.offsetTop, height: active.offsetHeight });
+    };
+
+    measure();
+
+    // The rows move when the sidebar is resized or a font finally loads, and a
+    // pill measured against the old layout sits half a row off.
+    const observer = new ResizeObserver(measure);
+    observer.observe(nav);
+    return () => observer.disconnect();
+  }, [pathname]);
+
+  // One frame after the pill first lands, so the class that would have
+  // animated it into place arrives too late to do so.
+  useEffect(() => {
+    if (pill === null) return;
+    const frame = requestAnimationFrame(() => setAnimate(true));
+    return () => cancelAnimationFrame(frame);
+  }, [pill]);
+
   return (
-    <nav aria-label="Documentation navigation" className="text-sm">
+    <nav
+      ref={navRef}
+      aria-label="Documentation navigation"
+      className="relative text-sm"
+    >
+      {pill ? (
+        <span
+          aria-hidden="true"
+          className={[
+            "pointer-events-none absolute inset-x-0 z-0 rounded-(--gryt-radius-md) bg-gryt-accent",
+            animate
+              ? "transition-[translate,height] duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none"
+              : ""
+          ].join(" ")}
+          style={{ height: pill.height, translate: `0 ${pill.top}px` }}
+        />
+      ) : null}
       {navSections.map((section) => (
         <section key={section.title} className="pb-4">
           <h2 className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-gryt-muted">
@@ -211,15 +289,16 @@ function SidebarLink({
   const isExternal = item.href.startsWith("http");
   const isActive = useIsActive(item.href);
 
-  // The active row is marked with an accent rule and a colour shift rather than
-  // a filled pill. At 27 rows a filled pill is a block of accent in the corner
-  // of every screen, which spends the whole accent budget on "you are here".
+  // The fill lives on the pill in Sidebar so it can travel between rows, so the
+  // row itself only changes its text colour — the same split Tabs makes between
+  // Tab and Indicator. relative z-10 keeps the label above the pill rather than
+  // under it.
   const className = [
-    "flex min-h-9 items-center justify-between gap-3 rounded-(--gryt-radius-md) border-l-2 px-3 py-1.5 transition-colors duration-200",
+    "relative z-10 flex min-h-9 items-center justify-between gap-3 rounded-(--gryt-radius-md) px-3 py-1.5 transition-colors duration-200",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light",
     isActive
-      ? "border-l-gryt-accent bg-gryt-surface font-medium text-gryt-text"
-      : "border-l-transparent text-gryt-muted hover:bg-white/4 hover:text-gryt-text"
+      ? "font-medium text-gryt-on-accent"
+      : "text-gryt-muted hover:bg-white/4 hover:text-gryt-text"
   ].join(" ");
 
   const children = (
@@ -259,6 +338,11 @@ function SidebarLink({
       to={item.href}
       onClick={onNavigate}
       aria-current={isActive ? "page" : undefined}
+      // What the pill measures against. aria-current would do, but only for
+      // internal links — external ones are never current and the attribute
+      // would have to be read as "absent means not active", which is one more
+      // thing to get wrong than a boolean that is always there.
+      data-active={isActive ? "true" : "false"}
     >
       {children}
     </Link>

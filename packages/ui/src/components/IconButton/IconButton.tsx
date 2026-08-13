@@ -48,8 +48,14 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
           "rounded-(--gryt-radius-full) select-none",
           // scale rather than transform — see the note in Button.
           "transition-[scale,background-color,color] duration-(--gryt-dur-spring) ease-spring",
-          "motion-safe:hover:not-data-disabled:scale-[1.06]",
-          "motion-safe:active:not-data-disabled:scale-[0.94]",
+          // A button that opens something does not grow under the cursor.
+          // Base UI positions the popup against the trigger's measured box, and
+          // it keeps measuring while the popup is open — so a trigger that
+          // scales on hover drags its own menu a pixel or two sideways every
+          // time the pointer crosses it. aria-haspopup is how the trigger says
+          // that is what it is; Base UI puts it there, nothing to pass.
+          "motion-safe:not-[[aria-haspopup]]:hover:not-data-disabled:scale-[1.06]",
+          "motion-safe:not-[[aria-haspopup]]:active:not-data-disabled:scale-[0.94]",
           focusRing,
           disabledState,
           sizeStyles[size],

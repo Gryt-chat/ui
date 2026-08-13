@@ -242,19 +242,29 @@ function SelectExample() {
   {
     slug: "checkbox",
     name: "Checkbox",
-    description: "Binary selection control for settings and preference rows.",
+    description:
+      "Binary selection control for settings and preference rows. Reacts to its label as if it were the control.",
     importName: "Checkbox",
     preview: "checkbox",
     code: `import { Checkbox } from "@gryt/ui";
 
 <Checkbox defaultChecked tone="primary" aria-label="Primary" />
 <Checkbox defaultChecked tone="secondary" aria-label="Secondary" />
-<Checkbox defaultChecked tone="danger" aria-label="Danger" />`
+<Checkbox defaultChecked tone="danger" aria-label="Danger" />
+
+// Wrapped in a label, the box reacts to the whole row: hovering the text
+// grows it and pressing anywhere presses it. Nothing to pass — the rule
+// starts at the label, so any wrapping label does it, including Field.Label.
+<label className="flex items-center gap-2">
+  <Checkbox name="rememberMe" />
+  Remember me
+</label>`
   },
   {
     slug: "radio",
     name: "Radio",
-    description: "Single-choice control styled with the Gryt accent color.",
+    description:
+      "Single-choice control styled with the Gryt accent color. Reacts to its label as if it were the control.",
     importName: "Radio",
     preview: "radio",
     code: `import { Radio, RadioGroup } from "@gryt/ui";
@@ -281,14 +291,21 @@ function RadioExample() {
     slug: "switch",
     name: "Switch",
     description:
-      "Toggle control for on/off settings such as voice activity or presence.",
+      "Toggle control for on/off settings such as voice activity or presence. Reacts to its label as if it were the control.",
     importName: "Switch",
     preview: "switch",
     code: `import { Switch } from "@gryt/ui";
 
 <Switch defaultChecked tone="primary" aria-label="Primary" />
 <Switch defaultChecked tone="secondary" aria-label="Secondary" />
-<Switch defaultChecked tone="danger" aria-label="Danger" />`
+<Switch defaultChecked tone="danger" aria-label="Danger" />
+
+// Inside a label the switch reacts to the whole row, the same as
+// Checkbox and Radio do.
+<label className="flex items-center justify-between gap-6">
+  Noise suppression
+  <Switch defaultChecked />
+</label>`
   },
   {
     slug: "slider",
@@ -311,7 +328,14 @@ function RadioExample() {
     preview: "avatar",
     code: `import { Avatar } from "@gryt/ui";
 
-<Avatar>G</Avatar>`
+<Avatar size="small">G</Avatar>
+<Avatar>G</Avatar>
+<Avatar size="large">G</Avatar>
+
+// fallback is what shows while the image loads, and what stays if it
+// never arrives — so it is initials rather than a spinner.
+<Avatar src="/owl.png" alt="Gryt" fallback="G" />
+<Avatar size="large" src="/owl.png" alt="Gryt" fallback="G" />`
   },
   {
     slug: "badge",
@@ -323,6 +347,18 @@ function RadioExample() {
     code: `import { Avatar, Badge } from "@gryt/ui";
 
 <Badge badgeContent={3}>
+  <Avatar size="small" src="/owl.png" alt="Gryt" fallback="G" />
+</Badge>
+<Badge badgeContent={12}>
+  <Avatar src="/owl.png" alt="Gryt" fallback="G" />
+</Badge>
+
+// Over max it reads 99+, so the badge can never outgrow what it is
+// pinned to. An empty string gives a plain dot.
+<Badge badgeContent={240}>
+  <Avatar size="large" src="/owl.png" alt="Gryt" fallback="G" />
+</Badge>
+<Badge badgeContent="">
   <Avatar>G</Avatar>
 </Badge>`
   },
@@ -342,14 +378,21 @@ function RadioExample() {
   {
     slug: "tooltip",
     name: "Tooltip",
-    description: "Hover and focus hints for icon-only controls.",
+    description:
+      "Hover and focus hints for icon-only controls, on any of the four sides.",
     importName: "Tooltip",
     preview: "tooltip",
     code: `import { IconButton, Tooltip } from "@gryt/ui";
 
+// side is "top" by default, and flips on its own when the tooltip would
+// leave the viewport — so "top" means "top if it fits".
 <Tooltip title="Notifications">
   <IconButton aria-label="Notifications">...</IconButton>
-</Tooltip>`
+</Tooltip>
+
+<Tooltip title="Right" side="right">...</Tooltip>
+<Tooltip title="Bottom" side="bottom">...</Tooltip>
+<Tooltip title="Left" side="left" sideOffset={12}>...</Tooltip>`
   },
   {
     slug: "divider",
@@ -552,7 +595,7 @@ function VerticalTabsExample() {
     slug: "drawer",
     name: "Drawer",
     description:
-      "An edge panel you can drag away to dismiss, which becomes a bottom sheet under 768px.",
+      "An edge panel you can drag away to dismiss — left, right, top or bottom — which becomes a bottom sheet under 768px.",
     importName: "Drawer",
     preview: "drawer",
     code: `import { Button, Drawer } from "@gryt/ui";
@@ -686,7 +729,7 @@ function LayoutPicker() {
     slug: "popover",
     name: "Popover",
     description:
-      "An anchored panel for content and controls — a member card, a permissions summary — rather than a column of items.",
+      "An anchored panel for content and controls — a member card, a permissions summary — rather than a column of items. Sits on any side, with any alignment.",
     importName: "Popover",
     preview: "popover",
     code: `import { Popover } from "@gryt/ui";
@@ -694,7 +737,10 @@ function LayoutPicker() {
 <Popover.Root>
   <Popover.Trigger>Open</Popover.Trigger>
   <Popover.Portal>
-    <Popover.Positioner>
+    {/* side is top, right, bottom or left; align is start, center or
+        end along it. Both flip when the popup would leave the
+        viewport, so what you pass is a preference, not a promise. */}
+    <Popover.Positioner side="right" align="start" sideOffset={8}>
       <Popover.Popup>
         <Popover.Title>Sivert</Popover.Title>
         <Popover.Description>
@@ -728,7 +774,11 @@ function ToastList() {
   const { toasts } = useToastManager();
 
   return toasts.map((toast) => (
-    <Toast.Root key={toast.id} toast={toast}>
+    <Toast.Root
+      key={toast.id}
+      toast={toast}
+      severity={toast.data?.severity}
+    >
       <Toast.Title />
       <Toast.Description />
       <Toast.Close />
@@ -736,9 +786,19 @@ function ToastList() {
   ));
 }
 
-// Anywhere below the provider.
+// Anywhere below the provider. severity is neutral, info, success,
+// warning or danger; it rides in the toast's data, which is Base UI's
+// slot for anything the toast manager does not model itself.
 const toast = useToastManager();
-toast.add({ title: "Invite copied", description: "Expires in 24 hours." });`
+toast.add({ title: "Invite copied", description: "Expires in 24 hours." });
+toast.add({
+  title: "Connection lost",
+  description: "Reconnecting to the voice server.",
+  data: { severity: "danger" }
+});
+
+// Anything past that is a className away — Toast.Root forwards it.
+<Toast.Root toast={toast} className="border-gryt-accent/40 bg-gryt-accent/10" />`
   },
   {
     slug: "scroll-area",
@@ -892,13 +952,14 @@ const permissions = ["read", "write", "manage"];
     slug: "preview-card",
     name: "PreviewCard",
     description:
-      "What appears when you hover a username — content, not a label, so it waits before opening.",
+      "What appears when you hover a username — content, not a label, so it waits before opening. Sits on any side.",
     importName: "PreviewCard",
     preview: "preview-card",
     code: `import { PreviewCard } from "@gryt/ui";
 
 <PreviewCard.Root>
   <PreviewCard.Trigger>@sivert</PreviewCard.Trigger>
+  {/* Positioner takes the same side and align as Popover and Tooltip. */}
   <PreviewCard.Portal>
     <PreviewCard.Positioner>
       <PreviewCard.Popup>Maintains Gryt. In voice since 20:14.</PreviewCard.Popup>

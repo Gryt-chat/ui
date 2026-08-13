@@ -53,7 +53,7 @@ import {
   useToastManager
 } from "@gryt/ui";
 import { Bell, DotsThree, PaperPlaneTilt } from "@phosphor-icons/react";
-import type { Tone } from "@gryt/ui";
+import type { DrawerSide, Tone, ToastSeverity } from "@gryt/ui";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
@@ -137,7 +137,6 @@ const pagerClass =
 
 function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [inputDevice, setInputDevice] = useState("studio");
   const [radioMode, setRadioMode] = useState("voice");
   const [tabValue, setTabValue] = useState("chat");
@@ -328,12 +327,50 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
         </div>
       );
     case "avatar":
-      return <Avatar>G</Avatar>;
+      return (
+        <div className="grid w-full gap-6">
+          <ExampleSection title="Initials">
+            <Avatar size="small">G</Avatar>
+            <Avatar>G</Avatar>
+            <Avatar size="large">G</Avatar>
+          </ExampleSection>
+          <ExampleSection title="Image">
+            {/* The fallback is what shows while the image is still loading or
+                if it never arrives, so it is initials rather than a spinner. */}
+            <Avatar size="small" src={OWL} alt="Gryt" fallback="G" />
+            <Avatar src={OWL} alt="Gryt" fallback="G" />
+            <Avatar size="large" src={OWL} alt="Gryt" fallback="G" />
+          </ExampleSection>
+        </div>
+      );
     case "badge":
       return (
-        <Badge badgeContent={3}>
-          <Avatar>G</Avatar>
-        </Badge>
+        <div className="grid w-full gap-6">
+          <ExampleSection title="Count">
+            <Badge badgeContent={3}>
+              <Avatar size="small" src={OWL} alt="Gryt" fallback="G" />
+            </Badge>
+            <Badge badgeContent={12}>
+              <Avatar src={OWL} alt="Gryt" fallback="G" />
+            </Badge>
+            {/* Over max it reads 99+, so a badge can never outgrow the thing
+                it is pinned to. */}
+            <Badge badgeContent={240}>
+              <Avatar size="large" src={OWL} alt="Gryt" fallback="G" />
+            </Badge>
+          </ExampleSection>
+          <ExampleSection title="Dot">
+            <Badge badgeContent="">
+              <Avatar size="small">G</Avatar>
+            </Badge>
+            <Badge badgeContent="">
+              <Avatar>G</Avatar>
+            </Badge>
+            <Badge badgeContent="">
+              <Avatar size="large">G</Avatar>
+            </Badge>
+          </ExampleSection>
+        </div>
       );
     case "chip":
       return (
@@ -345,12 +382,35 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
         </div>
       );
     case "tooltip":
+      // Laid out where each one points, so the grid itself shows the prop.
       return (
-        <Tooltip title="Notifications">
-          <IconButton aria-label="Notifications">
-            <Bell size={18} />
-          </IconButton>
-        </Tooltip>
+        <div className="grid w-full max-w-xs grid-cols-3 place-items-center gap-2">
+          <span />
+          <Tooltip title="Top" side="top">
+            <IconButton aria-label="Top">
+              <Bell size={18} />
+            </IconButton>
+          </Tooltip>
+          <span />
+          <Tooltip title="Left" side="left">
+            <IconButton aria-label="Left">
+              <Bell size={18} />
+            </IconButton>
+          </Tooltip>
+          <span className="text-xs text-gryt-muted">side</span>
+          <Tooltip title="Right" side="right">
+            <IconButton aria-label="Right">
+              <Bell size={18} />
+            </IconButton>
+          </Tooltip>
+          <span />
+          <Tooltip title="Bottom" side="bottom">
+            <IconButton aria-label="Bottom">
+              <Bell size={18} />
+            </IconButton>
+          </Tooltip>
+          <span />
+        </div>
       );
     case "divider":
       return (
@@ -499,35 +559,7 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
         </>
       );
     case "drawer":
-      return (
-        <>
-          <Drawer.Root
-            open={drawerOpen}
-            onOpenChange={setDrawerOpen}
-            side="right"
-          >
-            <Drawer.Trigger render={<Button />}>Open drawer</Drawer.Trigger>
-            <Drawer.Portal>
-              <Drawer.Backdrop />
-              <Drawer.Viewport>
-                <Drawer.Popup>
-                  <Drawer.Grabber />
-                  <Drawer.Title className="text-lg font-semibold text-gryt-text">
-                    Gryt Drawer
-                  </Drawer.Title>
-                  <Drawer.Description className="text-sm text-gryt-muted">
-                    Drag it away to dismiss. Narrow the window below 768px and
-                    it becomes a bottom sheet.
-                  </Drawer.Description>
-                  <Drawer.Close render={<Button tone="neutral" />}>
-                    Close
-                  </Drawer.Close>
-                </Drawer.Popup>
-              </Drawer.Viewport>
-            </Drawer.Portal>
-          </Drawer.Root>
-        </>
-      );
+      return <DrawerExample />;
     case "message-bubble":
       return (
         <div className="space-y-3">
@@ -630,27 +662,52 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
       );
     case "popover":
       return (
-        <Popover.Root>
-          <Popover.Trigger render={<Button tone="neutral" />}>
-            Open member card
-          </Popover.Trigger>
-          <Popover.Portal>
-            <Popover.Positioner>
-              <Popover.Popup>
-                <div className="flex items-center gap-3">
-                  <Avatar fallback="S" />
-                  <div>
-                    <Popover.Title>Sivert</Popover.Title>
-                    <p className="m-0 text-xs text-gryt-muted">In voice</p>
-                  </div>
-                </div>
-                <Popover.Description>
-                  Joined the channel at 20:14. Speaking through a Shure SM7B.
-                </Popover.Description>
-              </Popover.Popup>
-            </Popover.Positioner>
-          </Popover.Portal>
-        </Popover.Root>
+        <div className="grid w-full gap-6">
+          <ExampleSection title="Sides">
+            {SIDES.map((side) => (
+              <Popover.Root key={side}>
+                <Popover.Trigger render={<Button size="small" tone="neutral" />}>
+                  {side}
+                </Popover.Trigger>
+                <Popover.Portal>
+                  {/* side and align are Base UI's, and both flip on their own
+                      when the popup would leave the viewport — so "top" means
+                      "top if it fits". */}
+                  <Popover.Positioner side={side}>
+                    <Popover.Popup className="w-56">
+                      <Popover.Title>side=&quot;{side}&quot;</Popover.Title>
+                      <Popover.Description>
+                        Flips to the opposite side when there is no room.
+                      </Popover.Description>
+                    </Popover.Popup>
+                  </Popover.Positioner>
+                </Popover.Portal>
+              </Popover.Root>
+            ))}
+          </ExampleSection>
+          <ExampleSection title="Alignment">
+            {ALIGNMENTS.map((align) => (
+              <Popover.Root key={align}>
+                <Popover.Trigger render={<Button size="small" tone="neutral" />}>
+                  {align}
+                </Popover.Trigger>
+                <Popover.Portal>
+                  <Popover.Positioner align={align} side="bottom">
+                    <Popover.Popup className="w-56">
+                      <Popover.Title>align=&quot;{align}&quot;</Popover.Title>
+                      <Popover.Description>
+                        Where the popup sits along the chosen side.
+                      </Popover.Description>
+                    </Popover.Popup>
+                  </Popover.Positioner>
+                </Popover.Portal>
+              </Popover.Root>
+            ))}
+          </ExampleSection>
+          <ExampleSection title="Member card">
+            <PopoverMember />
+          </ExampleSection>
+        </div>
       );
     case "toast":
       return <ToastExample />;
@@ -778,29 +835,32 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
       );
     case "preview-card":
       return (
-        <PreviewCard.Root>
-          <PreviewCard.Trigger className="cursor-default text-gryt-accent underline-offset-4 hover:underline">
-            @sivert
-          </PreviewCard.Trigger>
-          <PreviewCard.Portal>
-            <PreviewCard.Positioner>
-              <PreviewCard.Popup>
-                <div className="flex items-center gap-3">
-                  <Avatar fallback="S" />
-                  <div>
-                    <p className="m-0 text-sm font-semibold text-gryt-text">
-                      Sivert
-                    </p>
-                    <p className="m-0 text-xs text-gryt-muted">In voice</p>
-                  </div>
-                </div>
-                <p className="mt-3 mb-0 text-sm leading-6 text-gryt-muted">
-                  Maintains Gryt. Joined the channel at 20:14.
-                </p>
-              </PreviewCard.Popup>
-            </PreviewCard.Positioner>
-          </PreviewCard.Portal>
-        </PreviewCard.Root>
+        <div className="grid w-full gap-6">
+          <ExampleSection title="Sides">
+            {SIDES.map((side) => (
+              <PreviewCard.Root key={side}>
+                <PreviewCard.Trigger className="cursor-default text-gryt-accent underline-offset-4 hover:underline">
+                  @{side}
+                </PreviewCard.Trigger>
+                <PreviewCard.Portal>
+                  <PreviewCard.Positioner side={side}>
+                    <PreviewCard.Popup className="w-56">
+                      <p className="m-0 text-sm font-semibold text-gryt-text">
+                        side=&quot;{side}&quot;
+                      </p>
+                      <p className="mt-1 mb-0 text-xs leading-5 text-gryt-muted">
+                        Hover rather than click, so it opens on its own.
+                      </p>
+                    </PreviewCard.Popup>
+                  </PreviewCard.Positioner>
+                </PreviewCard.Portal>
+              </PreviewCard.Root>
+            ))}
+          </ExampleSection>
+          <ExampleSection title="Member card">
+            <PreviewCardMember />
+          </ExampleSection>
+        </div>
       );
     case "toolbar":
       return (
@@ -871,9 +931,18 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
       );
     case "form":
       return (
-        <Form className="w-full max-w-sm">
-          <TextField name="displayName" label="Display name" defaultValue="Sivert" />
-          <Button type="submit">Save</Button>
+        // gap-4 and a self-start button: Form is a <form> with no layout of
+        // its own, so without this the field and the button sit flush against
+        // each other and the button stretches the full width.
+        <Form className="flex w-full max-w-sm flex-col gap-4">
+          <TextField
+            name="displayName"
+            label="Display name"
+            defaultValue="Sivert"
+          />
+          <Button className="self-start" type="submit">
+            Save
+          </Button>
         </Form>
       );
     case "fieldset":
@@ -886,6 +955,10 @@ function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
       );
   }
 }
+
+/* Served from apps/docs/public. The Gryt client's own app icon, so the
+   avatar examples show a real image rather than a placeholder service. */
+const OWL = "/owl.png";
 
 const PERMISSIONS = ["read", "write", "manage"];
 const PERMISSION_LABELS = [
@@ -949,20 +1022,69 @@ function ToastExample() {
   );
 }
 
+/* Severity rides along in the toast's `data`, which is Base UI's escape hatch
+   for anything the manager does not model itself. The alternative is a second
+   store keyed by toast id, kept in sync by hand. */
+const TOAST_SEVERITIES: Array<{
+  severity: ToastSeverity;
+  label: string;
+  title: string;
+  description: string;
+}> = [
+  {
+    severity: "neutral",
+    label: "Neutral",
+    title: "Invite copied",
+    description: "The link expires in 24 hours."
+  },
+  {
+    severity: "info",
+    label: "Info",
+    title: "New voice region",
+    description: "eu-north is now closer to you than eu-west."
+  },
+  {
+    severity: "success",
+    label: "Success",
+    title: "Server created",
+    description: "You are the owner of gryt.chat/design."
+  },
+  {
+    severity: "warning",
+    label: "Warning",
+    title: "Input is peaking",
+    description: "Lower the microphone gain by a few decibels."
+  },
+  {
+    severity: "danger",
+    label: "Danger",
+    title: "Connection lost",
+    description: "Reconnecting to the voice server."
+  }
+];
+
 function ToastTrigger() {
   const toast = useToastManager();
 
   return (
-    <Button
-      onClick={() =>
-        toast.add({
-          title: "Invite copied",
-          description: "The link expires in 24 hours."
-        })
-      }
-    >
-      Copy invite
-    </Button>
+    <div className="flex flex-wrap gap-2">
+      {TOAST_SEVERITIES.map((entry) => (
+        <Button
+          key={entry.severity}
+          size="small"
+          tone={entry.severity === "neutral" ? "primary" : "neutral"}
+          onClick={() =>
+            toast.add({
+              title: entry.title,
+              description: entry.description,
+              data: { severity: entry.severity }
+            })
+          }
+        >
+          {entry.label}
+        </Button>
+      ))}
+    </div>
   );
 }
 
@@ -970,12 +1092,126 @@ function ToastList() {
   const { toasts } = useToastManager();
 
   return toasts.map((toast) => (
-    <Toast.Root key={toast.id} toast={toast}>
+    <Toast.Root
+      key={toast.id}
+      toast={toast}
+      severity={
+        (toast.data as { severity?: ToastSeverity } | undefined)?.severity
+      }
+    >
       <Toast.Title />
       <Toast.Description />
       <Toast.Close />
     </Toast.Root>
   ));
+}
+
+/** Base UI's four sides and three alignments, in the order the docs show them. */
+const SIDES = ["top", "right", "bottom", "left"] as const;
+const DRAWER_SIDES: DrawerSide[] = ["left", "right", "top", "bottom"];
+const ALIGNMENTS = ["start", "center", "end"] as const;
+
+function DrawerExample() {
+  // One open state and one side, rather than four independent drawers: only
+  // one can be open at a time anyway, and four Roots means four backdrops
+  // stacked on top of each other the moment two are open at once.
+  const [side, setSide] = useState<DrawerSide | null>(null);
+
+  return (
+    <>
+      <ExampleSection title="Side">
+        {DRAWER_SIDES.map((entry) => (
+          <Button
+            key={entry}
+            size="small"
+            tone={entry === "right" ? "primary" : "neutral"}
+            onClick={() => setSide(entry)}
+          >
+            {entry}
+          </Button>
+        ))}
+      </ExampleSection>
+
+      <Drawer.Root
+        open={side !== null}
+        onOpenChange={(open) => setSide(open ? side : null)}
+        side={side ?? "right"}
+      >
+        <Drawer.Portal>
+          <Drawer.Backdrop />
+          <Drawer.Viewport>
+            <Drawer.Popup>
+              <Drawer.Grabber />
+              <Drawer.Title className="text-lg font-semibold text-gryt-text">
+                side=&quot;{side ?? "right"}&quot;
+              </Drawer.Title>
+              <Drawer.Description className="text-sm text-gryt-muted">
+                Drag it back towards its own edge to dismiss. Narrow the window
+                below 768px and left and right become bottom sheets.
+              </Drawer.Description>
+              <Drawer.Close render={<Button tone="neutral" />}>
+                Close
+              </Drawer.Close>
+            </Drawer.Popup>
+          </Drawer.Viewport>
+        </Drawer.Portal>
+      </Drawer.Root>
+    </>
+  );
+}
+
+function PopoverMember() {
+  return (
+    <Popover.Root>
+      <Popover.Trigger render={<Button tone="neutral" />}>
+        Open member card
+      </Popover.Trigger>
+      <Popover.Portal>
+        <Popover.Positioner>
+          <Popover.Popup>
+            <div className="flex items-center gap-3">
+              <Avatar fallback="S" />
+              <div>
+                <Popover.Title>Sivert</Popover.Title>
+                <p className="m-0 text-xs text-gryt-muted">In voice</p>
+              </div>
+            </div>
+            <Popover.Description>
+              Joined the channel at 20:14. Speaking through a Shure SM7B.
+            </Popover.Description>
+          </Popover.Popup>
+        </Popover.Positioner>
+      </Popover.Portal>
+    </Popover.Root>
+  );
+}
+
+function PreviewCardMember() {
+  return (
+    <PreviewCard.Root>
+      <PreviewCard.Trigger className="cursor-default text-gryt-accent underline-offset-4 hover:underline">
+        @sivert
+      </PreviewCard.Trigger>
+      <PreviewCard.Portal>
+        <PreviewCard.Positioner>
+          <PreviewCard.Popup>
+            <div className="flex items-center gap-3">
+              <Avatar fallback="S" />
+              <div>
+                <p className="m-0 text-sm font-semibold text-gryt-text">
+                  Sivert
+                </p>
+                <p className="m-0 text-xs text-gryt-muted">In voice</p>
+              </div>
+            </div>
+            <p className="mt-3 mb-0 text-sm leading-6 text-gryt-muted">
+              Maintains Gryt. Joined the channel at 20:14.
+            </p>
+          </PreviewCard.Popup>
+        </PreviewCard.Positioner>
+      </PreviewCard.Portal>
+    </PreviewCard.Root>
+  );
 }
 
 function ExampleSection({
