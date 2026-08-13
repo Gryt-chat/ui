@@ -20,6 +20,7 @@ import { ComponentDocPage } from "./pages/componentDocs";
 import { ExampleFullPage, ExamplePage, exampleDocs } from "./pages/examples";
 import { HomePage } from "./pages/HomePage";
 import { InstallationPage } from "./pages/InstallationPage";
+import { ThemeGeneratorPage } from "./pages/ThemeGeneratorPage";
 import { ThemePage } from "./pages/ThemePage";
 
 const router = createBrowserRouter([
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "installation", element: <InstallationPage /> },
       { path: "theme", element: <ThemePage /> },
+      { path: "theme/generator", element: <ThemeGeneratorPage /> },
       {
         path: "components",
         element: <Navigate replace to="/components/button" />

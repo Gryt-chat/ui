@@ -1,5 +1,18 @@
 [
   {
+    "date": "2026-08-13",
+    "scope": "page",
+    "macrostructure": "Workbench",
+    "theme": "custom",
+    "theme_axes": "dark / grotesk-sans / cool",
+    "vibe": "the docs system, unchanged — design.md governs",
+    "genre": "modern-minimal",
+    "nav": "inherited N13",
+    "footer": "inherited Ft2",
+    "enrichment": "none",
+    "brief": "Theme generator page — /theme/generator (GRYT-238)"
+  },
+  {
     "date": "2026-08-11",
     "scope": "app",
     "macrostructure": "Catalogue (index) / Long Document (content) / Component Playground (reference)",

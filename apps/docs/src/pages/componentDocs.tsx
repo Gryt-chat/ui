@@ -135,7 +135,12 @@ export function ComponentDocPage() {
 const pagerClass =
   "min-w-0 rounded-(--gryt-radius-md) border border-gryt-border px-4 py-2.5 text-sm transition-colors hover:border-gryt-accent-light focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light";
 
-function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
+/**
+ * Exported for the theme generator, which previews a theme against the same
+ * demos this page documents. A second set built for the generator would drift
+ * from these the first time one of them was improved.
+ */
+export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [inputDevice, setInputDevice] = useState("studio");
   const [radioMode, setRadioMode] = useState("voice");

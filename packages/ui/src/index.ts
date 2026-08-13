@@ -12,6 +12,13 @@ export {
   grytTokens
 } from "./theme/createGrytTheme";
 export type { GrytThemeOptions, GrytTokens } from "./theme/createGrytTheme";
+// The colour maths the scales are built from. Exported because anything that
+// builds a theme rather than consuming one needs it: the docs site's generator
+// measures contrast as you pick a colour, and the library's own tests are the
+// only other caller. Keeping it internal would mean a second copy of the OKLab
+// matrices somewhere, which is exactly what one generator was meant to avoid.
+export { contrast, hexToOklch, oklchToHex } from "./theme/oklch";
+export type { Oklch } from "./theme/oklch";
 
 export { Button } from "./components/Button/Button";
 export type { ButtonProps } from "./components/Button/Button";

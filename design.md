@@ -24,6 +24,12 @@ bloom, no glow, no gradient meshes. Flat surfaces separated by hairlines.
   with inline section heads.
 - **Reference pages** (`/components/:slug`): Component Playground. Preview above,
   source below, one copy action per block.
+- **Tool pages** (`/theme/generator`): Workbench. A sticky editor rail on the
+  left and a live stage on the right, both full height, with what you take away
+  underneath the stage. A tool page is the one type that may break the 5xl
+  column — prose wants a measure, two panes want the room — so `AppShell` opts
+  these routes out by name. Prose belongs in the header and nowhere else: past
+  the first paragraph the page is controls and results.
 
 ## Theme
 
@@ -94,6 +100,10 @@ Motion-cut project: no motion library is installed and none should be added.
 - Index pages MAY render live components as the page content.
 - Content pages: typography only.
 - Reference pages: preview + code, nothing else.
+- Tool pages MAY render the same components and example screens under a theme
+  other than the site's own, and MAY use native controls the library does not
+  document — `input[type=color]` is the only one so far, because the platform
+  picker is the one every OS already has an eyedropper behind.
 - No page uses enrichment. There is no illustration budget here.
 
 ## What pages MUST share

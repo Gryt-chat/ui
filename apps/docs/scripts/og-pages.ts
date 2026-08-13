@@ -138,6 +138,15 @@ const staticPages: OgPage[] = [
     ],
     caption: "Read straight from grytTokens, so it cannot drift.",
     drawing: "palette"
+  },
+  {
+    route: "theme/generator",
+    title: "Theme generator — Gryt UI",
+    description:
+      "Pick the anchors, watch the twelve-step scales redraw under them, and take the createGrytTheme call away with you.",
+    hero: namedImport("createGrytTheme"),
+    caption: "A theme is a dozen hex values. Here they are.",
+    drawing: "palette"
   }
 ];
 

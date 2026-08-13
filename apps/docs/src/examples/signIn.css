@@ -283,13 +283,19 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  /* color-mix rather than the accent's rgba spelled out, so the fallback
+     follows a theme the same way the shader above it does. */
   background:
     radial-gradient(
       70% 60% at 25% 20%,
-      rgba(150, 143, 248, 0.18),
+      color-mix(in srgb, var(--gryt-accent) 18%, transparent),
       transparent 70%
     ),
-    radial-gradient(60% 55% at 80% 85%, rgba(125, 211, 252, 0.1), transparent 70%),
+    radial-gradient(
+      60% 55% at 80% 85%,
+      color-mix(in srgb, var(--gryt-secondary) 10%, transparent),
+      transparent 70%
+    ),
     var(--gryt-bg);
 }
 

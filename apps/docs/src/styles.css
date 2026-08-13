@@ -67,6 +67,45 @@ h3 {
     content: "";
 }
 
+/* The colour swatch in the theme generator.
+ *
+ * A native <input type="color"> rather than a picker of our own: it is the one
+ * control the platform already has an eyedropper behind, and on every OS it is
+ * the picker people already know. What it does not have is a shape — so the
+ * chrome around the well is removed and the well itself takes the field radius.
+ */
+.docs-swatch {
+    flex-shrink: 0;
+    border: 1px solid var(--gryt-border);
+    border-radius: var(--gryt-radius-md);
+    background: transparent;
+    padding: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.docs-swatch::-webkit-color-swatch-wrapper {
+    padding: 2px;
+}
+
+.docs-swatch::-webkit-color-swatch {
+    border: none;
+    border-radius: calc(var(--gryt-radius-md) - 3px);
+}
+
+.docs-swatch::-moz-color-swatch {
+    border: none;
+    border-radius: calc(var(--gryt-radius-md) - 3px);
+}
+
+.docs-swatch:focus-visible {
+    outline: 2px solid var(--gryt-accent-light);
+    outline-offset: 2px;
+}
+
 /* No overflow of its own: the block is wrapped in a ScrollArea, and two
    scrollers on the same box means the outer one never sees the overflow and
    never shows a bar. */
