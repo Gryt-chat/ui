@@ -1,9 +1,10 @@
-import { Chip, Tabs } from "@gryt/ui";
+import { Chip, Tabs, grytThemeHues } from "@gryt/ui";
 import { ArrowSquareOut } from "@phosphor-icons/react";
 import { useState } from "react";
 import type { ReactElement } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { CodeBlock } from "../components/CodeBlock";
+import { siteThemeOf, useSiteTheme } from "../lib/theme/siteTheme";
 
 import type { ExampleDoc } from "../exampleMeta";
 import { exampleDocs } from "../exampleMeta";
@@ -49,7 +50,7 @@ const tsx = (name: string, code: string): SourceFile => ({
 
 const partsBySlug: Record<string, ExampleParts> = {
   "sign-in": {
-    render: () => <SignInScreen />,
+    render: () => <ThemedSignIn />,
     files: [
       tsx("SignInScreen.tsx", signInSource),
       { name: "signIn.css", language: "css", code: signInCssSource },
@@ -93,6 +94,30 @@ const partsBySlug: Record<string, ExampleParts> = {
     files: [tsx("ServerSidebar.tsx", serverSidebarSource)]
   }
 };
+
+/**
+ * The sign-in screen, with the shader told what colour the site is.
+ *
+ * ShaderBackground reads the custom properties off its own element, once, at
+ * setup — which is right for an app that picks a theme and keeps it, and wrong
+ * here, where the header changes the theme under a mounted canvas. Passing them
+ * makes the background follow, and it is the same prop the generator uses.
+ */
+function ThemedSignIn() {
+  const site = useSiteTheme();
+  const theme = siteThemeOf(site);
+  const hues = grytThemeHues(theme, site.appearance);
+
+  return (
+    <SignInScreen
+      palette={{
+        page: theme[site.appearance].bg,
+        accent: hues.accent,
+        secondary: hues.secondary
+      }}
+    />
+  );
+}
 
 export const exampleNavSection = {
   title: "Examples",

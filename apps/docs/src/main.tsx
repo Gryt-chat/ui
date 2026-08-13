@@ -15,6 +15,7 @@ import {
 } from "react-router-dom";
 import { GrytProvider } from "@gryt/ui";
 import { AppShell } from "./AppShell";
+import { useApplySiteTheme } from "./lib/theme/siteTheme";
 import { mdxComponents } from "./components/MdxComponents";
 import { ComponentDocPage } from "./pages/componentDocs";
 import { ExampleFullPage, ExamplePage, exampleDocs } from "./pages/examples";
@@ -49,12 +50,28 @@ const router = createBrowserRouter([
   { path: "/examples/:example/full", element: <ExampleFullPage /> }
 ]);
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+/**
+ * The theme goes on above the router, not inside the shell.
+ *
+ * The full-screen example route is a sibling of AppShell rather than a child of
+ * it — an example is a whole screen, and a sidebar next to a sign-in page is
+ * not the thing being shown — so a hook called in the shell would leave that
+ * route on the default palette.
+ */
+function Docs() {
+  useApplySiteTheme();
+
+  return (
     <GrytProvider>
       <MDXProvider components={mdxComponents}>
         <RouterProvider router={router} />
       </MDXProvider>
     </GrytProvider>
+  );
+}
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <Docs />
   </StrictMode>
 );
