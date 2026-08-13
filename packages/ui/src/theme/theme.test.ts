@@ -8,7 +8,8 @@ import {
   createGrytTheme,
   grytAlphaScales,
   grytScales,
-  grytScalesLight
+  grytScalesLight,
+  grytTokens
 } from "./createGrytTheme";
 import { contrast } from "./oklch";
 
@@ -83,6 +84,31 @@ describe("contrast", () => {
   });
 });
 
+describe("labels on filled controls", () => {
+  // Nothing measured these before. The contrast block above checks text steps
+  // against backgrounds, which is every piece of text in the library except the
+  // one that always sits on a saturated colour.
+  const pairs = [
+    ["on-accent", grytTokens.color.onAccent, grytScales.accent[8]],
+    ["on-secondary", grytTokens.color.onSecondary, grytScales.secondary[8]],
+    ["on-danger", grytTokens.color.onDanger, grytScales.danger[8]]
+  ] as const;
+
+  it("clears AAA on the fill it sits on", () => {
+    for (const [, label, fill] of pairs) {
+      expect(contrast(label, fill)).toBeGreaterThanOrEqual(7);
+    }
+  });
+
+  it("holds in light, where the fill is the same colour", () => {
+    // Step 9 is identical in both appearances by design, so one set of label
+    // colours has to serve both. This is what makes that safe.
+    for (const family of ["accent", "secondary", "danger"] as const) {
+      expect(grytScalesLight[family][8]).toBe(grytScales[family][8]);
+    }
+  });
+});
+
 describe("the light set", () => {
   const l = grytScalesLight;
 
@@ -145,5 +171,17 @@ describe("the light set", () => {
     const theme = createGrytTheme({ appearance: "light" }) as Record<string, string>;
     expect(theme["--gryt-neutral-2"]).toBe("#ffffff");
     expect(theme["--gryt-accent-11"]).toBe(l.accent[10]);
+  });
+
+  it("gives surface-hover a light value rather than the dark slate", () => {
+    // It had no light value at all, so a neutral Button hovered to #334155 on
+    // a white panel. Step 4 is the step that means "component background,
+    // hovered", in both appearances.
+    const block = css.slice(css.indexOf(".light {"));
+    expect(block).toContain("--gryt-surface-hover: var(--gryt-neutral-4);");
+    expect(block).toContain("--color-gryt-surface-hover: var(--gryt-neutral-4);");
+
+    const theme = createGrytTheme({ appearance: "light" }) as Record<string, string>;
+    expect(theme["--gryt-surface-hover"]).toBe(l.neutral[3]);
   });
 });

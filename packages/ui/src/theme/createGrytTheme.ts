@@ -24,9 +24,12 @@ export const grytTokens = {
     danger: "#f87171",
     dangerLight: "#fca5a5",
     warning: "#fbbf24",
-    onAccent: "#141126",
-    onSecondary: "#07131c",
-    onDanger: "#250b0b"
+    // The fill's own hue, dark enough to clear 7:1 against it. See the note in
+    // theme.css: these are the only text in the library that always sits on a
+    // saturated colour, so they are held to AAA rather than AA.
+    onAccent: "#0c0a20",
+    onSecondary: "#02121a",
+    onDanger: "#1f0405"
   },
   radius: {
     sm: 8,
@@ -110,6 +113,18 @@ export const grytScalesLight = {
   warning: hueScaleLight(grytTokens.color.warning)
 } as const;
 
+/**
+ * The light hover fill.
+ *
+ * Not one of the six anchors, because it is not a colour anybody picks: it is
+ * step 4, the step that means "component background, hovered", and writing it
+ * down as a literal would be a second definition of a value the ramp already
+ * has. It exists at all because `.light` never set surface-hover, so a neutral
+ * Button in a light app hovered to the dark slate the @theme block declares —
+ * a slate block on a white panel.
+ */
+export const grytLightSurfaceHover = grytScalesLight.neutral[3];
+
 export const grytAlphaScales = {
   neutral: alphaScale(grytScales.neutral, grytTokens.color.bg),
   accent: alphaScale(grytScales.accent, grytTokens.color.bg)
@@ -123,7 +138,11 @@ export const grytAlphaScalesLight = {
 export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
   const light = options.appearance === "light";
   const defaults = light
-    ? { ...grytTokens.color, ...grytLightTokens }
+    ? {
+        ...grytTokens.color,
+        ...grytLightTokens,
+        surfaceHover: grytLightSurfaceHover
+      }
     : grytTokens.color;
   const color = { ...defaults, ...options.color };
   const radius = { ...grytTokens.radius, ...options.radius };

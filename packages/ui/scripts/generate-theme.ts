@@ -74,6 +74,10 @@ function main() {
       bg: "neutral-1",
       surface: "neutral-2",
       "surface-raised": "neutral-3",
+      // Step 4 is "component background, hovered". Without this line the light
+      // block inherits the dark slate from @theme, and a neutral Button hovers
+      // to a dark block on a white panel.
+      "surface-hover": "neutral-4",
       border: "neutral-6",
       muted: "neutral-11",
       text: "neutral-12",
