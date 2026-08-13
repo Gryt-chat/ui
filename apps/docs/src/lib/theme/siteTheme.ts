@@ -123,19 +123,6 @@ export function useApplySiteTheme() {
     for (const [name, value] of Object.entries(variables)) {
       root.style.setProperty(name, value);
     }
-
-    /* Code blocks stay on the dark half of whichever theme is on.
-       Shiki writes its colours inline, one theme's worth, so a light page with
-       a light code surface put #e0e0e6 keywords on light grey. The choice is a
-       second Shiki theme or a block that keeps its own surface; this is the
-       second, which is also what half the docs sites on the internet do — and
-       it is this theme's dark, so Nord Light gets a Polar Night block rather
-       than a Gryt-coloured one. */
-    const darkHalf = createGrytTheme(
-      grytThemeToOptions(theme, "dark")
-    ) as unknown as Record<string, string>;
-    root.style.setProperty("--color-code-paper", darkHalf["--gryt-neutral-1"]);
-    root.style.setProperty("--color-code-ink", darkHalf["--gryt-neutral-12"]);
     root.classList.toggle("light", site.appearance === "light");
     root.classList.toggle("dark", site.appearance === "dark");
     root.style.colorScheme = site.appearance;
@@ -146,8 +133,6 @@ export function useApplySiteTheme() {
       for (const name of Object.keys(variables)) {
         root.style.removeProperty(name);
       }
-      root.style.removeProperty("--color-code-paper");
-      root.style.removeProperty("--color-code-ink");
     };
   }, [theme, site.appearance]);
 }

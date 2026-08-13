@@ -109,11 +109,24 @@ h3 {
 /* No overflow of its own: the block is wrapped in a ScrollArea, and two
    scrollers on the same box means the outer one never sees the overflow and
    never shows a bar. */
+/* Shiki emits both themes as custom properties and neither as a colour, so
+   this is where the choice is made. The dark set is the default and the light
+   block swaps it, which means the header's toggle recolours every code block
+   on the page without re-highlighting a single one. */
+.gryt-code-block .shiki,
+.gryt-code-block .shiki span {
+    color: var(--shiki-dark);
+}
+
+.light .gryt-code-block .shiki,
+.light .gryt-code-block .shiki span {
+    color: var(--shiki-light);
+}
+
 .gryt-code-block .shiki {
     margin: 0;
     background: transparent !important;
     padding: 1rem 1.125rem;
-    color: var(--color-code-ink);
     font-size: 13px;
     line-height: 1.6;
 }

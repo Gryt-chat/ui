@@ -15,7 +15,6 @@ import {
 } from "./components/CommandPalette";
 import { DocsFooter } from "./components/DocsFooter";
 import { ThemeSwitcher } from "./components/ThemeSwitcher";
-import { useApplySiteTheme } from "./lib/theme/siteTheme";
 import { componentNavSections } from "./pages/componentDocs";
 import { exampleNavSection } from "./pages/examples";
 
@@ -109,10 +108,6 @@ export function AppShell() {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const { pathname } = useLocation();
   const wide = WIDE_ROUTES.includes(pathname);
-
-  // The whole site wears whatever the header is set to, root element and all,
-  // so overlays get it too.
-  useApplySiteTheme();
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
