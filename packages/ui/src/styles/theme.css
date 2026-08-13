@@ -142,11 +142,18 @@
     /* Surface one step above --color-gryt-surface-raised, for hover states. */
     --color-gryt-surface-hover: #334155;
 
-    /* Text drawn on top of a filled tone, dark enough to stay readable on
-       these light fills. Not derived from the fills — picked per tone. */
-    --color-gryt-on-accent: #141126;
-    --color-gryt-on-secondary: #07131c;
-    --color-gryt-on-danger: #250b0b;
+    /* Text drawn on top of a filled tone: the fill's own hue with the
+       lightness dropped until it clears 7:1 against that fill.
+
+       AAA rather than the 4.5 AA asks for. This is the one piece of text in
+       the library that always sits on a saturated colour, and it is usually a
+       verb somebody is about to press. The previous values were 6.66 on the
+       accent and 6.71 on danger — legible, and the weakest text in the app for
+       no reason, since the cost of fixing it is a shade of a colour that was
+       already nearly black. */
+    --color-gryt-on-accent: #0c0a20;
+    --color-gryt-on-secondary: #02121a;
+    --color-gryt-on-danger: #1f0405;
 
     /* A damped-spring solution sampled into linear() — the real curve of a
        spring rather than a physics engine approximating one. Damping 0.5591,
@@ -616,6 +623,8 @@
   --color-gryt-surface: var(--gryt-neutral-2);
   --gryt-surface-raised: var(--gryt-neutral-3);
   --color-gryt-surface-raised: var(--gryt-neutral-3);
+  --gryt-surface-hover: var(--gryt-neutral-4);
+  --color-gryt-surface-hover: var(--gryt-neutral-4);
   --gryt-border: var(--gryt-neutral-6);
   --color-gryt-border: var(--gryt-neutral-6);
   --gryt-muted: var(--gryt-neutral-11);
