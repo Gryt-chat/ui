@@ -1,5 +1,12 @@
 # @gryt/ui
 
+## 0.12.1
+
+### Patch Changes
+
+- 8596215: Use pointer cursors for interactive controls, menu and select items, tabs, and
+  other ARIA-backed controls. Disabled controls now use the not-allowed cursor.
+
 ## 0.12.0
 
 ### Minor Changes
