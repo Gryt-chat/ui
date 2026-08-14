@@ -49,7 +49,7 @@ const Item = forwardRef<HTMLDivElement, MenuItemProps>(function MenuItem(
     <BaseMenu.Item
       ref={ref}
       className={cn(
-        "gryt-menu-item flex cursor-default items-center gap-2 rounded-(--gryt-radius-md)",
+        "gryt-menu-item flex cursor-pointer items-center gap-2 rounded-(--gryt-radius-md)",
         "px-3 py-2 text-sm text-gryt-text outline-none select-none",
         // Base UI drives keyboard and pointer highlight through the same
         // attribute, so arrow keys and the mouse land on identical styling.

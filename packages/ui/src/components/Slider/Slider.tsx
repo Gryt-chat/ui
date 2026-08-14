@@ -96,7 +96,7 @@ export function Slider({
   return (
     <BaseSlider.Root className={cn("gryt-slider w-full", className)} {...props}>
       <BaseSlider.Control
-        className="flex w-full touch-none items-center py-2 select-none"
+        className="flex w-full cursor-pointer touch-none items-center py-2 select-none"
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
       >

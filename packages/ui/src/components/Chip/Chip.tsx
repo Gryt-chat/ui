@@ -61,7 +61,7 @@ export const Chip = forwardRef<HTMLSpanElement, ChipProps>(function Chip(
           aria-label="Remove"
           onClick={onDelete}
           className={cn(
-            "-mr-1 inline-flex h-4 w-4 items-center justify-center rounded-(--gryt-radius-full)",
+            "-mr-1 inline-flex h-4 w-4 cursor-pointer items-center justify-center rounded-(--gryt-radius-full)",
             "opacity-70 transition-opacity hover:opacity-100",
             focusRing
           )}

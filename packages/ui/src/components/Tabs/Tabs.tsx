@@ -71,7 +71,7 @@ const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab(
     <BaseTabs.Tab
       ref={ref}
       className={cn(
-        "gryt-tab inline-flex min-h-8 items-center justify-center whitespace-nowrap",
+        "gryt-tab inline-flex min-h-8 cursor-pointer items-center justify-center whitespace-nowrap",
         "rounded-(--gryt-radius-full) border-0 bg-transparent px-4 py-1.5",
         "text-sm font-medium text-gryt-muted select-none",
         "relative z-10 transition-colors duration-150 hover:text-gryt-text",
@@ -84,6 +84,7 @@ const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab(
         "data-[orientation=vertical]:min-h-9 data-[orientation=vertical]:justify-start",
         "data-[orientation=vertical]:gap-2.5 data-[orientation=vertical]:px-3",
         "data-[orientation=vertical]:rounded-(--gryt-radius-md)",
+        "data-disabled:cursor-not-allowed data-disabled:opacity-50",
         focusRing,
         className
       )}

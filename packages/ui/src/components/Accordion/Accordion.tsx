@@ -57,10 +57,11 @@ const Trigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
         <BaseAccordion.Trigger
           ref={ref}
           className={cn(
-            "gryt-accordion-trigger flex w-full items-center justify-between gap-3",
+            "gryt-accordion-trigger flex w-full cursor-pointer items-center justify-between gap-3",
             "rounded-(--gryt-radius-lg) border-0 bg-transparent px-3 py-2.5",
             "text-left text-sm font-medium text-gryt-text select-none",
             "transition-colors duration-150 hover:bg-gryt-surface-raised",
+            "data-disabled:cursor-not-allowed data-disabled:opacity-50",
             focusRing,
             className
           )}
