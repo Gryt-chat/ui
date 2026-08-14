@@ -22,7 +22,7 @@ export const ConversationItem = forwardRef<
       ref={ref}
       type="button"
       className={cn(
-        "gryt-conversation-item",
+        "gryt-conversation-item enabled:cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
         active
           ? "bg-gryt-accent text-gryt-on-accent"
           : "text-gryt-text hover:bg-white/5",

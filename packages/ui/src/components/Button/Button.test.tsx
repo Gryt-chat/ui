@@ -11,6 +11,8 @@ describe("Button", () => {
       </GrytProvider>
     );
 
-    expect(screen.getByRole("button", { name: "New chat" })).toBeInTheDocument();
+    const button = screen.getByRole("button", { name: "New chat" });
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveClass("cursor-pointer");
   });
 });

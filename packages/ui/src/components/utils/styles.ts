@@ -59,7 +59,7 @@ export const popupMotion = [
 ].join(" ");
 
 export const disabledState =
-  "data-disabled:cursor-not-allowed data-disabled:opacity-50";
+  "cursor-pointer data-disabled:cursor-not-allowed data-disabled:opacity-50";
 
 // The tones shared by Checkbox, Radio, Switch and Slider. One union so a
 // component cannot invent its own sixth colour. Button and IconButton keep

@@ -47,7 +47,7 @@ export function Select({
         ) : null}
         <BaseSelect.Trigger
           className={cn(
-            "flex w-full items-center justify-between gap-2",
+            "flex w-full cursor-pointer items-center justify-between gap-2",
             "rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface-raised",
             "text-gryt-text select-none",
             "transition-colors duration-150 hover:border-gryt-accent-light",
@@ -75,7 +75,7 @@ export function Select({
                   value={option.value}
                   disabled={option.disabled}
                   className={cn(
-                    "flex cursor-default items-center justify-between gap-2",
+                    "flex cursor-pointer items-center justify-between gap-2",
                     "rounded-(--gryt-radius-md) px-3 py-2 text-sm text-gryt-text",
                     "outline-none select-none data-highlighted:bg-gryt-surface-raised",
                     "data-disabled:cursor-not-allowed data-disabled:opacity-50"

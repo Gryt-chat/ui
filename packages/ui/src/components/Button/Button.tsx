@@ -59,7 +59,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(
           "gryt-button",
-          "inline-flex items-center justify-center gap-2 border-0 shadow-none",
+          "inline-flex cursor-pointer items-center justify-center gap-2 border-0 shadow-none",
           "rounded-(--gryt-radius-full) font-semibold whitespace-nowrap select-none",
           // scale, not transform: Tailwind v4's scale-* utilities set the
           // standalone `scale` property, so transitioning `transform` alone

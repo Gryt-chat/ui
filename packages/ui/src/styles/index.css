@@ -18,6 +18,60 @@
 
 @import "./theme.css";
 
+/* Desktop controls use the hand cursor consistently, including compositional
+ * triggers and portaled menu items whose interactive semantics come from ARIA
+ * rather than their underlying element. This is intentionally outside a CSS
+ * layer: consumers may still have an unlayered reset (Radix Themes does), and
+ * that reset must not be able to put `cursor: default` back on our controls. */
+:where(
+    a[href],
+    button,
+    select,
+    summary,
+    label[for],
+    input[type="button"],
+    input[type="checkbox"],
+    input[type="radio"],
+    input[type="range"],
+    input[type="reset"],
+    input[type="submit"],
+    [role="button"],
+    [role="checkbox"],
+    [role="combobox"],
+    [role="link"],
+    [role="menuitem"],
+    [role="menuitemcheckbox"],
+    [role="menuitemradio"],
+    [role="option"],
+    [role="radio"],
+    [role="slider"],
+    [role="switch"],
+    [role="tab"],
+    [role="treeitem"]
+):not(:disabled, [aria-disabled="true"], [data-disabled]) {
+    cursor: pointer;
+}
+
+:where(
+    button,
+    select,
+    input,
+    [role="button"],
+    [role="checkbox"],
+    [role="combobox"],
+    [role="menuitem"],
+    [role="menuitemcheckbox"],
+    [role="menuitemradio"],
+    [role="option"],
+    [role="radio"],
+    [role="slider"],
+    [role="switch"],
+    [role="tab"],
+    [role="treeitem"]
+):is(:disabled, [aria-disabled="true"], [data-disabled]) {
+    cursor: not-allowed;
+}
+
 
 @layer components {
     /* Almost everything that used to live here moved into the components as
