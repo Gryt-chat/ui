@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.12.2
+
+### Patch Changes
+
+- bbbdeae: Fix Select dropdowns inside modal dialogs by supporting a custom portal container.
+
 ## 0.12.1
 
 ### Patch Changes
