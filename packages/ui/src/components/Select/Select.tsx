@@ -65,7 +65,7 @@ export function Select({
         </BaseSelect.Trigger>
       </div>
 
-      <BaseSelect.Portal>
+      <BaseSelect.Portal container={portalContainer}>
         <BaseSelect.Positioner sideOffset={6} className="outline-none">
           <BaseSelect.Popup
             className={cn("min-w-(--anchor-width) p-1", popupSurface, popupMotion)}
