@@ -27,6 +27,7 @@ export interface SelectProps
   placeholder?: string;
   size?: SelectSize;
   className?: string;
+  portalContainer?: HTMLElement | null;
 }
 
 export function Select({
@@ -35,6 +36,7 @@ export function Select({
   options = [],
   placeholder = "Select",
   size = "medium",
+  portalContainer,
   ...props
 }: SelectProps) {
   return (
