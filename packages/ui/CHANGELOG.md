@@ -1,5 +1,15 @@
 # @gryt/ui
 
+## 0.13.0
+
+### Minor Changes
+
+- 9855be3: Remove `Select`'s `portalContainer` prop. It made the popup render inside a dialog, where Base UI's positioning resolves against the dialog and counts its offset twice, so the list opened away from its trigger. Portalling to the document body positions correctly and already renders above the dialog.
+
+### Patch Changes
+
+- 13822ef: Ship the MIT license text with the package. The manifest has said MIT since the first release, but no LICENSE file was included in the tarball.
+
 ## 0.12.2
 
 ### Patch Changes
