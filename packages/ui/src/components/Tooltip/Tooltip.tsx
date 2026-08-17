@@ -29,7 +29,11 @@ export function Tooltip({
     <BaseTooltip.Root>
       <BaseTooltip.Trigger render={children} />
       <BaseTooltip.Portal>
-        <BaseTooltip.Positioner side={side} sideOffset={sideOffset}>
+        <BaseTooltip.Positioner
+          side={side}
+          sideOffset={sideOffset}
+          className="gryt-tooltip-positioner"
+        >
           <BaseTooltip.Popup
             className={cn(
               "gryt-tooltip rounded-(--gryt-radius-md) border border-gryt-border bg-gryt-surface-raised",

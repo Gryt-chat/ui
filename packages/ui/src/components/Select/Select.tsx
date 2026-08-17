@@ -90,7 +90,10 @@ export function Select({
       </div>
 
       <BaseSelect.Portal>
-        <BaseSelect.Positioner sideOffset={6} className="outline-none">
+        <BaseSelect.Positioner
+          sideOffset={6}
+          className="gryt-select-positioner outline-none"
+        >
           <BaseSelect.Popup
             className={cn("min-w-(--anchor-width) p-1", popupSurface, popupMotion)}
           >
