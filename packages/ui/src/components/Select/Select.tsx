@@ -2,6 +2,7 @@ import { Select as BaseSelect } from "@base-ui/react/select";
 import { CaretUpDown, Check } from "@phosphor-icons/react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../utils/cn";
+import { usePortalContainer } from "../utils/portalContainer";
 import { focusRing, popupMotion, popupSurface } from "../utils/styles";
 
 export interface SelectOption {
@@ -39,6 +40,15 @@ export function Select({
   portalContainer,
   ...props
 }: SelectProps) {
+  // Inside a dialog this comes from the dialog, so a call site does not have to
+  // know it is in one (GRYT-242). An explicit prop still wins.
+  //
+  // `?? undefined` is load-bearing. Base UI treats an explicit `null` container
+  // as different from an absent one, and handing it null stopped the popup
+  // rendering at all — which would have broken every dropdown *outside* a
+  // dialog, the case that was working fine before any of this.
+  const container = usePortalContainer(portalContainer) ?? undefined;
+
   return (
     <BaseSelect.Root items={options} {...props}>
       <div className={cn("gryt-select flex w-full flex-col gap-1.5", className)}>
@@ -65,7 +75,7 @@ export function Select({
         </BaseSelect.Trigger>
       </div>
 
-      <BaseSelect.Portal container={portalContainer}>
+      <BaseSelect.Portal container={container}>
         <BaseSelect.Positioner sideOffset={6} className="outline-none">
           <BaseSelect.Popup
             className={cn("min-w-(--anchor-width) p-1", popupSurface, popupMotion)}

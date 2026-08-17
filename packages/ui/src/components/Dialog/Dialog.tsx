@@ -1,7 +1,8 @@
 import { Dialog as BaseDialog } from "@base-ui/react/dialog";
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import type { ComponentPropsWithoutRef, HTMLAttributes } from "react";
 import { cn } from "../utils/cn";
+import { mergeRefs, PortalContainerProvider } from "../utils/portalContainer";
 
 // Base UI drives enter and exit animation through data-starting-style and
 // data-ending-style, which it sets for one frame either side of the transition.
@@ -42,10 +43,15 @@ export type DialogPopupProps = ComponentPropsWithoutRef<
 // tailwind-merge means those overrides still win, so this only moves the ones
 // that never said anything. AlertDialog carries the same width deliberately.
 const Popup = forwardRef<HTMLDivElement, DialogPopupProps>(
-  function DialogPopup({ className, ...props }, ref) {
+  function DialogPopup({ className, children, ...props }, ref) {
+    // Published so overlays inside this dialog portal into it rather than
+    // alongside it (GRYT-242). State rather than a ref, because a ref does not
+    // re-render and the children need the element on the pass after it exists.
+    const [element, setElement] = useState<HTMLDivElement | null>(null);
+
     return (
       <BaseDialog.Popup
-        ref={ref}
+        ref={mergeRefs(ref, setElement)}
         className={cn(
           "gryt-dialog fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
           "flex w-[32rem] max-w-[calc(100vw-3rem)] flex-col gap-4",
@@ -56,7 +62,11 @@ const Popup = forwardRef<HTMLDivElement, DialogPopupProps>(
           className
         )}
         {...props}
-      />
+      >
+        <PortalContainerProvider container={element}>
+          {children}
+        </PortalContainerProvider>
+      </BaseDialog.Popup>
     );
   }
 );

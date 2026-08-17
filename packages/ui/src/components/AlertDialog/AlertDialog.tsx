@@ -1,7 +1,8 @@
 import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog";
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
+import { mergeRefs, PortalContainerProvider } from "../utils/portalContainer";
 
 export type AlertDialogPopupProps = ComponentPropsWithoutRef<
   typeof BaseAlertDialog.Popup
@@ -16,10 +17,14 @@ export type AlertDialogPopupProps = ComponentPropsWithoutRef<
  * than not having it, because it takes away the escape people expect.
  */
 const Popup = forwardRef<HTMLDivElement, AlertDialogPopupProps>(
-  function AlertDialogPopup({ className, ...props }, ref) {
+  function AlertDialogPopup({ className, children, ...props }, ref) {
+    // Same reason as Dialog.Popup: an overlay opened in here should portal into
+    // this dialog, not alongside it (GRYT-242).
+    const [element, setElement] = useState<HTMLDivElement | null>(null);
+
     return (
       <BaseAlertDialog.Popup
-        ref={ref}
+        ref={mergeRefs(ref, setElement)}
         className={cn(
           "gryt-alert-dialog fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
           "flex w-[32rem] max-w-[calc(100vw-3rem)] flex-col gap-4",
@@ -31,7 +36,11 @@ const Popup = forwardRef<HTMLDivElement, AlertDialogPopupProps>(
           className
         )}
         {...props}
-      />
+      >
+        <PortalContainerProvider container={element}>
+          {children}
+        </PortalContainerProvider>
+      </BaseAlertDialog.Popup>
     );
   }
 );
