@@ -121,3 +121,8 @@ If your bundler supports CSS imports from npm packages, no extra CSS configurati
 - Gryt platform: [Gryt-chat/gryt](https://github.com/Gryt-chat/gryt)
 - Gryt client: [Gryt-chat/client](https://github.com/Gryt-chat/client)
 - Gryt docs: [docs.gryt.chat](https://docs.gryt.chat)
+
+## License
+
+MIT — see [LICENSE](LICENSE). The Gryt apps themselves are AGPL-3.0; this library is
+deliberately permissive so it can be used in anything.

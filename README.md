@@ -75,3 +75,17 @@ bun run build
 ## Publishing
 
 `packages/ui` is the npm package. The docs app is private and uses the workspace package through Vite.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
+
+This is the one Gryt repository that is not AGPL. The apps it is used by — client,
+server, SFU and the rest — are AGPL-3.0, and the argument for copyleft there is that
+somebody running a modified Gryt as a service should publish their changes. A
+component library is a different thing: it is meant to be picked up and used in
+whatever somebody is building, including things that have nothing to do with Gryt,
+and AGPL would make that impossible for most of them.
+
+`@gryt/ui` has been published to npm as MIT since the first release, so this records
+what was already true rather than deciding anything new.
