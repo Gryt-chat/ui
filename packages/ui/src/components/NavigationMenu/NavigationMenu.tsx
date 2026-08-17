@@ -76,6 +76,22 @@ const Popup = forwardRef<
   );
 });
 
+// Wrapped rather than re-exported raw, so it carries a class the app can hang a
+// z-index on. Every other popup in here already has one; this was the last
+// positioner without, and a consumer cannot style what it cannot select.
+const Positioner = forwardRef<
+  HTMLDivElement,
+  ComponentPropsWithoutRef<typeof BaseNavigationMenu.Positioner>
+>(function NavigationMenuPositioner({ className, ...props }, ref) {
+  return (
+    <BaseNavigationMenu.Positioner
+      ref={ref}
+      className={cn("gryt-navigation-menu-positioner outline-none", className)}
+      {...props}
+    />
+  );
+});
+
 const Viewport = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<typeof BaseNavigationMenu.Viewport>
@@ -118,7 +134,7 @@ export const NavigationMenu = {
   Trigger,
   Content: BaseNavigationMenu.Content,
   Portal: BaseNavigationMenu.Portal,
-  Positioner: BaseNavigationMenu.Positioner,
+  Positioner,
   Viewport,
   Popup,
   Link,
