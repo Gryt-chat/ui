@@ -27,16 +27,40 @@ export interface SelectProps
   placeholder?: string;
   size?: SelectSize;
   className?: string;
-  portalContainer?: HTMLElement | null;
 }
 
+/*
+ * The popup portals to the document body, and there is deliberately no way to
+ * change that.
+ *
+ * A `portalContainer` prop existed briefly so a Select inside a dialog could
+ * render into it rather than beside it. It does not work, and it caused the
+ * dropdowns in the client's server settings to open in the wrong place.
+ *
+ * Base UI positions the popup by computing coordinates against the viewport. A
+ * dialog is `position: fixed` and centres itself with `translate: -50% -50%`,
+ * and both of those make it a containing block for positioned descendants — so
+ * the coordinates get resolved against the dialog and its own offset is counted
+ * twice. Measured in a browser, with the dialog at (16, 226): the popup landed
+ * 227px too low and 17px too far right, matching the dialog's origin.
+ *
+ * Neither escape works. `positionMethod="fixed"` changes nothing. Removing the
+ * translate fixes the vertical error and leaves the horizontal one, because the
+ * dialog is still positioned.
+ *
+ * Portalling to the body is correct on both axes and already renders above the
+ * dialog, so there was never a stacking problem to solve.
+ *
+ * If a popup ever genuinely needs to live inside a themed subtree — previewing
+ * one theme inside another, which is the other half of GRYT-242 — that wants
+ * its own mechanism rather than this prop back.
+ */
 export function Select({
   className,
   label,
   options = [],
   placeholder = "Select",
   size = "medium",
-  portalContainer,
   ...props
 }: SelectProps) {
   return (
@@ -65,7 +89,7 @@ export function Select({
         </BaseSelect.Trigger>
       </div>
 
-      <BaseSelect.Portal container={portalContainer}>
+      <BaseSelect.Portal>
         <BaseSelect.Positioner sideOffset={6} className="outline-none">
           <BaseSelect.Popup
             className={cn("min-w-(--anchor-width) p-1", popupSurface, popupMotion)}
