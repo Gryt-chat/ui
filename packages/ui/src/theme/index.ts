@@ -27,6 +27,21 @@ export {
 } from "./createGrytTheme";
 export type { GrytThemeOptions, GrytTokens } from "./createGrytTheme";
 export { contrast, hexToOklch, oklchToHex } from "./oklch";
+// The ramp builders, not just the colour conversions. @gryt/ui composes these
+// into CSS custom properties in createGrytTheme; React Native cannot use custom
+// properties, so @gryt/ui-native composes the same functions into plain values
+// instead. Exporting them is what stops the OKLab maths being copied into the
+// second renderer. See GRYT-342.
+export {
+  alphaScale,
+  hexToRgb,
+  hueScale,
+  hueScaleLight,
+  neutralScale,
+  neutralScaleLight,
+  rgbToHex
+} from "./oklch";
+
 export type { Oklch } from "./oklch";
 export { grytPresets, grytPresetsById } from "./presets";
 export type { GrytThemePreset } from "./presets";

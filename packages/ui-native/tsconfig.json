@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // React Native's own JSX runtime, not the DOM one.
+    "jsx": "react-jsx",
+    "lib": ["ES2022"],
+    "types": ["node", "vitest/globals"],
+    "moduleResolution": "bundler",
+    "noEmit": true
+  },
+  "include": ["src"]
+}

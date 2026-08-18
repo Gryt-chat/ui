@@ -18,6 +18,15 @@ export type { GrytThemeOptions, GrytTokens } from "./theme/createGrytTheme";
 // only other caller. Keeping it internal would mean a second copy of the OKLab
 // matrices somewhere, which is exactly what one generator was meant to avoid.
 export { contrast, hexToOklch, oklchToHex } from "./theme/oklch";
+export {
+  alphaScale,
+  hexToRgb,
+  hueScale,
+  hueScaleLight,
+  neutralScale,
+  neutralScaleLight,
+  rgbToHex
+} from "./theme/oklch";
 export type { Oklch } from "./theme/oklch";
 // A whole theme as a document, and the link it travels in. Two apps read this
 // now — the generator on the docs site writes them, the client imports them —
