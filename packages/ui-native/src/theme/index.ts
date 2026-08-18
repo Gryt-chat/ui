@@ -9,4 +9,5 @@ export {
 } from "./createNativeTheme";
 export { GrytThemeProvider, type GrytThemeProviderProps } from "./ThemeProvider";
 export { ThemeContext } from "./themeContext";
+export { toneRamp, type ComponentTone } from "./tones";
 export { useTheme } from "./useTheme";
