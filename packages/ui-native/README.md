@@ -5,10 +5,10 @@ renderer.
 
 ## Status
 
-**Private, and not published.** Nine components exist: Surface, Divider, Chip,
-Avatar, Spinner, Button, TextField, Badge, Progress and Skeleton. Enough to
-assemble a simple form, not enough for a screen with a menu in it. Flip
-`private` off once there is a reason to install it.
+**Private, and not published.** Fifteen components: Surface, Divider, Chip,
+Avatar, Spinner, Button, TextField, Badge, Progress, Skeleton, Dialog,
+AlertDialog, Popover, Menu and Tooltip. Flip `private` off once there is a
+reason to install it.
 
 Tracked in GRYT-342. The goal is 1:1 with `@gryt/ui`: every component, matching
 behaviour, no mobile-only limits.
@@ -51,6 +51,12 @@ goal, so the honest list is worth more than a claim of parity that isn't one.
 | `Button` | `hasPopup` is a prop, not inferred | The web reads `aria-haspopup`, which Base UI sets on a trigger, and skips the scale so the trigger does not drag its own popup sideways while it is being measured. React Native has no such attribute, so a menu trigger has to say so. |
 | `TextField` | Focus changes the border colour instead of drawing an outline | The web's `outline` sits outside the box and shifts nothing. React Native has no outline, and a second ring would move the layout on focus. |
 | `Progress` | Indeterminate renders as an empty track | The web sweeps a partial bar with a CSS keyframe. Doing it here needs an `Animated` loop plus a reduce-motion check, which deserves its own pass rather than a footnote. |
+| `Tooltip` | Opens on long press, closes on release, instead of appearing on hover after a delay | A phone has no hover. This is the same name on a different interaction, and it is the component where 1:1 is least achievable. An interface that needs tooltips to be usable will not survive the port. |
+| *(positioned overlays)* | The popup does not follow a trigger that moves | Floating UI keeps watching the reference element. React Native measures on demand and reports nothing afterwards, so the position is taken once, when the popup opens. If a list scrolls underneath an open menu, the menu stays put. |
+| `Popover` | `Arrow` renders nothing | Base UI positions an arrow against the popup's edge once Floating UI has settled. Here it means a rotated square, a border on two sides only, and knowing which side the popup landed on. Doable, not free, and not done. |
+| `Menu` | `Positioner` is a passthrough | Base UI splits the positioned box from the styled box. There is no stacking context to escape here, so one view does both. |
+| `Dialog` | `Portal` is a passthrough and `Backdrop` renders nothing | React Native's `Modal` already renders above everything and draws its own layer, so there is nothing for a portal to escape and nowhere for a separate backdrop to go. Both are kept so call sites match. |
+| `Dialog` | Android's back button stands in for Escape | It is the only hardware dismiss a phone has. `AlertDialog` disables it along with the scrim, matching Base UI suppressing outside-press and Escape. |
 | `Skeleton` | Does not pulse | A loop running for the length of a request costs battery, and it is the sort of motion reduce-motion users switch off first. A flat block still reads as loading. |
 
 ## Not Node-importable
