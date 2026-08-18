@@ -44,6 +44,16 @@
         "default": "./dist/index.cjs"
       }
     },
+    "./theme": {
+      "import": {
+        "types": "./dist/theme.d.ts",
+        "default": "./dist/theme.js"
+      },
+      "require": {
+        "types": "./dist/theme.d.cts",
+        "default": "./dist/theme.cjs"
+      }
+    },
     "./styles.css": "./dist/styles.css",
     "./theme.css": "./dist/theme.css",
     "./package.json": "./package.json"
