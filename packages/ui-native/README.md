@@ -5,9 +5,10 @@ renderer.
 
 ## Status
 
-**Private, and not published.** Five components exist — Surface, Divider, Chip,
-Avatar, Spinner — which is enough to prove the token pipeline and not enough to
-build a screen with. Flip `private` off once there is a reason to install it.
+**Private, and not published.** Nine components exist: Surface, Divider, Chip,
+Avatar, Spinner, Button, TextField, Badge, Progress and Skeleton. Enough to
+assemble a simple form, not enough for a screen with a menu in it. Flip
+`private` off once there is a reason to install it.
 
 Tracked in GRYT-342. The goal is 1:1 with `@gryt/ui`: every component, matching
 behaviour, no mobile-only limits.
@@ -45,7 +46,12 @@ goal, so the honest list is worth more than a claim of parity that isn't one.
 | Component | What differs | Why |
 |---|---|---|
 | `Spinner` | Uses the platform `ActivityIndicator` instead of the web's stroked, CSS-animated circle | It is what the OS draws for "working", it honours reduce-motion for free, and iOS and Android differ from each other deliberately. Reproducing the web drawing would look wrong on both. |
-| *(all)* | No hover state | A phone has no pointer. The web's `scale-[1.03]` on hover has no equivalent and is not being emulated on press — press states are their own decision, coming with Button. |
+| *(all)* | No hover state | A phone has no pointer. The web's `scale-[1.03]` on hover has no equivalent and is deliberately not emulated on press, which would fire on every tap and make the whole UI feel loose. |
+| `Button` | Press scale is kept, hover scale is dropped | The web scales to `0.96` on press and `1.03` on hover. Press maps directly onto `onPressIn`/`onPressOut`, so it is here, spring-animated and skipped when reduce-motion is on. |
+| `Button` | `hasPopup` is a prop, not inferred | The web reads `aria-haspopup`, which Base UI sets on a trigger, and skips the scale so the trigger does not drag its own popup sideways while it is being measured. React Native has no such attribute, so a menu trigger has to say so. |
+| `TextField` | Focus changes the border colour instead of drawing an outline | The web's `outline` sits outside the box and shifts nothing. React Native has no outline, and a second ring would move the layout on focus. |
+| `Progress` | Indeterminate renders as an empty track | The web sweeps a partial bar with a CSS keyframe. Doing it here needs an `Animated` loop plus a reduce-motion check, which deserves its own pass rather than a footnote. |
+| `Skeleton` | Does not pulse | A loop running for the length of a request costs battery, and it is the sort of motion reduce-motion users switch off first. A flat block still reads as loading. |
 
 ## Not Node-importable
 
