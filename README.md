@@ -1,6 +1,6 @@
 # Gryt UI
 
-React component library for Gryt, the open-source WebRTC voice chat platform from [Gryt-chat](https://github.com/Gryt-chat).
+React component library for Gryt, the open-source WebRTC voice, video and text chat platform from [Gryt-chat](https://github.com/Gryt-chat).
 
 `@gryt/ui` builds on [Base UI](https://base-ui.com) — the MUI team's headless component library — styled with Tailwind on the Gryt palette. Flat surfaces, fully rounded controls, chat-focused primitives. Designed for the Gryt desktop/web client and reusable by Gryt-adjacent apps.
 
@@ -72,9 +72,28 @@ bun run test
 bun run build
 ```
 
-## Publishing
+## The workspace
 
-`packages/ui` is the npm package. The docs app is private and uses the workspace package through Vite.
+`packages/ui` is the published package. `packages/ui-native` is the same design
+system on React Native, private for now and covered below. The docs app is
+private too, and consumes the workspace package through Vite.
+
+`bun run build:lib` names the two libraries rather than building everything,
+because the docs app blocked a publish once.
+
+## React Native
+
+`packages/ui-native` renders the same tokens through React Native. It imports
+the theme from `@gryt/ui/theme`, which is a separate entry precisely so it can:
+the main entry bundles every component, pulls in Base UI, and imports the
+stylesheet as a side effect, none of which React Native can take.
+
+The colour maths is shared rather than copied. `neutralScale`, `hueScale` and
+`alphaScale` are exported from this package, and `ui-native` composes them into
+plain values instead of CSS custom properties. A curve tuned here moves there.
+
+It is private and unpublished while it is still short of components. See
+GRYT-342.
 
 ## License
 
