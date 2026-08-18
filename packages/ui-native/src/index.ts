@@ -80,6 +80,32 @@ export {
   type TooltipRootProps,
   type TooltipTriggerProps,
 } from "./components/Tooltip/Tooltip";
+export {
+  Accordion,
+  type AccordionItemProps,
+  type AccordionRootProps,
+} from "./components/Accordion/Accordion";
+export {
+  Drawer,
+  type DrawerPopupProps,
+  type DrawerRootProps,
+  type DrawerSide,
+} from "./components/Drawer/Drawer";
+export { NumberField, type NumberFieldProps } from "./components/NumberField/NumberField";
+export { OtpField, type OtpFieldProps } from "./components/OtpField/OtpField";
+export { ScrollArea, type ScrollAreaProps } from "./components/ScrollArea/ScrollArea";
+export {
+  ToastProvider,
+  useToast,
+  type ToastOptions,
+  type ToastSeverity,
+} from "./components/Toast/Toast";
+export {
+  Toolbar,
+  ToolbarSeparator,
+  type ToolbarProps,
+  type ToolbarSeparatorProps,
+} from "./components/Toolbar/Toolbar";
 export { AnchoredPopup, type AnchoredPopupProps } from "./overlay/AnchoredPopup";
 export {
   placePopup,
