@@ -23,13 +23,14 @@
   "scripts": {
     "dev": "bun --filter @gryt/docs dev",
     "build": "bun --filter '*' build",
+    "build:lib": "bun --filter @gryt/ui build",
     "typecheck": "bun --filter '*' typecheck",
     "test": "bun --filter @gryt/ui test",
     "lint": "eslint .",
     "format": "prettier --write .",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "bun run build && changeset publish"
+    "release": "bun run build:lib && changeset publish"
   },
   "devDependencies": {
     "@changesets/cli": "^2.29.7",

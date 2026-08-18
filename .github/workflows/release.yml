@@ -22,7 +22,19 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
       - run: bun run test
-      - run: bun run build
+      # Only the package being published.
+      #
+      # This was `bun run build`, which is `bun --filter '*' build`, so it also
+      # built @gryt/docs. On 2026-08-17 that blocked a release: @gryt/ui built
+      # and exited 0, then the docs app died inside wawoff2, an emscripten
+      # WOFF2 decompressor, on a refcount that read as undefined. A font
+      # decompressor in a site nobody installs from npm stopped a library
+      # release. GRYT-301.
+      #
+      # The docs build is not lost: ci.yml still runs `bun run build` across
+      # every workspace on pull requests, so a genuine breakage there still
+      # fails, just not on the publish path.
+      - run: bun run build:lib
       - uses: changesets/action@v1
         with:
           publish: bun run release
