@@ -18,9 +18,18 @@ export {
   type AlertDialogPopupProps,
   type AlertDialogRootProps,
 } from "./components/AlertDialog/AlertDialog";
+export { Alert, type AlertProps, type AlertSeverity } from "./components/Alert/Alert";
 export { Avatar, type AvatarProps, type AvatarSize } from "./components/Avatar/Avatar";
 export { Badge, type BadgeProps, type BadgeTone } from "./components/Badge/Badge";
 export { Button, type ButtonProps, type ButtonSize, type ButtonTone } from "./components/Button/Button";
+export {
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  type CardHeaderProps,
+  type CardProps,
+} from "./components/Card/Card";
 export { Checkbox, type CheckboxProps, type CheckboxTone } from "./components/Checkbox/Checkbox";
 export { Chip, type ChipProps, type ChipTone, type ChipVariant } from "./components/Chip/Chip";
 export {
@@ -29,8 +38,13 @@ export {
   type DialogRootProps,
   type DialogTriggerProps,
 } from "./components/Dialog/Dialog";
+export {
+  Collapsible,
+  type CollapsibleRootProps,
+} from "./components/Collapsible/Collapsible";
 export { Divider, type DividerProps } from "./components/Divider/Divider";
 export { Menu, type MenuItemProps, type MenuPopupProps, type MenuRootProps } from "./components/Menu/Menu";
+export { Meter, type MeterProps } from "./components/Meter/Meter";
 export { Popover, type PopoverPopupProps, type PopoverRootProps } from "./components/Popover/Popover";
 export { Progress, type ProgressProps } from "./components/Progress/Progress";
 export { Radio, RadioGroup, type RadioGroupProps, type RadioProps, type RadioTone } from "./components/Radio/Radio";
@@ -40,10 +54,23 @@ export {
   type SelectProps,
   type SelectSize,
 } from "./components/Select/Select";
+export {
+  Slider,
+  type SliderProps,
+  type SliderTone,
+} from "./components/Slider/Slider";
 export { Skeleton, type SkeletonProps } from "./components/Skeleton/Skeleton";
 export { Spinner, type SpinnerProps } from "./components/Spinner/Spinner";
 export { Surface, type SurfaceLevel, type SurfaceProps } from "./components/Surface/Surface";
 export { Switch, type SwitchProps, type SwitchTone } from "./components/Switch/Switch";
+export {
+  Tab,
+  Tabs,
+  type TabProps,
+  type TabsListProps,
+  type TabsPanelProps,
+  type TabsProps,
+} from "./components/Tabs/Tabs";
 export { TextField, type TextFieldProps, type TextFieldSize } from "./components/TextField/TextField";
 export { Toggle, type ToggleProps, type ToggleSize, type ToggleTone } from "./components/Toggle/Toggle";
 export {
