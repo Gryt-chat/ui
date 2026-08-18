@@ -5,12 +5,14 @@ renderer.
 
 ## Status
 
-**Private, and not published.** Twenty-one components. All five overlays are
-done, and the form controls with them: Surface, Divider, Chip, Avatar, Spinner,
-Button, TextField, Badge, Progress, Skeleton, Dialog, AlertDialog, Popover,
-Menu, Tooltip, Select, Switch, Checkbox, Radio, RadioGroup and Toggle.
+**Private, and not published.** Twenty-eight components: the five overlays, the
+form controls, and most of the layout and feedback set. Flip `private` off once
+there is a reason to install it.
 
-Flip `private` off once there is a reason to install it.
+Still missing, and all Gryt-specific or built on something not here yet:
+Composer, ConversationItem, MessageBubble, NavigationMenu, ContextMenu, Drawer,
+PreviewCard, Toolbar, Form, Toast, ScrollArea, Accordion, Autocomplete,
+Combobox, NumberField and OtpField.
 
 Tracked in GRYT-342. The goal is 1:1 with `@gryt/ui`: every component, matching
 behaviour, no mobile-only limits.
@@ -62,6 +64,10 @@ goal, so the honest list is worth more than a claim of parity that isn't one.
 | `Switch` | Drawn from tokens, not React Native's `Switch` | The platform control is green on iOS and Material on Android, and `thumbColor`/`trackColor` do not reach the whole shape. A design system that cannot colour its own switch is not one. |
 | `Select` | A list, not the platform picker | iOS gives a wheel and Android a dialog. Neither takes the Gryt palette and they look nothing like each other. |
 | `Checkbox` | The tick is a text glyph, not a Phosphor icon | An icon set would be this package's first runtime dependency, for one glyph, and `@phosphor-icons/react` renders SVG that React Native cannot mount without `react-native-svg`. That is a decision for whoever needs icons, not for a checkbox. |
+| `Tabs` | Each tab draws its own underline; `Indicator` renders nothing | Base UI slides one indicator between tabs, measured against the active one. Sliding it here means measuring every tab and animating between them, which is real work for a decoration. The underline appears rather than slides. |
+| `Tabs` | The panel has no `tabpanel` role | React Native has `tab` and `tablist` and no `tabpanel`. The panel is reachable, it just does not announce itself as belonging to the tab. |
+| `Collapsible` | Unmounts when closed instead of animating height | The web animates height, which needs the content measured first. Doable with `onLayout` and `Animated`, at the cost of a frame at the wrong size. |
+| `Alert` | Severity is colour plus a live region, with no icon | Colour alone does not tell anyone this is an error, which is why the web pairs it with an icon. `assertive` for error and warning, `polite` otherwise, reaches a screen reader, which an icon does not. A visible icon still wants an icon set. |
 | `Skeleton` | Does not pulse | A loop running for the length of a request costs battery, and it is the sort of motion reduce-motion users switch off first. A flat block still reads as loading. |
 
 ## Not Node-importable
