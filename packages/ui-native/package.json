@@ -1,0 +1,47 @@
+{
+  "name": "@gryt/ui-native",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "description": "Gryt's design system on React Native. Same tokens as @gryt/ui, a different renderer.",
+  "homepage": "https://gryt.chat",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gryt-chat/ui.git",
+    "directory": "packages/ui-native"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "bun run typecheck && bun run build"
+  },
+  "peerDependencies": {
+    "react": ">=18.3.0 || >=19.0.0",
+    "react-native": ">=0.76.0"
+  },
+  "dependencies": {
+    "@gryt/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "react": "^19.0.0",
+    "react-native": "^0.76.0",
+    "vitest": "^3.0.0"
+  }
+}
