@@ -1,0 +1,6 @@
+{
+  "//": "Not a package. A resolution stub so `@gryt/ui/theme` works under the legacy Node algorithm, which predates the exports field and never reads it. TypeScript's moduleResolution 'node' and anything else on node10 look for this directory on disk instead. The exports map in the root package.json is what modern resolvers use; both point at the same files. See GRYT-342.",
+  "main": "../dist/theme.cjs",
+  "module": "../dist/theme.js",
+  "types": "../dist/theme.d.ts"
+}
