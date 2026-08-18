@@ -5,9 +5,9 @@ renderer.
 
 ## Status
 
-**Private, and not published.** Twenty-eight components: the five overlays, the
-form controls, and most of the layout and feedback set. Flip `private` off once
-there is a reason to install it.
+**Private, and not published.** Thirty-three components across the overlays, the
+form controls, and the layout and feedback set. Flip `private` off once there is
+a reason to install it.
 
 Still missing, and all Gryt-specific or built on something not here yet:
 Composer, ConversationItem, MessageBubble, NavigationMenu, ContextMenu, Drawer,
@@ -68,6 +68,10 @@ goal, so the honest list is worth more than a claim of parity that isn't one.
 | `Tabs` | The panel has no `tabpanel` role | React Native has `tab` and `tablist` and no `tabpanel`. The panel is reachable, it just does not announce itself as belonging to the tab. |
 | `Collapsible` | Unmounts when closed instead of animating height | The web animates height, which needs the content measured first. Doable with `onLayout` and `Animated`, at the cost of a frame at the wrong size. |
 | `Alert` | Severity is colour plus a live region, with no icon | Colour alone does not tell anyone this is an error, which is why the web pairs it with an icon. `assertive` for error and warning, `polite` otherwise, reaches a screen reader, which an icon does not. A visible icon still wants an icon set. |
+| `NumberField` | No scrub gesture on the label | The web lets you press the label and drag sideways to change the value. On a phone that competes with scrolling, and the same interaction already exists as `Slider`. |
+| `ScrollArea` | Nearly a passthrough over `ScrollView` | The web version exists to replace scrollbars browsers draw badly. A phone's indicator is drawn by the OS, fades on its own, and already matches every other app. |
+| `Toolbar` | No roving focus | The web's manages arrow-key movement between controls and one tab stop for the group. There is no focus to rove. The role is kept, since that is what tells a screen reader the controls belong together. |
+| `Accordion` | Two glyphs instead of a rotating chevron | Same reasoning as the checkbox tick: rotating one needs a transform and a measurement, and there is no icon set here yet. |
 | `Skeleton` | Does not pulse | A loop running for the length of a request costs battery, and it is the sort of motion reduce-motion users switch off first. A flat block still reads as loading. |
 
 ## Not Node-importable
