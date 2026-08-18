@@ -28,6 +28,7 @@
   ],
   "files": [
     "dist",
+    "theme",
     "README.md"
   ],
   "main": "./dist/index.cjs",
