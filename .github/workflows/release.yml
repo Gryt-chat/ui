@@ -7,6 +7,11 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  # Required for npm trusted publishing. Without it the OIDC token is never
+  # minted and npm falls back to looking for a credential, so a publish that
+  # is meant to be tokenless fails as though the token were missing — which is
+  # a confusing way to find out.
+  id-token: write
 
 jobs:
   release:
