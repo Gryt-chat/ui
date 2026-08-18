@@ -4,6 +4,11 @@ import { resolve } from "node:path";
 const distDir = resolve(import.meta.dir, "../dist");
 const indexDtsPath = resolve(distDir, "index.d.ts");
 const indexDCtsPath = resolve(distDir, "index.d.cts");
+// The ./theme subpath has its own declaration for the same reason the root
+// does: the require condition points at a .d.cts, and vite-plugin-dts only
+// emits .d.ts. See GRYT-351.
+const themeDtsPath = resolve(distDir, "theme.d.ts");
+const themeDCtsPath = resolve(distDir, "theme.d.cts");
 const themeSourcePath = resolve(import.meta.dir, "../src/styles/theme.css");
 const themeDistPath = resolve(distDir, "theme.css");
 
@@ -47,6 +52,7 @@ for (const filePath of await declarationFiles(distDir)) {
 }
 
 await copyFile(indexDtsPath, indexDCtsPath);
+await copyFile(themeDtsPath, themeDCtsPath);
 
 // Copied verbatim rather than built. dist/styles.css goes through Vite and
 // Tailwind, which resolves @theme into :root variables — useful at runtime,
