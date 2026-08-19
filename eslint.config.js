@@ -13,6 +13,14 @@ export default tseslint.config(
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  // Build scripts. They run under Node, are not part of any bundle, and have
+  // neither a DOM nor the browser globals the recommended config assumes.
+  {
+    files: ["**/scripts/**/*.mjs"],
+    languageOptions: {
+      globals: { console: "readonly", process: "readonly" }
+    }
+  },
   {
     files: ["**/*.{ts,tsx}"],
     plugins: {

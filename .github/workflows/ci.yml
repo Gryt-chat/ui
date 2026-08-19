@@ -21,10 +21,18 @@ jobs:
       - run: bun run test
       - run: bun run build
       - run: bunx publint packages/ui
+      - run: bunx publint packages/ui-native
       # Both CSS entrypoints are excluded: attw checks that an entrypoint
       # resolves to type declarations or JavaScript, and a stylesheet is
       # neither. Any future CSS export needs adding here too.
       - run: bunx @arethetypeswrong/cli --pack packages/ui --exclude-entrypoints ./styles.css --exclude-entrypoints ./theme.css
+
+      # ui-native is ESM only and ships no CommonJS build, the same as
+      # @gryt/voice, so the CJS-resolves-to-ESM rule is the intended shape here
+      # rather than a finding. Everything else is on: this is the check that
+      # caught the extensionless relative imports tsc emits, which resolved
+      # under Metro and nowhere else (GRYT-356).
+      - run: bunx @arethetypeswrong/cli --pack packages/ui-native --ignore-rules cjs-resolves-to-esm
 
   # ui.gryt.chat is this Dockerfile, and nothing above builds it. The manifests
   # it copies are listed one at a time, so adding a workspace member without
