@@ -11,8 +11,16 @@ FROM --platform=$BUILDPLATFORM oven/bun:1.2 AS builder
 WORKDIR /app
 
 # Manifests first so a source-only change doesn't reinstall the world.
+#
+# Every workspace member has to be listed. bun.lock describes all of them, and
+# --frozen-lockfile fails outright on a manifest it cannot find rather than
+# skipping that member: ui-native was added without this line and the image
+# stopped building with "lockfile had changes, but lockfile is frozen", which
+# reads like a stale lockfile and is not one. Adding a package under packages/
+# or apps/ means adding it here too.
 COPY package.json bun.lock tsconfig.base.json ./
 COPY packages/ui/package.json ./packages/ui/
+COPY packages/ui-native/package.json ./packages/ui-native/
 COPY apps/docs/package.json ./apps/docs/
 RUN bun install --frozen-lockfile
 
