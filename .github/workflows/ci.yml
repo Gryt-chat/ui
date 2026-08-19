@@ -34,6 +34,14 @@ jobs:
       # under Metro and nowhere else (GRYT-356).
       - run: bunx @arethetypeswrong/cli --pack packages/ui-native --ignore-rules cjs-resolves-to-esm
 
+      # Packs each package and installs the tarball into an empty directory,
+      # which is the only check here that resolves the manifest the way a
+      # consumer does. publint and attw both run against the workspace, where
+      # `workspace:*` is a legitimate dependency spec, so both passed while
+      # @gryt/ui-native 0.1.0 could not be installed at all (GRYT-370).
+      - run: node scripts/check-installable.mjs packages/ui
+      - run: node scripts/check-installable.mjs packages/ui-native
+
   # ui.gryt.chat is this Dockerfile, and nothing above builds it. The manifests
   # it copies are listed one at a time, so adding a workspace member without
   # adding it there breaks the image while every check here stays green — which
