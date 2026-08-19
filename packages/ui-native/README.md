@@ -3,19 +3,34 @@
 Gryt's design system on React Native. The same tokens as `@gryt/ui`, a different
 renderer.
 
+## Install
+
+```sh
+npm install @gryt/ui-native
+```
+
+```sh
+bun add @gryt/ui-native
+pnpm add @gryt/ui-native
+yarn add @gryt/ui-native
+```
+
+Your app provides `react` and `react-native`. `@gryt/ui` comes with it, for the
+colour maths described below, and nothing from its main entry is loaded.
+
 ## Status
 
-**Private, and not published.** Thirty-three components across the overlays, the
-form controls, and the layout and feedback set. Flip `private` off once there is
-a reason to install it.
+Thirty-three components across the overlays, the form controls, and the layout
+and feedback set.
 
-Still missing, and all Gryt-specific or built on something not here yet:
-Composer, ConversationItem, MessageBubble, NavigationMenu, ContextMenu, Drawer,
-PreviewCard, Toolbar, Form, Toast, ScrollArea, Accordion, Autocomplete,
-Combobox, NumberField and OtpField.
+Ten are still missing, against 42 in `@gryt/ui`: Autocomplete, Combobox,
+Composer, ContextMenu, ConversationItem, Form, IconButton, MessageBubble,
+NavigationMenu and PreviewCard. Most of them are Gryt-specific and want a screen
+to design against rather than a web component to copy.
 
 Tracked in GRYT-342. The goal is 1:1 with `@gryt/ui`: every component, matching
-behaviour, no mobile-only limits.
+behaviour, no mobile-only limits. The exceptions below are the honest distance
+from that.
 
 ## The tokens are imported, not copied
 
@@ -76,11 +91,14 @@ goal, so the honest list is worth more than a claim of parity that isn't one.
 
 ## Not Node-importable
 
-The build is unbundled `tsc` output with extensionless relative imports, which
-is what Metro wants: it resolves `.native.ts` and `.web.ts` per file, and a
-bundle would have no files left to pick between. That also means plain Node
-cannot import `dist/index.js` — it would fail on `react-native` regardless, so
-nothing is lost, but do not add a Node-side consumer expecting it to work.
+The build is unbundled `tsc` output, which is what Metro wants: it resolves
+`.native.ts` and `.web.ts` per file, and a bundle would have no files left to
+pick between. A post-build step appends the `.js` extensions Node's resolver
+needs, so the module graph resolves rather than only working under a bundler.
+
+Importing `dist/index.js` from plain Node still fails, on `react-native`, which
+Node cannot load either. Nothing is lost by that, but do not add a Node-side
+consumer expecting it to work.
 
 The theme layer is testable without a native runtime, which is what
 `createNativeTheme.test.ts` covers.
