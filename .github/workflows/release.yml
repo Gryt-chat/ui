@@ -40,6 +40,13 @@ jobs:
       # every workspace on pull requests, so a genuine breakage there still
       # fails, just not on the publish path.
       - run: bun run build:lib
+
+      # Before the publish rather than after it, because a version cannot be
+      # replaced once it is on npm. @gryt/ui-native 0.1.0 went out with a
+      # `workspace:*` dependency that npm refuses to resolve, and the only way
+      # to fix it was to burn the version (GRYT-370).
+      - run: node scripts/check-installable.mjs packages/ui
+      - run: node scripts/check-installable.mjs packages/ui-native
       - uses: changesets/action@v1
         with:
           publish: bun run release
