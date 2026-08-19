@@ -18,6 +18,13 @@ yarn add @gryt/ui
 
 `@gryt/ui` includes Base UI, Phosphor icons, and the compiled Gryt styles. Your app provides `react` and `react-dom`. There is no CSS-in-JS runtime.
 
+For React Native, install [`@gryt/ui-native`](packages/ui-native) instead. It is
+the same design system through a different renderer, and it is covered below.
+
+```sh
+npm install @gryt/ui-native
+```
+
 ## Usage
 
 Import the stylesheet once in your app's global entry file.
@@ -74,9 +81,9 @@ bun run build
 
 ## The workspace
 
-`packages/ui` is the published package. `packages/ui-native` is the same design
-system on React Native, private for now and covered below. The docs app is
-private too, and consumes the workspace package through Vite.
+`packages/ui` and `packages/ui-native` are both published. The second is the
+same design system on React Native and is covered below. The docs app is
+private, and consumes the workspace package through Vite.
 
 `bun run build:lib` names the two libraries rather than building everything,
 because the docs app blocked a publish once.
@@ -92,8 +99,10 @@ The colour maths is shared rather than copied. `neutralScale`, `hueScale` and
 `alphaScale` are exported from this package, and `ui-native` composes them into
 plain values instead of CSS custom properties. A curve tuned here moves there.
 
-It is private and unpublished while it is still short of components. See
-GRYT-342.
+It is published, and short of ten of the 42 components in `@gryt/ui` — mostly
+the Gryt-specific ones, which want a screen to design against rather than a web
+component to copy. Its README carries the list, and a table of the places where
+a component deliberately behaves differently on a phone. See GRYT-342.
 
 ## License
 
