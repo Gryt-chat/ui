@@ -25,3 +25,21 @@ jobs:
       # resolves to type declarations or JavaScript, and a stylesheet is
       # neither. Any future CSS export needs adding here too.
       - run: bunx @arethetypeswrong/cli --pack packages/ui --exclude-entrypoints ./styles.css --exclude-entrypoints ./theme.css
+
+  # ui.gryt.chat is this Dockerfile, and nothing above builds it. The manifests
+  # it copies are listed one at a time, so adding a workspace member without
+  # adding it there breaks the image while every check here stays green — which
+  # is what happened with ui-native, and it went unnoticed until a deploy tried
+  # it (GRYT-362).
+  #
+  # No push and no run: the failure worth catching is a build failure, and the
+  # build is the check.
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Plain docker build rather than buildx with a layer cache. There is no
+      # cache to reuse between pull requests on a Dockerfile whose first real
+      # step installs the workspace, and a cold build here is a couple of
+      # minutes.
+      - run: docker build .
