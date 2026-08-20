@@ -69,6 +69,11 @@ export const grytDurations = {
  */
 export const grytScaleSteps = {
   button: { hover: 1.03, press: 0.96 },
+  iconButton: { hover: 1.06, press: 0.94 },
+  checkbox: { hover: 1.08, press: 0.92 },
+  radio: { hover: 1.08, press: 0.92 },
+  switch: { hover: 1.05, press: 0.95 },
+  toggle: { hover: 1.06, press: 0.94 },
   toast: { hover: 1.04, press: 0.96 },
   sliderThumb: { hover: 1.12, press: 0.94 }
 } as const;

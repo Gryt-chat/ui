@@ -1,5 +1,9 @@
 import { useState, type ReactNode } from "react";
 import { Pressable, Text, type StyleProp, type ViewStyle } from "react-native";
+import Animated from "react-native-reanimated";
+
+import { grytScaleSteps } from "@gryt/theme";
+import { usePressScale } from "../../motion";
 
 import { toneRamp, useTheme, type ComponentTone } from "../../theme";
 
@@ -26,6 +30,16 @@ export interface ToggleProps {
 }
 
 /** A button that stays down. Mute, deafen, and the rest of the call controls. */
+/**
+ * Animated.createAnimatedComponent rather than a wrapping Animated.View.
+ *
+ * A Toggle is laid out by its parent — a Toolbar puts them in a row — and an
+ * extra view between the two would take the layout props and leave the button
+ * sized by its content. The web scales the button element itself, so this does
+ * too.
+ */
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 export function Toggle({
   pressed: controlled,
   defaultPressed = false,
@@ -38,23 +52,27 @@ export function Toggle({
   accessibilityLabel,
 }: ToggleProps) {
   const theme = useTheme();
+  const press = usePressScale(grytScaleSteps.toggle.press, disabled);
   const [uncontrolled, setUncontrolled] = useState(defaultPressed);
   const on = controlled ?? uncontrolled;
   const metrics = SIZES[size];
   const ramp = toneRamp(theme, tone);
 
   return (
-    <Pressable
+    <AnimatedPressable
       accessibilityRole="button"
       accessibilityState={{ selected: on, disabled: !!disabled }}
       accessibilityLabel={accessibilityLabel}
       disabled={disabled}
+      onPressIn={press.onPressIn}
+      onPressOut={press.onPressOut}
       onPress={() => {
         const next = !on;
         if (controlled === undefined) setUncontrolled(next);
         onPressedChange?.(next);
       }}
       style={[
+        press.style,
         {
           minHeight: metrics.minHeight,
           paddingHorizontal: metrics.paddingH,
@@ -82,6 +100,6 @@ export function Toggle({
       ) : (
         children
       )}
-    </Pressable>
+    </AnimatedPressable>
   );
 }

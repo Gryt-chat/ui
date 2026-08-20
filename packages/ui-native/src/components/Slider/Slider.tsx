@@ -137,6 +137,19 @@ export function Slider({
       onPanResponderMove: (_e, gesture) => {
         apply(valueFromX(origin.current + gesture.dx));
       },
+      // The fix for GRYT-390's "the slider still lets me scroll the page".
+      //
+      // The comment above says this "claims the gesture and holds it". It did
+      // not: `onPanResponderTerminationRequest` defaults to *granting*, so the
+      // enclosing ScrollView asked for the responder as soon as the finger
+      // moved and got it. Every drag inside a scrolling screen scrolled the
+      // screen, which is every drag — volume sliders live in settings lists.
+      //
+      // Saying no is the whole fix. `onShouldBlockNativeResponder` stops the
+      // native scroll view taking over underneath on Android, where the JS
+      // answer alone is not enough.
+      onPanResponderTerminationRequest: () => false,
+      onShouldBlockNativeResponder: () => true,
       onPanResponderRelease: () => {
         thumbScale.value = springy(1);
         emit.current.onValueCommit?.(state.current.value);
