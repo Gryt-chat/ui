@@ -368,6 +368,7 @@
        changing the curve moves where the overshoot lands. */
     --gryt-dur-spring: 500ms;
     --gryt-dur-spring-soft: 700ms;
+    --gryt-dur-spring-slow: 900ms;
 
     /* A colour or opacity change, which should not feel sprung. ScrollArea
        fades its scrollbar with this and OtpField tints its focused cell; both

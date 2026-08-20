@@ -56,6 +56,14 @@ export const grytDurations = {
   spring: 500,
   /** Drawer, where the travel is the width of a panel. */
   springSoft: 700,
+  /**
+   * For something that travels further than its own width.
+   *
+   * A bottom sheet comes up from off the screen and covers most of it, which is
+   * a longer journey than a drawer's. Reusing `springSoft` there meant the same
+   * time over more distance, and it read as a snap.
+   */
+  springSlow: 900,
   /** Colour changes, which should not feel sprung. */
   fast: 150,
   /**

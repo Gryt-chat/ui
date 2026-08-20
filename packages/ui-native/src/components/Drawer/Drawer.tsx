@@ -222,21 +222,27 @@ function Popup({
   });
 
   /**
-   * The scrim fades with the panel, and thins as it is dragged away.
+   * The scrim thins as the panel is dragged away, and does not fade in or out.
    *
-   * It was a flat `rgba(0,0,0,0.6)` that appeared and vanished with the Modal,
-   * so a drawer animating out sat under a full-strength scrim for the whole
-   * 700ms and then the scrim blinked off. The web has animated this from the
-   * start — `transition-opacity` on the same duration and curve — and it also
-   * tracks the swipe, with a comment saying not to "leave a full-strength
-   * scrim over a half-gone sheet".
+   * A drawer opens by sliding and nothing about it fades — that is the whole
+   * distinction from a dialog, and a scrim that fades up alongside the panel
+   * puts a second, slower animation on top of the one that matters. It is up
+   * when the drawer is up.
    *
-   * Both halves are here: `progress` fades it in and out, and the drag term
-   * thins it in proportion to how far the panel has been pushed off.
+   * The drag term stays, and it is a different thing: pushing the panel off
+   * lightens the scrim in proportion, so a half-gone drawer does not sit under
+   * a full-strength one. The web's own rule, in its own words.
+   *
+   * The Modal unmounts once the panel has finished travelling, which is what
+   * takes the scrim with it. Earlier this was a flat colour that vanished with
+   * the Modal *before* the panel had moved, so a drawer animating out sat under
+   * a full-strength scrim for 700ms and then blinked off — that was the bug,
+   * and keeping the scrim up for exactly as long as the panel is on screen is
+   * the fix rather than fading it.
    */
   const scrimStyle = useAnimatedStyle(() => {
     const dragged = extent > 0 ? Math.min(1, Math.abs(drag.value) / extent) : 0;
-    return { opacity: progress.value * (1 - dragged) };
+    return { opacity: 1 - dragged };
   });
 
   /**
