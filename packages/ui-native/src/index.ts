@@ -99,6 +99,8 @@ export {
   type SheetCloseProps,
   type SheetContentProps,
   type SheetProps,
+  SheetProvider,
+  type SheetProviderProps,
   type SheetTitleProps,
   type SheetTriggerProps,
 } from "./components/Sheet/Sheet";

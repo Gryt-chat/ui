@@ -20,5 +20,10 @@ lines and no library will give you the right one. Velocity dismiss, snap points,
 keyboard avoidance and the drag-versus-scroll handoff are deep, generic, and
 nothing to do with Gryt.
 
+`SheetProvider` has to be mounted at the app root, beside `ToastProvider` and
+`TooltipProvider`. It is `BottomSheetModal` underneath, and the provider is
+what anchors the sheet to the screen rather than to wherever the call site
+happens to sit in the layout.
+
 Adds `@gorhom/bottom-sheet` and `react-native-gesture-handler` as peer
 dependencies.

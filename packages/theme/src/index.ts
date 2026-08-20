@@ -72,6 +72,7 @@ export type {
 } from "./theme";
 
 export {
+  grytDrawerBleed,
   grytDurations,
   grytScaleSteps,
   sampleCurve,

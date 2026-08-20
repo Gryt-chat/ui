@@ -79,6 +79,21 @@ export const grytScaleSteps = {
 } as const;
 
 /**
+ * How far a Drawer or Sheet hangs past the edge it comes from, in points.
+ *
+ * The spring overshoots — that is the whole point of it — and it settles onto
+ * its target from both directions. A panel sized exactly to its resting place
+ * therefore shows a seam of backdrop down its edge on the undershoot, for a
+ * frame or two, every time it opens.
+ *
+ * So the panel is built `bleed` larger than it needs to be and hangs that much
+ * off-screen, with matching padding on the same side so the content sits where
+ * it would have. 64 is 4rem, which is what `theme.css` has said since the web
+ * Drawer was written; `bleedTokens.test.ts` in @gryt/ui keeps the two equal.
+ */
+export const grytDrawerBleed = 64;
+
+/**
  * Sample a curve at `t` in 0..1, interpolating linearly between points.
  *
  * This is what `linear()` does in CSS, written out so other renderers can do

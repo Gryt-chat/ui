@@ -2,18 +2,24 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
-  useState,
   type ReactNode,
 } from "react";
 import { Pressable, Text, View, type StyleProp, type ViewStyle } from "react-native";
-import BottomSheet, {
+import {
   BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetModalProvider,
   BottomSheetView,
+  useBottomSheetTimingConfigs,
   type BottomSheetBackdropProps,
+  type BottomSheetBackgroundProps,
 } from "@gorhom/bottom-sheet";
 
+import { grytDrawerBleed } from "@gryt/theme";
+import { durations, easeSpring } from "../../motion";
 import { useTheme } from "../../theme";
 
 /**
@@ -38,7 +44,28 @@ import { useTheme } from "../../theme";
  *
  * The library supplies behaviour only. Every colour, radius and dimension below
  * comes from the theme.
+ *
+ * **`SheetProvider` has to be mounted above anything that renders a Sheet**,
+ * next to `ToastProvider` and `TooltipProvider`. That is not ceremony: this is
+ * `BottomSheetModal`, not `BottomSheet`, and the difference is where the sheet
+ * is anchored.
+ *
+ * `BottomSheet` positions itself inside whatever container it is rendered in.
+ * Written inline in a screen, as this was first, it anchors to its slot in the
+ * layout — so it appeared partway down the page with the content behind it
+ * showing through, and read as entering from the top. `BottomSheetModal`
+ * portals to the provider instead, which sits at the app root, so it is always
+ * anchored to the bottom of the screen no matter where the call site is.
  */
+
+export interface SheetProviderProps {
+  children?: ReactNode;
+}
+
+/** Mount once, at the root. See the note above for why it is required. */
+export function SheetProvider({ children }: SheetProviderProps) {
+  return <BottomSheetModalProvider>{children}</BottomSheetModalProvider>;
+}
 
 interface SheetContextValue {
   open: () => void;
@@ -73,26 +100,26 @@ function Root({
   onOpenChange,
   children,
 }: SheetProps) {
-  const ref = useRef<BottomSheet>(null);
-  const [mounted, setMounted] = useState(defaultOpen);
+  const ref = useRef<BottomSheetModal>(null);
 
+  // `present` and `dismiss` rather than mounting and unmounting by hand: the
+  // modal is always rendered and the provider decides whether it is on screen,
+  // which is what removes the mount-then-snap-on-the-next-frame dance the
+  // inline version needed.
   const open = useCallback(() => {
-    setMounted(true);
-    // Expanding on the next tick rather than immediately: the sheet has to
-    // exist before it can be told to move, and on first open it does not yet.
-    requestAnimationFrame(() => ref.current?.snapToIndex(0));
+    ref.current?.present();
     onOpenChange?.(true);
   }, [onOpenChange]);
 
   const close = useCallback(() => {
-    ref.current?.close();
+    ref.current?.dismiss();
   }, []);
 
   const context = useMemo<SheetContextValue>(() => ({ open, close }), [open, close]);
 
   return (
     <SheetContext.Provider value={context}>
-      <SheetRefContext.Provider value={{ ref, mounted, setMounted, snapPoints, onOpenChange }}>
+      <SheetRefContext.Provider value={{ ref, defaultOpen, snapPoints, onOpenChange }}>
         {children}
       </SheetRefContext.Provider>
     </SheetContext.Provider>
@@ -100,9 +127,8 @@ function Root({
 }
 
 interface SheetRefValue {
-  ref: React.RefObject<BottomSheet | null>;
-  mounted: boolean;
-  setMounted: (mounted: boolean) => void;
+  ref: React.RefObject<BottomSheetModal | null>;
+  defaultOpen: boolean;
   snapPoints: (string | number)[];
   onOpenChange?: (open: boolean) => void;
 }
@@ -137,14 +163,79 @@ export interface SheetContentProps {
 function Content({ children, style }: SheetContentProps) {
   const theme = useTheme();
   const state = useContext(SheetRefContext);
-  if (!state) throw new Error("Sheet.Content must be rendered inside Sheet.");
+  // Read here, in the normal tree, and handed back down below — see the note
+  // on the provider inside the modal.
+  const sheet = useContext(SheetContext);
+  if (!state || !sheet) {
+    throw new Error("Sheet.Content must be rendered inside Sheet.");
+  }
 
-  const { ref, mounted, setMounted, snapPoints, onOpenChange } = state;
+  const { ref, defaultOpen, snapPoints, onOpenChange } = state;
 
-  // Unmounted while closed rather than kept at index -1. A sheet that is not
-  // open should not be holding a backdrop over the screen, and gorhom's own
-  // examples differ on this — keeping it mounted is what makes a closed sheet
-  // eat taps.
+  useEffect(() => {
+    if (defaultOpen) ref.current?.present();
+  }, [defaultOpen, ref]);
+
+  // The modal renders nothing until it is presented, so there is no invisible
+  // backdrop sitting over the screen eating taps while it is closed. That was
+  // a real hazard with the inline version and had to be handled by unmounting.
+  /**
+   * The sheet's own background, drawn here rather than left to `backgroundStyle`.
+   *
+   * Two things needed fixing and one prop could not do either.
+   *
+   * `backgroundStyle` paints a view sized exactly to the sheet, and the
+   * container `style` sits outside the rounded corners — so a border on the
+   * container drew a straight line across the full width above the rounded top,
+   * which is the stray line that was reported.
+   *
+   * And the spring overshoots. A sheet sized exactly to its snap point travels
+   * past it and leaves a band of backdrop along the bottom of the screen for a
+   * frame or two. So this hangs `grytDrawerBleed` below the bottom edge, which
+   * is the same trick and the same distance the web Drawer uses — its comment
+   * calls the artefact "a seam of backdrop down the edge".
+   */
+  const renderBackground = useCallback(
+    ({ style: bgStyle }: BottomSheetBackgroundProps) => (
+      <View
+        pointerEvents="none"
+        style={[
+          bgStyle,
+          {
+            backgroundColor: theme.color.surface,
+            borderTopLeftRadius: theme.radius.xl,
+            borderTopRightRadius: theme.radius.xl,
+            // Follows the rounded corners, unlike a border on the container.
+            borderTopWidth: 1,
+            borderColor: theme.color.border,
+            // The overhang. Negative bottom rather than extra height, so the
+            // rounded top stays where the sheet actually is.
+            bottom: -grytDrawerBleed,
+          },
+        ]}
+      />
+    ),
+    [theme],
+  );
+
+  /**
+   * Gryt's spring, rather than gorhom's default.
+   *
+   * `withTiming` over the sampled curve, for the same reason every other
+   * animation in this package does it that way: the curve in @gryt/theme is a
+   * damped spring solved analytically, and approximating it with a physics
+   * engine would be approximating an exact curve with the thing it was chosen
+   * over.
+   *
+   * `springSoft` — 700ms — because a sheet travels its own height, which is the
+   * case that duration was shaped for. It is what Drawer uses and for the same
+   * reason.
+   */
+  const animationConfigs = useBottomSheetTimingConfigs({
+    duration: durations.springSoft,
+    easing: easeSpring,
+  });
+
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
@@ -160,42 +251,41 @@ function Content({ children, style }: SheetContentProps) {
     [],
   );
 
-  if (!mounted) return null;
-
   return (
-    <BottomSheet
+    <BottomSheetModal
       ref={ref}
-      index={0}
       snapPoints={snapPoints}
       enablePanDownToClose
-      onClose={() => {
-        setMounted(false);
-        onOpenChange?.(false);
-      }}
+      onDismiss={() => onOpenChange?.(false)}
+      animationConfigs={animationConfigs}
       backdropComponent={renderBackdrop}
-      backgroundStyle={{
-        backgroundColor: theme.color.surface,
-        // Corners on the top two only. A sheet is anchored to the bottom edge
-        // and rounding all four would float it, which is a different component.
-        borderTopLeftRadius: theme.radius.xl,
-        borderTopRightRadius: theme.radius.xl,
-      }}
+      backgroundComponent={renderBackground}
       handleIndicatorStyle={{
         backgroundColor: theme.color.border,
         width: 36,
         height: 4,
       }}
-      style={{
-        // gorhom draws no shadow, and without a border the sheet's top edge
-        // vanishes against a dark backdrop at low opacity.
-        borderTopWidth: 1,
-        borderColor: theme.color.border,
-      }}
     >
       <BottomSheetView style={[{ flex: 1, padding: theme.space(4) }, style]}>
-        {children}
+        {/*
+          The context is provided a second time, inside the modal, and it has
+          to be.
+
+          `BottomSheetModal` teleports its children with `@gorhom/portal`,
+          which does not render them through a React portal — it renders them
+          in a different tree, under the provider at the app root. React
+          context does not survive that, so anything below here looking for
+          `SheetContext` finds nothing.
+
+          What that looked like: the sheet presented correctly and then threw
+          "Sheet.Close must be rendered inside Sheet." from inside its own
+          content. Nothing about the error points at teleporting, and it only
+          happens for the parts that read context — a Sheet whose content is
+          plain text works fine, which is exactly how this would have shipped.
+        */}
+        <SheetContext.Provider value={sheet}>{children}</SheetContext.Provider>
       </BottomSheetView>
-    </BottomSheet>
+    </BottomSheetModal>
   );
 }
 
