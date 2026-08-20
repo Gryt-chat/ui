@@ -57,7 +57,14 @@ export const grytDurations = {
   /** Drawer, where the travel is the width of a panel. */
   springSoft: 700,
   /** Colour changes, which should not feel sprung. */
-  fast: 150
+  fast: 150,
+  /**
+   * One pass of an indeterminate Progress bar across its track.
+   *
+   * Long enough to read as "working" rather than "flickering", short enough
+   * that a second pass starts before you wonder whether it has stopped.
+   */
+  sweep: 1400
 } as const;
 
 /**

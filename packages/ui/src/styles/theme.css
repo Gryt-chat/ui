@@ -375,6 +375,9 @@
        two components and declared in none. */
     --gryt-dur-fast: 150ms;
 
+    /* One pass of an indeterminate Progress bar across its track. */
+    --gryt-dur-sweep: 1400ms;
+
     /* Backdrop blur behind Dialog and Drawer. Deliberately small — enough to
        separate the panel from the page without the scrim becoming an effect of
        its own. backdrop-filter is not free on a full-screen element, so this is

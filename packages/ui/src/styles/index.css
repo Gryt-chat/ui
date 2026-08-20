@@ -79,6 +79,41 @@
        through. What is left is the handful of rules that are genuinely
        stylesheet-shaped: multi-element layouts a className cannot express. */
 
+    /* An indeterminate Progress: a partial bar sweeping the track, looping.
+       A keyframe rather than a Tailwind utility because there is no arbitrary
+       value for "define an animation", and this is genuinely stylesheet-shaped.
+
+       The bar is 40% of the track and travels from fully off the left edge to
+       fully off the right — -100% and 250% of its own width. Leaving the track
+       completely at both ends is what makes the loop seam invisible; a bar that
+       restarts while still visible flicks backwards once per pass.
+
+       React Native draws the same description in points, measured from the
+       track's own layout, at the same --gryt-dur-sweep. GRYT-382. */
+    @keyframes gryt-progress-sweep {
+        from {
+            transform: translateX(-100%);
+        }
+        to {
+            transform: translateX(250%);
+        }
+    }
+
+    .gryt-progress-indeterminate {
+        width: 40%;
+        animation: gryt-progress-sweep var(--gryt-dur-sweep) ease-in-out infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        /* Full width and dimmed rather than a frozen partial bar, which reads
+           as a job that stalled 40% of the way through. */
+        .gryt-progress-indeterminate {
+            width: 100%;
+            opacity: 0.4;
+            animation: none;
+        }
+    }
+
     .gryt-message-bubble {
         max-width: min(42rem, 85%);
         @apply rounded-(--gryt-radius-xl) px-4 py-3 text-sm leading-6;
