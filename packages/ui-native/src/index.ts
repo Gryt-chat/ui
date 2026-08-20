@@ -94,6 +94,7 @@ export {
 export { NumberField, type NumberFieldProps } from "./components/NumberField/NumberField";
 export { OtpField, type OtpFieldProps } from "./components/OtpField/OtpField";
 export { ScrollArea, type ScrollAreaProps } from "./components/ScrollArea/ScrollArea";
+export { useDragLock, type DragLock } from "./components/internal/dragLock";
 export {
   ToastProvider,
   useToast,
