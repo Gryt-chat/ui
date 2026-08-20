@@ -8,6 +8,7 @@ import {
 } from "react-native";
 
 import { toneRamp, useTheme, type ComponentTone } from "../../theme";
+import { valueAt } from "./sliderValue";
 
 export type SliderTone = Extract<ComponentTone, "primary" | "secondary" | "neutral" | "danger">;
 
@@ -65,6 +66,8 @@ export function Slider({
   // fire from touch events, which is always after an effect has run.
   const state = useRef({ width, value, min, max, step, disabled });
   const emit = useRef({ onValueChange, onValueCommit, controlled });
+  /** Where the current gesture started, in track coordinates. */
+  const origin = useRef(0);
 
   useEffect(() => {
     state.current = { width, value, min, max, step, disabled };
@@ -76,11 +79,10 @@ export function Slider({
 
   const valueFromX = (x: number) => {
     const s = state.current;
+    // Before layout there is no position to read, so hold what we have rather
+    // than snapping to min.
     if (s.width <= 0) return s.value;
-    const ratio = Math.max(0, Math.min(1, x / s.width));
-    const raw = s.min + ratio * (s.max - s.min);
-    const stepped = Math.round(raw / s.step) * s.step;
-    return Math.max(s.min, Math.min(s.max, stepped));
+    return valueAt(x, s);
   };
 
   const apply = (next: number) => {
@@ -104,11 +106,23 @@ export function Slider({
       // Claimed on move as well, so a drag that begins as a scroll still lands
       // here once it is clearly horizontal.
       onMoveShouldSetPanResponder: () => !state.current.disabled,
-      onPanResponderGrant: (e) => apply(valueFromX(e.nativeEvent.locationX)),
+      onPanResponderGrant: (e) => {
+        // Where the finger landed, kept for the drag to offset from.
+        origin.current = e.nativeEvent.locationX;
+        apply(valueFromX(e.nativeEvent.locationX));
+      },
+      // `gesture.dx` is the distance from where the gesture *started*, not from
+      // the previous event. Offsetting the live value by it therefore adds the
+      // whole travel again on every move, and the thumb accelerates away from
+      // the finger — 200px wide, 0-100, dragging to x=50 then 60 then 70 gave
+      // 25, then 55, then 90. Tapping was always fine, because grant uses
+      // locationX directly, which is what made it look like a rendering
+      // problem rather than an arithmetic one.
+      //
+      // Anchoring on the grant position is also what makes the drag continue
+      // from the finger: grant has already seeked the thumb there.
       onPanResponderMove: (_e, gesture) => {
-        const s = state.current;
-        const ratio = (s.value - s.min) / (s.max - s.min || 1);
-        apply(valueFromX(ratio * s.width + gesture.dx));
+        apply(valueFromX(origin.current + gesture.dx));
       },
       onPanResponderRelease: () => emit.current.onValueCommit?.(state.current.value),
     }),
