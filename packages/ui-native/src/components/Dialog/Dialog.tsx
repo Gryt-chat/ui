@@ -157,7 +157,27 @@ function Popup({
           backgroundColor: "rgba(0,0,0,0.6)",
         }}
       >
-        {/* Swallows presses so tapping the panel does not close it. */}
+        {/*
+          A View that claims the touch, not a Pressable — and the difference is
+          the whole of GRYT-383.
+
+          This has to do two things at once: stop a tap on the panel reaching
+          the scrim and dismissing it, while letting a drag reach the ScrollView
+          inside. A `Pressable` does the first and prevents the second, because
+          it sets `onResponderTerminationRequest: () => false` — once it has the
+          touch it refuses to hand it over, so the ScrollView never gets the
+          drag and a dialog taller than the cap could not be scrolled at all.
+
+          `onStartShouldSetResponder` on a plain View is asked during the bubble
+          phase, so children are offered the touch first. A ScrollView claims a
+          drag and scrolls; a tap on empty space nobody wanted lands here, stops
+          bubbling, and the scrim never sees it. Nothing is refused, so nothing
+          is starved.
+
+          Same approach `@rn-primitives/dialog` takes for the same reason: its
+          `Content` is a `View` with `onStartShouldSetResponder` returning true,
+          while its `Overlay` is the Pressable that closes.
+        */}
         {/* The 80% cap lives here, not on the popup.
             A percentage maxHeight only resolves against a parent with a
             definite height. This wrapper had `alignItems` and a width and no
@@ -165,15 +185,25 @@ function Popup({
             nothing and never constrained anything — which is why a short
             dialog clipped its footer while `scrollable={false}` looked fine.
             The scrim above is `flex: 1`, so a percentage here does resolve. */}
-        <Pressable
-          onPress={() => {}}
+        <View
+          onStartShouldSetResponder={claimTouch}
           style={{ width: "100%", alignItems: "center", maxHeight: "80%" }}
         >
           {body}
-        </Pressable>
+        </View>
       </Pressable>
     </Modal>
   );
+}
+
+/**
+ * Claim a touch that no child wanted.
+ *
+ * Declared once rather than as an inline arrow, so every Dialog is not handing
+ * the responder system a new function identity on every render.
+ */
+function claimTouch(): boolean {
+  return true;
 }
 
 /**
