@@ -29,7 +29,18 @@ export function Progress({ className, value = null, ...props }: ProgressProps) {
             travel — so a jump to 100% ran past the end of the track and came
             back, which says the job finished, then unfinished, then finished.
             Bouncing is for controls the user just pushed. */}
-        <BaseProgress.Indicator className="h-full rounded-(--gryt-radius-full) bg-gryt-accent transition-[width] duration-300 ease-out motion-reduce:transition-none" />
+        <BaseProgress.Indicator
+          className={cn(
+            "h-full rounded-(--gryt-radius-full) bg-gryt-accent",
+            "transition-[width] duration-300 ease-out motion-reduce:transition-none",
+            // Base UI marks the indicator indeterminate and leaves its width
+            // unset, and nothing styled that — so an indeterminate Progress
+            // rendered a track with an invisible indicator. An empty bar reads
+            // as "nothing has happened yet", which is why it went unnoticed
+            // rather than being reported. GRYT-382.
+            value === null && "gryt-progress-indeterminate"
+          )}
+        />
       </BaseProgress.Track>
     </BaseProgress.Root>
   );
