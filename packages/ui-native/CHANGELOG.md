@@ -1,5 +1,114 @@
 # @gryt/ui-native
 
+## 0.4.0
+
+### Minor Changes
+
+- fe584b0: Native controls take a label, press like the web does, and are big enough to hit.
+
+  `Checkbox`, `Radio` and `Switch` accept a `label`, and tapping it works the
+  control — what a `<label>` does on the web, which React Native has no equivalent
+  of. All three gain the web's press scale at the web's own value, plus 12pt of
+  hit slop, which takes a 20pt box to the 44pt Apple and WCAG both ask for without
+  moving a drawn pixel.
+
+  `grytScaleSteps` grows the five components it was missing, and a test in
+  `@gryt/ui` reads the components' own Tailwind classes and asserts they still
+  agree. The values are not interchangeable — a checkbox presses to 0.92 and a
+  button to 0.96 — so two hand-copied lists was the wrong number of lists.
+
+  Styling parity fixes found while doing it: an unchecked `Checkbox` was
+  transparent where the web is a filled surface with an outline, `Radio`'s border
+  was 1.5 against the web's 1, and `Switch`'s track had no border at all. The
+  checkbox tick and the radio dot now scale from 0 on the spring rather than
+  appearing — scaling from 0 is what makes the overshoot visible, which is the
+  reasoning already written down in the web components.
+
+- 29fc4be: Adds `Sheet`, a bottom sheet built on `@gorhom/bottom-sheet`.
+
+  Drag between snap points, flick down to dismiss, a backdrop whose opacity
+  tracks the drag. Styled entirely from the theme — surface, top-corner radius,
+  handle, border — so the library supplies behaviour and nothing else.
+
+  `@gryt/ui` has no counterpart, and this is in the parity exceptions table as an
+  addition rather than a gap. A sheet is what a phone does where the web opens a
+  dialog or slides a drawer, and they are not the same interaction: a sheet is
+  dragged, settles at heights the user picks, and is dismissed with a flick.
+  Shipping the web's Dialog on a phone would be 1:1 and wrong.
+
+  Bought rather than built, which is the opposite of the call made for Slider and
+  Tabs, and the difference is the shape of the problem. A press scale is four
+  lines and no library will give you the right one. Velocity dismiss, snap points,
+  keyboard avoidance and the drag-versus-scroll handoff are deep, generic, and
+  nothing to do with Gryt.
+
+  `SheetProvider` has to be mounted at the app root, beside `ToastProvider` and
+  `TooltipProvider`. It is `BottomSheetModal` underneath, and the provider is
+  what anchors the sheet to the screen rather than to wherever the call site
+  happens to sit in the layout.
+
+  Adds `@gorhom/bottom-sheet` and `react-native-gesture-handler` as peer
+  dependencies.
+
+- a13fa1b: Tabs is the same component as the web's now, not a different one.
+
+  It was an underline: each tab drew its own 2px bottom border and the active
+  label changed colour. The web is a pill rail — a `surfaceRaised` container with
+  4px padding and a full radius, and a separate accent-filled indicator that
+  _slides_ between tabs on the spring curve while the active label goes
+  `onAccent`.
+
+  The indicator is drawn by `List`, which is the only part that sees every tab's
+  measured box. `Tabs.Indicator` is still exported and still renders nothing, so a
+  call site copied from the web keeps working.
+
+  `orientation="vertical"` exists now too, matching the web: the rail turns ninety
+  degrees, rows go full width, the radius drops from full to `lg`, and labels
+  left-align.
+
+  Geometry taken by measuring the running docs app rather than reading the classes
+  — list 4px padding and 4px gap, tabs 32pt min-height at 6/16 padding, 14px/500
+  labels, indicator inset 4 on every side.
+
+  `Tabs.List` gains `scrollable`, off by default. The web has no scroller here, so
+  off is the parity answer; it exists because a phone is narrow and clipping a
+  five-tab rail silently is worse than scrolling it.
+
+### Patch Changes
+
+- 50a13f5: The drawer overhang is a shared token, and React Native uses it.
+
+  `--gryt-drawer-bleed: 4rem` has been in `theme.css` since the web Drawer was
+  written, with the reasoning next to it: the spring overshoots and settles from
+  both directions, so a panel sized exactly to its resting place shows a seam of
+  backdrop down its edge on the undershoot. The panel is built that much larger
+  and hangs the difference off-screen.
+
+  React Native had none of it — there is no CSS variable to read there — so its
+  Drawer flashed its own edge every time it opened. `grytDrawerBleed` is that
+  distance in points, and `bleedTokens.test.ts` keeps it equal to what the
+  stylesheet says.
+
+  `Sheet` uses the same overhang below its bottom edge, for the same reason, now
+  that it animates on the overshooting curve.
+
+- 388a4db: A Dialog taller than its 80% cap scrolls, and still dismisses on outside press.
+
+  The popup's wrapper was a `Pressable`, there to stop a tap on the panel reaching
+  the scrim. A Pressable sets `onResponderTerminationRequest: () => false`, so
+  once it had the touch it would not hand it over — the ScrollView inside never
+  saw a drag and anything past the cap was unreachable.
+
+  It is a plain `View` with `onStartShouldSetResponder` now.
+  `onStartShouldSetResponder` is asked during the bubble phase, so children are
+  offered the touch first: a ScrollView claims a drag and scrolls, and a tap on
+  empty space that nobody wanted lands on the wrapper and stops there, so the
+  scrim never sees it. Nothing is refused, so nothing is starved.
+
+- Updated dependencies [50a13f5]
+- Updated dependencies [fe584b0]
+  - @gryt/theme@0.3.0
+
 ## 0.3.1
 
 ### Patch Changes
