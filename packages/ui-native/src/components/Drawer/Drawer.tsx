@@ -17,6 +17,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { grytDrawerBleed } from "@gryt/theme";
 import { durations, springy } from "../../motion";
 import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
 import { useTheme } from "../../theme";
@@ -102,7 +103,29 @@ function Popup({
   const extent = vertical ? screen.height * size : screen.width * size;
 
   const progress = useSharedValue(0);
-  const hidden = side === "right" ? extent : side === "left" ? -extent : extent;
+
+  /**
+   * The panel is built `grytDrawerBleed` larger than it needs to be and hangs
+   * that much off-screen, with matching padding so the content sits where it
+   * would have.
+   *
+   * The spring overshoots — that is what makes it a spring — and it settles
+   * onto its target from both directions. A panel sized exactly to its resting
+   * place therefore shows a seam of backdrop down its edge on the undershoot,
+   * for a frame or two, every time it opens. The web has had this since the
+   * Drawer was written, as `--gryt-drawer-bleed`; this side did not.
+   *
+   * `grytDrawerBleed` rather than a local 64, and `bleedTokens.test.ts` in
+   * @gryt/ui keeps it equal to what theme.css says. Two overhangs that must
+   * match is how they stop matching.
+   */
+  const bleed = grytDrawerBleed;
+  const panelExtent = extent + bleed;
+
+  // Measured against the bleed panel, so the panel's *visible* edge lands
+  // exactly off-screen rather than the overhang doing it.
+  const hidden =
+    side === "right" ? panelExtent : side === "left" ? -panelExtent : panelExtent;
 
   // 700ms, the web's `--gryt-dur-spring-soft`, on the overshooting curve —
   // which is what the web uses here despite the panel travelling its own
@@ -147,8 +170,13 @@ function Popup({
               bottom: 0,
               left: side === "right" ? undefined : 0,
               right: side === "left" ? undefined : 0,
-              width: vertical ? "100%" : extent,
-              height: vertical ? extent : "100%",
+              width: vertical ? "100%" : panelExtent,
+              height: vertical ? panelExtent : "100%",
+              // The overhang, and the padding that puts the content back where
+              // it would have been without it.
+              paddingLeft: side === "right" ? bleed : 0,
+              paddingRight: side === "left" ? bleed : 0,
+              paddingBottom: vertical ? bleed : 0,
               backgroundColor: theme.color.surface,
               borderColor: theme.color.border,
               borderRightWidth: side === "left" ? 1 : 0,
