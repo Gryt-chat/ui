@@ -1,5 +1,12 @@
 # @gryt/ui
 
+## 0.15.1
+
+### Patch Changes
+
+- Updated dependencies [64cbe56]
+  - @gryt/theme@0.2.0
+
 ## 0.15.0
 
 ### Minor Changes
