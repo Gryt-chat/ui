@@ -8,6 +8,7 @@ import {
   type ViewStyle
 } from "react-native";
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue
 } from "react-native-reanimated";
@@ -138,15 +139,45 @@ function Popup({
    *
    * `@gryt/ui`'s Drawer moved to `ease-spring-tight` in the same change.
    */
+  /**
+   * Mounted for longer than it is open, so the panel can animate out.
+   *
+   * React Native's `Modal` unmounts the moment `visible` goes false, and the
+   * close was also snapping `progress` straight to 0 rather than animating it
+   * — so a dismissed drawer did not slide away, it simply stopped existing.
+   * Both halves had to change: animate the close, and stay mounted until that
+   * animation has finished.
+   */
+  const [mounted, setMounted] = useState(open);
+
   useEffect(() => {
+    if (open) setMounted(true);
+  }, [open]);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    if (reducedMotion) {
+      // eslint-disable-next-line react-hooks/immutability
+      progress.value = open ? 1 : 0;
+      if (!open) setMounted(false);
+      return;
+    }
+
     // eslint-disable-next-line react-hooks/immutability
-    progress.value =
-      !open || reducedMotion
-        ? open
-          ? 1
-          : 0
-        : travelTo(1, { duration: durations.springSoft });
-  }, [open, progress, reducedMotion]);
+    progress.value = travelTo(
+      open ? 1 : 0,
+      { duration: durations.springSoft },
+      (finished) => {
+        "worklet";
+        // Unmount only once the panel is actually gone, and only if the
+        // animation ran to the end — an interrupted close means it was
+        // reopened, and unmounting then would take the drawer away as it
+        // arrives.
+        if (finished && !open) runOnJS(setMounted)(false);
+      }
+    );
+  }, [open, mounted, progress, reducedMotion]);
 
   /**
    * How far the finger has dragged the panel away from open, in points.
@@ -247,7 +278,7 @@ function Popup({
 
   return (
     <Modal
-      visible={open}
+      visible={mounted}
       transparent
       animationType="none"
       onRequestClose={dismissible ? () => setOpen(false) : undefined}

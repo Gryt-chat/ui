@@ -29,3 +29,14 @@ thumb is texture; on a 320pt panel it is a slam.
 The overhang also hung the wrong way — added to the panel's width, so it grew
 *inwards* and covered 64pt more of the screen while the seam it was meant to
 hide stayed exactly where it was. It hangs off the entering edge now.
+
+Dismissing a Drawer animates it out, rather than making it vanish.
+
+Two causes, both needed fixing: the close snapped `progress` straight to 0
+instead of animating it, and React Native's `Modal` unmounts the moment
+`visible` goes false, so there would have been nothing left to animate anyway.
+The panel now stays mounted until the close has actually finished.
+
+`springy`, `travel` and `fade` forward Reanimated's completion callback, which
+is what makes that possible without reaching past them to `withTiming` — and
+reaching past them is how the sampled curve stops being the thing that runs.
