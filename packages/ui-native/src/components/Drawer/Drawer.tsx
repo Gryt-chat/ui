@@ -1,11 +1,7 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  type ReactNode
-} from "react";
+import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from "react";
 import {
   Dimensions,
+  PanResponder,
   Modal,
   Pressable,
   type StyleProp,
@@ -141,14 +137,102 @@ function Popup({
         : springy(1, { duration: durations.springSoft });
   }, [open, progress, reducedMotion]);
 
-  const panelStyle = useAnimatedStyle(() => ({
-    transform: [
-      vertical
-        ? { translateY: hidden + (0 - hidden) * progress.value }
-        : { translateX: hidden + (0 - hidden) * progress.value }
-    ],
-    opacity: progress.value
-  }));
+  /**
+   * How far the finger has dragged the panel away from open, in points.
+   *
+   * Separate from `progress` rather than folded into it. `progress` is
+   * animated on the spring, and a drag has to track the finger exactly —
+   * feeding a gesture through an overshooting curve makes the panel lead and
+   * lag the thumb, which reads as the drawer being slippery.
+   */
+  const drag = useSharedValue(0);
+
+  const panelStyle = useAnimatedStyle(() => {
+    const travel = hidden + (0 - hidden) * progress.value + drag.value;
+    return {
+      transform: [vertical ? { translateY: travel } : { translateX: travel }],
+      opacity: progress.value
+    };
+  });
+
+  /**
+   * Swipe to dismiss, which the web has had from Base UI's drawer primitive
+   * and this did not have at all (GRYT-395). A drawer you cannot push back is
+   * the thing a drawer is for.
+   *
+   * `PanResponder` rather than react-native-gesture-handler: the Slider proved
+   * this path works from this package's prebuilt output today, and an attempt
+   * at gesture-handler from here failed for reasons still not understood
+   * (GRYT-393). This is not the place to retry that.
+   */
+  const gesture = useRef({ extent, side, vertical, dismissible, setOpen });
+  useEffect(() => {
+    gesture.current = { extent, side, vertical, dismissible, setOpen };
+  }, [extent, side, vertical, dismissible, setOpen]);
+
+  /* eslint-disable react-hooks/refs */
+  const [responder] = useState(() =>
+    PanResponder.create({
+      // Claimed on move, not on start. Claiming on start would swallow every
+      // tap on the panel's own content — buttons inside a drawer would stop
+      // working, which is a far worse bug than not being able to swipe.
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: (_e, g) => {
+        if (!gesture.current.dismissible) return false;
+        // Only once the drag is clearly along the axis the panel closes on,
+        // and clearly a drag rather than a slow press. Anything else belongs
+        // to whatever is inside.
+        const along = gesture.current.vertical ? g.dy : g.dx;
+        const across = gesture.current.vertical ? g.dx : g.dy;
+        return Math.abs(along) > 8 && Math.abs(along) > Math.abs(across);
+      },
+      // Once it is ours it stays ours, for the same reason the Slider needs
+      // this: the default is to grant, and a ScrollView inside the drawer
+      // would take the drag back mid-swipe.
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderMove: (_e, g) => {
+        const { vertical: v, side: sd } = gesture.current;
+        const raw = v ? g.dy : g.dx;
+        // Clamped to the closing direction. Dragging a left drawer rightwards
+        // should do nothing, not tear it off its edge.
+        const closing = sd === "left" ? Math.min(0, raw) : Math.max(0, raw);
+        // eslint-disable-next-line react-hooks/immutability
+        drag.value = closing;
+      },
+      onPanResponderRelease: (_e, g) => {
+        const { vertical: v, side: sd, extent: ex } = gesture.current;
+        const moved = Math.abs(v ? g.dy : g.dx);
+        const speed = Math.abs(v ? g.vy : g.vx);
+        // Half the panel, or a flick. The velocity term is what makes a short
+        // sharp swipe work — without it you have to drag the whole way, which
+        // is the difference between a drawer and a slow puzzle.
+        const dismiss = moved > ex / 2 || speed > 0.5;
+
+        if (dismiss) {
+          gesture.current.setOpen(false);
+          // Left where it is: the close animation runs from here, and resetting
+          // it first would snap the panel back before it left.
+          return;
+        }
+        // eslint-disable-next-line react-hooks/immutability
+        drag.value = springy(0, { duration: durations.springSoft });
+      },
+      onPanResponderTerminate: () => {
+        // eslint-disable-next-line react-hooks/immutability
+        drag.value = springy(0, { duration: durations.springSoft });
+      }
+    })
+  );
+  /* eslint-enable react-hooks/refs */
+
+  // Cleared once the panel is closed, so the next open does not start from
+  // wherever the last swipe left it.
+  useEffect(() => {
+    if (!open) {
+      // eslint-disable-next-line react-hooks/immutability
+      drag.value = 0;
+    }
+  }, [open, drag]);
 
   return (
     <Modal
@@ -163,6 +247,7 @@ function Popup({
       >
         <Animated.View
           accessibilityViewIsModal
+          {...responder.panHandlers}
           style={[
             {
               position: "absolute",
