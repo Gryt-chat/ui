@@ -10,13 +10,24 @@ export interface ProgressProps {
 }
 
 /**
- * Determinate only for now.
+ * Determinate only — and so is the web, which is not what this used to say.
  *
- * The web's indeterminate state is a CSS keyframe sweeping a partial bar across
- * the track. Reproducing it here needs an Animated loop and a reduce-motion
- * check, which is worth doing properly rather than as a footnote on this one, so
- * an undefined value currently renders an empty track. Recorded in the parity
- * exceptions table.
+ * The previous note here claimed the web's indeterminate state was a CSS
+ * keyframe sweeping a bar across the track, and listed this as a parity
+ * exception. It is not one. `@gryt/ui`'s Progress passes `value={null}` to
+ * Base UI and styles nothing for it: there is no `@keyframes` anywhere in the
+ * package, no rule for `data-indeterminate`, and the compiled stylesheet has
+ * zero rules matching `gryt-progress`. An indeterminate Progress renders an
+ * empty track on the web too.
+ *
+ * So both platforms agree, and both are missing the feature. Implementing it
+ * belongs on both at once — GRYT-382 — rather than here, where it would make
+ * React Native the one that behaves differently.
+ *
+ * The travel that *is* implemented follows the web deliberately: 300ms on
+ * ease-out rather than the spring. A progress bar is a reading, and the
+ * spring's 12% overshoot on a jump to 100% runs past the end of the track and
+ * comes back — which reads as the job finishing, unfinishing, then finishing.
  */
 export function Progress({ value, tone = "accent", style }: ProgressProps) {
   const theme = useTheme();
