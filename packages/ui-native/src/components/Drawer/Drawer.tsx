@@ -1,14 +1,23 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import {
-  Animated,
+  createContext,
+  useContext,
+  useEffect,
+  type ReactNode
+} from "react";
+import {
   Dimensions,
   Modal,
   Pressable,
   type StyleProp,
-  type ViewStyle,
+  type ViewStyle
 } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue
+} from "react-native-reanimated";
 
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { durations, springy } from "../../motion";
 import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
 import { useTheme } from "../../theme";
 
@@ -23,7 +32,8 @@ const DrawerContext = createContext<DrawerContextValue | null>(null);
 
 function useDrawer(part: string) {
   const value = useContext(DrawerContext);
-  if (!value) throw new Error(`Drawer.${part} must be rendered inside Drawer.Root.`);
+  if (!value)
+    throw new Error(`Drawer.${part} must be rendered inside Drawer.Root.`);
   return value;
 }
 
@@ -33,13 +43,25 @@ export interface DrawerRootProps extends OpenStateProps {
 
 function Root({ children, ...openProps }: DrawerRootProps) {
   const state = useOpenState(openProps);
-  return <DrawerContext.Provider value={state}>{children}</DrawerContext.Provider>;
+  return (
+    <DrawerContext.Provider value={state}>{children}</DrawerContext.Provider>
+  );
 }
 
-function Trigger({ children, style }: { children?: ReactNode; style?: StyleProp<ViewStyle> }) {
+function Trigger({
+  children,
+  style
+}: {
+  children?: ReactNode;
+  style?: StyleProp<ViewStyle>;
+}) {
   const { setOpen } = useDrawer("Trigger");
   return (
-    <Pressable accessibilityRole="button" onPress={() => setOpen(true)} style={style}>
+    <Pressable
+      accessibilityRole="button"
+      onPress={() => setOpen(true)}
+      style={style}
+    >
       {children}
     </Pressable>
   );
@@ -70,7 +92,7 @@ function Popup({
   side = "left",
   size = 0.8,
   dismissible = true,
-  style,
+  style
 }: DrawerPopupProps) {
   const { open, setOpen } = useDrawer("Popup");
   const theme = useTheme();
@@ -79,30 +101,31 @@ function Popup({
   const vertical = side === "bottom";
   const extent = vertical ? screen.height * size : screen.width * size;
 
-  const [progress] = useState(() => new Animated.Value(0));
+  const progress = useSharedValue(0);
+  const hidden = side === "right" ? extent : side === "left" ? -extent : extent;
 
+  // 700ms, the web's `--gryt-dur-spring-soft`, on the overshooting curve —
+  // which is what the web uses here despite the panel travelling its own
+  // width. Matching it rather than substituting the tight curve, because the
+  // brief is 1:1 with the web and not a second opinion about it.
   useEffect(() => {
-    if (!open) {
-      progress.setValue(0);
-      return;
-    }
-    if (reducedMotion) {
-      progress.setValue(1);
-      return;
-    }
-    Animated.spring(progress, {
-      toValue: 1,
-      useNativeDriver: true,
-      speed: 20,
-      bounciness: 0,
-    }).start();
+    // eslint-disable-next-line react-hooks/immutability
+    progress.value =
+      !open || reducedMotion
+        ? open
+          ? 1
+          : 0
+        : springy(1, { duration: durations.springSoft });
   }, [open, progress, reducedMotion]);
 
-  const hidden = side === "right" ? extent : side === "left" ? -extent : extent;
-  const translate = progress.interpolate({
-    inputRange: [0, 1],
-    outputRange: [hidden, 0],
-  });
+  const panelStyle = useAnimatedStyle(() => ({
+    transform: [
+      vertical
+        ? { translateY: hidden + (0 - hidden) * progress.value }
+        : { translateX: hidden + (0 - hidden) * progress.value }
+    ],
+    opacity: progress.value
+  }));
 
   return (
     <Modal
@@ -117,23 +140,25 @@ function Popup({
       >
         <Animated.View
           accessibilityViewIsModal
-          style={{
-            position: "absolute",
-            top: side === "bottom" ? undefined : 0,
-            bottom: 0,
-            left: side === "right" ? undefined : 0,
-            right: side === "left" ? undefined : 0,
-            width: vertical ? "100%" : extent,
-            height: vertical ? extent : "100%",
-            backgroundColor: theme.color.surface,
-            borderColor: theme.color.border,
-            borderRightWidth: side === "left" ? 1 : 0,
-            borderLeftWidth: side === "right" ? 1 : 0,
-            borderTopWidth: vertical ? 1 : 0,
-            borderTopLeftRadius: vertical ? theme.radius.lg : 0,
-            borderTopRightRadius: vertical ? theme.radius.lg : 0,
-            transform: [vertical ? { translateY: translate } : { translateX: translate }],
-          }}
+          style={[
+            {
+              position: "absolute",
+              top: side === "bottom" ? undefined : 0,
+              bottom: 0,
+              left: side === "right" ? undefined : 0,
+              right: side === "left" ? undefined : 0,
+              width: vertical ? "100%" : extent,
+              height: vertical ? extent : "100%",
+              backgroundColor: theme.color.surface,
+              borderColor: theme.color.border,
+              borderRightWidth: side === "left" ? 1 : 0,
+              borderLeftWidth: side === "right" ? 1 : 0,
+              borderTopWidth: vertical ? 1 : 0,
+              borderTopLeftRadius: vertical ? theme.radius.lg : 0,
+              borderTopRightRadius: vertical ? theme.radius.lg : 0
+            },
+            panelStyle
+          ]}
         >
           <Pressable onPress={() => {}} style={[{ flex: 1 }, style]}>
             {children}
@@ -144,10 +169,20 @@ function Popup({
   );
 }
 
-function Close({ children, style }: { children?: ReactNode; style?: StyleProp<ViewStyle> }) {
+function Close({
+  children,
+  style
+}: {
+  children?: ReactNode;
+  style?: StyleProp<ViewStyle>;
+}) {
   const { setOpen } = useDrawer("Close");
   return (
-    <Pressable accessibilityRole="button" onPress={() => setOpen(false)} style={style}>
+    <Pressable
+      accessibilityRole="button"
+      onPress={() => setOpen(false)}
+      style={style}
+    >
       {children}
     </Pressable>
   );
