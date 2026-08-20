@@ -35,7 +35,7 @@
     "react-native": ">=0.76.0"
   },
   "dependencies": {
-    "@gryt/ui": "^0.14.0"
+    "@gryt/theme": "^0.1.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

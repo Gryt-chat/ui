@@ -8,10 +8,10 @@ export default defineConfig({
   resolve: {
     alias: {
       // Mirrors the `paths` entry in tsconfig.json, for the same reason: the
-      // exports map sends @gryt/ui/theme to ./dist, which only exists after a
+      // exports map sends @gryt/theme to ./dist, which only exists after a
       // build. CI runs typecheck and test before build, so resolving to source
       // is what keeps this package from depending on a sibling's artefacts.
-      "@gryt/ui/theme": resolve(__dirname, "../ui/src/theme/index.ts"),
+      "@gryt/theme": resolve(__dirname, "../theme/src/index.ts"),
     },
   },
   test: {

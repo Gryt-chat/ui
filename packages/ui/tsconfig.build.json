@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    // Drop the source mapping, exactly as ui-native's build config does.
+    //
+    // By build time @gryt/theme is built, because the root build script runs
+    // the three libraries in sequence rather than letting bun schedule them.
+    // Resolving through the exports map is also what the emitted declarations
+    // have to say, since a consumer has no ../theme/src.
+    "paths": {}
+  },
+  "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx", "src/test/**"]
+}

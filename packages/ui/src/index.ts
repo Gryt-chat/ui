@@ -10,14 +10,14 @@ export {
   grytScales,
   grytScalesLight,
   grytTokens
-} from "./theme/createGrytTheme";
-export type { GrytThemeOptions, GrytTokens } from "./theme/createGrytTheme";
+} from "@gryt/theme";
+export type { GrytThemeOptions, GrytTokens } from "@gryt/theme";
 // The colour maths the scales are built from. Exported because anything that
 // builds a theme rather than consuming one needs it: the docs site's generator
 // measures contrast as you pick a colour, and the library's own tests are the
 // only other caller. Keeping it internal would mean a second copy of the OKLab
 // matrices somewhere, which is exactly what one generator was meant to avoid.
-export { contrast, hexToOklch, oklchToHex } from "./theme/oklch";
+export { contrast, hexToOklch, oklchToHex } from "@gryt/theme";
 export {
   alphaScale,
   hexToRgb,
@@ -26,8 +26,8 @@ export {
   neutralScale,
   neutralScaleLight,
   rgbToHex
-} from "./theme/oklch";
-export type { Oklch } from "./theme/oklch";
+} from "@gryt/theme";
+export type { Oklch } from "@gryt/theme";
 // A whole theme as a document, and the link it travels in. Two apps read this
 // now — the generator on the docs site writes them, the client imports them —
 // so the format lives with createGrytTheme rather than in either of them.
@@ -45,9 +45,9 @@ export {
   isHexColor,
   normalizeHexColor,
   normalizeThemeName
-} from "./theme/theme";
-export { grytPresets, grytPresetsById } from "./theme/presets";
-export type { GrytThemePreset } from "./theme/presets";
+} from "@gryt/theme";
+export { grytPresets, grytPresetsById } from "@gryt/theme";
+export type { GrytThemePreset } from "@gryt/theme";
 export type {
   DecodedGrytTheme,
   GrytAppearance,
@@ -57,7 +57,7 @@ export type {
   GrytNeutrals,
   GrytRadiusKey,
   GrytTheme
-} from "./theme/theme";
+} from "@gryt/theme";
 
 export { Button } from "./components/Button/Button";
 export type { ButtonProps } from "./components/Button/Button";

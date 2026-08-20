@@ -4,8 +4,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { grytScales, grytScalesLight } from "./createGrytTheme";
-import { contrast } from "./oklch";
+import { contrast, grytScales, grytScalesLight } from "@gryt/theme";
 
 const componentsDir = join(
   dirname(fileURLToPath(import.meta.url)),

@@ -1,6 +1,6 @@
 /**
  * Writes the scale block in src/styles/theme.css from the generator in
- * src/theme/oklch.ts.
+ * the OKLCH maths in @gryt/theme.
  *
  * The stylesheet has to hold literal values — a CSS custom property cannot be
  * computed at parse time, and dist/styles.css is what a consumer imports — but
@@ -21,7 +21,7 @@ import {
   grytScales,
   grytScalesLight,
   grytTokens
-} from "../src/theme/createGrytTheme";
+} from "@gryt/theme";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const themeCss = join(here, "..", "src", "styles", "theme.css");

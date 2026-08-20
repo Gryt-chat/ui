@@ -6,17 +6,17 @@ import {
   hueScaleLight,
   neutralScale,
   neutralScaleLight,
-} from "@gryt/ui/theme";
+} from "@gryt/theme";
 
 /**
  * The same theme, without CSS.
  *
- * `createGrytTheme` in `@gryt/ui` returns `CSSProperties` — a map of
+ * `createGrytTheme` in `@gryt/theme` returns `CSSProperties` — a map of
  * `--gryt-accent-9` style custom properties. React Native has no custom
  * properties and no cascade, so it cannot consume that at all.
  *
  * What it can consume is the maths underneath. `neutralScale`, `hueScale` and
- * `alphaScale` are exported from `@gryt/ui/theme` for exactly this, so the two
+ * `alphaScale` are exported from `@gryt/theme` for exactly this, so the two
  * renderers compute their ramps from one implementation of the OKLab
  * conversions rather than two. A copy here would drift the moment somebody
  * tunes a curve on the web.

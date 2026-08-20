@@ -1,7 +1,7 @@
 import { Tooltip } from "@base-ui/react/tooltip";
 import type { CSSProperties, ReactNode } from "react";
-import { createGrytTheme } from "./theme/createGrytTheme";
-import type { GrytThemeOptions } from "./theme/createGrytTheme";
+import { createGrytTheme } from "@gryt/theme";
+import type { GrytThemeOptions } from "@gryt/theme";
 
 export interface GrytProviderProps {
   children: ReactNode;

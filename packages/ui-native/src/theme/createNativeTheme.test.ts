@@ -1,17 +1,17 @@
 import { describe, expect, it } from "vitest";
 
-import { grytScales, grytTokens } from "@gryt/ui/theme";
+import { grytScales, grytTokens } from "@gryt/theme";
 
 import { createNativeTheme } from "./createNativeTheme";
 
 /**
- * The point of these is not that the numbers are right — @gryt/ui already tests
+ * The point of these is not that the numbers are right — @gryt/theme already tests
  * the colour maths. It is that the numbers are *the same ones*, reached through
  * an import rather than a copy. A drift here means the two renderers have
  * quietly become two design systems.
  */
 describe("createNativeTheme", () => {
-  it("takes its ramps from @gryt/ui rather than recomputing them", () => {
+  it("takes its ramps from @gryt/theme rather than recomputing them", () => {
     const theme = createNativeTheme();
     expect(theme.scales.neutral).toEqual(grytScales.neutral);
     expect(theme.scales.accent).toEqual(grytScales.accent);
