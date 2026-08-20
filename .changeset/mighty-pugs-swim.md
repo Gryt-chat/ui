@@ -40,3 +40,16 @@ The panel now stays mounted until the close has actually finished.
 `springy`, `travel` and `fade` forward Reanimated's completion callback, which
 is what makes that possible without reaching past them to `withTiming` — and
 reaching past them is how the sampled curve stops being the thing that runs.
+
+The scrim fades with the panel and thins as it is dragged, and the panel no
+longer fades at all.
+
+Native had these the wrong way round from the web. The scrim was a flat colour
+that appeared and vanished with the Modal, so a drawer animating out sat under
+a full-strength scrim for the whole 700ms and then it blinked off. The panel
+meanwhile carried `opacity: progress`, which the web's Popup does not — it
+declares `transition-transform` and nothing else.
+
+The scrim also tracks the swipe now, in proportion to how far the panel has
+been pushed off. The web's own comment on that rule is not to leave a
+full-strength scrim over a half-gone sheet.

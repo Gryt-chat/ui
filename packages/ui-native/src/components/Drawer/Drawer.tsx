@@ -85,6 +85,13 @@ export interface DrawerPopupProps {
  * panel, so this one animates even though Collapsible and Skeleton do not.
  * Reduce-motion still turns it off: the drawer arrives in place instead.
  */
+/**
+ * The scrim takes an animated opacity, so it has to be an animated component.
+ * Declared once at module scope — `createAnimatedComponent` inside a render
+ * makes a new component type every time, which remounts the subtree.
+ */
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 function Popup({
   children,
   side = "left",
@@ -192,9 +199,30 @@ function Popup({
   const panelStyle = useAnimatedStyle(() => {
     const travel = hidden + (0 - hidden) * progress.value + drag.value;
     return {
-      transform: [vertical ? { translateY: travel } : { translateX: travel }],
-      opacity: progress.value
+      // Transform only. The panel slides; it does not fade. This used to carry
+      // `opacity: progress.value`, which the web's Popup does not — it declares
+      // `transition-transform` and nothing else — and a panel that fades as it
+      // arrives reads as a dialog rather than a drawer.
+      transform: [vertical ? { translateY: travel } : { translateX: travel }]
     };
+  });
+
+  /**
+   * The scrim fades with the panel, and thins as it is dragged away.
+   *
+   * It was a flat `rgba(0,0,0,0.6)` that appeared and vanished with the Modal,
+   * so a drawer animating out sat under a full-strength scrim for the whole
+   * 700ms and then the scrim blinked off. The web has animated this from the
+   * start — `transition-opacity` on the same duration and curve — and it also
+   * tracks the swipe, with a comment saying not to "leave a full-strength
+   * scrim over a half-gone sheet".
+   *
+   * Both halves are here: `progress` fades it in and out, and the drag term
+   * thins it in proportion to how far the panel has been pushed off.
+   */
+  const scrimStyle = useAnimatedStyle(() => {
+    const dragged = extent > 0 ? Math.min(1, Math.abs(drag.value) / extent) : 0;
+    return { opacity: progress.value * (1 - dragged) };
   });
 
   /**
@@ -283,9 +311,9 @@ function Popup({
       animationType="none"
       onRequestClose={dismissible ? () => setOpen(false) : undefined}
     >
-      <Pressable
+      <AnimatedPressable
         onPress={dismissible ? () => setOpen(false) : undefined}
-        style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)" }}
+        style={[{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)" }, scrimStyle]}
       >
         <Animated.View
           accessibilityViewIsModal
@@ -325,7 +353,7 @@ function Popup({
             {children}
           </Pressable>
         </Animated.View>
-      </Pressable>
+      </AnimatedPressable>
     </Modal>
   );
 }
