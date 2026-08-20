@@ -12,6 +12,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { grytDrawerBleed } from "@gryt/theme";
@@ -101,6 +102,19 @@ function Popup({
 }: DrawerPopupProps) {
   const { open, setOpen } = useDrawer("Popup");
   const theme = useTheme();
+  /**
+   * The phone's own furniture, which a drawer has to stay clear of.
+   *
+   * A panel from the side is full height by definition, so its first row sits
+   * under the Dynamic Island and its last under the home indicator unless it
+   * says otherwise. A panel from the bottom only has the second problem.
+   *
+   * This is the same call GRYT-402 made for `Sheet`, and it belongs here for
+   * the same reason: every caller would otherwise write the same two lines, and
+   * the one that forgets ships a drawer with its heading under the clock. That
+   * is how the mobile shell's server switcher first looked.
+   */
+  const insets = useSafeAreaInsets();
   const reducedMotion = useReducedMotion();
   const screen = Dimensions.get("window");
   const vertical = side === "bottom";
@@ -349,7 +363,19 @@ function Popup({
             panelStyle
           ]}
         >
-          <Pressable onPress={() => {}} style={[{ flex: 1 }, style]}>
+          <Pressable
+            onPress={() => {}}
+            style={[
+              {
+                flex: 1,
+                // Before the caller's style, so a drawer that wants to run
+                // under the island — a full-bleed image, say — still can.
+                paddingTop: vertical ? 0 : insets.top,
+                paddingBottom: insets.bottom
+              },
+              style
+            ]}
+          >
             {children}
           </Pressable>
         </Animated.View>

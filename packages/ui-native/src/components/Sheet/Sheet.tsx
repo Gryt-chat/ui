@@ -22,6 +22,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { grytDrawerBleed } from "@gryt/theme";
 import { durations, easeSpring } from "../../motion";
+import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
 import { useTheme } from "../../theme";
 
 /**
@@ -33,7 +34,7 @@ import { useTheme } from "../../theme";
  * a sheet is dragged, it settles at heights the user chooses, and dismissing it
  * is a flick rather than a click on an X. Shipping the web's Dialog on a phone
  * would be 1:1 and wrong; inventing a sheet on the web would be worse. So this
- * is an addition, and it is in the parity exceptions table as one.
+ * is an addition, and the README lists it as one.
  *
  * Built on `@gorhom/bottom-sheet` rather than by hand, which is the opposite of
  * the call made for Slider and Tabs, and the reason is the shape of the
@@ -82,7 +83,7 @@ function useSheet(part: string) {
   return value;
 }
 
-export interface SheetProps {
+export interface SheetProps extends OpenStateProps {
   /**
    * Heights the sheet settles at, as percentages or points.
    *
@@ -90,38 +91,41 @@ export interface SheetProps {
    * why this is its own component rather than a Drawer with a prop.
    */
   snapPoints?: (string | number)[];
-  /** Starts open. Uncontrolled; use the Trigger for the usual case. */
-  defaultOpen?: boolean;
-  onOpenChange?: (open: boolean) => void;
   children?: ReactNode;
 }
 
+/**
+ * `open` with `onOpenChange` drives it from outside; `defaultOpen` alone lets
+ * it manage itself. That is `useOpenState`, which every other overlay in this
+ * package already uses — Sheet was the one that did not, and took `defaultOpen`
+ * and a `Trigger` and nothing else.
+ *
+ * What that cost a caller: a sheet opened by something that is not a Pressable
+ * — a tab bar item, a notification, a deep link — had to be unmounted and
+ * remounted with `defaultOpen` to open it at all, which throws the body away on
+ * every open. The mobile app shell did exactly that, twice.
+ */
 function Root({
   snapPoints = ["50%"],
-  defaultOpen = false,
-  onOpenChange,
   children,
+  ...openProps
 }: SheetProps) {
   const ref = useRef<BottomSheetModal>(null);
+  const state = useOpenState(openProps);
+  const { open: isOpen, setOpen } = state;
 
-  // `present` and `dismiss` rather than mounting and unmounting by hand: the
-  // modal is always rendered and the provider decides whether it is on screen,
-  // which is what removes the mount-then-snap-on-the-next-frame dance the
-  // inline version needed.
-  const open = useCallback(() => {
-    ref.current?.present();
-    onOpenChange?.(true);
-  }, [onOpenChange]);
-
-  const close = useCallback(() => {
-    ref.current?.dismiss();
-  }, []);
+  // Asking for the state rather than reaching for the ref, so a controlled
+  // Sheet's parent gets the final say — `setOpen` on a controlled overlay
+  // reports and does not decide. The effect in `Content` is what actually
+  // presents, once the modal it presents exists.
+  const open = useCallback(() => setOpen(true), [setOpen]);
+  const close = useCallback(() => setOpen(false), [setOpen]);
 
   const context = useMemo<SheetContextValue>(() => ({ open, close }), [open, close]);
 
   return (
     <SheetContext.Provider value={context}>
-      <SheetRefContext.Provider value={{ ref, defaultOpen, snapPoints, onOpenChange }}>
+      <SheetRefContext.Provider value={{ ref, isOpen, setOpen, snapPoints }}>
         {children}
       </SheetRefContext.Provider>
     </SheetContext.Provider>
@@ -130,9 +134,9 @@ function Root({
 
 interface SheetRefValue {
   ref: React.RefObject<BottomSheetModal | null>;
-  defaultOpen: boolean;
+  isOpen: boolean;
+  setOpen: (open: boolean) => void;
   snapPoints: (string | number)[];
-  onOpenChange?: (open: boolean) => void;
 }
 
 const SheetRefContext = createContext<SheetRefValue | null>(null);
@@ -182,11 +186,34 @@ function Content({ children, style }: SheetContentProps) {
     throw new Error("Sheet.Content must be rendered inside Sheet.");
   }
 
-  const { ref, defaultOpen, snapPoints, onOpenChange } = state;
+  const { ref, isOpen, setOpen, snapPoints } = state;
+
+  /**
+   * `present` and `dismiss` rather than mounting and unmounting by hand: the
+   * modal is always rendered and the provider decides whether it is on screen,
+   * which is what removes the mount-then-snap-on-the-next-frame dance the
+   * inline version needed.
+   *
+   * Here rather than in `Root` because `ref` is attached to the modal below,
+   * and `Root` runs before there is one.
+   *
+   * `presented` is not bookkeeping that could be dropped. A closed Sheet runs
+   * this effect once on mount with `isOpen` false, and dismissing a modal that
+   * has never been presented takes it *out* of the provider's registry — after
+   * which `present()` is a no-op and the sheet never opens again. It looks like
+   * the open prop being ignored, and it is not: it is the close that ran first.
+   */
+  const presented = useRef(false);
 
   useEffect(() => {
-    if (defaultOpen) ref.current?.present();
-  }, [defaultOpen, ref]);
+    if (isOpen) {
+      presented.current = true;
+      ref.current?.present();
+    } else if (presented.current) {
+      presented.current = false;
+      ref.current?.dismiss();
+    }
+  }, [isOpen, ref]);
 
   // The modal renders nothing until it is presented, so there is no invisible
   // backdrop sitting over the screen eating taps while it is closed. That was
@@ -279,7 +306,11 @@ function Content({ children, style }: SheetContentProps) {
       // ignored because they were.
       enableDynamicSizing={false}
       enablePanDownToClose
-      onDismiss={() => onOpenChange?.(false)}
+      // A flick down or a tap on the backdrop closes it without anything in
+      // React asking, so the state has to be told. Uncontrolled, this is what
+      // makes the next `present` work; controlled, it is how the parent finds
+      // out its sheet is gone.
+      onDismiss={() => setOpen(false)}
       animationConfigs={animationConfigs}
       backdropComponent={renderBackdrop}
       backgroundComponent={renderBackground}
