@@ -69,7 +69,6 @@ goal, so the honest list is worth more than a claim of parity that isn't one.
 | `Button` | Press scale is kept, hover scale is dropped | The web scales to `0.96` on press and `1.03` on hover. Press maps directly onto `onPressIn`/`onPressOut`, so it is here, spring-animated and skipped when reduce-motion is on. |
 | `Button` | `hasPopup` is a prop, not inferred | The web reads `aria-haspopup`, which Base UI sets on a trigger, and skips the scale so the trigger does not drag its own popup sideways while it is being measured. React Native has no such attribute, so a menu trigger has to say so. |
 | `TextField` | Focus changes the border colour instead of drawing an outline | The web's `outline` sits outside the box and shifts nothing. React Native has no outline, and a second ring would move the layout on focus. |
-| `Progress` | Indeterminate renders as an empty track | The web sweeps a partial bar with a CSS keyframe. Doing it here needs an `Animated` loop plus a reduce-motion check, which deserves its own pass rather than a footnote. |
 | `Tooltip` | Opens on long press, closes on release, instead of appearing on hover after a delay | A phone has no hover. This is the same name on a different interaction, and it is the component where 1:1 is least achievable. An interface that needs tooltips to be usable will not survive the port. |
 | *(positioned overlays)* | The popup does not follow a trigger that moves | Floating UI keeps watching the reference element. React Native measures on demand and reports nothing afterwards, so the position is taken once, when the popup opens. If a list scrolls underneath an open menu, the menu stays put. |
 | `Popover` | `Arrow` renders nothing | Base UI positions an arrow against the popup's edge once Floating UI has settled. Here it means a rotated square, a border on two sides only, and knowing which side the popup landed on. Doable, not free, and not done. |
@@ -88,6 +87,15 @@ goal, so the honest list is worth more than a claim of parity that isn't one.
 | `Toolbar` | No roving focus | The web's manages arrow-key movement between controls and one tab stop for the group. There is no focus to rove. The role is kept, since that is what tells a screen reader the controls belong together. |
 | `Accordion` | Two glyphs instead of a rotating chevron | Same reasoning as the checkbox tick: rotating one needs a transform and a measurement, and there is no icon set here yet. |
 | `Skeleton` | Does not pulse | A loop running for the length of a request costs battery, and it is the sort of motion reduce-motion users switch off first. A flat block still reads as loading. |
+
+## Additions
+
+The other direction, and a shorter list. Something here that the web does not
+have needs the same justification as something missing.
+
+| Component | Why there is no web counterpart |
+|---|---|
+| `Sheet` | A sheet is what a phone does where the web opens a dialog or slides a drawer, and the two are not the same interaction: it is dragged, it settles at heights the user chooses, and dismissing it is a flick rather than a click on an X. Shipping the web's Dialog on a phone would be 1:1 and wrong; inventing a sheet on the web would be worse. |
 
 ## Not Node-importable
 
