@@ -266,12 +266,15 @@ function Content({ children, style }: SheetContentProps) {
    * engine would be approximating an exact curve with the thing it was chosen
    * over.
    *
-   * `springSoft` — 700ms — because a sheet travels its own height, which is the
-   * case that duration was shaped for. It is what Drawer uses and for the same
-   * reason.
+   * `springSlow` — 900ms — rather than the 700 a Drawer uses, because a sheet
+   * travels further than a drawer does. A drawer crosses its own width, which
+   * is most of the screen only on a phone; a sheet at 82% comes up from off the
+   * bottom edge and covers nearly all of it. The same duration over a longer
+   * distance is a faster animation, and at 700 this arrived quickly enough to
+   * read as a snap rather than a slide.
    */
   const animationConfigs = useBottomSheetTimingConfigs({
-    duration: durations.springSoft,
+    duration: durations.springSlow,
     easing: easeSpring,
   });
 
