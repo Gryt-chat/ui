@@ -16,3 +16,16 @@ the same curve the drawer opens with.
 
 The gesture is claimed on move rather than on start, so a tap on a button inside
 the drawer still reaches the button.
+
+Drawer also lands on the calmer curve and stops covering more screen than
+`size` asks for.
+
+The overshooting spring moved to `ease-spring-tight` on **both** platforms. The
+note in the React Native file said a panel travelling its own width was exactly
+the case the tight curve was added for, and that if it ever felt wrong on a
+device the web was what was wrong. It did. A 12% overshoot on a 20pt switch
+thumb is texture; on a 320pt panel it is a slam.
+
+The overhang also hung the wrong way — added to the panel's width, so it grew
+*inwards* and covered 64pt more of the screen while the seam it was meant to
+hide stayed exactly where it was. It hangs off the entering edge now.

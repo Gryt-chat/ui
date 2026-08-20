@@ -14,7 +14,7 @@ import Animated, {
 
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { grytDrawerBleed } from "@gryt/theme";
-import { durations, springy } from "../../motion";
+import { durations, springy, travel as travelTo } from "../../motion";
 import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
 import { useTheme } from "../../theme";
 
@@ -123,10 +123,21 @@ function Popup({
   const hidden =
     side === "right" ? panelExtent : side === "left" ? -panelExtent : panelExtent;
 
-  // 700ms, the web's `--gryt-dur-spring-soft`, on the overshooting curve —
-  // which is what the web uses here despite the panel travelling its own
-  // width. Matching it rather than substituting the tight curve, because the
-  // brief is 1:1 with the web and not a second opinion about it.
+  /**
+   * 700ms on the *tight* curve, and this changed on both platforms at once.
+   *
+   * It used to be the overshooting one, matching the web, with a note saying
+   * that a panel travelling its own width is exactly the case
+   * `--ease-spring-tight` was added for — and that if it ever felt wrong on a
+   * device, the web was what was wrong and both should change together.
+   *
+   * It felt wrong on a device. A full-height panel arriving with a 12%
+   * overshoot reads as aggressive rather than lively, because the overshoot is
+   * a percentage of the travel and the travel here is most of the screen. The
+   * same 12% on a 20px switch thumb is texture; on a 320pt panel it is a slam.
+   *
+   * `@gryt/ui`'s Drawer moved to `ease-spring-tight` in the same change.
+   */
   useEffect(() => {
     // eslint-disable-next-line react-hooks/immutability
     progress.value =
@@ -134,7 +145,7 @@ function Popup({
         ? open
           ? 1
           : 0
-        : springy(1, { duration: durations.springSoft });
+        : travelTo(1, { duration: durations.springSoft });
   }, [open, progress, reducedMotion]);
 
   /**
@@ -215,11 +226,11 @@ function Popup({
           return;
         }
         // eslint-disable-next-line react-hooks/immutability
-        drag.value = springy(0, { duration: durations.springSoft });
+        drag.value = travelTo(0, { duration: durations.springSoft });
       },
       onPanResponderTerminate: () => {
         // eslint-disable-next-line react-hooks/immutability
-        drag.value = springy(0, { duration: durations.springSoft });
+        drag.value = travelTo(0, { duration: durations.springSoft });
       }
     })
   );
@@ -251,16 +262,22 @@ function Popup({
           style={[
             {
               position: "absolute",
+              // The overhang hangs *off* the edge the panel comes from, which
+              // is the only direction that helps. It used to be added to the
+              // width instead, so the panel grew inwards — 64pt more of the
+              // screen covered, and the seam it was meant to hide still there,
+              // because the gap opens on the entering edge and that is the edge
+              // the extra material was not on.
               top: side === "bottom" ? undefined : 0,
-              bottom: 0,
-              left: side === "right" ? undefined : 0,
-              right: side === "left" ? undefined : 0,
+              bottom: vertical ? -bleed : 0,
+              left: side === "right" ? undefined : side === "left" ? -bleed : 0,
+              right: side === "left" ? undefined : side === "right" ? -bleed : 0,
               width: vertical ? "100%" : panelExtent,
               height: vertical ? panelExtent : "100%",
-              // The overhang, and the padding that puts the content back where
-              // it would have been without it.
-              paddingLeft: side === "right" ? bleed : 0,
-              paddingRight: side === "left" ? bleed : 0,
+              // Puts the content back where it would have been without the
+              // overhang, so `size` still means what it says.
+              paddingLeft: side === "left" ? bleed : 0,
+              paddingRight: side === "right" ? bleed : 0,
               paddingBottom: vertical ? bleed : 0,
               backgroundColor: theme.color.surface,
               borderColor: theme.color.border,

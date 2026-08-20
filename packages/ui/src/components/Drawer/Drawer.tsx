@@ -167,7 +167,7 @@ const Popup = forwardRef<HTMLDivElement, DrawerPopupProps>(function DrawerPopup(
       className={cn(
         "gryt-drawer flex flex-col gap-4 border-gryt-border bg-gryt-surface text-gryt-text",
         "overflow-y-auto overscroll-contain outline-none",
-        "transition-transform duration-(--gryt-dur-spring-soft) ease-spring",
+        "transition-transform duration-(--gryt-dur-spring-soft) ease-spring-tight",
         // While the finger is down the panel must track it exactly. Any
         // duration here turns a drag into a drag plus lag.
         "data-swiping:duration-0 data-swiping:select-none",
@@ -194,7 +194,7 @@ const Backdrop = forwardRef<
         // Lightens as the panel is dragged away, so letting go halfway does not
         // leave a full-strength scrim over a half-gone sheet.
         "[opacity:calc(1-var(--drawer-swipe-progress,0))]",
-        "transition-opacity duration-(--gryt-dur-spring-soft) ease-spring",
+        "transition-opacity duration-(--gryt-dur-spring-soft) ease-spring-tight",
         "data-swiping:duration-0",
         "data-starting-style:opacity-0 data-ending-style:opacity-0",
         "motion-reduce:transition-none",
