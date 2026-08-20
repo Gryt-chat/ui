@@ -48,5 +48,34 @@ describe("motion tokens match the stylesheet", () => {
 
     expect(duration("--gryt-dur-spring")).toBe(grytDurations.spring);
     expect(duration("--gryt-dur-spring-soft")).toBe(grytDurations.springSoft);
+    expect(duration("--gryt-dur-fast")).toBe(grytDurations.fast);
   });
+});
+
+/**
+ * Every duration in @gryt/theme has a variable, whatever it is called.
+ *
+ * The assertions above name three, and that list being hand-written is how
+ * `--gryt-dur-fast` came to be used by ScrollArea and OtpField while being
+ * declared nowhere: both transitions were instant, nothing failed, and the
+ * test passed because `fast` was simply not among the names anyone had thought
+ * to check. GRYT-381.
+ *
+ * This derives the names instead, so a fourth duration cannot be added and then
+ * silently go undeclared.
+ */
+describe("every duration in the theme is declared in the stylesheet", () => {
+  /** `springSoft` -> `--gryt-dur-spring-soft`. */
+  function variableFor(key: string): string {
+    return `--gryt-dur-${key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}`;
+  }
+
+  for (const [key, value] of Object.entries(grytDurations)) {
+    it(`${key} is ${variableFor(key)}`, () => {
+      const name = variableFor(key);
+      const match = new RegExp(`${name}:\\s*(\\d+)ms`).exec(css);
+      expect(match, `${name} is not declared in theme.css`).not.toBeNull();
+      expect(Number(match![1])).toBe(value);
+    });
+  }
 });

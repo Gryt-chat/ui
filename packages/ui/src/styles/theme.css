@@ -369,6 +369,12 @@
     --gryt-dur-spring: 500ms;
     --gryt-dur-spring-soft: 700ms;
 
+    /* A colour or opacity change, which should not feel sprung. ScrollArea
+       fades its scrollbar with this and OtpField tints its focused cell; both
+       were instant until this was defined, because the variable was used in
+       two components and declared in none. */
+    --gryt-dur-fast: 150ms;
+
     /* Backdrop blur behind Dialog and Drawer. Deliberately small — enough to
        separate the panel from the page without the scrim becoming an effect of
        its own. backdrop-filter is not free on a full-screen element, so this is
