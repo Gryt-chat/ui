@@ -1,6 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import {
-  Animated,
   Pressable,
   Text,
   View,
@@ -8,8 +7,11 @@ import {
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import Animated from "react-native-reanimated";
 
+import { grytScaleSteps } from "@gryt/theme";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { usePressScale } from "../../motion";
 import { useTheme } from "../../theme";
 
 export type ButtonTone = "primary" | "secondary" | "neutral" | "danger" | "ghost";
@@ -41,8 +43,14 @@ export interface ButtonProps extends Omit<PressableProps, "style" | "children"> 
   hasPopup?: boolean;
 }
 
-const PRESSED_SCALE = 0.96;
-const SPRING = { useNativeDriver: true, speed: 40, bounciness: 6 };
+/**
+ * `active:scale-[0.96]` on the web, and the same number here.
+ *
+ * `hover:scale-[1.03]` has no counterpart: a touch screen has no state
+ * between not-touching and touching, so emulating hover would be a
+ * difference from the web rather than a match to it.
+ */
+const PRESSED_SCALE = grytScaleSteps.button.press;
 
 export function Button({
   children,
@@ -57,13 +65,9 @@ export function Button({
 }: ButtonProps) {
   const theme = useTheme();
   const reducedMotion = useReducedMotion();
-  // useState with an initialiser rather than useRef(new Animated.Value(1)):
-  // reading .current during render is a lint error, and the useRef form also
-  // constructs a throwaway Animated.Value on every render.
-  const [scale] = useState(() => new Animated.Value(1));
-
   const metrics = SIZES[size];
   const animate = !reducedMotion && !hasPopup && !disabled;
+  const press = usePressScale(PRESSED_SCALE, !animate);
 
   const background =
     tone === "primary"
@@ -87,19 +91,14 @@ export function Button({
             ? theme.color.muted
             : theme.color.text;
 
-  const springTo = (value: number) => {
-    if (!animate) return;
-    Animated.spring(scale, { toValue: value, ...SPRING }).start();
-  };
-
   return (
-    <Animated.View style={[{ transform: [{ scale }] }, style]}>
+    <Animated.View style={[press.style, style]}>
       <Pressable
         accessibilityRole="button"
         accessibilityState={{ disabled: !!disabled }}
         disabled={disabled}
-        onPressIn={() => springTo(PRESSED_SCALE)}
-        onPressOut={() => springTo(1)}
+        onPressIn={press.onPressIn}
+        onPressOut={press.onPressOut}
         style={{
           minHeight: metrics.minHeight,
           paddingHorizontal: metrics.paddingH,

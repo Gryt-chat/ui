@@ -117,3 +117,13 @@ export {
 } from "./overlay/placePopup";
 export { useOpenState, type OpenStateProps } from "./overlay/useOpenState";
 export { useReducedMotion } from "./hooks/useReducedMotion";
+export {
+  durations,
+  easeSpring,
+  easeSpringTight,
+  fade,
+  springy,
+  travel,
+  usePressScale,
+  type PressScale
+} from "./motion/index.js";
