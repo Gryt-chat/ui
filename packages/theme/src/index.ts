@@ -70,3 +70,11 @@ export type {
   GrytRadiusKey,
   GrytTheme
 } from "./theme";
+
+export {
+  grytDurations,
+  grytScaleSteps,
+  sampleCurve,
+  springSamples,
+  springTightSamples
+} from "./motion";
