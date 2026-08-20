@@ -53,10 +53,19 @@ RUN printf '%s\n' \
   '    # $uri/ makes nginx 301 to add the trailing slash. Serving the file' \
   '    # directly saves every crawler and visitor that redirect.' \
   '    #' \
-  '    # The /index.html fallback stays: createBrowserRouter still owns anything' \
-  '    # that was not prerendered, and the app routes it client-side.' \
-  '    location / { try_files $uri $uri/index.html /index.html; }' \
+  '    # =404 rather than a fallback to /index.html. Every route in' \
+  '    # apps/docs/src/routes.ts is written to disk, so a path that does not' \
+  '    # resolve is a path that does not exist. Falling back meant any typo' \
+  '    # answered 200 and rendered React Router 404 on top of front-page' \
+  '    # metadata: a status check called a missing page fine, and crawlers' \
+  '    # indexed it as a duplicate of the home page. Same fix as packages/site.' \
+  '    location / { try_files $uri $uri/index.html =404; }' \
   '    location = /index.html { add_header Cache-Control "no-cache"; }' \
+  '    # The SPA boots from this exactly as it does from any other entry point,' \
+  '    # and the catch-all route renders NotFound — with a real 404 status' \
+  '    # under it this time.' \
+  '    error_page 404 /404.html;' \
+  '    location = /404.html { internal; }' \
   '    location /health { return 200 "healthy"; add_header Content-Type text/plain; }' \
   '  }' \
   '}' > /etc/nginx/nginx.conf

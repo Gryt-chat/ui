@@ -21,6 +21,7 @@ import { ComponentDocPage } from "./pages/componentDocs";
 import { ExampleFullPage, ExamplePage, exampleDocs } from "./pages/examples";
 import { HomePage } from "./pages/HomePage";
 import { InstallationPage } from "./pages/InstallationPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 import { ThemeGeneratorPage } from "./pages/ThemeGeneratorPage";
 import { ThemePage } from "./pages/ThemePage";
 
@@ -42,7 +43,11 @@ const router = createBrowserRouter([
         path: "examples",
         element: <Navigate replace to={`/examples/${exampleDocs[0].slug}`} />
       },
-      { path: "examples/:example", element: <ExamplePage /> }
+      { path: "examples/:example", element: <ExamplePage /> },
+      // Inside the shell on purpose: a dead end is a better place to be with
+      // the sidebar than without it. nginx serves dist/404.html for these, so
+      // the status code is a real 404 and this is what renders on top of it.
+      { path: "*", element: <NotFoundPage /> }
     ]
   },
   // Outside the shell on purpose: these are whole screens, and a sidebar next
