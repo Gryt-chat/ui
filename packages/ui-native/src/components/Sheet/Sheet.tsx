@@ -18,6 +18,8 @@ import {
   type BottomSheetBackgroundProps,
 } from "@gorhom/bottom-sheet";
 
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import { grytDrawerBleed } from "@gryt/theme";
 import { durations, easeSpring } from "../../motion";
 import { useTheme } from "../../theme";
@@ -162,6 +164,16 @@ export interface SheetContentProps {
 
 function Content({ children, style }: SheetContentProps) {
   const theme = useTheme();
+  /**
+   * The phone's own furniture, which the sheet has to stay clear of at both
+   * ends.
+   *
+   * At the tall snap point the sheet reaches the top of the screen, and without
+   * `topInset` its content runs under the Dynamic Island. At the other end the
+   * home indicator sits over the last few points, and a control row ending
+   * flush with the sheet is clipped by it.
+   */
+  const insets = useSafeAreaInsets();
   const state = useContext(SheetRefContext);
   // Read here, in the normal tree, and handed back down below — see the note
   // on the provider inside the modal.
@@ -255,6 +267,9 @@ function Content({ children, style }: SheetContentProps) {
     <BottomSheetModal
       ref={ref}
       snapPoints={snapPoints}
+      // So a sheet at 100% stops below the Dynamic Island rather than running
+      // its content under it.
+      topInset={insets.top}
       // Off, because `snapPoints` is the whole point of this component.
       //
       // gorhom v5 defaults dynamic sizing on, which measures the content and
@@ -274,7 +289,19 @@ function Content({ children, style }: SheetContentProps) {
         height: 4,
       }}
     >
-      <BottomSheetView style={[{ flex: 1, padding: theme.space(4) }, style]}>
+      <BottomSheetView
+        style={[
+          {
+            flex: 1,
+            padding: theme.space(4),
+            // The home indicator's strip, on top of whatever padding the caller
+            // asked for. Without it the last row of content is clipped by it —
+            // reported as the voice controls being cut off at the bottom.
+            paddingBottom: theme.space(4) + insets.bottom,
+          },
+          style,
+        ]}
+      >
         {/*
           The context is provided a second time, inside the modal, and it has
           to be.
