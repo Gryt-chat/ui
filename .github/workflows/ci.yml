@@ -20,11 +20,15 @@ jobs:
       - run: bun run typecheck
       - run: bun run test
       - run: bun run build
+      - run: bunx publint packages/theme
       - run: bunx publint packages/ui
       - run: bunx publint packages/ui-native
       # Both CSS entrypoints are excluded: attw checks that an entrypoint
       # resolves to type declarations or JavaScript, and a stylesheet is
       # neither. Any future CSS export needs adding here too.
+      # No exclusions needed here: @gryt/theme has one entry point, ships no
+      # CSS, and has both an ESM and a CommonJS build.
+      - run: bunx @arethetypeswrong/cli --pack packages/theme
       - run: bunx @arethetypeswrong/cli --pack packages/ui --exclude-entrypoints ./styles.css --exclude-entrypoints ./theme.css
 
       # ui-native is ESM only and ships no CommonJS build, the same as
@@ -39,6 +43,7 @@ jobs:
       # consumer does. publint and attw both run against the workspace, where
       # `workspace:*` is a legitimate dependency spec, so both passed while
       # @gryt/ui-native 0.1.0 could not be installed at all (GRYT-370).
+      - run: node scripts/check-installable.mjs packages/theme
       - run: node scripts/check-installable.mjs packages/ui
       - run: node scripts/check-installable.mjs packages/ui-native
 

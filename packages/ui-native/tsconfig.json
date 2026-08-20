@@ -6,18 +6,18 @@
     "lib": ["ES2022"],
     "types": ["node", "vitest/globals"],
     "moduleResolution": "bundler",
-    // Resolve @gryt/ui's theme entry to its source, not to dist.
+    // Resolve @gryt/theme to its source, not to dist.
     //
-    // The exports map points ./theme at ./dist/theme.d.ts, which only exists
-    // after @gryt/ui has been built. That made this package's typecheck depend
-    // on a sibling's build artefact — it passed locally because dist happened
-    // to be there and failed in CI, which typechecks without building.
+    // The exports map points at ./dist/index.d.ts, which only exists after
+    // @gryt/theme has been built. That made this package's typecheck depend on
+    // a sibling's build artefact — it passed locally because dist happened to
+    // be there and failed in CI, which typechecks without building.
     //
     // Only resolution is affected. The emitted declarations still say
-    // "@gryt/ui/theme", so consumers go through the exports map as normal.
+    // "@gryt/theme", so consumers go through the exports map as normal.
     "baseUrl": ".",
     "paths": {
-      "@gryt/ui/theme": ["../ui/src/theme/index.ts"]
+      "@gryt/theme": ["../theme/src/index.ts"]
     },
     "noEmit": true
   },

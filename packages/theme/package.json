@@ -1,0 +1,63 @@
+{
+  "name": "@gryt/theme",
+  "version": "0.1.0",
+  "description": "Gryt's design tokens, colour scales and OKLCH maths. No renderer, no DOM.",
+  "type": "module",
+  "license": "MIT",
+  "homepage": "https://gryt.chat",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gryt-chat/ui.git",
+    "directory": "packages/theme"
+  },
+  "bugs": {
+    "url": "https://github.com/Gryt-chat/ui/issues"
+  },
+  "keywords": [
+    "gryt",
+    "gryt-chat",
+    "design-tokens",
+    "design-system",
+    "oklch",
+    "color"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build && bun scripts/fix-declarations.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "bun run typecheck && bun run test && bun run build"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.7",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.0.16"
+  }
+}

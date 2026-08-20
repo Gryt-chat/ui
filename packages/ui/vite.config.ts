@@ -24,7 +24,11 @@ export default defineConfig({
     tailwindcss(),
     dts({
       insertTypesEntry: true,
-      tsconfigPath: resolve(__dirname, "tsconfig.json"),
+      // tsconfig.build.json, not tsconfig.json. The typecheck config maps
+      // @gryt/theme to its source so CI can run without building; declaration
+      // emit has to resolve it through the exports map instead, or the emitted
+      // .d.ts would point at ../theme/src, which no consumer has.
+      tsconfigPath: resolve(__dirname, "tsconfig.build.json"),
       exclude: ["src/**/*.test.ts", "src/**/*.test.tsx", "src/test/**"]
     })
   ],
@@ -56,6 +60,13 @@ export default defineConfig({
   test: {
     environment: "happy-dom",
     setupFiles: ["./src/test/setup.ts"],
-    globals: true
+    globals: true,
+    // Under `test`, deliberately, not `resolve`. A top-level alias would make
+    // Rollup inline @gryt/theme into the library bundle rather than leaving it
+    // external, which is the opposite of what splitting it out was for. Tests
+    // still need it resolvable before dist exists, and this is only the tests.
+    alias: {
+      "@gryt/theme": resolve(__dirname, "../theme/src/index.ts")
+    }
   }
 });

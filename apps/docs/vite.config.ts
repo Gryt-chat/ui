@@ -22,7 +22,10 @@ export default defineConfig({
         __dirname,
         "../../packages/ui/src/styles/index.css"
       ),
-      "@gryt/ui": resolve(__dirname, "../../packages/ui/src/index.ts")
+      "@gryt/ui": resolve(__dirname, "../../packages/ui/src/index.ts"),
+      // @gryt/ui's source imports this, and the docs app builds that source
+      // rather than its dist, so the alias has to cover it too.
+      "@gryt/theme": resolve(__dirname, "../../packages/theme/src/index.ts")
     }
   },
   plugins: [

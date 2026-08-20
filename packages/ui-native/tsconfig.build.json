@@ -8,12 +8,12 @@
     "rootDir": "src",
     // Drop the source mapping the base config uses.
     //
-    // Typecheck and test resolve @gryt/ui/theme to its source, so they do not
+    // Typecheck and test resolve @gryt/theme to its source, so they do not
     // depend on a sibling's build output — CI runs both before anything is
     // built. Declaration emit cannot: pulling the sibling's source into the
     // program puts files outside rootDir, which tsc refuses.
     //
-    // By build time @gryt/ui is built — bun orders the workspace by dependency
+    // By build time @gryt/theme is built — bun orders the workspace by dependency
     // and this package depends on it — so resolving through the exports map to
     // dist is both correct and available.
     "baseUrl": ".",

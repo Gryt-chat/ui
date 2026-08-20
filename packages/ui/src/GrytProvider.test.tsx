@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { GrytProvider } from "./GrytProvider";
-import { createGrytTheme } from "./theme/createGrytTheme";
+import { createGrytTheme } from "@gryt/theme";
 
 describe("GrytProvider", () => {
   it("paints nothing when it is given no theme", () => {

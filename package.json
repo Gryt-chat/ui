@@ -23,9 +23,9 @@
   "scripts": {
     "dev": "bun --filter @gryt/docs dev",
     "build": "bun --filter '*' build",
-    "build:lib": "bun --filter @gryt/ui --filter @gryt/ui-native build",
+    "build:lib": "bun --filter @gryt/theme --filter @gryt/ui --filter @gryt/ui-native build",
     "typecheck": "bun --filter '*' typecheck",
-    "test": "bun --filter @gryt/ui --filter @gryt/ui-native test",
+    "test": "bun --filter @gryt/theme --filter @gryt/ui --filter @gryt/ui-native test",
     "lint": "eslint .",
     "format": "prettier --write .",
     "changeset": "changeset",

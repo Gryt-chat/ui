@@ -1,12 +1,20 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "declaration": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true,
-    "outDir": "dist",
-    "rootDir": "src",
-    "types": ["node", "vitest/globals", "@testing-library/jest-dom"]
+    "types": ["node", "vitest/globals", "@testing-library/jest-dom"],
+    // Resolve @gryt/theme to its source, so typecheck does not depend on a
+    // sibling's build output — CI typechecks before it builds anything. The
+    // same reason ui-native does it.
+    //
+    // No declaration emit here, and so no rootDir: pulling the sibling's
+    // source into the program puts files outside src, which tsc refuses the
+    // moment declarations are on. Declaration emit lives in
+    // tsconfig.build.json, which resolves through the exports map instead.
+    "baseUrl": ".",
+    "paths": {
+      "@gryt/theme": ["../theme/src/index.ts"]
+    },
+    "noEmit": true
   },
   "include": ["src"]
 }

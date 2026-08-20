@@ -19,6 +19,7 @@ WORKDIR /app
 # reads like a stale lockfile and is not one. Adding a package under packages/
 # or apps/ means adding it here too.
 COPY package.json bun.lock tsconfig.base.json ./
+COPY packages/theme/package.json ./packages/theme/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/ui-native/package.json ./packages/ui-native/
 COPY apps/docs/package.json ./apps/docs/

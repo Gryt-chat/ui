@@ -5,13 +5,13 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
+  contrast,
   createGrytTheme,
   grytAlphaScales,
   grytScales,
   grytScalesLight,
   grytTokens
-} from "./createGrytTheme";
-import { contrast } from "./oklch";
+} from "@gryt/theme";
 
 const css = readFileSync(
   join(dirname(fileURLToPath(import.meta.url)), "..", "styles", "theme.css"),
