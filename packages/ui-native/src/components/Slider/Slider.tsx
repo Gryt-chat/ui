@@ -7,6 +7,10 @@ import {
   type ViewStyle,
 } from "react-native";
 
+import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+
+import { grytScaleSteps } from "@gryt/theme";
+import { springy } from "../../motion";
 import { toneRamp, useTheme, type ComponentTone } from "../../theme";
 import { valueAt } from "./sliderValue";
 
@@ -68,6 +72,14 @@ export function Slider({
   const emit = useRef({ onValueChange, onValueCommit, controlled });
   /** Where the current gesture started, in track coordinates. */
   const origin = useRef(0);
+  /**
+   * `active:scale-[0.94]` on the web. `hover:scale-[1.12]` has no touch
+   * equivalent, so only the press half ports.
+   */
+  const thumbScale = useSharedValue(1);
+  const thumbStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: thumbScale.value }]
+  }));
 
   useEffect(() => {
     state.current = { width, value, min, max, step, disabled };
@@ -109,6 +121,7 @@ export function Slider({
       onPanResponderGrant: (e) => {
         // Where the finger landed, kept for the drag to offset from.
         origin.current = e.nativeEvent.locationX;
+        thumbScale.value = springy(grytScaleSteps.sliderThumb.press);
         apply(valueFromX(e.nativeEvent.locationX));
       },
       // `gesture.dx` is the distance from where the gesture *started*, not from
@@ -124,7 +137,10 @@ export function Slider({
       onPanResponderMove: (_e, gesture) => {
         apply(valueFromX(origin.current + gesture.dx));
       },
-      onPanResponderRelease: () => emit.current.onValueCommit?.(state.current.value),
+      onPanResponderRelease: () => {
+        thumbScale.value = springy(1);
+        emit.current.onValueCommit?.(state.current.value);
+      },
     }),
   );
   /* eslint-enable react-hooks/refs */
@@ -156,18 +172,21 @@ export function Slider({
           }}
         />
       </View>
-      <View
+      <Animated.View
         pointerEvents="none"
-        style={{
-          position: "absolute",
-          left: Math.max(0, ratio * width - THUMB / 2),
-          width: THUMB,
-          height: THUMB,
-          borderRadius: THUMB / 2,
-          backgroundColor: ramp[8],
-          borderWidth: 2,
-          borderColor: theme.color.bg,
-        }}
+        style={[
+          {
+            position: "absolute",
+            left: Math.max(0, ratio * width - THUMB / 2),
+            width: THUMB,
+            height: THUMB,
+            borderRadius: THUMB / 2,
+            backgroundColor: ramp[8],
+            borderWidth: 2,
+            borderColor: theme.color.bg,
+          },
+          thumbStyle,
+        ]}
       />
     </View>
   );

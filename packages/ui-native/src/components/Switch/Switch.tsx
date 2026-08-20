@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { Animated, Pressable, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, type StyleProp, type ViewStyle } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { springy } from "../../motion";
 import { toneRamp, useTheme } from "../../theme";
 
 export type SwitchTone = "primary" | "secondary" | "neutral" | "danger";
@@ -48,20 +50,21 @@ export function Switch({
   const [uncontrolled, setUncontrolled] = useState(defaultChecked);
   const checked = controlled ?? uncontrolled;
 
-  const [offset] = useState(() => new Animated.Value(checked ? TRAVEL : 0));
+  const offset = useSharedValue(checked ? TRAVEL : 0);
 
+  // The web is `translate-x-4` on `ease-spring` — the overshooting curve, even
+  // though the thumb travels, because the travel is 16px inside a 40px track
+  // rather than the width of a container. Following the web rather than
+  // second-guessing it: 1:1 means the same curve, not a better-argued one.
   useEffect(() => {
-    if (reducedMotion) {
-      offset.setValue(checked ? TRAVEL : 0);
-      return;
-    }
-    Animated.spring(offset, {
-      toValue: checked ? TRAVEL : 0,
-      useNativeDriver: true,
-      speed: 40,
-      bounciness: 4,
-    }).start();
+    const to = checked ? TRAVEL : 0;
+    // eslint-disable-next-line react-hooks/immutability
+    offset.value = reducedMotion ? to : springy(to);
   }, [checked, offset, reducedMotion]);
+
+  const thumbStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: offset.value }]
+  }));
 
   const ramp = toneRamp(theme, tone);
 
@@ -90,13 +93,15 @@ export function Switch({
       ]}
     >
       <Animated.View
-        style={{
-          width: THUMB,
-          height: THUMB,
-          borderRadius: THUMB / 2,
-          backgroundColor: checked ? theme.color.bg : theme.color.text,
-          transform: [{ translateX: offset }],
-        }}
+        style={[
+          {
+            width: THUMB,
+            height: THUMB,
+            borderRadius: THUMB / 2,
+            backgroundColor: checked ? theme.color.bg : theme.color.text,
+          },
+          thumbStyle,
+        ]}
       />
     </Pressable>
   );

@@ -1,7 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { Animated, Pressable, Text, View, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, Text, View, type StyleProp, type ViewStyle } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 
+import { grytScaleSteps } from "@gryt/theme";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { fade, usePressScale } from "../../motion";
 import { useTheme } from "../../theme";
 
 export type ToastSeverity = "info" | "success" | "warning" | "error";
@@ -107,26 +110,30 @@ function ToastItem({
 }) {
   const theme = useTheme();
   const reducedMotion = useReducedMotion();
-  const [opacity] = useState(() => new Animated.Value(reducedMotion ? 1 : 0));
+  const opacity = useSharedValue(reducedMotion ? 1 : 0);
   const ramp = theme.scales[RAMP[toast.severity ?? "info"]];
   const duration = toast.duration === undefined ? 4000 : toast.duration;
+  // `active:scale-[0.96]` on the web. The `hover:scale-[1.04]` half has no
+  // touch equivalent and is deliberately not emulated.
+  const press = usePressScale(grytScaleSteps.toast.press, reducedMotion);
 
   useEffect(() => {
     if (!reducedMotion) {
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 150,
-        useNativeDriver: true,
-      }).start();
+      // eslint-disable-next-line react-hooks/immutability
+      opacity.value = fade(1);
     }
     if (duration === null) return;
     const timer = setTimeout(() => onDismiss(toast.id), duration);
     return () => clearTimeout(timer);
   }, [duration, onDismiss, opacity, reducedMotion, toast.id]);
 
+  const enter = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
   return (
-    <Animated.View style={{ opacity }}>
+    <Animated.View style={[enter, press.style]}>
       <Pressable
+        onPressIn={press.onPressIn}
+        onPressOut={press.onPressOut}
         accessibilityRole="alert"
         accessibilityLiveRegion={
           toast.severity === "error" || toast.severity === "warning" ? "assertive" : "polite"
