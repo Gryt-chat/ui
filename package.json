@@ -22,8 +22,8 @@
   ],
   "scripts": {
     "dev": "bun --filter @gryt/docs dev",
-    "build": "bun --filter '*' build",
-    "build:lib": "bun --filter @gryt/theme --filter @gryt/ui --filter @gryt/ui-native build",
+    "build": "bun run build:lib && bun --filter @gryt/docs build",
+    "build:lib": "bun --filter @gryt/theme build && bun --filter @gryt/ui build && bun --filter @gryt/ui-native build",
     "typecheck": "bun --filter '*' typecheck",
     "test": "bun --filter @gryt/theme --filter @gryt/ui --filter @gryt/ui-native test",
     "lint": "eslint .",
