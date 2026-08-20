@@ -12,6 +12,7 @@ import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanima
 import { grytScaleSteps } from "@gryt/theme";
 import { springy } from "../../motion";
 import { toneRamp, useTheme, type ComponentTone } from "../../theme";
+import { useDragLock } from "../internal/dragLock";
 import { valueAt } from "./sliderValue";
 
 export type SliderTone = Extract<ComponentTone, "primary" | "secondary" | "neutral" | "danger">;
@@ -58,6 +59,9 @@ export function Slider({
   accessibilityLabel,
 }: SliderProps) {
   const theme = useTheme();
+  // Held for the duration of a drag, so the list this is sitting in stays put.
+  // A no-op outside a ScrollView from this package — see useDragLock.
+  const dragLock = useDragLock();
   const [uncontrolled, setUncontrolled] = useState(defaultValue);
   const value = controlled ?? uncontrolled;
   const [width, setWidth] = useState(0);
@@ -70,6 +74,9 @@ export function Slider({
   // fire from touch events, which is always after an effect has run.
   const state = useRef({ width, value, min, max, step, disabled });
   const emit = useRef({ onValueChange, onValueCommit, controlled });
+  // Same reason as the others: the responder callbacks are created once, and
+  // the lock's identity changes whenever the count does.
+  const lockRef = useRef(dragLock);
   /** Where the current gesture started, in track coordinates. */
   const origin = useRef(0);
   /**
@@ -88,6 +95,10 @@ export function Slider({
   useEffect(() => {
     emit.current = { onValueChange, onValueCommit, controlled };
   }, [onValueChange, onValueCommit, controlled]);
+
+  useEffect(() => {
+    lockRef.current = dragLock;
+  }, [dragLock]);
 
   const valueFromX = (x: number) => {
     const s = state.current;
@@ -119,6 +130,7 @@ export function Slider({
       // here once it is clearly horizontal.
       onMoveShouldSetPanResponder: () => !state.current.disabled,
       onPanResponderGrant: (e) => {
+        lockRef.current.lock();
         // Where the finger landed, kept for the drag to offset from.
         origin.current = e.nativeEvent.locationX;
         thumbScale.value = springy(grytScaleSteps.sliderThumb.press);
@@ -137,7 +149,29 @@ export function Slider({
       onPanResponderMove: (_e, gesture) => {
         apply(valueFromX(origin.current + gesture.dx));
       },
+      // The fix for GRYT-390's "the slider still lets me scroll the page".
+      //
+      // The comment above says this "claims the gesture and holds it". It did
+      // not: `onPanResponderTerminationRequest` defaults to *granting*, so the
+      // enclosing ScrollView asked for the responder as soon as the finger
+      // moved and got it. Every drag inside a scrolling screen scrolled the
+      // screen, which is every drag — volume sliders live in settings lists.
+      //
+      // Saying no is the whole fix. `onShouldBlockNativeResponder` stops the
+      // native scroll view taking over underneath on Android, where the JS
+      // answer alone is not enough.
+      onPanResponderTerminationRequest: () => false,
+      // A refused termination can still happen — the system can take the
+      // responder away regardless, on a call or a notification. Without this
+      // the lock leaks and the screen never scrolls again, which is a far
+      // worse bug than the one being fixed.
+      onPanResponderTerminate: () => {
+        lockRef.current.unlock();
+        thumbScale.value = springy(1);
+      },
+      onShouldBlockNativeResponder: () => true,
       onPanResponderRelease: () => {
+        lockRef.current.unlock();
         thumbScale.value = springy(1);
         emit.current.onValueCommit?.(state.current.value);
       },

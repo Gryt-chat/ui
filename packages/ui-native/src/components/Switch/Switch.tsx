@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
-import { Pressable, type StyleProp, type ViewStyle } from "react-native";
+import { useEffect, useState, type ReactNode } from "react";
+import { type StyleProp, type ViewStyle } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { springy } from "../../motion";
+import { grytScaleSteps } from "@gryt/theme";
 import { toneRamp, useTheme } from "../../theme";
+import { ControlRow } from "../internal/ControlRow";
 
 export type SwitchTone = "primary" | "secondary" | "neutral" | "danger";
 
@@ -14,6 +16,8 @@ export interface SwitchProps {
   onCheckedChange?: (checked: boolean) => void;
   disabled?: boolean;
   tone?: SwitchTone;
+  /** Tapping this toggles the switch, as a `<label>` does on the web. */
+  label?: ReactNode;
   style?: StyleProp<ViewStyle>;
   accessibilityLabel?: string;
 }
@@ -42,6 +46,7 @@ export function Switch({
   onCheckedChange,
   disabled,
   tone = "primary",
+  label,
   style,
   accessibilityLabel,
 }: SwitchProps) {
@@ -69,40 +74,49 @@ export function Switch({
   const ramp = toneRamp(theme, tone);
 
   return (
-    <Pressable
-      accessibilityRole="switch"
-      accessibilityState={{ checked, disabled: !!disabled }}
-      accessibilityLabel={accessibilityLabel}
-      disabled={disabled}
+    <ControlRow
+      label={label}
       onPress={() => {
         const next = !checked;
         if (controlled === undefined) setUncontrolled(next);
         onCheckedChange?.(next);
       }}
-      style={[
-        {
+      disabled={disabled}
+      pressScale={grytScaleSteps.switch.press}
+      accessibilityRole="switch"
+      accessibilityState={{ checked, disabled: !!disabled }}
+      accessibilityLabel={accessibilityLabel}
+      style={style}
+    >
+      <Animated.View
+        style={{
           width: TRACK_WIDTH,
           height: TRACK_HEIGHT,
           borderRadius: TRACK_HEIGHT / 2,
           padding: (TRACK_HEIGHT - THUMB) / 2,
           justifyContent: "center",
-          backgroundColor: checked ? ramp[8] : theme.scales.neutral[5],
+          // The web outlines the track and fills it with surfaceRaised when
+          // off, then paints the tone over it and drops the border to
+          // transparent. This was neutral[5] with no border, which is close
+          // enough to look right on its own and wrong beside a checkbox.
+          borderWidth: 1,
+          borderColor: checked ? "transparent" : theme.color.border,
+          backgroundColor: checked ? ramp[8] : theme.color.surfaceRaised,
           opacity: disabled ? 0.5 : 1,
-        },
-        style,
-      ]}
-    >
-      <Animated.View
-        style={[
-          {
-            width: THUMB,
-            height: THUMB,
-            borderRadius: THUMB / 2,
-            backgroundColor: checked ? theme.color.bg : theme.color.text,
-          },
-          thumbStyle,
-        ]}
-      />
-    </Pressable>
+        }}
+      >
+        <Animated.View
+          style={[
+            {
+              width: THUMB,
+              height: THUMB,
+              borderRadius: THUMB / 2,
+              backgroundColor: checked ? theme.color.bg : theme.color.text,
+            },
+            thumbStyle,
+          ]}
+        />
+      </Animated.View>
+    </ControlRow>
   );
 }
