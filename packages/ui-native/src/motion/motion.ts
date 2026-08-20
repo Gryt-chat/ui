@@ -10,31 +10,11 @@
  * `withTiming` plus an easing that interpolates the same samples at the same
  * duration is both simpler and actually identical.
  */
-import { Easing, withTiming, type EasingFunction, type WithTimingConfig } from "react-native-reanimated";
-import { grytDurations, sampleCurve, springSamples, springTightSamples } from "@gryt/theme";
+import { Easing, withTiming, type WithTimingConfig } from "react-native-reanimated";
+import { grytDurations } from "@gryt/theme";
+import { easeSpring, easeSpringTight } from "./easing";
 
-/**
- * Turn a sample list into an easing.
- *
- * The body is a worklet so it can run on the UI thread — an easing evaluated
- * on the JS thread would drop frames under exactly the load this system exists
- * to survive. `samples` is captured by value, which worklets allow for plain
- * arrays.
- */
-function easingFromSamples(samples: readonly number[]): EasingFunction {
-  const points = [...samples];
-
-  return (t: number) => {
-    "worklet";
-    return sampleCurve(points, t);
-  };
-}
-
-/** Overshoots ~12%. For things that scale in place. */
-export const easeSpring = easingFromSamples(springSamples);
-
-/** Critically damped, no overshoot. For things that travel inside bounds. */
-export const easeSpringTight = easingFromSamples(springTightSamples);
+export { easeSpring, easeSpringTight };
 
 export const durations = grytDurations;
 
