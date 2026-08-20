@@ -99,7 +99,10 @@ function Popup({
         {
           width: "100%",
           maxWidth: 480,
-          maxHeight: "80%",
+          // Shrinks inside the capped wrapper below rather than carrying its
+          // own percentage, so the popup hugs short content and gives way when
+          // the content is taller than the cap.
+          flexShrink: 1,
           backgroundColor: theme.color.surfaceRaised,
           borderRadius: theme.radius.lg,
           borderWidth: 1,
@@ -111,7 +114,19 @@ function Popup({
       ]}
     >
       {scrollable ? (
-        <ScrollView contentContainerStyle={{ gap: theme.space(3) }}>
+        // flexGrow 0 so the ScrollView takes the height of its content rather
+        // than filling the popup, and flexShrink 1 so it still gives way when
+        // maxHeight caps it and the content has to scroll.
+        //
+        // Without these it clipped every short dialog: a ScrollView has no
+        // intrinsic height, the popup sizes to its content, and neither had
+        // anything to measure against — so the footer was drawn half off the
+        // bottom. The `scrollable={false}` path was unaffected, which is what
+        // made it look like a layout choice rather than a bug (GRYT-379).
+        <ScrollView
+          style={{ flexGrow: 0, flexShrink: 1 }}
+          contentContainerStyle={{ gap: theme.space(3) }}
+        >
           {children}
         </ScrollView>
       ) : (
@@ -143,7 +158,17 @@ function Popup({
         }}
       >
         {/* Swallows presses so tapping the panel does not close it. */}
-        <Pressable onPress={() => {}} style={{ width: "100%", alignItems: "center" }}>
+        {/* The 80% cap lives here, not on the popup.
+            A percentage maxHeight only resolves against a parent with a
+            definite height. This wrapper had `alignItems` and a width and no
+            height at all, so the popup's `maxHeight: "80%"` resolved against
+            nothing and never constrained anything — which is why a short
+            dialog clipped its footer while `scrollable={false}` looked fine.
+            The scrim above is `flex: 1`, so a percentage here does resolve. */}
+        <Pressable
+          onPress={() => {}}
+          style={{ width: "100%", alignItems: "center", maxHeight: "80%" }}
+        >
           {body}
         </Pressable>
       </Pressable>
