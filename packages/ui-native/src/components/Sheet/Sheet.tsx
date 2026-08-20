@@ -255,6 +255,14 @@ function Content({ children, style }: SheetContentProps) {
     <BottomSheetModal
       ref={ref}
       snapPoints={snapPoints}
+      // Off, because `snapPoints` is the whole point of this component.
+      //
+      // gorhom v5 defaults dynamic sizing on, which measures the content and
+      // sizes the sheet to it — overriding the snap points entirely. A sheet
+      // asked for 70% whose content had no intrinsic height collapsed to the
+      // height of its own footer, which looks like the snap points being
+      // ignored because they were.
+      enableDynamicSizing={false}
       enablePanDownToClose
       onDismiss={() => onOpenChange?.(false)}
       animationConfigs={animationConfigs}
