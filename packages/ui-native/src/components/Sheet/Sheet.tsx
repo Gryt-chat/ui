@@ -21,7 +21,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { grytDrawerBleed } from "@gryt/theme";
-import { durations, easeSpring } from "../../motion";
+import { durations, easeSpringTight } from "../../motion";
 import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
 import { useTheme } from "../../theme";
 
@@ -272,10 +272,22 @@ function Content({ children, style }: SheetContentProps) {
    * bottom edge and covers nearly all of it. The same duration over a longer
    * distance is a faster animation, and at 700 this arrived quickly enough to
    * read as a snap rather than a slide.
+   *
+   * **`easeSpringTight`, not `easeSpring`.** This used the loose curve and
+   * bounced, and the two are labelled in `easing.ts` in a way that decides it:
+   * `easeSpring` "overshoots ~12%, for things that scale in place", and
+   * `easeSpringTight` is "critically damped, no overshoot, for things that
+   * travel inside bounds". A sheet sliding up from the bottom edge to a snap
+   * point is the second thing, not the first — so this was the wrong curve by
+   * the package's own rule, and it is the curve the Drawer already uses.
+   *
+   * Overshoot on a sheet is worse than on a button, too: the thing that
+   * overshoots is the top edge, so it travels past its snap point and comes
+   * back, which reads as the sheet failing to land rather than as bounce.
    */
   const animationConfigs = useBottomSheetTimingConfigs({
     duration: durations.springSlow,
-    easing: easeSpring,
+    easing: easeSpringTight,
   });
 
   const renderBackdrop = useCallback(
