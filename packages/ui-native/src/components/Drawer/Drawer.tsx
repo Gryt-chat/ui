@@ -222,27 +222,31 @@ function Popup({
   });
 
   /**
-   * The scrim thins as the panel is dragged away, and does not fade in or out.
+   * The scrim fades with the panel, and thins further as it is dragged away.
    *
-   * A drawer opens by sliding and nothing about it fades — that is the whole
-   * distinction from a dialog, and a scrim that fades up alongside the panel
-   * puts a second, slower animation on top of the one that matters. It is up
-   * when the drawer is up.
+   * Two separate rules, both the web's:
    *
-   * The drag term stays, and it is a different thing: pushing the panel off
-   * lightens the scrim in proportion, so a half-gone drawer does not sit under
-   * a full-strength one. The web's own rule, in its own words.
+   * ```
+   * "[opacity:calc(1-var(--drawer-swipe-progress,0))]",
+   * "transition-opacity duration-(--gryt-dur-spring-soft) ease-spring-tight",
+   * "data-starting-style:opacity-0 data-ending-style:opacity-0",
+   * ```
    *
-   * The Modal unmounts once the panel has finished travelling, which is what
-   * takes the scrim with it. Earlier this was a flat colour that vanished with
-   * the Modal *before* the panel had moved, so a drawer animating out sat under
-   * a full-strength scrim for 700ms and then blinked off — that was the bug,
-   * and keeping the scrim up for exactly as long as the panel is on screen is
-   * the fix rather than fading it.
+   * The first is the drag term. The other two are the fade: the backdrop
+   * starts and ends at zero, over the same duration and easing as the panel's
+   * slide. `progress` already runs on `travel`, which is `easeSpringTight` at
+   * `springSoft` — so multiplying by it is the same curve, not a new one.
+   *
+   * GRYT-408 took the fade out, on the grounds that "the web's Popup declares
+   * `transition-transform` and nothing else". That is true, and it is about
+   * `Drawer.Popup` — the panel, which still only translates. The backdrop is a
+   * different element and says the opposite. Without the fade the scrim was at
+   * full strength before the panel was on screen and stayed there while it slid
+   * away, then blinked off with the Modal.
    */
   const scrimStyle = useAnimatedStyle(() => {
     const dragged = extent > 0 ? Math.min(1, Math.abs(drag.value) / extent) : 0;
-    return { opacity: 1 - dragged };
+    return { opacity: progress.value * (1 - dragged) };
   });
 
   /**
