@@ -1,6 +1,6 @@
 {
   "name": "@gryt/ui-native",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "type": "module",
   "license": "MIT",
   "description": "Gryt's design system on React Native. Same tokens as @gryt/ui, a different renderer.",
