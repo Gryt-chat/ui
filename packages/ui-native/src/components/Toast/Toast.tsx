@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { Pressable, Text, View, type StyleProp, type ViewStyle } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 
 import { grytScaleSteps } from "@gryt/theme";
@@ -32,9 +33,25 @@ const ToastContext = createContext<ToastContextValue | null>(null);
  * Toasts need somewhere to live, which on the web is a portal at the document
  * root and here is a provider near the top of the tree.
  *
+ * **Mount it above everything else it has to cover.** The viewport is rendered
+ * as a sibling *after* `children`, so it paints over anything inside them —
+ * including a `Sheet`, whose content goes through `@gorhom/portal` to a host
+ * that is itself inside those children. Put `ToastProvider` below
+ * `SheetProvider` and the sheet wins instead, which is the wrong way round: a
+ * sheet is a surface you are working in, and a toast is the app telling you
+ * something happened while you work.
+ *
  * They are deliberately not built on `Modal` like the dialogs are. A modal
  * intercepts touches for the whole screen, and a toast that blocked the app
  * until it faded would be worse than no toast.
+ *
+ * **What that costs, stated rather than discovered:** a `Modal` is a separate
+ * native window, so anything built on one — `Dialog`, `AlertDialog`, `Drawer`,
+ * and the platform's own `ActionSheetIOS` — draws *over* a toast, whatever the
+ * z-index says. React Native has no z-index across windows. A flow that raises
+ * a dialog and toasts at the same moment should toast after the dialog closes;
+ * there is nothing this component can do about it from inside the tree, and
+ * the alternative is a toast that can block the app, which is worse.
  */
 export function ToastProvider({ children }: { children?: ReactNode }) {
   const [toasts, setToasts] = useState<QueuedToast[]>([]);
@@ -79,6 +96,7 @@ function Viewport({
   onDismiss: (id: number) => void;
 }) {
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
   if (toasts.length === 0) return null;
 
   return (
@@ -89,9 +107,26 @@ function Viewport({
         position: "absolute",
         left: 0,
         right: 0,
-        bottom: theme.space(6),
+        /* The top, which on a phone is the only edge that is reliably free.
+         *
+         * The bottom is where a tab bar sits, where the home indicator sits,
+         * and where every sheet in the app rises from — so a toast there is
+         * either under the chrome or in the way of the gesture. It is also
+         * where iOS puts nothing of its own, precisely because that edge is
+         * the user's.
+         *
+         * Below the status bar rather than over it: the clock and the battery
+         * are not ours to cover, and a toast that starts under the notch reads
+         * as a system banner rather than as this app talking. */
+        top: insets.top + theme.space(2),
         paddingHorizontal: theme.space(4),
         gap: theme.space(2),
+        /* Explicit rather than relying on paint order. Within this tree the
+         * viewport is already last, but a caller can put something absolutely
+         * positioned after it — a floating bar, a call pill — and the toast
+         * has to win. `elevation` is the Android half of the same statement. */
+        zIndex: 1000,
+        elevation: 24,
       }}
     >
       {toasts.map((toast) => (
