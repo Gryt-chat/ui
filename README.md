@@ -1,8 +1,12 @@
-# Gryt UI
+<div align="center">
+  <img src="https://raw.githubusercontent.com/Gryt-chat/client/main/public/logo.svg" width="80" alt="Gryt logo" />
+  <h1>Gryt UI</h1>
+  <p>The component library behind <a href="https://github.com/Gryt-chat/gryt">Gryt</a>, in two packages that share one set of tokens.<br /><code>@gryt/ui</code> for the web, <code>@gryt/ui-native</code> for React Native.<br />Documented at <a href="https://ui.gryt.chat">ui.gryt.chat</a>.</p>
+</div>
 
-React component library for Gryt, the open-source WebRTC voice, video and text chat platform from [Gryt-chat](https://github.com/Gryt-chat).
+<br />
 
-`@gryt/ui` builds on [Base UI](https://base-ui.com) — the MUI team's headless component library — styled with Tailwind on the Gryt palette. Flat surfaces, fully rounded controls, chat-focused primitives. Designed for the Gryt desktop/web client and reusable by Gryt-adjacent apps.
+`@gryt/ui` builds on [Base UI](https://base-ui.com), the MUI team's headless component library, styled with Tailwind on the Gryt palette. Flat surfaces, fully rounded controls, chat-focused primitives. Built for the Gryt desktop and web client, and usable by anything else.
 
 ## Install
 
@@ -103,6 +107,15 @@ It is published, and short of ten of the 42 components in `@gryt/ui` — mostly
 the Gryt-specific ones, which want a screen to design against rather than a web
 component to copy. Its README carries the list, and a table of the places where
 a component deliberately behaves differently on a phone. See GRYT-342.
+
+## Sponsors
+
+What sponsoring pays for, the tiers, and everyone who has sponsored:
+[gryt.chat/sponsors](https://gryt.chat/sponsors). To sponsor:
+[GitHub Sponsors](https://github.com/sponsors/Gryt-chat).
+
+The list itself lives in the [Gryt README](https://github.com/Gryt-chat/gryt#sponsors),
+in one place rather than ten, so it cannot fall out of step across repositories.
 
 ## License
 
