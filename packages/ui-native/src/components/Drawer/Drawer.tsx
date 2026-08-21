@@ -1,12 +1,19 @@
-import { createContext, type ReactNode, useContext, useEffect, useRef, useState } from "react";
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 import {
   Dimensions,
-  PanResponder,
   Modal,
   Pressable,
   type StyleProp,
   type ViewStyle
 } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -143,7 +150,11 @@ function Popup({
   // Measured against the bleed panel, so the panel's *visible* edge lands
   // exactly off-screen rather than the overhang doing it.
   const hidden =
-    side === "right" ? panelExtent : side === "left" ? -panelExtent : panelExtent;
+    side === "right"
+      ? panelExtent
+      : side === "left"
+        ? -panelExtent
+        : panelExtent;
 
   /**
    * 700ms on the *tight* curve, and this changed on both platforms at once.
@@ -254,79 +265,109 @@ function Popup({
    * and this did not have at all (GRYT-395). A drawer you cannot push back is
    * the thing a drawer is for.
    *
-   * `PanResponder` rather than react-native-gesture-handler: the Slider proved
-   * this path works from this package's prebuilt output today, and an attempt
-   * at gesture-handler from here failed for reasons still not understood
-   * (GRYT-393). This is not the place to retry that.
+   * `react-native-gesture-handler` rather than `PanResponder`. That was the
+   * other way round because gesture callbacks from this package's prebuilt
+   * output were measured doing nothing (GRYT-393) — the babel plugin was not
+   * reaching `node_modules`, so nothing became a worklet. Measured again on
+   * 2026-08-21 with a probe built inside this package: both worklet and
+   * `runOnJS` callbacks report correctly. Whatever it was, it is fixed, and
+   * `PanResponder` was only ever the fallback.
+   *
+   * The reason to move is what the axis constraints below buy. `PanResponder`
+   * cannot negotiate with a native scroll recogniser, so the old version kept
+   * the drag with `onPanResponderTerminationRequest: () => false` — which
+   * works by never handing the gesture back, and stops a `ScrollView` inside
+   * the drawer scrolling at all. Here the pan simply fails on a cross-axis
+   * drag and the scrollable gets it, which is the same rule the web relies on
+   * the browser for.
+   *
+   * The callbacks stay worklets. Running them on the JS thread would be
+   * simpler and would give up the whole point: the panel tracks the finger on
+   * the UI thread, with nothing to be blocked by a busy bridge.
    */
-  const gesture = useRef({ extent, side, vertical, dismissible, setOpen });
-  useEffect(() => {
-    gesture.current = { extent, side, vertical, dismissible, setOpen };
-  }, [extent, side, vertical, dismissible, setOpen]);
+  const pan = useMemo(() => {
+    const closingSign = side === "left" ? -1 : 1;
 
-  /* eslint-disable react-hooks/refs */
-  const [responder] = useState(() =>
-    PanResponder.create({
-      // Claimed on move, not on start. Claiming on start would swallow every
-      // tap on the panel's own content — buttons inside a drawer would stop
-      // working, which is a far worse bug than not being able to swipe.
-      onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_e, g) => {
-        if (!gesture.current.dismissible) return false;
-        // Only once the drag is clearly along the axis the panel closes on,
-        // and clearly a drag rather than a slow press. Anything else belongs
-        // to whatever is inside.
-        const along = gesture.current.vertical ? g.dy : g.dx;
-        const across = gesture.current.vertical ? g.dx : g.dy;
-        return Math.abs(along) > 8 && Math.abs(along) > Math.abs(across);
-      },
-      // Once it is ours it stays ours, for the same reason the Slider needs
-      // this: the default is to grant, and a ScrollView inside the drawer
-      // would take the drag back mid-swipe.
-      onPanResponderTerminationRequest: () => false,
-      onPanResponderMove: (_e, g) => {
-        const { vertical: v, side: sd } = gesture.current;
-        const raw = v ? g.dy : g.dx;
+    const gesture = Gesture.Pan().enabled(dismissible);
+
+    /* Claim only a drag heading the way the panel closes, and only once it is
+     * clearly a drag rather than a slow press — 8pt, the same threshold the
+     * old responder used. `failOffset` on the other axis is the half that
+     * `PanResponder` had no answer for: a finger moving across the panel is
+     * somebody scrolling its contents, and this hands that over rather than
+     * swallowing it. */
+    if (vertical) {
+      gesture.activeOffsetY(8).failOffsetX([-12, 12]);
+    } else {
+      gesture.activeOffsetX(closingSign * 8).failOffsetY([-12, 12]);
+    }
+
+    return gesture
+      .onUpdate((event) => {
+        "worklet";
+        const raw = vertical ? event.translationY : event.translationX;
         // Clamped to the closing direction. Dragging a left drawer rightwards
         // should do nothing, not tear it off its edge.
-        const closing = sd === "left" ? Math.min(0, raw) : Math.max(0, raw);
-        // eslint-disable-next-line react-hooks/immutability
-        drag.value = closing;
-      },
-      onPanResponderRelease: (_e, g) => {
-        const { vertical: v, side: sd, extent: ex } = gesture.current;
-        const moved = Math.abs(v ? g.dy : g.dx);
-        const speed = Math.abs(v ? g.vy : g.vx);
-        // Half the panel, or a flick. The velocity term is what makes a short
-        // sharp swipe work — without it you have to drag the whole way, which
-        // is the difference between a drawer and a slow puzzle.
-        const dismiss = moved > ex / 2 || speed > 0.5;
+        drag.value = closingSign < 0 ? Math.min(0, raw) : Math.max(0, raw);
+      })
+      .onEnd((event) => {
+        "worklet";
+        const moved = Math.abs(
+          vertical ? event.translationY : event.translationX
+        );
+        const speed = Math.abs(vertical ? event.velocityY : event.velocityX);
 
-        if (dismiss) {
-          gesture.current.setOpen(false);
-          // Left where it is: the close animation runs from here, and resetting
-          // it first would snap the panel back before it left.
+        /* Half the panel, or a flick. The velocity term is what makes a short
+         * sharp swipe work — without it you have to drag the whole way, which
+         * is the difference between a drawer and a slow puzzle.
+         *
+         * Gesture-handler reports velocity in points per second where
+         * `PanResponder` reported points per millisecond, so the old `0.5`
+         * became 500. Same gesture, different unit — worth stating, because
+         * carrying the number across unchanged would have made a flick need to
+         * be a thousand times faster and looked like the velocity term simply
+         * not working.
+         */
+        if (moved > extent / 2 || speed > 500) {
+          // Left where it is: the close animation runs from here, and snapping
+          // it back first would show the panel returning before it left.
+          runOnJS(setOpen)(false);
           return;
         }
-        // eslint-disable-next-line react-hooks/immutability
         drag.value = travelTo(0, { duration: durations.springSoft });
-      },
-      onPanResponderTerminate: () => {
-        // eslint-disable-next-line react-hooks/immutability
-        drag.value = travelTo(0, { duration: durations.springSoft });
-      }
-    })
-  );
-  /* eslint-enable react-hooks/refs */
+      })
+      .onFinalize((_event, success) => {
+        "worklet";
+        // A gesture cancelled by the system — an incoming call, a parent
+        // taking over — leaves the panel wherever the finger was.
+        if (!success)
+          drag.value = travelTo(0, { duration: durations.springSoft });
+      });
+  }, [dismissible, drag, extent, setOpen, side, vertical]);
 
-  // Cleared once the panel is closed, so the next open does not start from
-  // wherever the last swipe left it.
+  /**
+   * Any leftover drag goes back as the panel opens, and is cleared once it is
+   * gone.
+   *
+   * Two moments, deliberately. Clearing on `open` going false was wrong: that
+   * happens the instant a swipe dismisses, so the panel jumped back to fully
+   * open and then slid out — exactly what the release handler above says must
+   * not happen (GRYT-429). `mounted` is the moment the panel is actually off
+   * screen, where a hard reset costs nothing to look at.
+   */
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      // eslint-disable-next-line react-hooks/immutability
+      drag.value = travelTo(0, { duration: durations.springSoft });
+    }
+  }, [open, drag]);
+
+  useEffect(() => {
+    if (!mounted) {
       // eslint-disable-next-line react-hooks/immutability
       drag.value = 0;
     }
-  }, [open, drag]);
+  }, [mounted, drag]);
 
   return (
     <Modal
@@ -339,56 +380,59 @@ function Popup({
         onPress={dismissible ? () => setOpen(false) : undefined}
         style={[{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)" }, scrimStyle]}
       >
-        <Animated.View
-          accessibilityViewIsModal
-          {...responder.panHandlers}
-          style={[
-            {
-              position: "absolute",
-              // The overhang hangs *off* the edge the panel comes from, which
-              // is the only direction that helps. It used to be added to the
-              // width instead, so the panel grew inwards — 64pt more of the
-              // screen covered, and the seam it was meant to hide still there,
-              // because the gap opens on the entering edge and that is the edge
-              // the extra material was not on.
-              top: side === "bottom" ? undefined : 0,
-              bottom: vertical ? -bleed : 0,
-              left: side === "right" ? undefined : side === "left" ? -bleed : 0,
-              right: side === "left" ? undefined : side === "right" ? -bleed : 0,
-              width: vertical ? "100%" : panelExtent,
-              height: vertical ? panelExtent : "100%",
-              // Puts the content back where it would have been without the
-              // overhang, so `size` still means what it says.
-              paddingLeft: side === "left" ? bleed : 0,
-              paddingRight: side === "right" ? bleed : 0,
-              paddingBottom: vertical ? bleed : 0,
-              backgroundColor: theme.color.surface,
-              borderColor: theme.color.border,
-              borderRightWidth: side === "left" ? 1 : 0,
-              borderLeftWidth: side === "right" ? 1 : 0,
-              borderTopWidth: vertical ? 1 : 0,
-              borderTopLeftRadius: vertical ? theme.radius.lg : 0,
-              borderTopRightRadius: vertical ? theme.radius.lg : 0
-            },
-            panelStyle
-          ]}
-        >
-          <Pressable
-            onPress={() => {}}
+        <GestureDetector gesture={pan}>
+          <Animated.View
+            accessibilityViewIsModal
             style={[
               {
-                flex: 1,
-                // Before the caller's style, so a drawer that wants to run
-                // under the island — a full-bleed image, say — still can.
-                paddingTop: vertical ? 0 : insets.top,
-                paddingBottom: insets.bottom
+                position: "absolute",
+                // The overhang hangs *off* the edge the panel comes from, which
+                // is the only direction that helps. It used to be added to the
+                // width instead, so the panel grew inwards — 64pt more of the
+                // screen covered, and the seam it was meant to hide still there,
+                // because the gap opens on the entering edge and that is the edge
+                // the extra material was not on.
+                top: side === "bottom" ? undefined : 0,
+                bottom: vertical ? -bleed : 0,
+                left:
+                  side === "right" ? undefined : side === "left" ? -bleed : 0,
+                right:
+                  side === "left" ? undefined : side === "right" ? -bleed : 0,
+                width: vertical ? "100%" : panelExtent,
+                height: vertical ? panelExtent : "100%",
+                // Puts the content back where it would have been without the
+                // overhang, so `size` still means what it says.
+                paddingLeft: side === "left" ? bleed : 0,
+                paddingRight: side === "right" ? bleed : 0,
+                paddingBottom: vertical ? bleed : 0,
+                backgroundColor: theme.color.surface,
+                borderColor: theme.color.border,
+                borderRightWidth: side === "left" ? 1 : 0,
+                borderLeftWidth: side === "right" ? 1 : 0,
+                borderTopWidth: vertical ? 1 : 0,
+                borderTopLeftRadius: vertical ? theme.radius.lg : 0,
+                borderTopRightRadius: vertical ? theme.radius.lg : 0
               },
-              style
+              panelStyle
             ]}
           >
-            {children}
-          </Pressable>
-        </Animated.View>
+            <Pressable
+              onPress={() => {}}
+              style={[
+                {
+                  flex: 1,
+                  // Before the caller's style, so a drawer that wants to run
+                  // under the island — a full-bleed image, say — still can.
+                  paddingTop: vertical ? 0 : insets.top,
+                  paddingBottom: insets.bottom
+                },
+                style
+              ]}
+            >
+              {children}
+            </Pressable>
+          </Animated.View>
+        </GestureDetector>
       </AnimatedPressable>
     </Modal>
   );
