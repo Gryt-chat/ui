@@ -1,21 +1,26 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  PanResponder,
   View,
   type LayoutChangeEvent,
   type StyleProp,
-  type ViewStyle,
+  type ViewStyle
 } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
-import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue
+} from "react-native-reanimated";
 
 import { grytScaleSteps } from "@gryt/theme";
 import { springy } from "../../motion";
 import { toneRamp, useTheme, type ComponentTone } from "../../theme";
-import { useDragLock } from "../internal/dragLock";
 import { valueAt } from "./sliderValue";
 
-export type SliderTone = Extract<ComponentTone, "primary" | "secondary" | "neutral" | "danger">;
+export type SliderTone = Extract<
+  ComponentTone,
+  "primary" | "secondary" | "neutral" | "danger"
+>;
 
 export interface SliderProps {
   value?: number;
@@ -38,12 +43,23 @@ const THUMB = 20;
 /**
  * Dragging, on a surface where a drag might belong to something else.
  *
- * The web gets pointer capture: once the thumb is grabbed, every move belongs to
- * the slider until release. React Native has no equivalent, so this claims the
- * gesture through PanResponder and holds it, which is what stops a horizontal
- * drag being read as a scroll by whatever list the slider is sitting in.
+ * The web gets pointer capture: once the thumb is grabbed, every move belongs
+ * to the slider until release. React Native has no equivalent, and volume
+ * sliders live in settings lists, so a horizontal drag has to be told apart
+ * from the scroll it is sitting in.
  *
- * Volume sliders live in scroll views, so this matters more here than it looks.
+ * `activeOffsetX` is that distinction, declared rather than fought over. The
+ * pan claims the gesture once the finger has clearly gone sideways, and a
+ * vertical drag never activates it at all, so the scroll view keeps it. That
+ * replaces `onPanResponderTerminationRequest: () => false` plus the `DragLock`
+ * that had to switch the scroll view off, because refusing to hand back a JS
+ * responder says nothing to the native recogniser that actually does the
+ * scrolling on iOS.
+ *
+ * Both gestures run on the JS thread. The Drawer's stay worklets because they
+ * only move a shared value; every callback here has to reach React state and
+ * the consumer's `onValueChange`, so the hop is happening either way and
+ * pretending otherwise would only add a way to get it wrong.
  */
 export function Slider({
   value: controlled,
@@ -56,12 +72,9 @@ export function Slider({
   disabled,
   tone = "primary",
   style,
-  accessibilityLabel,
+  accessibilityLabel
 }: SliderProps) {
   const theme = useTheme();
-  // Held for the duration of a drag, so the list this is sitting in stays put.
-  // A no-op outside a ScrollView from this package — see useDragLock.
-  const dragLock = useDragLock();
   const [uncontrolled, setUncontrolled] = useState(defaultValue);
   const value = controlled ?? uncontrolled;
   const [width, setWidth] = useState(0);
@@ -74,11 +87,6 @@ export function Slider({
   // fire from touch events, which is always after an effect has run.
   const state = useRef({ width, value, min, max, step, disabled });
   const emit = useRef({ onValueChange, onValueCommit, controlled });
-  // Same reason as the others: the responder callbacks are created once, and
-  // the lock's identity changes whenever the count does.
-  const lockRef = useRef(dragLock);
-  /** Where the current gesture started, in track coordinates. */
-  const origin = useRef(0);
   /**
    * `active:scale-[0.94]` on the web. `hover:scale-[1.12]` has no touch
    * equivalent, so only the press half ports.
@@ -96,10 +104,6 @@ export function Slider({
     emit.current = { onValueChange, onValueCommit, controlled };
   }, [onValueChange, onValueCommit, controlled]);
 
-  useEffect(() => {
-    lockRef.current = dragLock;
-  }, [dragLock]);
-
   const valueFromX = (x: number) => {
     const s = state.current;
     // Before layout there is no position to read, so hold what we have rather
@@ -113,115 +117,116 @@ export function Slider({
     emit.current.onValueChange?.(next);
   };
 
-  // useState with an initialiser rather than useRef(...).current, which counts
-  // as reading a ref during render. Created once either way.
-  //
-  // The rule is disabled for the block below because it reads what the closures
-  // mention, not what runs. Every state.current here executes inside a touch
-  // callback, long after render, and none of it decides what is drawn — the
-  // rendered position comes from `value` and `width` directly. The thing the
-  // rule protects against, a component rendering from a ref and not updating,
-  // cannot happen here.
-  /* eslint-disable react-hooks/refs */
-  const [responder] = useState(() =>
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => !state.current.disabled,
-      // Claimed on move as well, so a drag that begins as a scroll still lands
-      // here once it is clearly horizontal.
-      onMoveShouldSetPanResponder: () => !state.current.disabled,
-      onPanResponderGrant: (e) => {
-        lockRef.current.lock();
-        // Where the finger landed, kept for the drag to offset from.
-        origin.current = e.nativeEvent.locationX;
+  /**
+   * Tap to seek, drag to scrub, and nothing at all if the finger goes down the
+   * page.
+   *
+   * Two gestures rather than one because they want opposite thresholds. A tap
+   * has to work with no movement; a drag must not claim anything until it is
+   * clearly sideways, or every attempt to scroll past a slider moves it. `Race`
+   * lets whichever qualifies win, and only one ever does.
+   */
+  const gesture = useMemo(() => {
+    const seek = (x: number) => {
+      const s = state.current;
+      if (s.disabled) return;
+      // Absolute position in the track, not accumulated translation.
+      //
+      // The old version anchored on where the gesture started and added
+      // `gesture.dx`, which is the distance from the *start* rather than from
+      // the last event — so offsetting the live value by it added the whole
+      // travel again every move and the thumb accelerated away from the
+      // finger. Reading the position directly cannot express that bug.
+      apply(valueFromX(x));
+    };
+
+    const pan = Gesture.Pan()
+      .runOnJS(true)
+      .enabled(!disabled)
+      // Sideways, and clearly so. Below this the scroll view keeps the gesture,
+      // which is the whole reason the lock is gone.
+      .activeOffsetX([-4, 4])
+      .onBegin(() => {
+        // On touch down rather than on activation: the press feedback should
+        // answer the finger, not wait to find out where it is going.
         thumbScale.value = springy(grytScaleSteps.sliderThumb.press);
-        apply(valueFromX(e.nativeEvent.locationX));
-      },
-      // `gesture.dx` is the distance from where the gesture *started*, not from
-      // the previous event. Offsetting the live value by it therefore adds the
-      // whole travel again on every move, and the thumb accelerates away from
-      // the finger — 200px wide, 0-100, dragging to x=50 then 60 then 70 gave
-      // 25, then 55, then 90. Tapping was always fine, because grant uses
-      // locationX directly, which is what made it look like a rendering
-      // problem rather than an arithmetic one.
-      //
-      // Anchoring on the grant position is also what makes the drag continue
-      // from the finger: grant has already seeked the thumb there.
-      onPanResponderMove: (_e, gesture) => {
-        apply(valueFromX(origin.current + gesture.dx));
-      },
-      // The fix for GRYT-390's "the slider still lets me scroll the page".
-      //
-      // The comment above says this "claims the gesture and holds it". It did
-      // not: `onPanResponderTerminationRequest` defaults to *granting*, so the
-      // enclosing ScrollView asked for the responder as soon as the finger
-      // moved and got it. Every drag inside a scrolling screen scrolled the
-      // screen, which is every drag — volume sliders live in settings lists.
-      //
-      // Saying no is the whole fix. `onShouldBlockNativeResponder` stops the
-      // native scroll view taking over underneath on Android, where the JS
-      // answer alone is not enough.
-      onPanResponderTerminationRequest: () => false,
-      // A refused termination can still happen — the system can take the
-      // responder away regardless, on a call or a notification. Without this
-      // the lock leaks and the screen never scrolls again, which is a far
-      // worse bug than the one being fixed.
-      onPanResponderTerminate: () => {
-        lockRef.current.unlock();
+      })
+      .onStart((event) => seek(event.x))
+      .onUpdate((event) => seek(event.x))
+      .onEnd(() => emit.current.onValueCommit?.(state.current.value))
+      .onFinalize(() => {
         thumbScale.value = springy(1);
-      },
-      onShouldBlockNativeResponder: () => true,
-      onPanResponderRelease: () => {
-        lockRef.current.unlock();
-        thumbScale.value = springy(1);
+      });
+
+    const tap = Gesture.Tap()
+      .runOnJS(true)
+      .enabled(!disabled)
+      .onEnd((event, success) => {
+        if (!success) return;
+        seek(event.x);
         emit.current.onValueCommit?.(state.current.value);
-      },
-    }),
-  );
-  /* eslint-enable react-hooks/refs */
+      });
+
+    return Gesture.Race(pan, tap);
+    // `apply` and `valueFromX` read refs that are written in effects, so they
+    // do not need to be dependencies — and listing them would rebuild the
+    // gesture on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [disabled, thumbScale]);
 
   const ratio = (value - min) / (max - min || 1);
 
   return (
-    <View
-      accessibilityRole="adjustable"
-      accessibilityLabel={accessibilityLabel}
-      accessibilityValue={{ min, max, now: value }}
-      onLayout={(e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width)}
-      style={[{ height: THUMB, justifyContent: "center", opacity: disabled ? 0.5 : 1 }, style]}
-      {...responder.panHandlers}
-    >
+    <GestureDetector gesture={gesture}>
       <View
-        style={{
-          height: TRACK_HEIGHT,
-          borderRadius: TRACK_HEIGHT / 2,
-          backgroundColor: theme.scales.neutral[4],
-        }}
+        accessibilityRole="adjustable"
+        accessibilityLabel={accessibilityLabel}
+        accessibilityValue={{ min, max, now: value }}
+        onLayout={(e: LayoutChangeEvent) =>
+          setWidth(e.nativeEvent.layout.width)
+        }
+        style={[
+          {
+            height: THUMB,
+            justifyContent: "center",
+            opacity: disabled ? 0.5 : 1
+          },
+          style
+        ]}
       >
         <View
           style={{
-            width: `${ratio * 100}%`,
-            height: "100%",
+            height: TRACK_HEIGHT,
             borderRadius: TRACK_HEIGHT / 2,
-            backgroundColor: ramp[8],
+            backgroundColor: theme.scales.neutral[4]
           }}
+        >
+          <View
+            style={{
+              width: `${ratio * 100}%`,
+              height: "100%",
+              borderRadius: TRACK_HEIGHT / 2,
+              backgroundColor: ramp[8]
+            }}
+          />
+        </View>
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            {
+              position: "absolute",
+              left: Math.max(0, ratio * width - THUMB / 2),
+              width: THUMB,
+              height: THUMB,
+              borderRadius: THUMB / 2,
+              backgroundColor: ramp[8],
+              borderWidth: 2,
+              borderColor: theme.color.bg
+            },
+            thumbStyle
+          ]}
         />
       </View>
-      <Animated.View
-        pointerEvents="none"
-        style={[
-          {
-            position: "absolute",
-            left: Math.max(0, ratio * width - THUMB / 2),
-            width: THUMB,
-            height: THUMB,
-            borderRadius: THUMB / 2,
-            backgroundColor: ramp[8],
-            borderWidth: 2,
-            borderColor: theme.color.bg,
-          },
-          thumbStyle,
-        ]}
-      />
-    </View>
+    </GestureDetector>
   );
 }

@@ -104,7 +104,6 @@ export {
   type SheetTitleProps,
   type SheetTriggerProps,
 } from "./components/Sheet/Sheet";
-export { useDragLock, type DragLock } from "./components/internal/dragLock";
 export {
   ToastProvider,
   useToast,
