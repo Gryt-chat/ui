@@ -24,6 +24,7 @@ import { grytDrawerBleed } from "@gryt/theme";
 import { durations, easeSpringTight } from "../../motion";
 import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
 import { useTheme } from "../../theme";
+import { nextPresentation } from "./presentation";
 
 /**
  * A bottom sheet, which is the phone's modal.
@@ -202,17 +203,23 @@ function Content({ children, style }: SheetContentProps) {
    * has never been presented takes it *out* of the provider's registry — after
    * which `present()` is a no-op and the sheet never opens again. It looks like
    * the open prop being ignored, and it is not: it is the close that ran first.
+   *
+   * **It has to be cleared by `onDismiss` as well**, which is the other way a
+   * sheet stops being presented and the one this missed. A flick down dismisses
+   * the modal itself and *then* tells React, so the effect that follows finds
+   * `presented` still true and calls `dismiss()` on a modal that is already
+   * gone — the same unregistering call the ref exists to prevent, arriving by
+   * the other door. Every sheet in the app so far was opened by a trigger and
+   * closed for good, so nothing noticed until something wanted one back.
    */
   const presented = useRef(false);
 
   useEffect(() => {
-    if (isOpen) {
-      presented.current = true;
-      ref.current?.present();
-    } else if (presented.current) {
-      presented.current = false;
-      ref.current?.dismiss();
-    }
+    const next = nextPresentation(isOpen, presented.current);
+    presented.current = next.presented;
+
+    if (next.action === "present") ref.current?.present();
+    else if (next.action === "dismiss") ref.current?.dismiss();
   }, [isOpen, ref]);
 
   // The modal renders nothing until it is presented, so there is no invisible
@@ -325,7 +332,14 @@ function Content({ children, style }: SheetContentProps) {
       // React asking, so the state has to be told. Uncontrolled, this is what
       // makes the next `present` work; controlled, it is how the parent finds
       // out its sheet is gone.
-      onDismiss={() => setOpen(false)}
+      //
+      // `presented` first, and not as a tidy-up: the modal has already
+      // dismissed itself by the time this runs, and leaving the ref true lets
+      // the effect below dismiss it a second time. See the note on the ref.
+      onDismiss={() => {
+        presented.current = false;
+        setOpen(false);
+      }}
       animationConfigs={animationConfigs}
       backdropComponent={renderBackdrop}
       backgroundComponent={renderBackground}
