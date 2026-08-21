@@ -1,9 +1,13 @@
 import {
   createContext,
+  type ComponentProps,
+  type ComponentType,
   type ReactNode,
+  type RefObject,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState
 } from "react";
 import {
@@ -13,7 +17,12 @@ import {
   type StyleProp,
   type ViewStyle
 } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import {
+  FlatList as GestureFlatList,
+  Gesture,
+  GestureDetector,
+  ScrollView as GestureScrollView
+} from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -35,6 +44,35 @@ interface DrawerContextValue {
 }
 
 const DrawerContext = createContext<DrawerContextValue | null>(null);
+
+/**
+ * Scrollables inside the panel, so the drawer's pan can be told to let them
+ * through.
+ *
+ * gesture-handler settles two recognisers by reference — there is no way to say
+ * "defer to whatever scrollable happens to be in there". A drawer's children
+ * are the caller's, so the drawer cannot find them; they have to announce
+ * themselves. That is why this is a scrollable the drawer hands you rather than
+ * a prop you point at one, and it is the same answer `@gorhom/bottom-sheet`
+ * reaches with `BottomSheetScrollView`.
+ */
+/**
+ * What `simultaneousWithExternalGesture` accepts.
+ *
+ * gesture-handler types its external references as a ref to a *component type*,
+ * which a mounted scroll view is not. That typing predates the current API and
+ * the value it wants is the instance, so the two are reconciled with one cast
+ * where a scrollable registers itself, rather than by loosening everything
+ * this passes through.
+ */
+type ScrollableRef = RefObject<ComponentType<object> | null | undefined>;
+
+interface DrawerScrollables {
+  register: (ref: ScrollableRef) => void;
+  unregister: (ref: ScrollableRef) => void;
+}
+
+const DrawerScrollContext = createContext<DrawerScrollables | null>(null);
 
 function useDrawer(part: string) {
   const value = useContext(DrawerContext);
@@ -285,6 +323,29 @@ function Popup({
    * simpler and would give up the whole point: the panel tracks the finger on
    * the UI thread, with nothing to be blocked by a busy bridge.
    */
+  /**
+   * Scrollables that have announced themselves, and the pan is rebuilt when one
+   * does.
+   *
+   * State rather than a ref precisely so it rebuilds: gesture-handler resolves
+   * these when the gesture is attached, and a child's ref is still empty at the
+   * detector's first attach. Registering flips this, the memo below runs again,
+   * and the detector re-attaches with something to point at.
+   */
+  const [scrollables, setScrollables] = useState<ScrollableRef[]>([]);
+
+  const scrollRegistry = useMemo<DrawerScrollables>(
+    () => ({
+      register: (ref) =>
+        setScrollables((current) =>
+          current.includes(ref) ? current : [...current, ref]
+        ),
+      unregister: (ref) =>
+        setScrollables((current) => current.filter((r) => r !== ref))
+    }),
+    []
+  );
+
   const pan = useMemo(() => {
     const closingSign = side === "left" ? -1 : 1;
 
@@ -300,6 +361,18 @@ function Popup({
       gesture.activeOffsetY(8).failOffsetX([-12, 12]);
     } else {
       gesture.activeOffsetX(closingSign * 8).failOffsetY([-12, 12]);
+    }
+
+    /* Let the scrollables run. Without this the drawer's recogniser competes
+     * with the scroll view's and wins, so a list inside the panel cannot move —
+     * which it could not, on either `PanResponder` or a bare pan (GRYT-431).
+     *
+     * "Simultaneous" overstates what happens: the axis rules above mean this
+     * pan does not activate on a vertical drag at all, so in practice the
+     * scroll view has it alone. What this removes is the blocking that was
+     * happening before either of them had decided anything. */
+    if (scrollables.length > 0) {
+      gesture.simultaneousWithExternalGesture(...scrollables);
     }
 
     return gesture
@@ -343,7 +416,7 @@ function Popup({
         if (!success)
           drag.value = travelTo(0, { duration: durations.springSoft });
       });
-  }, [dismissible, drag, extent, setOpen, side, vertical]);
+  }, [dismissible, drag, extent, scrollables, setOpen, side, vertical]);
 
   /**
    * Any leftover drag goes back as the panel opens, and is cleared once it is
@@ -429,7 +502,9 @@ function Popup({
                 style
               ]}
             >
-              {children}
+              <DrawerScrollContext.Provider value={scrollRegistry}>
+                {children}
+              </DrawerScrollContext.Provider>
             </Pressable>
           </Animated.View>
         </GestureDetector>
@@ -457,4 +532,61 @@ function Close({
   );
 }
 
-export const Drawer = { Root, Trigger, Portal, Popup, Close };
+/**
+ * Announce a scrollable to the drawer around it, for as long as it is mounted.
+ *
+ * Silently does nothing outside a `Drawer.Popup`, which is the right answer for
+ * a component that is only ever a scroll view with one extra job — throwing
+ * would make it unusable in any shared piece that might or might not be in a
+ * drawer.
+ */
+function useRegisterScrollable(ref: RefObject<unknown>) {
+  const asExternal = ref as ScrollableRef;
+  const registry = useContext(DrawerScrollContext);
+  const register = registry?.register;
+  const unregister = registry?.unregister;
+
+  useEffect(() => {
+    if (!register || !unregister) return;
+    register(asExternal);
+    return () => unregister(asExternal);
+  }, [asExternal, register, unregister]);
+}
+
+export type DrawerScrollViewProps = ComponentProps<typeof GestureScrollView>;
+
+/**
+ * The scroll view to use inside a drawer.
+ *
+ * React Native's own will not scroll in there: the drawer's pan and the scroll
+ * view's native recogniser both want the touch, and gesture-handler settles
+ * that by reference — which means the two have to know about each other. This
+ * is that introduction, and it is why the drawer hands you a scrollable rather
+ * than taking a prop pointing at one.
+ */
+function DrawerScrollView(props: DrawerScrollViewProps) {
+  const ref = useRef(null);
+  useRegisterScrollable(ref);
+  return <GestureScrollView ref={ref} {...props} />;
+}
+
+export type DrawerFlatListProps<ItemT> = ComponentProps<
+  typeof GestureFlatList<ItemT>
+>;
+
+/** The same, for a list long enough to deserve one. */
+function DrawerFlatList<ItemT>(props: DrawerFlatListProps<ItemT>) {
+  const ref = useRef(null);
+  useRegisterScrollable(ref);
+  return <GestureFlatList ref={ref} {...props} />;
+}
+
+export const Drawer = {
+  Root,
+  Trigger,
+  Portal,
+  Popup,
+  Close,
+  ScrollView: DrawerScrollView,
+  FlatList: DrawerFlatList
+};
