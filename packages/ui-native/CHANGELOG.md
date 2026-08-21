@@ -1,5 +1,65 @@
 # @gryt/ui-native
 
+## 0.6.1
+
+### Patch Changes
+
+- 1572209: The Drawer's scrim fades with the panel again.
+
+  GRYT-408 took the fade out on the grounds that "the web's Popup declares
+  `transition-transform` and nothing else". That is true, and it is about
+  `Drawer.Popup` — the panel, which still only translates and should. The
+  backdrop is a different element with its own rules, and the web's say the
+  opposite:
+
+  ```
+  "transition-opacity duration-(--gryt-dur-spring-soft) ease-spring-tight",
+  "data-starting-style:opacity-0 data-ending-style:opacity-0",
+  ```
+
+  It starts and ends at zero, over the same duration and easing as the panel's
+  slide. Without that on native the scrim was at full strength before the panel
+  was on screen, stayed there while it slid away, and blinked off with the Modal.
+
+  The drag term is unchanged and is a separate rule: pushing the panel away
+  lightens the scrim in proportion, so a half-gone drawer does not sit under a
+  full-strength one. Opacity is now `progress * (1 - dragged)` rather than
+  `1 - dragged`, and `progress` already runs on `travel` — `easeSpringTight` at
+  `springSoft` — so this is the web's curve rather than a new one.
+
+  The Sheet was right already: `BottomSheetBackdrop` interpolates between
+  `appearsOnIndex` and `disappearsOnIndex`, so it fades with the sheet without
+  being told.
+
+- 3c96894: The Drawer's swipe-to-dismiss runs on `react-native-gesture-handler`.
+
+  It was on `PanResponder` because gesture callbacks from this package's
+  prebuilt output were measured doing nothing (GRYT-393) — the babel plugin was
+  not reaching `node_modules`, so nothing became a worklet. Measured again with
+  a probe built inside this package: both worklet and `runOnJS` callbacks report
+  correctly. Whatever it was has been fixed underneath us.
+
+  What changes, in order of how much it matters:
+
+  - **The callbacks are worklets.** The panel tracks the finger on the UI
+    thread, rather than through the JS bridge.
+  - **The axis rules are declared rather than hand-rolled.** `activeOffsetX` and
+    `failOffsetY` replace threshold arithmetic in `onMoveShouldSetPanResponder`,
+    and `onPanResponderTerminationRequest: () => false` — a way of keeping the
+    drag by never handing it back — is gone.
+  - **A dismissed panel no longer returns to open before it leaves.** `drag` was
+    cleared when `open` went false, which is the instant a swipe dismisses, so
+    the panel jumped back and then slid out. It is cleared once the panel is
+    unmounted instead (GRYT-429).
+
+  Velocity is now points per second rather than points per millisecond, so the
+  flick threshold moved from `0.5` to `500`. Same gesture, different unit.
+
+  This does **not** make a `ScrollView` inside a Drawer scroll. That does not
+  work today either — verified against both builds — and fixing it needs the
+  drawer to compose with the scrollable by reference, which is an API decision
+  rather than a port. GRYT-431.
+
 ## 0.6.0
 
 ### Minor Changes
