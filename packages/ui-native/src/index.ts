@@ -101,6 +101,7 @@ export {
   type SheetProps,
   SheetProvider,
   type SheetProviderProps,
+  type SheetScrollViewProps,
   type SheetTitleProps,
   type SheetTriggerProps,
 } from "./components/Sheet/Sheet";
