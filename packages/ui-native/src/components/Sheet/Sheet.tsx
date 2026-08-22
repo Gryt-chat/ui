@@ -373,6 +373,22 @@ export interface SheetContentProps {
  * `BottomSheetView`, which sizes itself to its children, so a scrollable inside
  * it has no bounded height to scroll within and simply grows until the sheet
  * clips it.
+ *
+ * ## Why it is `height: "100%"`
+ *
+ * `flex: 1` is not enough on its own: `BottomSheetView` measures its children,
+ * so there is no bounded height for a flex child to be all of. Anything inside
+ * that wants to be the whole sheet — a column with a row pinned to the bottom,
+ * a list — collapses to the height of its own content instead.
+ *
+ * Every caller in the mobile app passed `height: "100%"` to get around that,
+ * all three for the same reason, which is a default being wrong rather than
+ * three callers being unusual. It is in the style array before `style`, so a
+ * caller can still override it exactly as it can the padding. GRYT-516.
+ *
+ * A sheet whose content is genuinely shorter than the snap point is unchanged
+ * by this: the view has no background of its own, so a full-height one draws
+ * the same as a short one.
  */
 function Content({ children, style }: SheetContentProps) {
   const { theme, insets, sheet, modalProps } = useSheetModal();
@@ -383,6 +399,7 @@ function Content({ children, style }: SheetContentProps) {
         style={[
           {
             flex: 1,
+            height: "100%",
             padding: theme.space(4),
             // The home indicator's strip, on top of whatever padding the caller
             // asked for. Without it the last row of content is clipped by it —
