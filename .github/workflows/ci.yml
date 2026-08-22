@@ -18,6 +18,15 @@ jobs:
           bun-version: 1.2.0
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
+      # New here. Lint has never run in CI, so twelve errors accumulated on main
+      # unseen — two files' worth of React Compiler findings in ui-native, fixed
+      # or explained in the same change that added this step (GRYT-528).
+      #
+      # The warning ceiling is a ratchet, not a target. There are 108 today and
+      # `--max-warnings 108` only fails when that grows, so the backlog cannot
+      # get bigger while nobody is made to clear it first. Lower the number as
+      # they go; the honest end state is 0.
+      - run: bun run lint
       - run: bun run test
       - run: bun run build
       - run: bunx publint packages/theme

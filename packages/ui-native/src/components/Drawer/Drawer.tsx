@@ -32,7 +32,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { grytDrawerBleed } from "@gryt/theme";
-import { durations, springy, travel as travelTo } from "../../motion";
+import { durations, travel as travelTo } from "../../motion";
 import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
 import { useTheme } from "../../theme";
 
@@ -220,7 +220,20 @@ function Popup({
    */
   const [mounted, setMounted] = useState(open);
 
+  /*
+   * react-hooks/set-state-in-effect is right that this is state derived from a
+   * prop, and wrong that it can be derived during render. `mounted` has to be
+   * true whenever `open` is — which a render-time `open || exiting` gives —
+   * but it also has to *stay* true after `open` goes false, until the exit
+   * animation ends. Knowing that `open` just changed is the part that needs an
+   * effect; the alternative is reading a previous-value ref during render,
+   * which react-hooks/refs forbids in the same breath.
+   *
+   * Keeping a panel mounted through its own exit is one of the cases the React
+   * docs leave to an effect, so this is the pattern working rather than a smell.
+   */
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (open) setMounted(true);
   }, [open]);
 
@@ -230,6 +243,10 @@ function Popup({
     if (reducedMotion) {
       // eslint-disable-next-line react-hooks/immutability
       progress.value = open ? 1 : 0;
+      // Same as the mount above: there is no animation to wait for here, so
+      // the unmount happens immediately, but it is still driven by `open`
+      // having changed.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (!open) setMounted(false);
       return;
     }
@@ -375,6 +392,12 @@ function Popup({
       gesture.simultaneousWithExternalGesture(...scrollables);
     }
 
+    /* Every `drag.value = …` below runs in a worklet on the UI thread, when the
+     * finger moves — not while this memo is building the recogniser.
+     * react-hooks/immutability cannot see through the closure and reads a
+     * Reanimated shared value being assigned during render, which is also why
+     * the two `progress.value` writes further up already carry this. */
+    /* eslint-disable react-hooks/immutability */
     return gesture
       .onUpdate((event) => {
         "worklet";
@@ -416,6 +439,7 @@ function Popup({
         if (!success)
           drag.value = travelTo(0, { duration: durations.springSoft });
       });
+    /* eslint-enable react-hooks/immutability */
   }, [dismissible, drag, extent, scrollables, setOpen, side, vertical]);
 
   /**

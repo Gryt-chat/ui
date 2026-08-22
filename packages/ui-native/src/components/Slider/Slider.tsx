@@ -126,6 +126,17 @@ export function Slider({
    * clearly sideways, or every attempt to scroll past a slider moves it. `Race`
    * lets whichever qualifies win, and only one ever does.
    */
+  /* Everything below runs when a finger moves, not while this memo builds the
+   * recognisers. react-hooks/refs and react-hooks/immutability cannot see
+   * through the closures: they read `state.current` and `emit.current` being
+   * touched during render, and `thumbScale.value` — a Reanimated shared value —
+   * being assigned there. Both actually happen inside gesture callbacks.
+   *
+   * The refs are deliberate and explained where they are declared: they are
+   * what lets the gesture read the live value without rebuilding itself on
+   * every render, which is the same reason the dependency list below is
+   * short. */
+  /* eslint-disable react-hooks/refs, react-hooks/immutability */
   const gesture = useMemo(() => {
     const seek = (x: number) => {
       const s = state.current;
@@ -173,6 +184,7 @@ export function Slider({
     // gesture on every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [disabled, thumbScale]);
+  /* eslint-enable react-hooks/refs, react-hooks/immutability */
 
   const ratio = (value - min) / (max - min || 1);
 
