@@ -52,9 +52,10 @@ const SCREENS = [
  * The themed box everything is rendered in.
  *
  * GrytProvider puts the theme's custom properties on this element, so the whole
- * subtree reads them. Overlays are the exception — a Select or a Tooltip
- * portals to document.body and lands outside this, where the site's own theme
- * still applies.
+ * subtree reads them. Overlays used to be the exception — a Select or a Tooltip
+ * portalled to document.body and landed outside this, where the site's own
+ * theme still applies, so a dropdown opened inside a preview came up in the
+ * wrong colours. `containOverlays` keeps them in here instead (GRYT-242).
  */
 function Stage({
   children,
@@ -67,14 +68,26 @@ function Stage({
 }) {
   return (
     <GrytProvider
+      containOverlays
       className={[
         "h-[38rem] max-h-[78vh] w-full rounded-(--gryt-radius-xl)",
-        "border border-gryt-border bg-gryt-bg text-gryt-text",
-        scroll ? "overflow-y-auto" : "overflow-hidden"
+        "border border-gryt-border bg-gryt-bg text-gryt-text"
       ].join(" ")}
       theme={theme}
     >
-      {children}
+      {/* The clipping lives here rather than on the provider, because the
+          provider is now also where overlays are portalled. Leave the two on
+          one element and a dropdown opened near the bottom of the stage is cut
+          off at the stage's edge — measured at 78px of a 106px popup. The
+          themed box and the scroll viewport are different jobs. */}
+      <div
+        className={[
+          "h-full w-full rounded-(--gryt-radius-xl)",
+          scroll ? "overflow-y-auto" : "overflow-hidden"
+        ].join(" ")}
+      >
+        {children}
+      </div>
     </GrytProvider>
   );
 }

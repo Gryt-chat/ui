@@ -1,5 +1,6 @@
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
 import type { ReactElement, ReactNode } from "react";
+import { usePortalContainer } from "../../portalContainer";
 import { cn } from "../utils/cn";
 import { popupMotion } from "../utils/styles";
 
@@ -25,10 +26,12 @@ export function Tooltip({
   sideOffset = 8,
   title
 }: TooltipProps) {
+  const portalContainer = usePortalContainer();
+
   return (
     <BaseTooltip.Root>
       <BaseTooltip.Trigger render={children} />
-      <BaseTooltip.Portal>
+      <BaseTooltip.Portal container={portalContainer}>
         <BaseTooltip.Positioner
           side={side}
           sideOffset={sideOffset}
