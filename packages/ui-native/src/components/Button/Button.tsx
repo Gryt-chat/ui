@@ -69,7 +69,7 @@ export function Button({
   const animate = !reducedMotion && !hasPopup && !disabled;
   const press = usePressScale(PRESSED_SCALE, !animate);
 
-  const background =
+  const fill =
     tone === "primary"
       ? theme.color.accent
       : tone === "secondary"
@@ -80,7 +80,7 @@ export function Button({
             ? theme.color.danger
             : "transparent";
 
-  const foreground =
+  const label =
     tone === "primary"
       ? theme.color.onAccent
       : tone === "secondary"
@@ -90,6 +90,24 @@ export function Button({
           : tone === "ghost"
             ? theme.color.muted
             : theme.color.text;
+
+  /**
+   * Disabled drops the fill rather than fading it.
+   *
+   * Every tone used to share one `opacity: 0.5`, and on the quiet tones that
+   * reads. On a filled one it does not: the accent at half opacity over a dark
+   * screen is still a saturated purple button, and nothing in it says it will
+   * not respond. That cost two taps on a Save button before I believed it was
+   * inert, having written the disabled condition myself half an hour earlier.
+   * GRYT-511, and the web's Button makes the same change in the same commit.
+   *
+   * So a disabled filled button becomes the surface it sits on, with a muted
+   * label — same size, same word, no longer claiming to be the action. Ghost
+   * has no fill to lose and its label is already muted, so the opacity below is
+   * what carries it.
+   */
+  const background = disabled && tone !== "ghost" ? theme.color.surfaceRaised : fill;
+  const foreground = disabled ? theme.color.muted : label;
 
   return (
     <Animated.View style={[press.style, style]}>
@@ -108,7 +126,12 @@ export function Button({
           gap: theme.space(2),
           borderRadius: theme.radius.full,
           backgroundColor: background,
-          opacity: disabled ? 0.5 : 1,
+          /* Lighter than it was, because the fill swap is doing the work now.
+             It is kept because `startIcon` and `endIcon` are the caller's
+             elements with the caller's colours — nothing here can mute those,
+             and an icon at full strength on a dead button is the same lie in
+             miniature. */
+          opacity: disabled ? 0.6 : 1,
         }}
         {...rest}
       >
