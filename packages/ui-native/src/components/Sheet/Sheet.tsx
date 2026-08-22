@@ -5,6 +5,7 @@ import {
   useEffect,
   useMemo,
   useRef,
+  type ComponentProps,
   type ReactNode,
 } from "react";
 import { Pressable, Text, View, type StyleProp, type ViewStyle } from "react-native";
@@ -12,6 +13,7 @@ import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetModalProvider,
+  BottomSheetScrollView,
   BottomSheetView,
   useBottomSheetTimingConfigs,
   type BottomSheetBackdropProps,
@@ -162,12 +164,14 @@ function Trigger({ children, style }: SheetTriggerProps) {
   );
 }
 
-export interface SheetContentProps {
-  children?: ReactNode;
-  style?: StyleProp<ViewStyle>;
-}
-
-function Content({ children, style }: SheetContentProps) {
+/**
+ * Everything about presenting the modal, shared by `Content` and `ScrollView`.
+ *
+ * The two are alternatives rather than one inside the other, so both need the
+ * whole `BottomSheetModal` — the effect that presents it, the backdrop, the
+ * background and the animation curve. This is that, once.
+ */
+function useSheetModal() {
   const theme = useTheme();
   /**
    * The phone's own furniture, which the sheet has to stay clear of at both
@@ -184,7 +188,7 @@ function Content({ children, style }: SheetContentProps) {
   // on the provider inside the modal.
   const sheet = useContext(SheetContext);
   if (!state || !sheet) {
-    throw new Error("Sheet.Content must be rendered inside Sheet.");
+    throw new Error("Sheet.Content and Sheet.ScrollView must be rendered inside Sheet.");
   }
 
   const { ref, isOpen, setOpen, snapPoints } = state;
@@ -312,13 +316,18 @@ function Content({ children, style }: SheetContentProps) {
     [],
   );
 
-  return (
-    <BottomSheetModal
-      ref={ref}
-      snapPoints={snapPoints}
+  return {
+    theme,
+    insets,
+    /* Re-provided inside the modal by whichever part renders the children. See
+     * the note at the call sites — `@gorhom/portal` does not carry context. */
+    sheet,
+    modalProps: {
+      ref,
+      snapPoints,
       // So a sheet at 100% stops below the Dynamic Island rather than running
       // its content under it.
-      topInset={insets.top}
+      topInset: insets.top,
       // Off, because `snapPoints` is the whole point of this component.
       //
       // gorhom v5 defaults dynamic sizing on, which measures the content and
@@ -326,8 +335,8 @@ function Content({ children, style }: SheetContentProps) {
       // asked for 70% whose content had no intrinsic height collapsed to the
       // height of its own footer, which looks like the snap points being
       // ignored because they were.
-      enableDynamicSizing={false}
-      enablePanDownToClose
+      enableDynamicSizing: false,
+      enablePanDownToClose: true,
       // A flick down or a tap on the backdrop closes it without anything in
       // React asking, so the state has to be told. Uncontrolled, this is what
       // makes the next `present` work; controlled, it is how the parent finds
@@ -336,19 +345,40 @@ function Content({ children, style }: SheetContentProps) {
       // `presented` first, and not as a tidy-up: the modal has already
       // dismissed itself by the time this runs, and leaving the ref true lets
       // the effect below dismiss it a second time. See the note on the ref.
-      onDismiss={() => {
+      onDismiss: () => {
         presented.current = false;
         setOpen(false);
-      }}
-      animationConfigs={animationConfigs}
-      backdropComponent={renderBackdrop}
-      backgroundComponent={renderBackground}
-      handleIndicatorStyle={{
+      },
+      animationConfigs,
+      backdropComponent: renderBackdrop,
+      backgroundComponent: renderBackground,
+      handleIndicatorStyle: {
         backgroundColor: theme.color.border,
         width: 36,
         height: 4,
-      }}
-    >
+      },
+    },
+  };
+}
+
+export interface SheetContentProps {
+  children?: ReactNode;
+  style?: StyleProp<ViewStyle>;
+}
+
+/**
+ * The sheet's body, for content that fits.
+ *
+ * Use `Sheet.ScrollView` instead when it might not — this is a
+ * `BottomSheetView`, which sizes itself to its children, so a scrollable inside
+ * it has no bounded height to scroll within and simply grows until the sheet
+ * clips it.
+ */
+function Content({ children, style }: SheetContentProps) {
+  const { theme, insets, sheet, modalProps } = useSheetModal();
+
+  return (
+    <BottomSheetModal {...modalProps}>
       <BottomSheetView
         style={[
           {
@@ -380,6 +410,69 @@ function Content({ children, style }: SheetContentProps) {
         */}
         <SheetContext.Provider value={sheet}>{children}</SheetContext.Provider>
       </BottomSheetView>
+    </BottomSheetModal>
+  );
+}
+
+export type SheetScrollViewProps = ComponentProps<typeof BottomSheetScrollView>;
+
+/**
+ * The sheet's body, for content that might not fit.
+ *
+ * **In place of `Sheet.Content`, not inside it.** React Native's own
+ * `ScrollView` does not scroll inside a sheet at all — the sheet's pan gesture
+ * and the scroll view's native recogniser both want the touch, and
+ * gesture-handler settles that by reference, so the two have to know about each
+ * other. `BottomSheetScrollView` is that introduction, which is the same answer
+ * `Drawer.ScrollView` reaches by the same route.
+ *
+ * Being the sheet's body rather than a child of one is what makes it a single
+ * component to reach for. Three callers in the app had assembled this by hand
+ * and all three had to get four things right together: `padding: 0` and
+ * `height: "100%"` on `Sheet.Content`, so the scrollable has a bounded height
+ * to scroll within rather than a box that grows with it; the keyboard inset;
+ * and `keyboardShouldPersistTaps`, without which the first tap on a button only
+ * dismisses the keyboard. GRYT-492.
+ *
+ * What it does not decide is the snap point. A sheet that takes a keyboard
+ * wants a tall one — at 46% the field and the button underneath it are both
+ * behind the keyboard — and how tall depends on what is in it.
+ *
+ * The padding is the same as `Sheet.Content`'s, moved to the content container
+ * where it belongs: on the scrollable itself it would clip the scrolling
+ * content instead of spacing it.
+ */
+function ScrollView({
+  children,
+  style,
+  contentContainerStyle,
+  ...props
+}: SheetScrollViewProps) {
+  const { theme, insets, sheet, modalProps } = useSheetModal();
+
+  return (
+    <BottomSheetModal {...modalProps}>
+      <BottomSheetScrollView
+        // The keyboard's height as a bottom inset, so what it covers can still
+        // be scrolled into what is left of the sheet.
+        automaticallyAdjustKeyboardInsets
+        // Or the first tap on anything only dismisses the keyboard, and the
+        // button has to be pressed twice.
+        keyboardShouldPersistTaps="handled"
+        {...props}
+        style={[{ flex: 1 }, style]}
+        contentContainerStyle={[
+          {
+            padding: theme.space(4),
+            // The home indicator's strip, as in `Content`.
+            paddingBottom: theme.space(4) + insets.bottom,
+          },
+          contentContainerStyle,
+        ]}
+      >
+        {/* Provided again for the same reason as in `Content`. */}
+        <SheetContext.Provider value={sheet}>{children}</SheetContext.Provider>
+      </BottomSheetScrollView>
     </BottomSheetModal>
   );
 }
@@ -422,4 +515,10 @@ function Title({ children, style }: SheetTitleProps) {
   );
 }
 
-export const Sheet = Object.assign(Root, { Trigger, Content, Close, Title });
+export const Sheet = Object.assign(Root, {
+  Trigger,
+  Content,
+  ScrollView,
+  Close,
+  Title,
+});
