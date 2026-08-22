@@ -1,6 +1,7 @@
 import { Select as BaseSelect } from "@base-ui/react/select";
 import { CaretUpDown, Check } from "@phosphor-icons/react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { usePortalContainer } from "../../portalContainer";
 import { cn } from "../utils/cn";
 import { focusRing, popupMotion, popupSurface } from "../utils/styles";
 
@@ -30,8 +31,8 @@ export interface SelectProps
 }
 
 /*
- * The popup portals to the document body, and there is deliberately no way to
- * change that.
+ * The popup portals to the document body, and no caller can change that per
+ * call site. It follows GrytProvider's `containOverlays` and nothing else.
  *
  * A `portalContainer` prop existed briefly so a Select inside a dialog could
  * render into it rather than beside it. It does not work, and it caused the
@@ -51,9 +52,12 @@ export interface SelectProps
  * Portalling to the body is correct on both axes and already renders above the
  * dialog, so there was never a stacking problem to solve.
  *
- * If a popup ever genuinely needs to live inside a themed subtree — previewing
- * one theme inside another, which is the other half of GRYT-242 — that wants
- * its own mechanism rather than this prop back.
+ * The other half of GRYT-242 — a popup that genuinely needs to live inside a
+ * themed subtree, because a second theme is being previewed inside a page — is
+ * now `containOverlays` on GrytProvider. Deliberately not this prop back: the
+ * container is set once, for a subtree, by whoever established the theme. A
+ * per-call prop is the thing somebody reaches for to fix a layout problem,
+ * which is how the bug above got made.
  */
 export function Select({
   className,
@@ -63,6 +67,8 @@ export function Select({
   size = "medium",
   ...props
 }: SelectProps) {
+  const portalContainer = usePortalContainer();
+
   return (
     <BaseSelect.Root items={options} {...props}>
       <div className={cn("gryt-select flex w-full flex-col gap-1.5", className)}>
@@ -89,7 +95,7 @@ export function Select({
         </BaseSelect.Trigger>
       </div>
 
-      <BaseSelect.Portal>
+      <BaseSelect.Portal container={portalContainer}>
         <BaseSelect.Positioner
           sideOffset={6}
           className="gryt-select-positioner outline-none"

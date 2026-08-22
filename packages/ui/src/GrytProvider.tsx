@@ -1,7 +1,9 @@
 import { Tooltip } from "@base-ui/react/tooltip";
+import { useRef } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { createGrytTheme } from "@gryt/theme";
 import type { GrytThemeOptions } from "@gryt/theme";
+import { PortalContainerContext } from "./portalContainer";
 
 export interface GrytProviderProps {
   children: ReactNode;
@@ -10,6 +12,16 @@ export interface GrytProviderProps {
   className?: string;
   // Shared hover delay for every Tooltip below this provider, in milliseconds.
   tooltipDelay?: number;
+  /**
+   * Render overlays inside this provider's element rather than in `document.body`.
+   *
+   * Off by default, and should stay off for an app with one theme: the body is
+   * the right place for a popup, and `:root` already carries the variables it
+   * needs. Turn it on when this provider is one theme inside a page that has
+   * another — previewing a theme in a panel — where an overlay in the body
+   * would come up in the surrounding page's colours instead (GRYT-242).
+   */
+  containOverlays?: boolean;
 }
 
 function isCssVariables(value: object): value is CSSProperties {
@@ -24,8 +36,13 @@ export function GrytProvider({
   children,
   className,
   theme,
-  tooltipDelay = 400
+  tooltipDelay = 400,
+  containOverlays = false
 }: GrytProviderProps) {
+  // A ref rather than state: Base UI's `container` accepts one, so the element
+  // does not have to exist on the first render and nothing has to re-render
+  // when it does.
+  const containerRef = useRef<HTMLDivElement | null>(null);
   /**
    * No theme, no variables.
    *
@@ -47,8 +64,12 @@ export function GrytProvider({
         : createGrytTheme(theme);
 
   return (
-    <div className={className} style={style}>
-      <Tooltip.Provider delay={tooltipDelay}>{children}</Tooltip.Provider>
+    <div className={className} style={style} ref={containerRef}>
+      <PortalContainerContext.Provider
+        value={containOverlays ? containerRef : undefined}
+      >
+        <Tooltip.Provider delay={tooltipDelay}>{children}</Tooltip.Provider>
+      </PortalContainerContext.Provider>
     </div>
   );
 }
