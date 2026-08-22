@@ -1,5 +1,68 @@
 # @gryt/ui-native
 
+## 0.10.0
+
+### Minor Changes
+
+- a3d358e: `Sheet.ScrollView`, for a sheet with more in it than fits.
+
+  React Native's own `ScrollView` does not scroll inside a sheet: the sheet's pan
+  and the scroll view's native recogniser both want the touch, and gesture-handler
+  settles that by reference, so the two have to know about each other.
+  `BottomSheetScrollView` is that introduction — the same reason `Drawer` hands you
+  a scrollable rather than taking a prop pointing at one.
+
+  It replaces `Sheet.Content` rather than sitting inside it:
+
+  ```tsx
+  <Sheet snapPoints={["88%"]} open={open} onOpenChange={setOpen}>
+    <Sheet.ScrollView>{fields}</Sheet.ScrollView>
+  </Sheet>
+  ```
+
+  That is the part worth having. `Sheet.Content` is a `BottomSheetView`, which
+  sizes itself to its children, so even the right scroll view inside one has no
+  bounded height to scroll within and simply grows until the sheet clips it. Three
+  callers had assembled the workaround by hand and each had to get four separate
+  things right: `padding: 0` and `height: "100%"` on the content, the keyboard
+  inset, and `keyboardShouldPersistTaps` — without which the first tap on a button
+  only dismisses the keyboard.
+
+  It takes every `BottomSheetScrollView` prop, and defaults
+  `automaticallyAdjustKeyboardInsets` and `keyboardShouldPersistTaps="handled"` on.
+  The padding is `Sheet.Content`'s, moved to the content container where it spaces
+  the content instead of clipping it, and the home indicator's inset is still
+  added at the bottom.
+
+  What it does not decide is the snap point. A sheet that takes a keyboard wants a
+  tall one — at 46% a field and the button under it are both behind the keyboard —
+  and how tall depends on what is in it.
+
+  `Sheet.Content` is unchanged for content that fits.
+
+### Patch Changes
+
+- b576d22: A disabled button loses its fill instead of fading.
+
+  Every tone shared one 50% opacity. On the quiet tones that reads — they are
+  already low-contrast, so halving them puts them under the surrounding text. On a
+  filled tone it does not: the accent at half opacity over a dark page is still a
+  saturated purple button, and there is nothing in it that says it will not
+  respond.
+
+  So `primary`, `secondary` and `danger` now take the surface colour when
+  disabled, with a muted label. Same size, same word, no longer claiming to be the
+  action. `neutral` already sat on that surface and only its label changes.
+  `ghost` has no fill to lose and its label is already muted, so the opacity is
+  what carries it there.
+
+  The opacity stays, lighter at 60%, because `startIcon` and `endIcon` are the
+  caller's elements with the caller's colours — nothing inside the button can mute
+  those, and an icon at full strength on a dead button is the same problem in
+  miniature.
+
+  Both packages, so the two do not disagree about what disabled looks like.
+
 ## 0.9.0
 
 ### Minor Changes
