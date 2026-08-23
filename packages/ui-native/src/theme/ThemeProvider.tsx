@@ -3,6 +3,7 @@ import { useColorScheme } from "react-native";
 
 import {
   createNativeTheme,
+  type FontFaces,
   type GrytAppearance,
   type NativeThemeOptions,
 } from "./createNativeTheme";
@@ -12,6 +13,14 @@ export interface GrytThemeProviderProps {
   appearance?: GrytAppearance;
   color?: NativeThemeOptions["color"];
   radius?: NativeThemeOptions["radius"];
+  /**
+   * The faces this app has registered, by the names React Native knows them as.
+   *
+   * The library ships no font files. Load your own and pass the names here, and
+   * every `Text` the library renders takes the right one. Leave it out and
+   * everything falls back to the platform default, exactly as before.
+   */
+  fonts?: FontFaces;
   /**
    * Follow the OS setting when `appearance` is not given.
    *
@@ -26,6 +35,7 @@ export function GrytThemeProvider({
   appearance,
   color,
   radius,
+  fonts,
   followSystemAppearance = false,
   children,
 }: GrytThemeProviderProps) {
@@ -38,8 +48,8 @@ export function GrytThemeProvider({
     const resolved =
       appearance ??
       (followSystemAppearance && systemScheme === "light" ? "light" : undefined);
-    return createNativeTheme({ appearance: resolved, color, radius });
-  }, [appearance, color, radius, followSystemAppearance, systemScheme]);
+    return createNativeTheme({ appearance: resolved, color, radius, fonts });
+  }, [appearance, color, radius, fonts, followSystemAppearance, systemScheme]);
 
   return (
     <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>

@@ -1,3 +1,5 @@
+import type { TextStyle } from "react-native";
+
 import {
   alphaScale,
   grytLightTokens,
@@ -31,6 +33,61 @@ export interface NativeThemeOptions {
   color?: Partial<Record<keyof typeof grytTokens.color, string>>;
   radius?: Partial<Record<keyof typeof grytTokens.radius, number>>;
   appearance?: GrytAppearance;
+  fonts?: FontFaces;
+}
+
+/**
+ * The faces an app has registered, by the names React Native knows them as.
+ *
+ * **The library ships no font files and is not going to.** A font is a
+ * megabyte-scale asset with a licence attached, and bundling one would make
+ * every consumer carry it whether they use it or not. What the library can do
+ * is stop hard-coding the platform default: an app loads its own faces —
+ * `expo-font`, `Font.loadAsync`, a native `Info.plist` entry, whichever — and
+ * passes the resulting family names in here.
+ *
+ * **One family per weight rather than one family with weights inside it.**
+ * Grouping faces under a single family name and letting `fontWeight` select
+ * between them works on iOS, where the OS reads the name table and assembles
+ * the family itself. Android does not: a custom family there wants an XML
+ * definition per weight, and a `fontWeight` it cannot satisfy is ignored rather
+ * than synthesised. Naming each face is the shape that behaves the same on both.
+ *
+ * Every field is optional. A gap falls back to the nearest lighter face that
+ * was given, and a theme with no faces at all behaves exactly as this library
+ * did before any of this existed.
+ */
+export interface FontFaces {
+  /** 400. The one everything else falls back to. */
+  regular?: string;
+  /** 500. */
+  medium?: string;
+  /** 600. */
+  semibold?: string;
+  /** 700. */
+  bold?: string;
+  /** 800 and up. */
+  extrabold?: string;
+  /** The code face, 400. */
+  mono?: string;
+  /** The code face, 600 and up. */
+  monoSemibold?: string;
+}
+
+/**
+ * What a component spreads into a `Text` style to get the right face.
+ *
+ * Both halves, and never both at once. With faces configured it is a
+ * `fontFamily` and no weight; with none it is a `fontWeight` and no family.
+ *
+ * The weight is dropped deliberately once a face is chosen. The file already
+ * carries the weight, and leaving the number on asks the platform to
+ * synthesise a bolder version of an already-bold face — on Android that is a
+ * visibly smeared double-bold, and on iOS it is a subtler one.
+ */
+export interface FontStyle {
+  fontFamily?: string;
+  fontWeight?: TextStyle["fontWeight"];
 }
 
 /** Twelve steps, the same shape `@gryt/ui` uses. Index 0 is the page. */
@@ -82,12 +139,27 @@ export interface NativeTheme {
   radius: { sm: number; md: number; lg: number; xl: number; full: number };
   /** Multiples of 4, matching the Tailwind spacing the web components use. */
   space: (steps: number) => number;
+  /**
+   * The face for a weight, as a style fragment to spread.
+   *
+   * ```tsx
+   * <Text style={{ fontSize: 16, ...theme.font("600") }}>
+   * ```
+   *
+   * Returns a `fontWeight` and nothing else when the theme has no faces, which
+   * is what makes this safe to adopt everywhere at once: a consumer who sets no
+   * fonts sees no change.
+   */
+  font: (weight?: TextStyle["fontWeight"], options?: { mono?: boolean }) => FontStyle;
+  /** The faces this theme was built with, for anything that needs the raw name. */
+  fonts: FontFaces;
 }
 
 const SPACE_UNIT = 4;
 
 export function createNativeTheme(options: NativeThemeOptions = {}): NativeTheme {
   const light = options.appearance === "light";
+  const fonts: FontFaces = options.fonts ?? {};
 
   const color = {
     ...grytTokens.color,
@@ -151,7 +223,67 @@ export function createNativeTheme(options: NativeThemeOptions = {}): NativeTheme
     },
     radius: { ...grytTokens.radius, ...options.radius },
     space: (steps: number) => steps * SPACE_UNIT,
+    font: (weight, fontOptions) => faceFor(fonts, weight, fontOptions?.mono ?? false),
+    fonts,
   };
+}
+
+/**
+ * A weight as a number.
+ *
+ * `"bold"` is 700 and `"normal"` is 400, per the CSS values React Native takes.
+ * `undefined` is 400 as well — an unstyled `Text` is regular.
+ */
+function weightNumber(weight: TextStyle["fontWeight"]): number {
+  if (weight === undefined || weight === null || weight === "normal") return 400;
+  if (weight === "bold") return 700;
+  const parsed = typeof weight === "number" ? weight : Number.parseInt(weight, 10);
+  return Number.isFinite(parsed) ? parsed : 400;
+}
+
+/**
+ * The face for a weight, or the weight itself when there is no face.
+ *
+ * Falls **down** through the configured faces rather than up: an app that gives
+ * only `regular` and `bold` should draw 600 in bold rather than in regular,
+ * because a semibold rendered at regular reads as a missing emphasis while one
+ * rendered bold reads as slightly too much. So each rung tries itself and then
+ * everything lighter, and the first rung that exists wins going down from the
+ * asked weight.
+ *
+ * Returning the bare `fontWeight` when nothing matches is the whole
+ * compatibility story: a theme built without `fonts` yields exactly the styles
+ * this library used before it had any of this.
+ */
+function faceFor(
+  fonts: FontFaces,
+  weight: TextStyle["fontWeight"],
+  mono: boolean,
+): FontStyle {
+  const n = weightNumber(weight);
+
+  if (mono) {
+    const face = n >= 600 ? (fonts.monoSemibold ?? fonts.mono) : fonts.mono;
+    return face ? { fontFamily: face } : { fontWeight: weight };
+  }
+
+  /* Heaviest first, so the ladder can be walked from the asked weight down. */
+  const ladder: [number, string | undefined][] = [
+    [800, fonts.extrabold],
+    [700, fonts.bold],
+    [600, fonts.semibold],
+    [500, fonts.medium],
+    [400, fonts.regular],
+  ];
+
+  for (const [step, face] of ladder) {
+    if (n >= step && face) return { fontFamily: face };
+  }
+
+  /* Below every configured rung — a 200 on a theme that only set `bold`.
+   * `regular` is the right answer if it exists, and the platform default is the
+   * right answer if it does not. */
+  return fonts.regular ? { fontFamily: fonts.regular } : { fontWeight: weight };
 }
 
 export const darkTheme = createNativeTheme();

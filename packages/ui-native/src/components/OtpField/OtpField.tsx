@@ -1,5 +1,10 @@
 import { useRef, useState } from "react";
-import { Pressable, Text, TextInput, View, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
+import { TextInput } from "../../internal/TextInput";
+/* The wrapper is a value; a ref is parameterised on the underlying native
+   class, so the type comes straight from React Native. */
+import type { TextInput as NativeTextInput } from "react-native";
+import { Text } from "../../internal/Text";
 
 import { useTheme } from "../../theme";
 
@@ -38,7 +43,7 @@ export function OtpField({
   const [uncontrolled, setUncontrolled] = useState("");
   const value = controlled ?? uncontrolled;
   const [focused, setFocused] = useState(false);
-  const input = useRef<TextInput>(null);
+  const input = useRef<NativeTextInput>(null);
 
   const setValue = (next: string) => {
     const digits = next.replace(/\D/g, "").slice(0, length);

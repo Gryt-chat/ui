@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { Pressable, Text, View, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
+import { Text } from "../../internal/Text";
 import Animated from "react-native-reanimated";
 
 import { usePressScale } from "../../motion";

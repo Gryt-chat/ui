@@ -127,6 +127,17 @@ export {
   type Side,
 } from "./overlay/placePopup";
 export { useOpenState, type OpenStateProps } from "./overlay/useOpenState";
+/**
+ * `Text` and `TextInput` in the theme's face.
+ *
+ * Every component in this library already draws through these. They are
+ * exported because an app's own screens have the same problem — React Native
+ * has no cascade, so a font given to the provider does not reach a `Text`
+ * written by hand — and rewriting the same wrapper in every app that uses this
+ * library would be the library not finishing its job.
+ */
+export { Text, type TextProps } from "./internal/Text";
+export { TextInput, type TextInputProps } from "./internal/TextInput";
 export { useReducedMotion } from "./hooks/useReducedMotion";
 export {
   durations,

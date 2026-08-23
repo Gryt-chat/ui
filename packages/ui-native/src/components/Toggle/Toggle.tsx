@@ -1,5 +1,6 @@
 import { useState, type ReactNode } from "react";
-import { Pressable, Text, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, type StyleProp, type ViewStyle } from "react-native";
+import { Text } from "../../internal/Text";
 import Animated from "react-native-reanimated";
 
 import { grytScaleSteps } from "@gryt/theme";

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Image, Text, View, type StyleProp, type ViewStyle } from "react-native";
+import { Image, View, type StyleProp, type ViewStyle } from "react-native";
+import { Text } from "../../internal/Text";
 
 import { useTheme } from "../../theme";
 
