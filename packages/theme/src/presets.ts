@@ -32,11 +32,11 @@
  * These ship with the library rather than with the docs site, because the docs
  * site is not the only thing that lists them: the client offers the same set,
  * and it should get a new one by taking a newer @gryt/ui rather than by
- * somebody copying eleven palettes across by hand.
+ * somebody copying twelve palettes across by hand.
  */
 
 import type { GrytRadiusKey, GrytTheme } from "./theme";
-import { grytTheme } from "./theme";
+import { cloneGrytTheme, grytTheme } from "./theme";
 
 export interface GrytThemePreset {
   id: string;
@@ -57,6 +57,8 @@ const SOFT: Radius = { sm: 6, md: 8, lg: 14, xl: 18, full: 999 };
 const CRISP: Radius = { sm: 4, md: 6, lg: 10, xl: 14, full: 6 };
 const SHADCN: Radius = { sm: 6, md: 8, lg: 10, xl: 14, full: 10 };
 const SQUARE: Radius = { sm: 2, md: 4, lg: 6, xl: 8, full: 4 };
+/** One value the whole way up, pills included. */
+const EIGHT: Radius = { sm: 8, md: 8, lg: 8, xl: 8, full: 8 };
 
 export const grytPresets: GrytThemePreset[] = [
   {
@@ -66,6 +68,19 @@ export const grytPresets: GrytThemePreset[] = [
     group: "Gryt",
     source: "github.com/Gryt-chat/code-theme",
     theme: grytTheme
+  },
+  {
+    /* Credits to Carlo, who made this in the generator and sent the link.
+       Same colours as above — the only change is the radius, and the one that
+       matters is `full`: it drops 999 to 8, so the controls that were pills
+       (buttons, the search field, badges) become rectangles with the same
+       corner as everything else. */
+    id: "gryt-rounded",
+    name: "Gryt Rounded",
+    note: "The shipped palette, every corner at eight pixels. Made by Carlo.",
+    group: "Gryt",
+    source: "Carlo",
+    theme: { ...cloneGrytTheme(grytTheme), name: "Gryt Rounded", radius: EIGHT }
   },
   {
     id: "ember",
