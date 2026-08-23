@@ -1,5 +1,7 @@
 import { useState, type ReactNode } from "react";
-import { Pressable, Text, TextInput, View, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
+import { TextInput } from "../../internal/TextInput";
+import { Text } from "../../internal/Text";
 
 import { useTheme } from "../../theme";
 

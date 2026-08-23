@@ -3,12 +3,12 @@ import {
   Modal,
   Pressable,
   ScrollView,
-  Text,
   View,
   type StyleProp,
   type TextStyle,
   type ViewStyle,
 } from "react-native";
+import { Text } from "../../internal/Text";
 
 import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
 import { useTheme } from "../../theme";

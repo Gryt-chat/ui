@@ -9,12 +9,12 @@ import {
 import {
   Pressable,
   ScrollView,
-  Text,
   View,
   type LayoutChangeEvent,
   type StyleProp,
   type ViewStyle,
 } from "react-native";
+import { Text } from "../../internal/Text";
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
 
 import { useReducedMotion } from "../../hooks/useReducedMotion";

@@ -5,6 +5,8 @@ export {
   type GrytAppearance,
   type NativeTheme,
   type NativeThemeOptions,
+  type FontFaces,
+  type FontStyle,
   type Ramp,
 } from "./createNativeTheme";
 export { GrytThemeProvider, type GrytThemeProviderProps } from "./ThemeProvider";

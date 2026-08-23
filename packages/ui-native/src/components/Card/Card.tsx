@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { Text, View, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
+import { View, type StyleProp, type TextStyle, type ViewStyle } from "react-native";
+import { Text } from "../../internal/Text";
 
 import { useTheme } from "../../theme";
 

@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState, type ReactNode } from "react";
-import { Pressable, Text, View, type StyleProp, type ViewStyle } from "react-native";
+import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
+import { Text } from "../../internal/Text";
 
 import { AnchoredPopup } from "../../overlay/AnchoredPopup";
 import { useAnchorMeasure } from "../../overlay/useAnchoredPosition";
