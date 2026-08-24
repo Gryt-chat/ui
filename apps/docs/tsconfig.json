@@ -3,6 +3,7 @@
   "compilerOptions": {
     "types": ["vite/client"],
     "paths": {
+      "@gryt/owl": ["../../packages/owl/src/index.ts"],
       "@gryt/theme": ["../../packages/theme/src/index.ts"],
       "@gryt/ui": ["../../packages/ui/src/index.ts"]
     }
