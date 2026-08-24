@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": ["node", "vitest/globals"],
+    // No DOM, deliberately, and the same reason @gryt/theme drops it: this
+    // package has to run in a React Native app, and the way that promise rots
+    // is somebody reaching for `document` in a helper and nothing stopping
+    // them. It builds strings; there is nothing here a DOM would help with.
+    "lib": ["ES2022"]
+  },
+  "include": ["src"]
+}

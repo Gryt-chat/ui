@@ -13,9 +13,9 @@
     // built. Declaration emit cannot: pulling the sibling's source into the
     // program puts files outside rootDir, which tsc refuses.
     //
-    // By build time @gryt/theme is built — bun orders the workspace by dependency
-    // and this package depends on it — so resolving through the exports map to
-    // dist is both correct and available.
+    // By build time @gryt/theme and @gryt/owl are built — the root build script
+    // runs the libraries in sequence rather than letting bun schedule them — so
+    // resolving through the exports map to dist is both correct and available.
     "baseUrl": ".",
     "paths": {}
   },

@@ -57,6 +57,25 @@ properties and no cascade, so components take a theme from context instead:
 Rendered outside a provider, components get the dark theme rather than nothing,
 which matches `@gryt/ui` shipping its dark tokens on `:root`.
 
+## Avatars are generated, not fetched
+
+`Avatar` takes a `seed` and draws that person's owl from `@gryt/owl` — the same
+generator and the same seed the web uses, so somebody looks the same in both
+apps.
+
+```tsx
+import { Avatar } from "@gryt/ui-native";
+import { avatarSeed } from "@gryt/owl";
+
+<Avatar seed={avatarSeed(member.nickname)} name={member.nickname} size="md" />;
+```
+
+`react-native-svg` is a peer dependency for it. React Native's `Image` cannot
+decode SVG from a data URI, so the markup goes to `SvgXml` instead — the web
+hands the same string to an `<img>`, and that is the one place the two renderers
+genuinely differ. Without a seed the component is what it was: the `source`
+image if there is one, initials if there is not.
+
 ## Parity exceptions
 
 Kept from the first component rather than the first argument. Full 1:1 is the
@@ -77,7 +96,7 @@ goal, so the honest list is worth more than a claim of parity that isn't one.
 | `Dialog` | Android's back button stands in for Escape | It is the only hardware dismiss a phone has. `AlertDialog` disables it along with the scrim, matching Base UI suppressing outside-press and Escape. |
 | `Switch` | Drawn from tokens, not React Native's `Switch` | The platform control is green on iOS and Material on Android, and `thumbColor`/`trackColor` do not reach the whole shape. A design system that cannot colour its own switch is not one. |
 | `Select` | A list, not the platform picker | iOS gives a wheel and Android a dialog. Neither takes the Gryt palette and they look nothing like each other. |
-| `Checkbox` | The tick is a text glyph, not a Phosphor icon | An icon set would be this package's first runtime dependency, for one glyph, and `@phosphor-icons/react` renders SVG that React Native cannot mount without `react-native-svg`. That is a decision for whoever needs icons, not for a checkbox. |
+| `Checkbox` | The tick is a text glyph, not a Phosphor icon | An icon set would be this package's first icon dependency, for one glyph. `react-native-svg` is a peer now, for the owl avatars, so mounting SVG is no longer the obstacle — but `@phosphor-icons/react` is still a web package, and picking a set is a decision for whoever needs icons rather than for a checkbox. |
 | `Tabs` | Each tab draws its own underline; `Indicator` renders nothing | Base UI slides one indicator between tabs, measured against the active one. Sliding it here means measuring every tab and animating between them, which is real work for a decoration. The underline appears rather than slides. |
 | `Tabs` | The panel has no `tabpanel` role | React Native has `tab` and `tablist` and no `tabpanel`. The panel is reachable, it just does not announce itself as belonging to the tab. |
 | `Collapsible` | Unmounts when closed instead of animating height | The web animates height, which needs the content measured first. Doable with `onLayout` and `Animated`, at the cost of a frame at the wrong size. |

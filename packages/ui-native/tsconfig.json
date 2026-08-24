@@ -6,7 +6,7 @@
     "lib": ["ES2022"],
     "types": ["node", "vitest/globals"],
     "moduleResolution": "bundler",
-    // Resolve @gryt/theme to its source, not to dist.
+    // Resolve @gryt/theme and @gryt/owl to their source, not to dist.
     //
     // The exports map points at ./dist/index.d.ts, which only exists after
     // @gryt/theme has been built. That made this package's typecheck depend on
@@ -17,7 +17,8 @@
     // "@gryt/theme", so consumers go through the exports map as normal.
     "baseUrl": ".",
     "paths": {
-      "@gryt/theme": ["../theme/src/index.ts"]
+      "@gryt/theme": ["../theme/src/index.ts"],
+      "@gryt/owl": ["../owl/src/index.ts"]
     },
     "noEmit": true
   },

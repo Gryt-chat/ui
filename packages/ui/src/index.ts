@@ -75,6 +75,11 @@ export { ConversationItem } from "./components/ConversationItem/ConversationItem
 export type { ConversationItemProps } from "./components/ConversationItem/ConversationItem";
 export { Avatar } from "./components/Avatar/Avatar";
 export type { AvatarProps } from "./components/Avatar/Avatar";
+// The seed rule, re-exported rather than left to be looked up. Avatar's `seed`
+// prop wants a normalised nickname, and a caller who reaches for the raw one
+// gets an owl drawn from a seed nothing else uses. Everything else about the
+// generator stays in @gryt/owl, which a consumer can depend on directly.
+export { avatarSeed } from "@gryt/owl";
 export { Badge } from "./components/Badge/Badge";
 export type { BadgeProps } from "./components/Badge/Badge";
 export { Chip } from "./components/Chip/Chip";

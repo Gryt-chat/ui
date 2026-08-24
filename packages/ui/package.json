@@ -76,6 +76,7 @@
   },
   "dependencies": {
     "@gryt/theme": "^0.6.0",
+    "@gryt/owl": "^0.0.1",
     "@base-ui/react": "^1.7.0",
     "@phosphor-icons/react": "^2.1.10",
     "clsx": "^2.1.1",

@@ -66,7 +66,8 @@ export default defineConfig({
     // external, which is the opposite of what splitting it out was for. Tests
     // still need it resolvable before dist exists, and this is only the tests.
     alias: {
-      "@gryt/theme": resolve(__dirname, "../theme/src/index.ts")
+      "@gryt/theme": resolve(__dirname, "../theme/src/index.ts"),
+      "@gryt/owl": resolve(__dirname, "../owl/src/index.ts")
     }
   }
 });

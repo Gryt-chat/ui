@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { owlAvatarSvg } from "@gryt/owl";
+import { useMemo, useState } from "react";
 import { Image, View, type StyleProp, type ViewStyle } from "react-native";
+import { SvgXml } from "react-native-svg";
 import { Text } from "../../internal/Text";
 
 import { useTheme } from "../../theme";
@@ -17,6 +19,13 @@ const SIZES: Record<AvatarSize, number> = {
 export interface AvatarProps {
   name?: string;
   source?: string;
+  /**
+   * Draws this person's owl, from @gryt/owl. The same seed draws the same owl
+   * here as it does on the web, which is the point of the package.
+   *
+   * Pass `avatarSeed(nickname)` rather than the nickname itself.
+   */
+  seed?: string;
   size?: AvatarSize;
   style?: StyleProp<ViewStyle>;
 }
@@ -27,6 +36,8 @@ export interface AvatarProps {
  * Deliberately the same arithmetic as the web: sum the code units and take the
  * remainder. Anything cleverer would give a different colour on each platform
  * for the same person, which is the one outcome to avoid.
+ *
+ * Only reached with no `source` and no `seed`. An owl brings its own colour.
  */
 function toneFor(name: string): "accent" | "secondary" | "success" | "danger" | "warning" {
   const tones = ["accent", "secondary", "success", "danger", "warning"] as const;
@@ -42,11 +53,15 @@ function initials(name: string): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export function Avatar({ name = "", source, size = "md", style }: AvatarProps) {
+export function Avatar({ name = "", seed, source, size = "md", style }: AvatarProps) {
   const theme = useTheme();
   const [failed, setFailed] = useState(false);
   const px = SIZES[size];
   const ramp = theme.scales[toneFor(name)];
+
+  // Memoised for the same reason the web one is: these render in member lists
+  // that repaint often and the seed never changes under a row.
+  const owl = useMemo(() => (seed ? owlAvatarSvg(seed) : undefined), [seed]);
 
   const frame: ViewStyle = {
     width: px,
@@ -57,8 +72,9 @@ export function Avatar({ name = "", source, size = "md", style }: AvatarProps) {
     overflow: "hidden",
   };
 
-  // A broken image URL falls back to initials rather than to a blank circle.
-  // The web gets this from <img onerror>; here it is onError plus state.
+  // A broken image URL falls back to the owl, or to initials without a seed,
+  // rather than to a blank circle. The web gets this from <img onerror>; here
+  // it is onError plus state.
   if (source && !failed) {
     return (
       <View style={[frame, { backgroundColor: theme.color.surfaceRaised }, style]}>
@@ -68,6 +84,21 @@ export function Avatar({ name = "", source, size = "md", style }: AvatarProps) {
           accessibilityLabel={name || undefined}
           style={{ width: px, height: px }}
         />
+      </View>
+    );
+  }
+
+  // SvgXml with the raw markup, not an Image with a data URI: React Native's
+  // Image cannot decode SVG, which is the one place the two renderers genuinely
+  // differ. The web hands the same generator's output to an <img> and it works.
+  if (owl) {
+    return (
+      <View
+        accessibilityRole="image"
+        accessibilityLabel={name || undefined}
+        style={[frame, style]}
+      >
+        <SvgXml xml={owl} width={px} height={px} />
       </View>
     );
   }

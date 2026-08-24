@@ -20,6 +20,7 @@ WORKDIR /app
 # or apps/ means adding it here too.
 COPY package.json bun.lock tsconfig.base.json ./
 COPY packages/theme/package.json ./packages/theme/
+COPY packages/owl/package.json ./packages/owl/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/ui-native/package.json ./packages/ui-native/
 COPY apps/docs/package.json ./apps/docs/

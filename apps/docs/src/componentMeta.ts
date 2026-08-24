@@ -323,7 +323,8 @@ function RadioExample() {
   {
     slug: "avatar",
     name: "Avatar",
-    description: "Identity marker for users, servers, and conversation rows.",
+    description:
+      "Identity marker for users, servers, and conversation rows. Draws a generated owl from a seed when there is no uploaded image.",
     importName: "Avatar",
     preview: "avatar",
     code: `import { Avatar } from "@gryt/ui";
@@ -335,7 +336,13 @@ function RadioExample() {
 // fallback is what shows while the image loads, and what stays if it
 // never arrives — so it is initials rather than a spinner.
 <Avatar src="/owl.png" alt="Gryt" fallback="G" />
-<Avatar size="large" src="/owl.png" alt="Gryt" fallback="G" />`
+<Avatar size="large" src="/owl.png" alt="Gryt" fallback="G" />
+
+// seed draws this person's owl, from @gryt/owl. Pass avatarSeed(nickname)
+// rather than the nickname: the two differ for anyone not already lower
+// case. It is also what an uploaded image falls back to when it 404s.
+<Avatar seed={avatarSeed("sivert")} alt="Sivert" />
+<Avatar size="large" seed={avatarSeed("nora")} alt="Nora" />`
   },
   {
     slug: "badge",

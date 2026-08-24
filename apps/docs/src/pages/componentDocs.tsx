@@ -52,6 +52,7 @@ import {
   Tooltip,
   useToastManager
 } from "@gryt/ui";
+import { avatarSeed } from "@gryt/owl";
 import { Bell, DotsThree, PaperPlaneTilt } from "@phosphor-icons/react";
 import type { DrawerSide, Tone, ToastSeverity } from "@gryt/ui";
 import { useEffect, useState } from "react";
@@ -345,6 +346,14 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
             <Avatar size="small" src={OWL} alt="Gryt" fallback="G" />
             <Avatar src={OWL} alt="Gryt" fallback="G" />
             <Avatar size="large" src={OWL} alt="Gryt" fallback="G" />
+          </ExampleSection>
+          <ExampleSection title="Generated">
+            {/* No src, so each of these is drawn from the seed. The same
+                nickname is the same owl on every client and forever, which is
+                the point of the thing — see @gryt/owl. */}
+            {MEMBERS.slice(0, 4).map((member) => (
+              <Avatar key={member} seed={avatarSeed(member)} alt={member} />
+            ))}
           </ExampleSection>
         </div>
       );
