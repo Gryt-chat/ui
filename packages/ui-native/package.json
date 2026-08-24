@@ -36,9 +36,11 @@
     "react-native-reanimated": ">=4.0.0",
     "@gorhom/bottom-sheet": ">=5.2.0",
     "react-native-gesture-handler": ">=2.16.1",
-    "react-native-safe-area-context": ">=5.0.0"
+    "react-native-safe-area-context": ">=5.0.0",
+    "react-native-svg": ">=15.0.0"
   },
   "dependencies": {
+    "@gryt/owl": "^0.0.1",
     "@gryt/theme": "^0.6.0"
   },
   "devDependencies": {
@@ -49,6 +51,7 @@
     "react-native-gesture-handler": "^2.32.0",
     "react-native-reanimated": "^4.5.1",
     "react-native-safe-area-context": "^5.7.0",
+    "react-native-svg": "^15.14.0",
     "vitest": "^3.0.0"
   },
   "peerDependenciesMeta": {}

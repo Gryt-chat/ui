@@ -12,6 +12,7 @@ export default defineConfig({
       // build. CI runs typecheck and test before build, so resolving to source
       // is what keeps this package from depending on a sibling's artefacts.
       "@gryt/theme": resolve(__dirname, "../theme/src/index.ts"),
+      "@gryt/owl": resolve(__dirname, "../owl/src/index.ts"),
     },
   },
   test: {
