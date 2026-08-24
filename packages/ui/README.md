@@ -16,7 +16,7 @@ pnpm add @gryt/ui
 yarn add @gryt/ui
 ```
 
-Gryt UI includes Base UI, Phosphor icons, and its compiled CSS. Your app should provide React and React DOM. There is no CSS-in-JS runtime.
+Gryt UI includes Base UI, Phosphor icons, and its compiled CSS. It also brings `@gryt/theme` for the tokens and `@gryt/owl` for the generated avatars, both of which are small and have no dependencies of their own. Your app should provide React and React DOM. There is no CSS-in-JS runtime.
 
 ## Usage
 

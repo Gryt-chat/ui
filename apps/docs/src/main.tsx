@@ -19,6 +19,7 @@ import { useApplySiteTheme } from "./lib/theme/siteTheme";
 import { mdxComponents } from "./components/MdxComponents";
 import { ComponentDocPage } from "./pages/componentDocs";
 import { ExampleFullPage, ExamplePage, exampleDocs } from "./pages/examples";
+import { AvatarsPage } from "./pages/AvatarsPage";
 import { HomePage } from "./pages/HomePage";
 import { InstallationPage } from "./pages/InstallationPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
       { path: "installation", element: <InstallationPage /> },
       { path: "theme", element: <ThemePage /> },
       { path: "theme/generator", element: <ThemeGeneratorPage /> },
+      { path: "avatars", element: <AvatarsPage /> },
       {
         path: "components",
         element: <Navigate replace to="/components/button" />

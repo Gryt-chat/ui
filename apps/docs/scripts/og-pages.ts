@@ -147,6 +147,15 @@ const staticPages: OgPage[] = [
     hero: namedImport("createGrytTheme"),
     caption: "A theme is a dozen hex values. Here they are.",
     drawing: "palette"
+  },
+  {
+    route: "avatars",
+    title: "Avatars — Gryt UI",
+    description:
+      "Give @gryt/owl a name and it returns an SVG. One drawn character rather than a face generator, in thirty palettes, wearing whatever the seed picked.",
+    hero: namedImport("owlAvatarSvg"),
+    caption: "One drawn character, not a face generator.",
+    drawing: "avatar"
   }
 ];
 

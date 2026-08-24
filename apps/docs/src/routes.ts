@@ -31,6 +31,7 @@ export const staticRoutes = [
   "installation",
   "theme",
   "theme/generator",
+  "avatars",
   "components",
   "examples"
 ];
