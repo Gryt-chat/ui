@@ -114,6 +114,64 @@ function pointsPath(attrs: string, close: boolean): string {
 const IGNORED = new Set(["svg", "g", "defs", "clippath", "mask", "title", "desc", "style"]);
 
 /**
+ * One colour, spelled the one way.
+ *
+ * Everything downstream compares colours as strings — the extractor decides
+ * "this arm is painted the background, so the drawing means to remove it" with
+ * `p.fill === realPalette.background`, and the ink table is keyed on hex. A
+ * tool that writes the same colour differently is therefore a tool whose
+ * drawings quietly do the wrong thing.
+ *
+ * Quietly is the problem. A wing whose colour matches nothing falls through to
+ * "could not place this", which drops the path and adds a warning — so the arm
+ * is neither hidden nor recoloured, the bird's own wing draws, and the run
+ * succeeds. Figma writes `#6cdac8ff` and the jackets stopped dropping their
+ * arms, with a warning line as the only sign.
+ *
+ * `#rgb`, `rgb()` and `rgba()` all fold to six-digit hex. An eight-digit hex
+ * folds only when its alpha is `ff`.
+ *
+ * A real alpha is left exactly as it was. `#6cdac880` is a translucent colour
+ * and genuinely is not the background; flattening it would trade a silent miss
+ * for a silent lie, and failing loudly is the better of the two.
+ */
+export function colour(raw: string | undefined): string {
+  const value = (raw || "none").trim().toLowerCase();
+  if (value === "none" || value === "") return "";
+
+  const hex = /^#([0-9a-f]{3,8})$/.exec(value);
+  if (hex) {
+    const digits = hex[1];
+    if (digits.length === 3) return "#" + [...digits].map((d) => d + d).join("");
+    if (digits.length === 6) return value;
+    if (digits.length === 8 && digits.slice(6) === "ff") return "#" + digits.slice(0, 6);
+    return value;
+  }
+
+  const rgb = /^rgba?\(([^)]+)\)$/.exec(value);
+  if (rgb) {
+    const parts = rgb[1].split(/[\s,/]+/).filter(Boolean);
+    if (parts.length >= 4 && parts[3] !== "1" && parts[3] !== "100%") return value;
+    const channels = parts.slice(0, 3).map((part) =>
+      part.endsWith("%")
+        ? Math.round((parseFloat(part) / 100) * 255)
+        : Math.round(parseFloat(part)),
+    );
+    if (channels.length !== 3 || channels.some((n) => Number.isNaN(n))) return value;
+    return (
+      "#" +
+      channels
+        .map((n) => Math.min(255, Math.max(0, n)).toString(16).padStart(2, "0"))
+        .join("")
+    );
+  }
+
+  // A named colour, a url(#gradient), anything else. Left alone: this
+  // normalises spelling, it does not resolve colour.
+  return value;
+}
+
+/**
  * Every drawable thing in an SVG, as path data with its paint.
  *
  * `<defs>` is cut out first, so a clip path's rectangle is never mistaken for a
@@ -153,13 +211,13 @@ export function readShapes(svg: string): ReadShapesResult {
     }
     if (!d) continue;
 
-    const fill = (attr(attrs, "fill") || "none").toLowerCase();
-    const stroke = (attr(attrs, "stroke") || "none").toLowerCase();
+    const fill = colour(attr(attrs, "fill"));
+    const stroke = colour(attr(attrs, "stroke"));
     shapes.push({
       d,
-      fill: fill === "none" ? "" : fill,
-      stroke: stroke === "none" ? "" : stroke,
-      strokeWidth: stroke === "none" ? 0 : num(attrs, "stroke-width", 1),
+      fill,
+      stroke,
+      strokeWidth: stroke === "" ? 0 : num(attrs, "stroke-width", 1),
       linecap: attr(attrs, "stroke-linecap"),
       linejoin: attr(attrs, "stroke-linejoin"),
       evenodd: /fill-rule="evenodd"/.test(attrs),
