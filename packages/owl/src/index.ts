@@ -51,6 +51,7 @@ import type {
   OwlOptions,
   OwlPalette,
   OwlPart,
+  PaletteName,
   ResolvedOwl,
   Seed,
 } from "./types";
@@ -169,6 +170,11 @@ export function resolveOwl(seed: Seed, options: OwlOptions = {}): ResolvedOwl {
     palette,
     ears: options.ears ?? pickWeighted(s, "ears", EAR_WEIGHTS),
     wearing: chooseAccessories(s, options.wearing),
+    // Filtered rather than trusted. A palette name from a newer build reads as
+    // "no tint" and the accessory follows the owl, which is the same rule
+    // decodeWorn applies to an accessory key it does not recognise: one unknown
+    // thing costs that thing, not the whole avatar.
+    tint: cleanTint(options.tint),
     background,
     cornerRadius: Math.min(1, Math.max(0, options.cornerRadius ?? 0)),
   };
@@ -177,25 +183,38 @@ export function resolveOwl(seed: Seed, options: OwlOptions = {}): ResolvedOwl {
   return resolved;
 }
 
-/** Everything worn, in slot order. */
-function wornBy(c: ResolvedOwl): Accessory[] {
-  const out: Accessory[] = [];
+function cleanTint(
+  tint: OwlOptions["tint"],
+): Partial<Record<AccessorySlot, PaletteName>> {
+  if (!tint) return {};
+  const out: Partial<Record<AccessorySlot, PaletteName>> = {};
+  for (const slot of ACCESSORY_SLOTS) {
+    const name = tint[slot];
+    if (name && (PALETTE_NAMES as readonly string[]).includes(name)) out[slot] = name;
+  }
+  return out;
+}
+
+/** Everything worn, in slot order, each with the slot it came from. */
+function wornBy(c: ResolvedOwl): { slot: AccessorySlot; accessory: Accessory }[] {
+  const out: { slot: AccessorySlot; accessory: Accessory }[] = [];
   for (const slot of ACCESSORY_SLOTS) {
     const name = c.wearing[slot];
     const worn = name ? accessoryByName(name) : undefined;
-    if (worn) out.push(worn);
+    if (worn) out.push({ slot, accessory: worn });
   }
   return out;
 }
 
 function renderAccessories(
-  worn: readonly Accessory[],
-  palette: OwlPalette,
+  worn: readonly { slot: AccessorySlot; accessory: Accessory }[],
+  paletteFor: (slot: AccessorySlot) => OwlPalette,
   layer: AccessoryLayer,
 ): string {
   let out = "";
-  for (const accessory of worn) {
+  for (const { slot, accessory } of worn) {
     if (accessory.layer !== layer) continue;
+    const palette = paletteFor(slot);
     for (const p of accessory.paths) {
       // `fill="none"` is spelled out rather than left off. An SVG dropped into
       // an <img> has no page around it to inherit from, and the default is
@@ -231,14 +250,39 @@ export function owlAvatarSvg(seed: Seed, options: OwlOptions = {}): string {
 
   // A coat repaints the arms out. That has to happen before anything is drawn,
   // and it applies to the bird's own parts as well as to the coat.
-  const p = repaint(c.palette, worn);
+  const p = repaint(c.palette, worn.map((w) => w.accessory));
+
+  /*
+   * The palette a slot's accessory is painted from.
+   *
+   * The owl's own unless that slot was tinted, and the tint takes the owl's
+   * scheme rather than bringing one — a day owl in a night hat reads as a hole
+   * in the picture rather than as a colour.
+   *
+   * Built once per slot and cached, because a drawing has up to a few hundred
+   * paths and owlPalette is not free.
+   */
+  const tinted = new Map<AccessorySlot, OwlPalette>();
+  const paletteFor = (slot: AccessorySlot): OwlPalette => {
+    const name = c.tint[slot];
+    if (!name) return p;
+    let found = tinted.get(slot);
+    if (!found) {
+      // From the repainted palette, not the raw one: a coat that paints the
+      // wings out still has to paint them out in the colour the bird is on,
+      // whatever the coat itself is tinted.
+      found = { ...p, ...owlPalette(name, c.scheme) };
+      tinted.set(slot, found);
+    }
+    return found;
+  };
 
   // A drawing that brings its own version of a part says so, and the bird's own
   // is then not drawn at all. Painting it out instead would be wrong twice: the
   // eyes and the beak share a colour, and a plate-coloured shape is only
   // invisible where the plate is what happens to be behind it.
   const hidden = new Set<OwlPart>();
-  for (const accessory of worn) for (const part of accessory.hides ?? []) hidden.add(part);
+  for (const { accessory } of worn) for (const part of accessory.hides ?? []) hidden.add(part);
 
   // A drawing may name one of a pair or the pair itself, so a side is hidden by
   // either. A wink hides one eye and leaves the other; an expression that
@@ -249,19 +293,19 @@ export function owlAvatarSvg(seed: Seed, options: OwlOptions = {}): string {
     gone(part, pair) ? "" : markup;
 
   const parts =
-    renderAccessories(worn, p, "behind") +
+    renderAccessories(worn, paletteFor, "behind") +
     draw("earTufts", renderEars(m, c.ears, p.body)) +
     draw("body", renderBody(m, p.body)) +
     draw("wingLeft", renderWing(m, p.wing, -1), "wings") +
     draw("wingRight", renderWing(m, p.wing, 1), "wings") +
-    renderAccessories(worn, p, "underFace") +
+    renderAccessories(worn, paletteFor, "underFace") +
     draw("face", renderFace(m, p.face)) +
-    renderAccessories(worn, p, "overFace") +
+    renderAccessories(worn, paletteFor, "overFace") +
     draw("eyeLeft", renderEye(m, p, -1), "eyes") +
     draw("eyeRight", renderEye(m, p, 1), "eyes") +
     draw("beak", renderBeak(m, p.accent)) +
-    renderAccessories(worn, p, "overEyes") +
-    renderAccessories(worn, p, "overAll");
+    renderAccessories(worn, paletteFor, "overEyes") +
+    renderAccessories(worn, paletteFor, "overAll");
 
   const title = c.title ? `<title>${escapeXml(c.title)}</title>` : "";
   const label = c.title

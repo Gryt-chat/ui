@@ -122,6 +122,24 @@ accessories are drawn in to palette roles, and it is one table for all of them,
 so a drawing in colours already used needs nothing at all. A new colour stops
 the run and prints the line to add.
 
+### Colouring an accessory
+
+Accessories are painted from the owl's own palette, so a hat is normally the
+same family of colours as the bird. `tint` overrides that per slot:
+
+```ts
+owlAvatarSvg("sivert", { wearing: { head: "hat-winter" }, tint: { head: "amber" } })
+```
+
+A slot is as fine as it goes. "The hat" is a thing somebody can point at; "the
+second darkest tone in the hat" is not, and letting people set that is how you
+get an owl that is all hot pink except the beak. A slot picks a palette and the
+drawing's accessory roles resolve from it, so every choice is a ramp somebody
+drew.
+
+The tint takes the owl's own scheme. A day owl wearing a night hat reads as a
+hole in the picture rather than as a colour.
+
 How often a slot is filled is set once, in `SLOT_PRESENCE`, and the weights are
 sized to hit it. Adding a ninth pair of glasses changes which glasses turn up,
 not whether anyone is wearing any.

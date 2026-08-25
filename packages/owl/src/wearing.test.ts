@@ -149,3 +149,60 @@ describe("the keys themselves", () => {
     for (const a of ACCESSORIES) expect(a.key).not.toBe(EMPTY_FIELD);
   });
 });
+
+describe("a colour per slot", () => {
+  it("round-trips a tint", () => {
+    const tinted: WornLook = { ...look, tint: { head: "amber", eyewear: "teal" } };
+    const back = decodeWorn(encodeWorn(tinted));
+    expect(back?.tint).toEqual({ head: "amber", eyewear: "teal" });
+  });
+
+  it("leaves the other slots following the owl", () => {
+    const back = decodeWorn(encodeWorn({ ...look, tint: { head: "amber" } }));
+    expect(back?.tint).toEqual({ head: "amber" });
+    expect(back?.tint?.body).toBeUndefined();
+  });
+
+  it("says nothing at all when no slot is tinted", () => {
+    // Not an empty object. `tint` absent and `tint: {}` would draw the same
+    // owl, but a caller checking whether somebody has chosen colours should get
+    // a straight answer.
+    expect(decodeWorn(encodeWorn(look))?.tint).toBeUndefined();
+  });
+
+  it("reads a string written before tints existed", () => {
+    // The one that matters. Every look saved before this field was added is
+    // this shape, and if it stopped decoding — or decoded to something else —
+    // every wardrobe would empty or every owl would change at once.
+    const old = encodeWorn(look).slice(0, (ACCESSORY_SLOTS.length + 3) * 2);
+    expect(old).toHaveLength(16);
+
+    const back = decodeWorn(old);
+    expect(back).not.toBeNull();
+    expect(back?.wearing).toEqual(decodeWorn(encodeWorn(look))?.wearing);
+    expect(back?.palette).toBe("violet");
+    expect(back?.scheme).toBe("day");
+    expect(back?.ears).toBe("tufts");
+    expect(back?.tint).toBeUndefined();
+  });
+
+  it("ignores a palette it does not know", () => {
+    // A tint written by a newer build. One unknown colour costs that colour,
+    // not the look, and certainly not the avatar.
+    const withUnknown = encodeWorn(look).slice(0, 16) + "zz" + EMPTY_FIELD.repeat(4);
+    const back = decodeWorn(withUnknown);
+    expect(back).not.toBeNull();
+    expect(back?.tint).toBeUndefined();
+    expect(back?.palette).toBe("violet");
+  });
+
+  it("is as long as WORN_LENGTH says", () => {
+    expect(encodeWorn({ ...look, tint: { head: "amber" } })).toHaveLength(WORN_LENGTH);
+  });
+
+  it("hands the tint to the generator", () => {
+    const options = wornToOptions({ ...look, tint: { head: "amber" } });
+    expect(options.tint).toEqual({ head: "amber" });
+    expect(wornToOptions(look).tint).toBeUndefined();
+  });
+});
