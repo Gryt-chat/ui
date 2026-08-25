@@ -30,7 +30,7 @@
  * failure this is meant to prevent, and it looks like a scarf worn as a hat.
  */
 
-import type { AccessorySlot } from "../../src/types";
+import type { AccessorySlot } from "../types";
 
 /**
  * How likely an accessory is against the others in its slot.

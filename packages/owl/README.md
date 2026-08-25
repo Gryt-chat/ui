@@ -132,6 +132,26 @@ not whether anyone is wearing any.
 The full walkthrough, with the bird to download and a worked example, is at
 **[ui.gryt.chat/avatars/drawing](https://ui.gryt.chat/avatars/drawing)**.
 
+### Checking a drawing without cloning anything
+
+```sh
+npx @gryt/owl check my-hat.svg
+```
+
+Reads a drawing and says whether it would work: whether the filename gives it a
+slot, whether it is on the 1024 frame, whether the transforms are flattened, how
+many of the bird's paths it found, and what is left once the bird is subtracted
+back out. Anything short of all of the bird means the drawing was moved or was
+never on the base. It writes nothing, and exits non-zero when the drawing would
+not build, so it can hang off a commit hook.
+
+It looks for an `inks.ts` by walking up from the file it was given. Without one
+it reports every colour as needing a role, which is also the line you would have
+to add.
+
+`bun scripts/owl-accessory.ts` does all of this and then writes the registry.
+That one needs this repository checked out; this one needs Node.
+
 ## Who uses it
 
 - `@gryt/ui`'s `Avatar` generates one when it has a `seed` and no `src`.

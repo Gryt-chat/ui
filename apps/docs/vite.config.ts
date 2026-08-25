@@ -32,7 +32,7 @@ export default defineConfig({
       // how they stay in step.
       "@gryt/owl/authoring": resolve(
         __dirname,
-        "../../packages/owl/scripts/lib/extract.ts"
+        "../../packages/owl/scripts/authoring.ts"
       ),
       "@gryt/owl": resolve(__dirname, "../../packages/owl/src/index.ts")
     }

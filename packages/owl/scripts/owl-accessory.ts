@@ -42,7 +42,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 
-import { extract, realPalette, ROLES } from "./lib/extract";
+import { extract, realPalette, ROLES } from "../src/lib/extract";
 import { readLedger, updateLedger, writeLedger } from "./lib/keys";
 import {
   isIgnored,
@@ -50,7 +50,7 @@ import {
   weightsFor,
   type Placement,
   type Rarity,
-} from "./lib/filename";
+} from "../src/lib/filename";
 
 import * as owl from "../src/index";
 import { INKS } from "../artwork/inks";

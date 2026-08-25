@@ -332,6 +332,14 @@ export function DrawingPage() {
         <div className="my-(--space-md)">
           <CosmeticChecker />
         </div>
+        <p>
+          There is a command-line version if you would rather not leave your
+          editor, or want it on a commit hook. It needs Node and nothing else,
+          and reports the same things:
+        </p>
+        <pre>
+          <code>npx @gryt/owl check my-hat.svg</code>
+        </pre>
       </Step>
 
       <Step n={5} title="Share it">
