@@ -28,10 +28,15 @@
      is no single step that means both. */
   --color-code-paper: color-mix(in oklab, var(--gryt-bg) 92%, black);
 
-  --font-display: "Geist Variable", "Inter Variable", ui-sans-serif, system-ui,
+  /* One family, two cuts, the same as the client and the site. These used to
+     name Geist, Inter and JetBrains Mono, and they are defined here as well as
+     in the @theme block in styles.css — so setting only that one left headings
+     and code on the old faces while the body text changed. */
+  --font-display: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui,
     sans-serif;
-  --font-body: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono Variable", ui-monospace, Menlo, Consolas,
+  --font-body: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, Consolas,
     monospace;
 
   --space-3xs: 0.25rem;

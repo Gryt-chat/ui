@@ -9,7 +9,15 @@
  * Without this, every consumer restates the palette and the copies drift.
  */
 @theme {
-    --font-sans: Inter, ui-sans-serif, system-ui, sans-serif;
+    /* Gryt is set in Atkinson Hyperlegible Next everywhere it renders — the
+       client, the site, the docs, the Keycloak login theme. This token named
+       Inter, so the default the library shipped was a face Gryt does not use
+       and every consumer had to override it. The font itself is not shipped
+       here; naming it only decides what is asked for first. */
+    --font-sans: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui,
+        sans-serif;
+    --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, Consolas,
+        monospace;
     --color-gryt-bg: #111318;
     --color-gryt-surface: #1a1d24;
     --color-gryt-surface-raised: #1e2028;

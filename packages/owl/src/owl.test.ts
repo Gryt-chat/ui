@@ -78,7 +78,7 @@ describe("the same name draws the same owl", () => {
   it.each([
     ["sivert", "5696b9aa6095ea56"],
     ["ingy", "ae9902b72ddb5d51"],
-    ["gryt", "92a8add559709f9b"],
+    ["gryt", "ddd680cd5c4e30a9"],
   ])("%s is unchanged", (seed, expected) => {
     expect(digest(owlAvatarSvg(seed))).toBe(expected);
   });

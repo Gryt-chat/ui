@@ -33,6 +33,9 @@ export const INKS: Record<string, PaletteSlot> = {
   // The highlight rung, for a four-tone garment.
   "#53c5be": "trimLight",
   "#258a95": "trimLight",
+  "#6bb2b5": "trimLight",       // hat_bear
+  "#259099": "trimLight",       // hat_cap
+  "#1a7786": "trimLight",       // hat_winter
 
   // The body of an accessory.
   "#57a695": "trim",
@@ -41,6 +44,10 @@ export const INKS: Record<string, PaletteSlot> = {
   "#3e8077": "trim",
   "#21858f": "trim",
   "#257773": "trim",
+  "#288c94": "trim",       // hat_bear
+  "#1f828b": "trim",       // hat_cap
+  "#1d7282": "trim",       // hat_winter
+  "#1c7c88": "trim",       // hat_bucket
 
   // Its shaded half.
   "#387a71": "trimDeep",
@@ -49,6 +56,11 @@ export const INKS: Record<string, PaletteSlot> = {
   "#376452": "trimDeep",
   "#186975": "trimDeep",
   "#135763": "trimDeep",
+  "#217f8b": "trimDeep",       // hat_bear
+  "#166472": "trimDeep",       // hat_cap
+  "#16646e": "trimDeep",       // hat_cap
+  "#186270": "trimDeep",       // hat_winter
+  "#136773": "trimDeep",       // hat_bucket
 
   // The dark one: frames, outlines, the bird's own eyes and beak.
   "#0b6970": "accent",
@@ -58,6 +70,7 @@ export const INKS: Record<string, PaletteSlot> = {
   "#254b40": "accent",
   "#114f5b": "accent",
   "#282d33": "accent",
+  "#0f4a53": "accent",       // hat_cap
 
   // Warm, and outside the palette's hue on purpose.
   "#e7c25d": "gold",

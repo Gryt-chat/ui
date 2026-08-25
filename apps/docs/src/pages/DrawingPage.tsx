@@ -5,6 +5,7 @@ import {
   owlAvatarDataUri,
   owlAvatarSvg
 } from "@gryt/owl";
+import { Button, Surface } from "@gryt/ui";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
@@ -14,6 +15,16 @@ import { CodeBlock } from "../components/CodeBlock";
    the folder: eighteen paths, four tones, and it repaints the wings away. An
    example that only worked for a bow tie would leave the interesting half out. */
 const EXAMPLE = "shirt-jacket-winter";
+
+/* OWL_BASE pins the palette so the first two panels are the bird as you draw on
+   it. The third is the same drawing on somebody else's colours, which means
+   handing those two keys back to the seed. */
+function withoutColours(options: typeof OWL_BASE): Omit<typeof OWL_BASE, "palette" | "scheme"> {
+  const copy: Record<string, unknown> = { ...options };
+  delete copy.palette;
+  delete copy.scheme;
+  return copy as Omit<typeof OWL_BASE, "palette" | "scheme">;
+}
 
 function Owl({
   seed,
@@ -30,8 +41,7 @@ function Owl({
      panels are the bird as you draw on it, and that is one specific palette. */
   ownPalette?: boolean;
 }) {
-  const { palette, scheme, ...rest } = OWL_BASE;
-  const base = ownPalette ? rest : OWL_BASE;
+  const base = ownPalette ? withoutColours(OWL_BASE) : OWL_BASE;
 
   return (
     <img
@@ -57,7 +67,9 @@ function Panel({
 }) {
   return (
     <figure className="m-0 flex flex-col gap-(--space-sm)">
-      <div className="overflow-hidden rounded-(--radius-md) bg-gryt-surface">{children}</div>
+      {/* p-0 because Surface pads for text and this is a picture edge to edge.
+          tailwind-merge lets the later class win. */}
+      <Surface className="overflow-hidden p-0">{children}</Surface>
       <figcaption className="m-0 text-center text-[11px] text-gryt-muted">{caption}</figcaption>
     </figure>
   );
@@ -90,14 +102,14 @@ export function DrawingPage() {
         Open this in whatever you draw in. It is the exact bird the script
         subtracts, on a 1024 x 1024 frame.
       </p>
-      <p>
-        <a
-          className="inline-block rounded-(--radius-md) bg-gryt-accent px-(--space-md) py-(--space-sm) text-gryt-on-accent no-underline"
-          download="owl-base.svg"
-          href={baseHref}
-        >
+      <p className="not-prose">
+        {/* The library's own Button rather than an anchor painted to look like
+            one. This is the site that documents it. `render` is Base UI's
+            escape hatch for the element underneath, so it stays a real link
+            with a real download attribute. */}
+        <Button render={<a download="owl-base.svg" href={baseHref} />}>
           Download owl-base.svg
-        </a>
+        </Button>
       </p>
       <p>
         Do not move it, resize it, or redraw any part of it. The script finds the
