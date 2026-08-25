@@ -13,15 +13,20 @@
  * Extent, perimeter and area survive that.
  */
 
-import * as owl from "../../src/index";
+import * as owl from "../index";
 
 import { readShapes, type Shape } from "./svg-shapes";
 import { simplifyPath } from "./svg-simplify";
 import { DEFAULT_LAYER } from "./filename";
 
-// Re-exported so a caller needs one import for the whole job. The site's
-// drawing guide wants the ink table and the extractor together.
-export { INKS } from "../../artwork/inks";
+// The ink table used to be re-exported from here, so a caller had one import
+// for the whole job. It cannot be now: this file moved under src/ so the CLI
+// could reach it, and artwork/ is not package code — it is this repository's
+// drawings and the roles they are painted in. Somebody drawing a hat at their
+// own kitchen table has no copy of it and should not need one.
+//
+// `scripts/authoring.ts` puts the two back together for the things that do want
+// both, which is the docs app's upload checker.
 export {
   placementFor,
   isIgnored,

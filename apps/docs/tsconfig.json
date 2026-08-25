@@ -4,7 +4,7 @@
     "types": ["vite/client"],
     "paths": {
       "@gryt/owl": ["../../packages/owl/src/index.ts"],
-      "@gryt/owl/authoring": ["../../packages/owl/scripts/lib/extract.ts"],
+      "@gryt/owl/authoring": ["../../packages/owl/scripts/authoring.ts"],
       "@gryt/theme": ["../../packages/theme/src/index.ts"],
       "@gryt/ui": ["../../packages/ui/src/index.ts"]
     }
