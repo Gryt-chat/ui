@@ -1,5 +1,12 @@
 # @gryt/ui-native
 
+## 0.13.2
+
+### Patch Changes
+
+- Updated dependencies [93dfe88]
+  - @gryt/owl@0.3.0
+
 ## 0.13.1
 
 ### Patch Changes
