@@ -19,19 +19,30 @@ function Owl({
   seed,
   wearing,
   size = 160,
-  label
+  label,
+  ownPalette = false
 }: {
   seed: string;
   wearing?: Record<string, string | null>;
   size?: number;
   label: string;
+  /* Let the seed choose its own colours. Off by default, because the first two
+     panels are the bird as you draw on it, and that is one specific palette. */
+  ownPalette?: boolean;
 }) {
+  const { palette, scheme, ...rest } = OWL_BASE;
+  const base = ownPalette ? rest : OWL_BASE;
+
   return (
     <img
       alt={label}
       className="block h-full w-full object-cover"
       height={size}
-      src={owlAvatarDataUri(seed, { ...OWL_BASE, size, wearing: { ...OWL_BASE.wearing, ...wearing } })}
+      src={owlAvatarDataUri(seed, {
+        ...base,
+        size,
+        wearing: { ...OWL_BASE.wearing, ...wearing }
+      })}
       width={size}
     />
   );
@@ -65,7 +76,7 @@ export function DrawingPage() {
   const example = accessoryByName(EXAMPLE);
 
   return (
-    <article className="prose-gryt">
+    <article className="prose prose-invert max-w-[68ch] prose-headings:font-display prose-headings:tracking-[-0.022em] prose-h1:text-[length:var(--text-2xl)] prose-h2:mt-(--space-xl) prose-h2:text-[length:var(--text-lg)] prose-p:text-gryt-muted prose-p:leading-7">
       <h1>Drawing a cosmetic</h1>
       <p>
         An owl wears up to five things at once, and every one of them started as
@@ -188,11 +199,16 @@ bun scripts/owl-accessory.ts --all`}
         <Panel caption="1. the bird you download">
           <Owl label="The bare owl" seed="example" />
         </Panel>
-        <Panel caption="2. saved as jacket_winter.svg">
+        <Panel caption="2. saved as shirt_jacket_winter.svg">
           <Owl label="An owl in the winter jacket" seed="example" wearing={{ body: EXAMPLE }} />
         </Panel>
-        <Panel caption="3. on somebody else's palette">
-          <Owl label="The same jacket, another palette" seed="ingy" wearing={{ body: EXAMPLE }} />
+        <Panel caption="3. the same drawing, another palette">
+          <Owl
+            label="The same jacket on a different palette"
+            ownPalette
+            seed="ingy"
+            wearing={{ body: EXAMPLE }}
+          />
         </Panel>
       </div>
       <p>
