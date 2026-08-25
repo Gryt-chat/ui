@@ -24,6 +24,7 @@ import {
   owlAvatarDataUri,
   owlAvatarSvg,
   owlPalette,
+  OWL_BASE,
   owlPartPaths,
   PALETTE_NAMES,
   PALETTE_SCHEMES,
@@ -158,9 +159,55 @@ describe("the parts draw", () => {
     expect(parts.length).toBeGreaterThan(0);
     // Colour cannot tell an eye from the beak — both are accent — so the
     // extractor leans on this, and it is worth knowing when it stops working.
-    expect(parts.filter((p) => p.part === "eyes")).toHaveLength(2);
+    //
+    // Named a side at a time, because a wink covers one eye and a coat covers
+    // one arm. Naming the pair meant a wink hid both and came out blank-faced.
+    expect(parts.filter((p) => p.part === "eyeLeft")).toHaveLength(1);
+    expect(parts.filter((p) => p.part === "eyeRight")).toHaveLength(1);
+    expect(parts.filter((p) => p.part === "wingLeft")).toHaveLength(1);
+    expect(parts.filter((p) => p.part === "wingRight")).toHaveLength(1);
     expect(parts.filter((p) => p.part === "beak")).toHaveLength(1);
     expect(parts.every((p) => p.d.length > 0)).toBe(true);
+  });
+});
+
+/*
+ * A wink is one closed eye and one open one. It came out with a blank face,
+ * because `hides` could only name the pair and the drawing only supplied the
+ * closed one.
+ */
+describe("a drawing that replaces one of a pair", () => {
+  const parts = owlPartPaths(OWL_BASE);
+  const pathFor = (part: string) => parts.find((p) => p.part === part)!.d;
+  const wearing = (worn: Record<string, string | null>) =>
+    owlAvatarSvg("x", { ...OWL_BASE, wearing: { ...OWL_BASE.wearing, ...worn } });
+
+  it("leaves the other eye alone on a wink", () => {
+    const left = wearing({ expression: "eyes-wink-left" });
+    expect(left).not.toContain(pathFor("eyeLeft"));
+    expect(left).toContain(pathFor("eyeRight"));
+
+    const right = wearing({ expression: "eyes-wink-right" });
+    expect(right).toContain(pathFor("eyeLeft"));
+    expect(right).not.toContain(pathFor("eyeRight"));
+  });
+
+  it("still takes both when the drawing brings both", () => {
+    const happy = wearing({ expression: "eyes-happy" });
+    expect(happy).not.toContain(pathFor("eyeLeft"));
+    expect(happy).not.toContain(pathFor("eyeRight"));
+  });
+
+  it("takes the arm a coat covers", () => {
+    const coat = wearing({ body: "shirt-jacket-winter" });
+    expect(coat).not.toContain(pathFor("wingLeft"));
+    expect(coat).not.toContain(pathFor("wingRight"));
+  });
+
+  it("leaves both arms on when nothing is worn over them", () => {
+    const bare = wearing({});
+    expect(bare).toContain(pathFor("wingLeft"));
+    expect(bare).toContain(pathFor("wingRight"));
   });
 });
 
@@ -218,6 +265,7 @@ describe("accessories", () => {
     const swapped = repaint(base, [
       {
         name: "t",
+        key: "zz",
         slot: "body",
         layer: "behind",
         weight: 1,
