@@ -1,7 +1,7 @@
 import {
   ACCESSORIES,
   ACCESSORY_SLOTS,
-  EMPTY_WEIGHT,
+  SLOT_PRESENCE,
   PALETTE_NAMES,
   PALETTE_SCHEMES,
   accessoriesIn,
@@ -193,7 +193,8 @@ export function AvatarsPage() {
             <h3 className="m-0 flex items-baseline justify-between pb-(--space-sm) text-[11px] font-semibold uppercase tracking-wider text-gryt-muted">
               <span>{slot}</span>
               <span className="font-mono normal-case tracking-normal">
-                empty {EMPTY_WEIGHT[slot]} · {percent(tally.empty.get(slot) ?? 0)}
+                empty {percent(tally.empty.get(slot) ?? 0)} · asked for{" "}
+                {Math.round((1 - SLOT_PRESENCE[slot]) * 100)}%
               </span>
             </h3>
             <ul className="m-0 grid list-none grid-cols-3 gap-3 p-0 sm:grid-cols-4 lg:grid-cols-6">
@@ -213,7 +214,7 @@ export function AvatarsPage() {
                     {accessory.name}
                   </p>
                   <p className="m-0 text-center font-mono text-[10px] text-gryt-muted">
-                    {accessory.weight} · {percent(tally.counts.get(accessory.name) ?? 0)}
+                    {percent(tally.counts.get(accessory.name) ?? 0)}
                   </p>
                 </li>
               ))}
@@ -226,16 +227,23 @@ export function AvatarsPage() {
       <p>
         The percentages above are counted over {SAMPLE.toLocaleString("en")}{" "}
         seeds, drawn by the library on this page rather than measured once and
-        written down. A weight is a share of its slot, set against the other
-        accessories in it and against the slot's own chance of coming up empty.
-        Eight pairs of glasses in one slot each get a smaller share than one
-        scarf in another, and counting is the only way to see what that adds up
-        to.
+        written down.
+      </p>
+      <p>
+        How often a slot is filled at all is set rather than accumulated:{" "}
+        {ACCESSORY_SLOTS.map(
+          (slot, i) =>
+            `${i > 0 ? ", " : ""}${slot} on ${Math.round(SLOT_PRESENCE[slot] * 100)}%`
+        )}{" "}
+        of owls. The drawings in a slot then split that between them, so a ninth
+        pair of glasses changes which glasses turn up rather than how many owls
+        wear a pair. That used to work the other way around, and eyewear had
+        climbed to 38% one drawing at a time.
       </p>
       <p>
         {ACCESSORIES.length} accessories today. An owl with a coat has no scarf:
-        the two exclude each other, which the tally sees and the weights on their
-        own do not.
+        the two exclude each other, which is why body comes in under the rate it
+        asks for and the others land on theirs.
       </p>
 
       <h2>The same seed draws the same owl</h2>

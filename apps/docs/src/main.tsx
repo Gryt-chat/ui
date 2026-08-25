@@ -1,8 +1,5 @@
 // Self-hosted rather than a CDN link: the docs build and render offline, and
 // both faces this site names were previously declared but never loaded.
-import "@fontsource-variable/inter";
-import "@fontsource-variable/geist";
-import "@fontsource-variable/jetbrains-mono";
 import "@gryt/ui/styles.css";
 import "./styles.css";
 import { MDXProvider } from "@mdx-js/react";
@@ -22,6 +19,7 @@ import { ExampleFullPage, ExamplePage, exampleDocs } from "./pages/examples";
 import { AvatarsPage } from "./pages/AvatarsPage";
 import { HomePage } from "./pages/HomePage";
 import { InstallationPage } from "./pages/InstallationPage";
+import { DrawingPage } from "./pages/DrawingPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ThemeGeneratorPage } from "./pages/ThemeGeneratorPage";
 import { ThemePage } from "./pages/ThemePage";
@@ -36,6 +34,7 @@ const router = createBrowserRouter([
       { path: "theme", element: <ThemePage /> },
       { path: "theme/generator", element: <ThemeGeneratorPage /> },
       { path: "avatars", element: <AvatarsPage /> },
+      { path: "avatars/drawing", element: <DrawingPage /> },
       {
         path: "components",
         element: <Navigate replace to="/components/button" />

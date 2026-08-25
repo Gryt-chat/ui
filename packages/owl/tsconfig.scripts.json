@@ -16,5 +16,7 @@
     // and should: nothing here needs a document either.
     "types": ["node"]
   },
-  "include": ["scripts"]
+  // artwork too: inks.ts is TypeScript so a misspelled palette role is caught
+  // where it is written rather than by a run that guesses instead.
+  "include": ["scripts", "artwork"]
 }

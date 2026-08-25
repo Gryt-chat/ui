@@ -4,11 +4,41 @@
 
 @source "./**/*.{ts,tsx,mdx}";
 
+/* Atkinson Hyperlegible Next, the same two files the client ships and the same
+   face the site, the docs and the Keycloak login theme are set in. This site
+   was on Inter and Geist, which made the one page showing Gryt's components the
+   one place not set in Gryt's type.
+
+   It is not a taste choice. The Braille Institute drew it for character
+   differentiation rather than for looks: I, l and 1 are unmistakable, b/d and
+   p/q are subtly asymmetric, and c, e and s keep open apertures at small sizes.
+   design.md in the site repo has the reasoning. */
+@font-face {
+    font-family: "Atkinson Hyperlegible Next";
+    src: url("./assets/fonts/AtkinsonHyperlegibleNextVF-Variable.woff2")
+        format("woff2");
+    font-weight: 200 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Atkinson Hyperlegible Mono";
+    src: url("./assets/fonts/AtkinsonHyperlegibleMonoVF-Variable.woff2")
+        format("woff2");
+    font-weight: 200 900;
+    font-style: normal;
+    font-display: swap;
+}
+
 @theme {
-    --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-    --font-display: "Geist Variable", "Inter Variable", ui-sans-serif, system-ui,
+    --font-sans: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui,
         sans-serif;
-    --font-mono: "JetBrains Mono Variable", ui-monospace, Menlo, Consolas,
+    /* Headings are the same face. One family, two cuts, which is what the site
+       does — a display face here would be a fourth typeface in one product. */
+    --font-display: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui,
+        sans-serif;
+    --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, Consolas,
         monospace;
 }
 

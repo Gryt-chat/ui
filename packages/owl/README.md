@@ -93,17 +93,44 @@ each, rolled independently, so a hat and glasses and a scarf can all turn up at
 once. A slot can also come up empty. An owl with no expression still has eyes:
 the ones the bird is drawn with.
 
-Adding one does not involve writing any path data. The bird is exported to draw
-on, the drawing goes back into `artwork/` with a line in `accessories.json`, and
-the extractor subtracts the bird out again:
+Adding one does not involve writing any path data, or a manifest. Export the
+bird, draw on it, save the result into `artwork/` under a name that says what it
+is, and run the script:
 
 ```sh
 bun scripts/owl-accessory.ts --base   # the bare bird, to draw on
 bun scripts/owl-accessory.ts --all    # regenerate the registry
 ```
 
+The filename is the configuration. A word in it says which slot the drawing
+belongs in — `Winter_Hat.svg` is a hat, `Heart_Glasses.svg` is eyewear — and
+optional dot-tags cover the rest:
+
+| | |
+|---|---|
+| `Cravat.neck.svg` | a slot, for a word the script has not been taught |
+| `Heart_Glasses.rare.svg` | seen less often than the rest of its slot |
+| `Hoodie.covers-head.svg` | cannot be worn with a hat |
+| `Round_Glasses.over-face.svg` | drawn as holes, so the eyes show through |
+| `_Old_Hat.svg` | kept in the folder, left out of the registry |
+
+A word the script does not know stops the run and says so, rather than putting
+the drawing somewhere and leaving you to notice a scarf worn as a hat.
+
+Colours are not configuration either. `artwork/inks.ts` maps the colours
+accessories are drawn in to palette roles, and it is one table for all of them,
+so a drawing in colours already used needs nothing at all. A new colour stops
+the run and prints the line to add.
+
+How often a slot is filled is set once, in `SLOT_PRESENCE`, and the weights are
+sized to hit it. Adding a ninth pair of glasses changes which glasses turn up,
+not whether anyone is wearing any.
+
 `src/accessories.generated.ts` is derived from the drawings and is rebuilt by
 `build`. `--all --check` fails when what is committed disagrees with `artwork/`.
+
+The full walkthrough, with the bird to download and a worked example, is at
+**[ui.gryt.chat/avatars/drawing](https://ui.gryt.chat/avatars/drawing)**.
 
 ## Who uses it
 

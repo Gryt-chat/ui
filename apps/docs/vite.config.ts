@@ -26,6 +26,14 @@ export default defineConfig({
       // @gryt/ui's source imports this, and the docs app builds that source
       // rather than its dist, so the alias has to cover it too.
       "@gryt/theme": resolve(__dirname, "../../packages/theme/src/index.ts"),
+      // The extractor, so the drawing guide can check an upload with the
+      // same code the generator runs. Listed before "@gryt/owl" would be
+      // wrong — vite matches longest-first, but keeping them adjacent is
+      // how they stay in step.
+      "@gryt/owl/authoring": resolve(
+        __dirname,
+        "../../packages/owl/scripts/lib/extract.ts"
+      ),
       "@gryt/owl": resolve(__dirname, "../../packages/owl/src/index.ts")
     }
   },

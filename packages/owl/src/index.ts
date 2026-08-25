@@ -32,7 +32,10 @@ import { owlPalette, PALETTE_NAMES, PALETTE_SCHEMES } from "./palette";
 import { renderBody, renderEars, renderWings } from "./parts/body";
 import { renderEyes } from "./parts/eyes";
 import { renderBeak, renderFace } from "./parts/face";
-import { hash32, pick, pickWeighted } from "./rng";
+// pickWeighted still, for ears: EAR_WEIGHTS is a fixed pair that cannot grow,
+// so there is nothing for the by-name draw to protect, and switching it would
+// move every owl's ears for no reason.
+import { hash32, pick, pickWeighted, pickWeightedByName } from "./rng";
 import {
   accessoriesIn,
   accessoryByName,
@@ -61,6 +64,8 @@ export { OWL, type OwlMetrics } from "./metrics";
 export {
   ACCESSORIES,
   EMPTY_WEIGHT,
+  SLOT_PRESENCE,
+  OWL_BASE,
   accessoriesIn,
   accessoryByName,
   repaint,
@@ -118,10 +123,16 @@ function chooseAccessories(
     );
     if (available.length === 0) continue;
 
-    const entries: [Accessory | null, number][] = [[null, EMPTY_WEIGHT[slot]]];
-    for (const a of available) entries.push([a, a.weight]);
+    // "nothing" is a candidate like any other, and its id is fixed so that
+    // adding a drawing cannot move the draw that decides whether this slot is
+    // filled at all. An empty slot is the most common outcome in every one of
+    // them, so that is the draw it matters most to hold still.
+    const entries: [Accessory | null, string, number][] = [
+      [null, "", EMPTY_WEIGHT[slot]],
+    ];
+    for (const a of available) entries.push([a, a.name, a.weight]);
 
-    const chosen = pickWeighted(seed, `wear:${slot}`, entries);
+    const chosen = pickWeightedByName(seed, `wear:${slot}`, entries);
     if (chosen) {
       worn[slot] = chosen.name;
       taken.push(slot);
