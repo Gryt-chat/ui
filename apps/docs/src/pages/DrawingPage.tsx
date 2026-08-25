@@ -5,20 +5,35 @@ import {
   owlAvatarDataUri,
   owlAvatarSvg
 } from "@gryt/owl";
+import { KEYWORDS } from "@gryt/owl/authoring";
 import { Button, Surface } from "@gryt/ui";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 
 import { CodeBlock } from "../components/CodeBlock";
+import { CosmeticChecker } from "../components/CosmeticChecker";
 
 /* The example runs through the winter jacket because it is the hardest one in
    the folder: eighteen paths, four tones, and it repaints the wings away. An
    example that only worked for a bow tie would leave the interesting half out. */
 const EXAMPLE = "shirt-jacket-winter";
 
-/* OWL_BASE pins the palette so the first two panels are the bird as you draw on
-   it. The third is the same drawing on somebody else's colours, which means
-   handing those two keys back to the seed. */
+const DISCORD = "https://discord.gg/Q3JKUGsnHE";
+
+/* The type words a filename may start with, grouped by the slot each one puts
+   the drawing in. Module scope rather than a useMemo: KEYWORDS is a constant,
+   so there is nothing here that could change between renders. */
+const TYPES_BY_SLOT = (() => {
+  const bySlot = new Map<string, string[]>();
+  for (const [word, slot] of Object.entries(KEYWORDS)) {
+    if (!bySlot.has(slot)) bySlot.set(slot, []);
+    bySlot.get(slot)!.push(word);
+  }
+  return [...bySlot];
+})();
+
+/* OWL_BASE pins the palette so the drawing steps show the bird as you draw on
+   it. A preview on somebody else's colours hands those two keys back. */
 function withoutColours(options: typeof OWL_BASE): Omit<typeof OWL_BASE, "palette" | "scheme"> {
   const copy: Record<string, unknown> = { ...options };
   delete copy.palette;
@@ -29,7 +44,7 @@ function withoutColours(options: typeof OWL_BASE): Omit<typeof OWL_BASE, "palett
 function Owl({
   seed,
   wearing,
-  size = 160,
+  size = 200,
   label,
   ownPalette = false
 }: {
@@ -37,12 +52,9 @@ function Owl({
   wearing?: Record<string, string | null>;
   size?: number;
   label: string;
-  /* Let the seed choose its own colours. Off by default, because the first two
-     panels are the bird as you draw on it, and that is one specific palette. */
   ownPalette?: boolean;
 }) {
   const base = ownPalette ? withoutColours(OWL_BASE) : OWL_BASE;
-
   return (
     <img
       alt={label}
@@ -58,20 +70,39 @@ function Owl({
   );
 }
 
-function Panel({
-  caption,
+function Panel({ caption, children }: { caption: string; children: React.ReactNode }) {
+  return (
+    <figure className="m-0 flex flex-col gap-(--space-sm)">
+      <Surface className="overflow-hidden p-0">{children}</Surface>
+      <figcaption className="m-0 text-center text-[11px] text-gryt-muted">
+        {caption}
+      </figcaption>
+    </figure>
+  );
+}
+
+function Step({
+  n,
+  title,
   children
 }: {
-  caption: string;
+  n: number;
+  title: string;
   children: React.ReactNode;
 }) {
   return (
-    <figure className="m-0 flex flex-col gap-(--space-sm)">
-      {/* p-0 because Surface pads for text and this is a picture edge to edge.
-          tailwind-merge lets the later class win. */}
-      <Surface className="overflow-hidden p-0">{children}</Surface>
-      <figcaption className="m-0 text-center text-[11px] text-gryt-muted">{caption}</figcaption>
-    </figure>
+    <section className="mt-(--space-xl)">
+      <h2 className="not-prose flex items-baseline gap-3 text-[length:var(--text-lg)] font-semibold tracking-[-0.022em] text-gryt-text">
+        <span
+          aria-hidden="true"
+          className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-gryt-accent text-sm text-gryt-on-accent"
+        >
+          {n}
+        </span>
+        {title}
+      </h2>
+      {children}
+    </section>
   );
 }
 
@@ -94,143 +125,207 @@ export function DrawingPage() {
         An owl wears up to five things at once, and every one of them started as
         a drawing of the whole bird. You draw on top of the bird and a script
         subtracts the bird back out, so nothing here involves writing path data
-        or measuring anything.
+        or measuring anything. There are {ACCESSORIES.length} in the game today.
       </p>
 
-      <h2>Start from the bird</h2>
-      <p>
-        Open this in whatever you draw in. It is the exact bird the script
-        subtracts, on a 1024 x 1024 frame.
-      </p>
-      <p className="not-prose">
-        {/* The library's own Button rather than an anchor painted to look like
-            one. This is the site that documents it. `render` is Base UI's
-            escape hatch for the element underneath, so it stays a real link
-            with a real download attribute. */}
-        <Button render={<a download="owl-base.svg" href={baseHref} />}>
-          Download owl-base.svg
-        </Button>
-      </p>
-      <p>
-        Do not move it, resize it, or redraw any part of it. The script finds the
-        bird in your file by shape, and a nudged path is one it cannot find. Its
-        colours are only there to draw against — the subtraction ignores colour
-        except where you changed it deliberately.
-      </p>
+      <Step n={1} title="Start from the bird">
+        <div className="not-prose my-(--space-md) grid grid-cols-1 items-center gap-(--space-md) sm:grid-cols-[200px_1fr]">
+          <Surface className="overflow-hidden p-0">
+            <Owl label="The bare owl" seed="base" />
+          </Surface>
+          <div className="flex flex-col items-start gap-(--space-sm)">
+            <Button render={<a download="owl-base.svg" href={baseHref} />}>
+              Download owl-base.svg
+            </Button>
+            <p className="m-0 text-sm text-gryt-muted">
+              The exact bird the script subtracts, on a 1024 x 1024 frame. Open
+              it in whatever you draw in.
+            </p>
+          </div>
+        </div>
+        <p>
+          Do not move it, resize it, or redraw any part of it. The script finds
+          the bird in your file by shape, and a nudged path is one it cannot
+          find. Its colours are only there to draw against.
+        </p>
+      </Step>
 
-      <h2>Draw</h2>
-      <ul>
-        <li>
-          Stay on the 1024 frame. Everything is positioned absolutely, so where
-          you put it is where it lands.
-        </li>
-        <li>
-          Flatten your transforms before exporting. A <code>{"<g transform>"}</code>{" "}
-          around a layer stops the build rather than being applied, because an
-          accessory that is silently offset is worse than one that fails.
-        </li>
-        <li>
-          To take a part of the bird away, paint it out rather than deleting it.
-          A coat paints the wings in the background colour and the script records
-          that as a repaint, so it still works on all thirty palettes.
-        </li>
-      </ul>
+      <Step n={2} title="Draw on top of it">
+        <div className="not-prose my-(--space-md) grid grid-cols-1 gap-(--space-md) sm:grid-cols-3">
+          <Panel caption="the bird you started with">
+            <Owl label="The bare owl" seed="example" />
+          </Panel>
+          <Panel caption="your drawing over it">
+            <Owl label="An owl in the winter jacket" seed="example" wearing={{ body: EXAMPLE }} />
+          </Panel>
+          <Panel caption="what everyone else sees">
+            <Owl
+              label="The same jacket on another palette"
+              ownPalette
+              seed="ingy"
+              wearing={{ body: EXAMPLE }}
+            />
+          </Panel>
+        </div>
+        <p>
+          The drawing is made once and worn on all thirty palettes, because what
+          gets recorded is which role each colour is rather than the colour
+          itself. Three things to hold to:
+        </p>
+        <ul>
+          <li>
+            Stay on the 1024 frame. Everything is positioned absolutely, so
+            where you put it is where it lands.
+          </li>
+          <li>
+            Flatten your transforms before exporting. A{" "}
+            <code>{"<g transform>"}</code> around a layer stops the build rather
+            than being applied, because an accessory that is silently offset is
+            worse than one that fails.
+          </li>
+          <li>
+            Never delete a part of the bird. The script finds it by shape, and a
+            missing part reads as a drawing made on something other than the
+            base.
+          </li>
+        </ul>
+        <p>
+          You can recolour the bird, and that is how a part is taken away.
+          Recolour it to a colour already in the drawing rather than a new one,
+          because what gets recorded is not the colour — it is which part now
+          follows which.
+        </p>
+        <p>
+          Paint the body in the background&rsquo;s colour and what is written
+          down is <em>body follows background</em>. On every one of the thirty
+          palettes the body then takes that palette&rsquo;s background, so it
+          keeps disappearing rather than turning into one particular shade of
+          teal. That is how the jacket above loses the wings, and why it still
+          works on the amber owl next to it.
+        </p>
+        <p>
+          Reuse colours from a cosmetic that already exists wherever you can.
+          Each one has to map to a rung of the palette, and the ones already
+          drawn are already mapped — a drawing in those needs no configuration
+          at all. A new colour is fine too; you will be asked which rung it is.
+        </p>
+      </Step>
 
-      <h2>Name the file</h2>
-      <p>
-        The filename is the configuration. There is no manifest to edit, and the
-        shape is <code>type_family_variant.svg</code>: underscores between the
-        three fields, hyphens inside one of them.
-      </p>
-      <div className="not-prose overflow-x-auto">
-        <table className="w-full border-collapse text-[13px]">
-          <tbody>
-            {[
-              ["scarf.svg", "a type on its own is its own family"],
-              ["glasses_round.svg", "round glasses"],
-              ["glasses_round_gold.svg", "the gold pair of them"],
-              ["hat_winter-beanie_red.svg", "two words in a field, joined by a hyphen"],
-              ["glasses_heart.rare.svg", "seen less often than the other eyewear"],
-              ["hoodie.covers-head.svg", "has a hood, so no hat over it"],
-              ["glasses_round.over-face.svg", "drawn as holes, so the eyes show through"],
-              ["sporran_dress.neck.svg", "a type the script has not been taught"],
-              ["_hat_winter_old.svg", "kept in the folder, left out of the registry"]
-            ].map(([name, meaning]) => (
-              <tr key={name} className="border-b border-gryt-border">
-                <td className="py-2 pr-4 align-top font-mono text-gryt-text">{name}</td>
-                <td className="py-2 align-top text-gryt-muted">{meaning}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <p>
-        The type decides the slot. A type the script does not know stops the run
-        and prints the ones it does, because a scarf worn as a hat is not
-        something anyone notices from a diff.
-      </p>
-      <p>
-        Variants of one thing share a family. A family competes for its slot as
-        one thing and its variants split whatever it wins, so six colourways of
-        round glasses stay as likely to turn up as a pair drawn once. Without
-        that they would be six times as likely, and drawing variants would
-        quietly bury everything that only exists in one.
-      </p>
+      <Step n={3} title="Export it as SVG, named for where it goes">
+        <p>
+          Export at <strong>1x</strong> as <strong>SVG</strong>. Name the layer
+          in Figma and the export takes its name from it, so the naming below is
+          something you do once in the layers panel rather than every time you
+          export.
+        </p>
+        <div className="not-prose my-(--space-md) max-w-[280px]">
+          <Surface className="flex flex-col gap-3 p-4">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-gryt-text">Export</span>
+              <span aria-hidden="true" className="text-gryt-muted">
+                +
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="flex-1 rounded-(--gryt-radius-sm) border border-gryt-border px-2 py-1 text-xs text-gryt-muted">
+                1x
+              </span>
+              <span className="flex-1 rounded-(--gryt-radius-sm) border border-gryt-border px-2 py-1 text-xs text-gryt-text">
+                SVG
+              </span>
+            </div>
+            <span className="rounded-(--gryt-radius-sm) border border-gryt-border px-2 py-1.5 text-center text-xs text-gryt-text">
+              Export shirt_jacket_winter
+            </span>
+          </Surface>
+        </div>
+        <p>
+          The filename is the configuration. There is no manifest to edit, and
+          the shape is <code>type_family_variant.svg</code>: underscores between
+          the three fields, hyphens inside one of them.
+        </p>
+        <div className="not-prose my-(--space-md) overflow-x-auto">
+          <table className="w-full border-collapse text-[13px]">
+            <tbody>
+              {[
+                ["scarf.svg", "a type on its own is its own family"],
+                ["glasses_round.svg", "round glasses"],
+                ["glasses_round_gold.svg", "the gold pair of them"],
+                ["hat_winter-beanie_red.svg", "two words in a field, joined by a hyphen"],
+                ["glasses_heart.rare.svg", "seen less often than the other eyewear"],
+                ["hoodie.covers-head.svg", "has a hood, so no hat over it"],
+                ["glasses_round.over-face.svg", "drawn as holes, so the eyes show through"],
+                ["sporran_dress.neck.svg", "a type the script has not been taught"]
+              ].map(([name, meaning]) => (
+                <tr key={name} className="border-b border-gryt-border">
+                  <td className="py-2 pr-4 align-top font-mono text-gryt-text">{name}</td>
+                  <td className="py-2 align-top text-gryt-muted">{meaning}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p>
+          The type is the first field and it decides which of the five slots the
+          drawing is worn in. Pick one of these words:
+        </p>
+        <div className="not-prose my-(--space-md) flex flex-col gap-(--space-sm)">
+          {TYPES_BY_SLOT.map(([slot, words]) => (
+            <div key={slot} className="flex flex-col gap-1 sm:flex-row sm:gap-3">
+              <span className="w-24 shrink-0 font-mono text-xs text-gryt-muted">{slot}</span>
+              <span className="text-[13px] text-gryt-text">{words.join(", ")}</span>
+            </div>
+          ))}
+        </div>
+        <p>
+          A word that is not on the list stops the run rather than being placed
+          somewhere, because a scarf worn as a hat is not something anyone
+          notices from a diff. Add <code>.neck</code> or whichever slot to the
+          name and it goes there instead.
+        </p>
+        <p>
+          Variants of one thing share a family, and the family is what competes
+          for the slot — its variants split whatever it wins. Six colourways of
+          round glasses stay as likely to turn up as a pair drawn once. Without
+          that they would be six times as likely, and drawing variants would
+          quietly bury everything that only exists in one.
+        </p>
+      </Step>
 
-      <h2>Use colours it already knows</h2>
-      <p>
-        An accessory is drawn in ordinary colours and repainted per owl, so each
-        colour has to map to a palette role. <code>artwork/inks.ts</code> is that
-        map, and it is one table for every drawing rather than one per drawing.
-        Draw in colours already in there and you write no configuration at all.
-      </p>
-      <p>
-        A colour it has not seen stops the run and prints the line to add. It
-        will not guess: the role is which rung of the palette you meant, and the
-        hex value on its own does not say.
-      </p>
+      <Step n={4} title="Check it here">
+        <p>
+          Drop the file in and it runs the same extractor the build runs. It
+          reads the file in your browser and sends it nowhere.
+        </p>
+        <div className="my-(--space-md)">
+          <CosmeticChecker />
+        </div>
+      </Step>
 
-      <h2>Run it</h2>
-      <CodeBlock
-        code={`cd packages/owl
-bun scripts/owl-accessory.ts --all`}
-        language="sh"
-      />
-      <p>
-        That reads every drawing in <code>artwork/</code> and rewrites{" "}
-        <code>src/accessories.generated.ts</code>. Commit both. Look at the{" "}
-        <Link to="/avatars">contact sheet</Link> before you ship it.
-      </p>
+      <Step n={5} title="Share it">
+        <p>
+          Post the SVG in{" "}
+          <a href={DISCORD} rel="noreferrer" target="_blank">
+            the Gryt Discord
+          </a>
+          , with the name you would like to be credited under. If the checker
+          asked you about any colours, say which rung of the palette each one
+          is, and it goes in with the drawing.
+        </p>
+        <p>
+          Cosmetics that go in keep their author. The registry records who drew
+          each one, and the intention is that a Gryt you are wearing can tell
+          you whose drawing it is.
+        </p>
+      </Step>
 
       <h2>The winter jacket, end to end</h2>
       <p>
         The hardest one in the folder: eighteen paths, four tones, and it takes
-        the wings off.
-      </p>
-      <div className="not-prose grid grid-cols-1 gap-(--space-md) sm:grid-cols-3">
-        <Panel caption="1. the bird you download">
-          <Owl label="The bare owl" seed="example" />
-        </Panel>
-        <Panel caption="2. saved as shirt_jacket_winter.svg">
-          <Owl label="An owl in the winter jacket" seed="example" wearing={{ body: EXAMPLE }} />
-        </Panel>
-        <Panel caption="3. the same drawing, another palette">
-          <Owl
-            label="The same jacket on a different palette"
-            ownPalette
-            seed="ingy"
-            wearing={{ body: EXAMPLE }}
-          />
-        </Panel>
-      </div>
-      <p>
-        The drawing was made in one palette and is worn in all thirty, because
-        what was recorded is which role each colour is rather than the colour
-        itself.
+        the wings off. What the script wrote for it:
       </p>
       {example ? (
         <>
-          <p>What the script wrote for it:</p>
           <CodeBlock
             code={`{
   name: "${example.name}",
@@ -252,39 +347,12 @@ bun scripts/owl-accessory.ts --all`}
         </>
       ) : null}
 
-      <h2>When it refuses</h2>
-      <p>Three things stop the run, and each prints what to do about it.</p>
-      <CodeBlock
-        code={`sporran_dress.svg: "sporran" is not a type this knows, so there is
-no slot to put it in.
-  Types:
-    expression  eyes, expression, smile, frown, wink, blink
-    eyewear     glasses, spectacles, shades, goggles, monocle, visor
-    head        hat, cap, beanie, crown, helmet, headset, flower, halo
-    neck        scarf, bowtie, tie, necklace, collar, bandana, cravat
-    body        shirt, jacket, coat, hoodie, sweater, vest, dress, cape
-  Or name the slot yourself, e.g. sporran_dress.head.svg`}
-        language="text"
-      />
-      <CodeBlock
-        code={`1 colour(s) are not in artwork/inks.ts.
-
-Add them, with the role each one should be repainted as:
-
-  "#ff00aa": "trim",   // cravat-fancy`}
-        language="text"
-      />
-      <CodeBlock
-        code={`glasses_round.svg has a <g transform=...> in it. Flatten the
-transforms in the drawing tool and export again.`}
-        language="text"
-      />
-
       <h2>Where things live</h2>
       <ul>
         <li>
           <code>packages/owl/artwork/</code> holds the drawings, and{" "}
-          <code>inks.ts</code>
+          <code>inks.ts</code> maps every colour they are drawn in to a palette
+          role
         </li>
         <li>
           <code>packages/owl/src/accessories.generated.ts</code> is derived,
@@ -296,9 +364,11 @@ transforms in the drawing tool and export again.`}
         </li>
       </ul>
       <p>
-        {ACCESSORIES.length} accessories are in the registry today.{" "}
-        <code>--all --check</code> runs in CI and fails when the generated file
-        disagrees with the folder.
+        Running it yourself is <code>bun scripts/owl-accessory.ts --all</code>{" "}
+        from <code>packages/owl</code>. <code>--all --check</code> runs in CI and
+        fails when the generated file disagrees with the folder. The{" "}
+        <Link to="/avatars">contact sheet</Link> is worth a look before shipping
+        anything.
       </p>
     </article>
   );
