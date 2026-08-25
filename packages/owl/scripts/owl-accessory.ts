@@ -39,13 +39,21 @@
  * alternative is redrawing it from the exported result.
  */
 
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 
 import { readShapes, type Shape } from "./lib/svg-shapes";
 import { simplifyPath } from "./lib/svg-simplify";
+import {
+  isIgnored,
+  placementFor,
+  weightsFor,
+  type Placement,
+  type Rarity,
+} from "./lib/filename";
 
 import * as owl from "../src/index";
+import { INKS } from "../artwork/inks";
 
 const root = path.resolve(import.meta.dir, "..");
 const GENERATED = "src/accessories.generated.ts";
@@ -308,26 +316,6 @@ function lightness(hex: string): number {
 /** Lightest first, which is the order the drawn accessories use their tones in. */
 const LADDER: owl.PaletteSlot[] = ["trimSoft", "trimLight", "trim", "trimDeep", "accent"];
 
-/**
- * One accessory's entry in artwork/accessories.json.
- *
- * The file is the source for the whole registry, so this is also the only
- * written-down description of what a row in it may contain.
- */
-interface ManifestEntry {
-  file: string;
-  name: string;
-  slot: owl.AccessorySlot;
-  layer?: string;
-  weight: number;
-  excludes?: string[];
-  /** Decimal places to round to, when the drawing needs more than the default. */
-  places?: number;
-  tolerance?: number;
-  /** Hex to palette role, for the colours the lightness ladder gets wrong. */
-  map?: Record<string, owl.PaletteSlot>;
-}
-
 /** What extract needs to know about the accessory it is pulling out. */
 interface ExtractOptions {
   name: string;
@@ -461,6 +449,12 @@ function extract(svg: string, label: string, opts: ExtractOptions) {
     `\n    ],\n  },`;
 
   const pad = " ".repeat(20);
+
+  // Colours the ink table has never seen. The caller collects these across
+  // every drawing and stops, rather than shipping the lightness ladder's guess:
+  // the ladder ranks a drawing's own colours against each other, so it has no
+  // way to know that a mid-teal is `trim` here and `trimLight` in a lighter
+  // drawing, and it gets that wrong more often than not.
   const guessed = distinct.filter((hex) => !opts.map.has(hex));
   const summary =
     `${opts.name.padEnd(18)} ${String(kept.length).padStart(2)} paths  ` +
@@ -488,7 +482,7 @@ function extract(svg: string, label: string, opts: ExtractOptions) {
     `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" ` +
     `viewBox="0 0 1024 1024" fill="none">${body}</svg>\n`;
 
-  return { literal, summary, stripped, roles, kept, paint };
+  return { literal, summary, stripped, roles, kept, paint, guessed };
 }
 
 /* --- arguments ----------------------------------------------------------- */
@@ -554,6 +548,49 @@ function accessorySlot(value: string, where: string): owl.AccessorySlot {
   return value as owl.AccessorySlot;
 }
 
+/**
+ * The ink table as the extractor wants it: lowercase hex to palette role.
+ *
+ * Typechecked at the source — artwork/inks.ts is TypeScript precisely so a
+ * misspelled role is a red squiggle rather than something the run finds out
+ * about — so there is nothing to validate here beyond the casing.
+ */
+const inks = new Map<string, owl.PaletteSlot>(
+  Object.entries(INKS).map(([hex, role]) => [hex.toLowerCase(), role]),
+);
+
+/**
+ * What the run did to each slot.
+ *
+ * Printed because the weights are no longer written down anywhere a person
+ * reads. The fill rate is the number to check: it should match SLOT_PRESENCE
+ * whatever was added, and if it has moved, the model is not doing its job.
+ */
+function reportSlots(
+  placements: ReadonlyArray<{ name: string; slot: owl.AccessorySlot; rarity: Rarity }>,
+  weights: ReadonlyMap<string, number>,
+) {
+  console.log("");
+  for (const slot of owl.ACCESSORY_SLOTS) {
+    const items = placements.filter((p) => p.slot === slot);
+    if (!items.length) continue;
+
+    const total = items.reduce((sum, i) => sum + weights.get(i.name)!, 0);
+    const empty = owl.EMPTY_WEIGHT[slot];
+    const fill = (100 * total) / (total + empty);
+    const want = 100 * owl.SLOT_PRESENCE[slot];
+
+    console.log(
+      `${slot.padEnd(11)} ${String(items.length).padStart(2)} drawn   ` +
+        `worn by ${fill.toFixed(1)}% of owls (asked for ${want.toFixed(1)}%)`,
+    );
+    const split = items
+      .map((i) => `${i.name}:${weights.get(i.name)}${i.rarity === "common" ? "" : ` ${i.rarity}`}`)
+      .join("  ");
+    console.log(`            ${split}`);
+  }
+}
+
 /* --- writing the bird ---------------------------------------------------- */
 
 if (has("base")) {
@@ -577,30 +614,89 @@ if (has("base")) {
 
 if (has("all")) {
   const dir = flag("out", path.join(root, "artwork"));
-  const manifest: ManifestEntry[] = JSON.parse(
-    readFileSync(path.join(dir, "accessories.json"), "utf8"),
-  );
+
+  // Every drawing in the folder, in a fixed order. readdir's order is the
+  // filesystem's and differs between machines, so sorting is what keeps the
+  // generated file from changing depending on who ran the script.
+  const files = readdirSync(dir)
+    .filter((f) => f.toLowerCase().endsWith(".svg"))
+    .filter((f) => !isIgnored(f))
+    .sort();
+
+  if (files.length === 0) {
+    console.error(`No drawings in ${dir}. An accessory is an SVG dropped in there.`);
+    process.exit(1);
+  }
+
+  // Read every filename before extracting anything. The weights depend on how
+  // many drawings are in each slot, so they cannot be worked out one file at a
+  // time — and a misnamed file should fail before the slow part rather than
+  // seventeen extractions later.
+  const placements: Array<{ file: string } & Placement> = [];
+  const failures: string[] = [];
+  for (const file of files) {
+    try {
+      placements.push({ file, ...placementFor(file, owl.ACCESSORY_SLOTS) });
+    } catch (error) {
+      failures.push(String(error instanceof Error ? error.message : error));
+    }
+  }
+  if (failures.length) {
+    console.error("These drawings do not say where they go:\n");
+    for (const f of failures) console.error(`  ${f}\n`);
+    process.exit(1);
+  }
+
+  const duplicates = placements
+    .map((p) => p.name)
+    .filter((name, i, all) => all.indexOf(name) !== i);
+  if (duplicates.length) {
+    console.error(`Two drawings would both be called ${[...new Set(duplicates)].join(", ")}.`);
+    process.exit(1);
+  }
+
+  const weights = weightsFor(placements, owl.SLOT_PRESENCE, owl.EMPTY_WEIGHT.head);
+
   const blocks: string[] = [];
-  for (const entry of manifest) {
+  const unknownInks = new Map<string, string[]>();
+  for (const entry of placements) {
     const built = extract(readFileSync(path.join(dir, entry.file), "utf8"), entry.file, {
       name: entry.name,
       slot: entry.slot,
       layer: entry.layer,
-      weight: entry.weight,
-      excludes: entry.excludes ?? [],
-      places: entry.places ?? Number(flag("places", "1")),
-      tolerance: entry.tolerance ?? Number(flag("tolerance", "0.4")),
-      map: new Map(
-        Object.entries(entry.map ?? {}).map(([k, v]): [string, owl.PaletteSlot] => [
-          k.toLowerCase(),
-          paletteRole(v, `${entry.file} map.${k}`),
-        ]),
-      ),
+      weight: weights.get(entry.name)!,
+      excludes: entry.excludes,
+      places: Number(flag("places", "1")),
+      tolerance: Number(flag("tolerance", "0.4")),
+      map: inks,
     });
     blocks.push(built.literal);
     console.log(built.summary);
+    for (const hex of built.guessed) {
+      if (!unknownInks.has(hex)) unknownInks.set(hex, []);
+      unknownInks.get(hex)!.push(entry.name);
+    }
   }
+
+  // Collected across every drawing and reported once, so a new palette is one
+  // paste rather than one failed run per colour.
+  if (unknownInks.size > 0 && !has("guess")) {
+    console.error(`\n${unknownInks.size} colour(s) are not in artwork/inks.ts.\n`);
+    console.error("Add them, with the role each one should be repainted as:\n");
+    for (const [hex, users] of unknownInks) {
+      console.error(`  "${hex}": "trim",${" ".repeat(Math.max(1, 14 - hex.length))}// ${users.join(", ")}`);
+    }
+    console.error(
+      `\nRoles: ${ROLES.join(", ")}.\n` +
+        "Or run with --guess to let the lightness ladder pick, which is for\n" +
+        "looking at a drawing rather than for anything committed.",
+    );
+    process.exit(1);
+  }
+
   const content = header() + blocks.join("\n") + "\n];\n";
+
+  reportSlots(placements, weights);
 
   /*
    * `--check` is for CI. The build regenerates this file, so a forgotten run is
@@ -619,12 +715,12 @@ if (has("all")) {
       );
       process.exit(1);
     }
-    console.log(`\n${GENERATED} is up to date — ${manifest.length} accessories`);
+    console.log(`\n${GENERATED} is up to date — ${placements.length} accessories`);
     process.exit(0);
   }
 
   writeFileSync(path.join(root, GENERATED), content);
-  console.log(`\nwrote ${GENERATED} — ${manifest.length} accessories`);
+  console.log(`\nwrote ${GENERATED} — ${placements.length} accessories`);
   process.exit(0);
 }
 
@@ -645,26 +741,61 @@ if (!input) {
   process.exit(1);
 }
 
-const slot = accessorySlot(flag("slot", "head"), "--slot");
-const name = flag("name", path.basename(input, ".svg").toLowerCase().replace(/[_\s]+/g, "-"));
-const built = extract(readFileSync(path.resolve(input), "utf8"), path.basename(input), {
+// One drawing on its own, for looking at before it goes in the folder. The
+// filename decides the same things it decides in --all, so what comes out here
+// is what will come out there; the flags below only exist to try something
+// without renaming the file first.
+const fileName = path.basename(input);
+let placement: Placement;
+try {
+  placement = placementFor(fileName, owl.ACCESSORY_SLOTS);
+} catch (error) {
+  // Not fatal on this path. A drawing being looked at may not have a name yet,
+  // and --slot is right there.
+  const flagged = flag("slot", "");
+  if (!flagged) {
+    console.error(String(error instanceof Error ? error.message : error));
+    process.exit(1);
+  }
+  placement = {
+    name: fileName.replace(/\.svg$/i, "").toLowerCase().replace(/[_\s]+/g, "-"),
+    slot: accessorySlot(flagged, "--slot"),
+    layer: "overAll",
+    rarity: "common",
+    excludes: [],
+  };
+}
+
+const slot = flag("slot", "") ? accessorySlot(flag("slot", ""), "--slot") : placement.slot;
+const name = flag("name", placement.name);
+
+// --map on top of the ink table rather than instead of it, so trying a colour
+// out does not mean restating every colour the drawing already uses.
+const map = new Map(inks);
+for (const pair of (flag("map", "") || "").split(",").filter(Boolean)) {
+  const [hex, role] = pair.split("=");
+  map.set(hex.trim().toLowerCase(), paletteRole(role.trim(), `--map ${pair}`));
+}
+
+const built = extract(readFileSync(path.resolve(input), "utf8"), fileName, {
   name,
   slot,
-  layer: flag("layer", undefined),
-  weight: Number(flag("weight", "10")),
-  excludes: (flag("excludes", "") || "").split(",").filter(Boolean),
+  layer: flag("layer", undefined) ?? placement.layer,
+  // A single drawing has no slot to be a share of, so this is a placeholder.
+  // --all is what sets the real one, from SLOT_PRESENCE and what else is drawn.
+  weight: 0,
+  excludes: placement.excludes,
   places: Number(flag("places", "1")),
   tolerance: Number(flag("tolerance", "0.4")),
-  map: new Map(
-    (flag("map", "") || "")
-      .split(",")
-      .filter(Boolean)
-      .map((pair): [string, owl.PaletteSlot] => {
-        const [hex, role] = pair.split("=");
-        return [hex.trim().toLowerCase(), paletteRole(role.trim(), `--map ${pair}`)];
-      }),
-  ),
+  map,
 });
+
+if (built.guessed.length && !has("guess")) {
+  console.error(`\n${built.guessed.length} colour(s) are not in artwork/inks.ts:\n`);
+  for (const hex of built.guessed) console.error(`  "${hex}": "trim",`);
+  console.error(`\nRoles: ${ROLES.join(", ")}. Or pass --guess to look at it anyway.`);
+  process.exit(1);
+}
 
 const outDir = flag("out", path.dirname(path.resolve(input)));
 mkdirSync(outDir, { recursive: true });

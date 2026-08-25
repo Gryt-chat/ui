@@ -81,8 +81,11 @@ export interface Accessory {
    */
   excludes?: readonly AccessorySlot[];
   /**
-   * How often it comes up, against the other accessories in its slot and
-   * against the slot's own chance of being empty. See EMPTY_WEIGHT.
+   * How often it comes up, against the other accessories in its slot.
+   *
+   * Derived, not written: the generator sizes these so the slot fills at
+   * SLOT_PRESENCE's rate, splitting that between the drawings by the rarity
+   * tag in each filename. Editing one here is undone by the next run.
    */
   weight: number;
   /**
@@ -113,22 +116,56 @@ export interface Accessory {
 }
 
 /**
- * How much weight "nothing" carries in each slot.
+ * How often a slot is filled at all.
  *
- * High, and deliberately. A uniform draw over a slot's contents plus nothing
- * puts a hat on most of a member list, and at that rate the hat stops being a
- * thing about that person and becomes noise. These numbers are weighed against
- * the sum of the accessories in the slot, so adding a fifth hat makes hats a
- * little more common rather than making every owl wear one.
+ * The knob that matters, and the one that used to not exist. A weight in the
+ * generated list is a share of its slot; these decide how big the slot is
+ * against nothing, and the generator sizes the weights to hit them. So the
+ * numbers here hold however many drawings land in artwork/ — an eighth pair of
+ * glasses changes which glasses turn up, not whether anyone is wearing any.
+ *
+ * That was not true before. Weights were written by hand against a fixed
+ * EMPTY_WEIGHT, so every drawing added to a slot made that slot more likely to
+ * be filled: eight pairs of glasses had put eyewear on 38% of owls, and a ninth
+ * would have pushed it past that without anybody choosing it. The comment here
+ * used to describe that as adding "a fifth hat makes hats a little more common",
+ * which was accurate and is the drift.
+ *
+ * Kept low on purpose. A uniform draw over a slot's contents plus nothing puts
+ * a hat on most of a member list, and at that rate the hat stops being a thing
+ * about that person and becomes noise.
+ *
+ * These are the rates the hand-written weights happened to produce, carried
+ * over so adopting the model moved nobody by itself.
  */
-export const EMPTY_WEIGHT: Record<AccessorySlot, number> = {
+export const SLOT_PRESENCE: Record<AccessorySlot, number> = {
   // Empty here is not a face with no eyes — it is the eyes the bird is drawn
   // with, which is the one every other expression is a departure from.
-  expression: 46,
-  eyewear: 90,
-  head: 60,
-  neck: 48,
-  body: 70,
+  expression: 0.18,
+  eyewear: 0.38,
+  head: 0.3,
+  neck: 0.35,
+  body: 0.18,
+};
+
+/**
+ * How much weight "nothing" carries in each slot.
+ *
+ * The same in every slot now, and it is only the denominator SLOT_PRESENCE is
+ * measured against — the generator picks weights to suit it. Change
+ * SLOT_PRESENCE to make a slot rarer; this number does nothing on its own.
+ *
+ * A thousand rather than a hundred so there is room to divide. Weights are
+ * whole numbers, so this is the resolution the split between drawings is cut
+ * at, and a slot with thirty of them in it still lands on the rate it asked
+ * for rather than a few points under.
+ */
+export const EMPTY_WEIGHT: Record<AccessorySlot, number> = {
+  expression: 1000,
+  eyewear: 1000,
+  head: 1000,
+  neck: 1000,
+  body: 1000,
 };
 
 /**

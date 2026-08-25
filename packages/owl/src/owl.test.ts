@@ -61,11 +61,24 @@ describe("the same name draws the same owl", () => {
   /*
    * The pins. Generated once and left alone — see the note at the top of the
    * file before touching them.
+   *
+   * Regenerated once, on 2026-08-25, and it is the only time. GRYT-589 moved
+   * accessory weights off a hand-written manifest and onto the filenames, and
+   * changed the draw so that a candidate's chance stops depending on what else
+   * is in its slot. Both change where a seed lands, so all three moved and so
+   * did most owls.
+   *
+   * That was the point rather than a cost of it. Before, adding one drawing
+   * changed 28.6% of owls while 8.7% wore the new thing — every drawing ever
+   * added reshuffled a fifth of everybody for nothing, and would have gone on
+   * doing it. It is 4.4% now, and the remainder is the slot holding its overall
+   * rate steady. This is the last time a new accessory moves people who do not
+   * get it, which is what buys the one-off.
    */
   it.each([
-    ["sivert", "4561f7aec327db0e"],
-    ["ingy", "5c1a03958ee50663"],
-    ["gryt", "dbf9898f1befe5c5"],
+    ["sivert", "08e0f6cac482bd90"],
+    ["ingy", "ef23823fe3db7b87"],
+    ["gryt", "dcf2a44b431e7c5b"],
   ])("%s is unchanged", (seed, expected) => {
     expect(digest(owlAvatarSvg(seed))).toBe(expected);
   });
