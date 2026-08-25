@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 /**
  * Shrinking a path without changing what it draws.
  *
@@ -21,15 +19,30 @@
  */
 
 /**
+ * The commands that survive parsing. H and V become L, Q becomes C, and A is
+ * refused outright rather than approximated.
+ */
+export type SegmentType = "M" | "L" | "C" | "Z";
+
+/**
+ * One absolute segment. `pts` holds the coordinate pairs the command takes:
+ * none for Z, one for M and L, three for C.
+ */
+export interface Segment {
+  type: SegmentType;
+  pts: number[];
+}
+
+/**
  * A path as a list of absolute segments, commands kept.
  *
  * Deliberately narrow. It handles what a drawing tool emits for this artwork and
  * refuses everything else, rather than silently mangling a construct it does not
  * understand.
  */
-export function parsePath(d) {
+export function parsePath(d: string): Segment[] {
   const tokens = d.match(/[MmLlHhVvCcSsQqTtAaZz]|-?\d*\.?\d+(?:e-?\d+)?/gi) || [];
-  const out = [];
+  const out: Segment[] = [];
   let i = 0;
   let x = 0;
   let y = 0;
@@ -103,7 +116,7 @@ export function parsePath(d) {
 }
 
 /** How far a point sits off the line through a and b. */
-function offLine(px, py, ax, ay, bx, by) {
+function offLine(px: number, py: number, ax: number, ay: number, bx: number, by: number): number {
   const dx = bx - ax;
   const dy = by - ay;
   const len = Math.hypot(dx, dy);
@@ -112,30 +125,25 @@ function offLine(px, py, ax, ay, bx, by) {
 }
 
 /** As short as a number can be written and still parse the same. */
-function short(n) {
+function short(n: number): string {
   const s = String(n);
   if (s.startsWith("0.")) return s.slice(1);
   if (s.startsWith("-0.")) return "-" + s.slice(2);
   return s;
 }
 
-/**
- * Four passes, in order:
- *
- *   - round every coordinate to `places`,
- *   - drop segments that go nowhere, which is what rounding leaves behind and
- *     what a vectoriser emits anyway,
- *   - turn a curve whose control points sit on its own chord into the line it
- *     already was,
- *   - merge runs of collinear lines into one.
- *
- * `tolerance` is in artwork units, so 0.4 means "a curve that never leaves four
- * tenths of a unit of its chord is a straight line". On a 1024 box drawn at 32
- * pixels that is a hundredth of a pixel; at 512 it is still under a fifth.
- */
+/** The area and bounding box of a path, to a resolution that catches a mangle. */
+interface Outline {
+  area: number;
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+}
+
 /** A coarse outline of a path: enough to tell whether two of them agree. */
-function outline(segments) {
-  const points = [];
+function outline(segments: Segment[]): Outline {
+  const points: Array<[number, number]> = [];
   let x = 0;
   let y = 0;
   let sx = 0;
@@ -188,11 +196,25 @@ function outline(segments) {
   return { area: Math.abs(area) / 2, minX, minY, maxX, maxY };
 }
 
-export function simplifyPath(d, places = 1, tolerance = 0.4) {
-  const round = (n) => Number(n.toFixed(places));
-  const segments = parsePath(d).map((s) => ({ type: s.type, pts: s.pts.map(round) }));
+/**
+ * Four passes, in order:
+ *
+ *   - round every coordinate to `places`,
+ *   - drop segments that go nowhere, which is what rounding leaves behind and
+ *     what a vectoriser emits anyway,
+ *   - turn a curve whose control points sit on its own chord into the line it
+ *     already was,
+ *   - merge runs of collinear lines into one.
+ *
+ * `tolerance` is in artwork units, so 0.4 means "a curve that never leaves four
+ * tenths of a unit of its chord is a straight line". On a 1024 box drawn at 32
+ * pixels that is a hundredth of a pixel; at 512 it is still under a fifth.
+ */
+export function simplifyPath(d: string, places = 1, tolerance = 0.4): string {
+  const round = (n: number) => Number(n.toFixed(places));
+  const segments: Segment[] = parsePath(d).map((s) => ({ type: s.type, pts: s.pts.map(round) }));
 
-  const out = [];
+  const out: Segment[] = [];
   let x = 0;
   let y = 0;
   let sx = 0;

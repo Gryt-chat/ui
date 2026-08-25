@@ -1,5 +1,3 @@
-/* eslint-env node */
-
 /**
  * Reading the drawable things out of an SVG.
  *
@@ -15,20 +13,43 @@
  * through, and anything not understood is reported rather than skipped.
  */
 
+/** One drawable thing, as path data and the paint it was drawn with. */
+export interface Shape {
+  d: string;
+  /**
+   * Empty rather than the string "none", for both of these. The caller tests
+   * them for truthiness to decide whether a shape is filled, stroked or both,
+   * and "none" is truthy.
+   */
+  fill: string;
+  stroke: string;
+  /** Zero when there is no stroke, so it is never read against an empty one. */
+  strokeWidth: number;
+  linecap?: string;
+  linejoin?: string;
+  evenodd: boolean;
+}
+
+export interface ReadShapesResult {
+  shapes: Shape[];
+  /** Tags that turned up and were not understood. Reported, never skipped. */
+  unknown: string[];
+}
+
 /** Kappa: the handle length that turns four cubics into a circle. */
 const K = 0.5522847498307936;
 
-function attr(attrs, name) {
+function attr(attrs: string, name: string): string | undefined {
   const m = new RegExp(`\\b${name}="([^"]*)"`).exec(attrs);
   return m ? m[1] : undefined;
 }
 
-function num(attrs, name, fallback = 0) {
+function num(attrs: string, name: string, fallback = 0): number {
   const v = attr(attrs, name);
   return v === undefined ? fallback : Number(v);
 }
 
-function round(n) {
+function round(n: number): number {
   return Number(n.toFixed(3));
 }
 
@@ -38,7 +59,7 @@ function round(n) {
  * Cubics rather than arcs, because the simplifier's parser refuses arcs — and
  * it refuses them on purpose, so this converts rather than making it guess.
  */
-export function rectPath(attrs) {
+export function rectPath(attrs: string): string {
   const x = num(attrs, "x");
   const y = num(attrs, "y");
   const w = num(attrs, "width");
@@ -53,7 +74,7 @@ export function rectPath(attrs) {
   }
   const cx = rx * K;
   const cy = ry * K;
-  const p = (a, b) => `${round(a)} ${round(b)}`;
+  const p = (a: number, b: number) => `${round(a)} ${round(b)}`;
   return (
     `M${p(x + rx, y)}` +
     `L${p(x + w - rx, y)}` +
@@ -68,10 +89,10 @@ export function rectPath(attrs) {
 }
 
 /** An ellipse as four cubics. `<circle>` is the case where rx and ry agree. */
-export function ellipsePath(cx, cy, rx, ry) {
+export function ellipsePath(cx: number, cy: number, rx: number, ry: number): string {
   const hx = rx * K;
   const hy = ry * K;
-  const p = (a, b) => `${round(a)} ${round(b)}`;
+  const p = (a: number, b: number) => `${round(a)} ${round(b)}`;
   return (
     `M${p(cx, cy - ry)}` +
     `C${p(cx + hx, cy - ry)} ${p(cx + rx, cy - hy)} ${p(cx + rx, cy)}` +
@@ -81,7 +102,7 @@ export function ellipsePath(cx, cy, rx, ry) {
   );
 }
 
-function pointsPath(attrs, close) {
+function pointsPath(attrs: string, close: boolean): string {
   const nums = (attr(attrs, "points") || "").match(/-?\d*\.?\d+/g) || [];
   if (nums.length < 4) return "";
   let d = `M${nums[0]} ${nums[1]}`;
@@ -102,17 +123,17 @@ const IGNORED = new Set(["svg", "g", "defs", "clippath", "mask", "title", "desc"
  * files carry already says. A path with a stroke and no fill is a line, and it
  * has to stay one.
  */
-export function readShapes(svg) {
+export function readShapes(svg: string): ReadShapesResult {
   const body = svg.replace(/<defs\b[\s\S]*?<\/defs>/gi, "");
-  const shapes = [];
-  const unknown = new Set();
+  const shapes: Shape[] = [];
+  const unknown = new Set<string>();
 
   for (const m of body.matchAll(/<([A-Za-z][\w-]*)\b([^>]*?)\/?>/g)) {
     const tag = m[1].toLowerCase();
     const attrs = m[2];
     if (IGNORED.has(tag)) continue;
 
-    let d;
+    let d: string | undefined;
     if (tag === "path") d = attr(attrs, "d");
     else if (tag === "rect") d = rectPath(attrs);
     else if (tag === "circle") {
