@@ -8,8 +8,16 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    # To push the regenerated registry back to the pull request branch.
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          # The branch rather than the merge commit, so there is something to
+          # push back to, and a token that is allowed to do it.
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24
@@ -28,15 +36,73 @@ jobs:
       # they go; the honest end state is 0.
       - run: bun run lint
       - run: bun run test
-      # Before the build, and that is the whole point: `bun run build`
-      # regenerates accessories.generated.ts as its first step, so after it
-      # has run there is nothing left to catch. This compares what is
-      # committed against what the drawings produce.
+      # Check any drawing this pull request adds or changes, before anything
+      # tries to build with it.
       #
-      # The mode has existed since the file became derived and nothing ran
-      # it. A drawing changed without the regenerated file alongside it
-      # would have merged, built green, and shipped an owl wearing the old
-      # version of the hat.
+      # This is the same checker `npx @gryt/owl check` ships, run from source,
+      # and it exists so that adding a cosmetic fails here with a report about
+      # the drawing rather than somewhere downstream with a stack trace. It
+      # reports the filename's slot and rarity, the viewBox, whether the
+      # transforms are flattened, how much of the bird it found, and any colour
+      # with no palette role.
+      #
+      # The one that matters is how much of the bird it found. A drawing that
+      # was not drawn on the base extracts perfectly happily and produces an
+      # accessory shaped like a whole owl, so "it produced something" is not the
+      # test.
+      - name: Check drawings added by this pull request
+        if: github.event_name == 'pull_request'
+        run: |
+          base=$(git merge-base HEAD "origin/${{ github.base_ref }}" 2>/dev/null || echo "")
+          if [ -z "$base" ]; then
+            git fetch --no-tags --depth=50 origin "${{ github.base_ref }}"
+            base=$(git merge-base HEAD FETCH_HEAD)
+          fi
+          # Added, copied or modified only — a deleted drawing has nothing to check.
+          mapfile -t drawings < <(git diff --name-only --diff-filter=ACM "$base" HEAD -- 'packages/owl/artwork/*.svg')
+          if [ ${#drawings[@]} -eq 0 ]; then
+            echo "no drawings added or changed"
+            exit 0
+          fi
+          printf 'checking %s drawing(s)\n\n' "${#drawings[@]}"
+          cd packages/owl
+          bun src/cli/check.ts check "${drawings[@]/#packages\/owl\//}"
+
+      # Regenerate the registry from the drawings, and commit it if it moved.
+      #
+      # This used to be `accessories:check`, which failed the build when the
+      # committed file disagreed with artwork/ and told you to run the script.
+      # That is a chore with one correct answer, which is the kind of chore a
+      # machine should be doing: adding a cosmetic is now dropping an SVG into
+      # artwork/ and releasing.
+      #
+      # The file stays committed rather than generated at build time and
+      # gitignored. Accessory output is load-bearing — the registry decides what
+      # existing people look like — and a diff on this file is the only place
+      # that change is visible before it ships. Generating it invisibly would
+      # mean nobody ever sees which owls moved.
+      #
+      # Only on pull_request: a push to main has no branch to push back to, and
+      # the merge commit already carries whatever the PR settled on. The check
+      # below still runs everywhere, so main cannot drift.
+      - name: Regenerate cosmetics from artwork/
+        if: github.event_name == 'pull_request'
+        run: bun --filter @gryt/owl accessories
+      - name: Commit the regenerated registry
+        if: github.event_name == 'pull_request'
+        run: |
+          if git diff --quiet -- packages/owl/src/accessories.generated.ts packages/owl/artwork/keys.json; then
+            echo "registry already matches the drawings"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add packages/owl/src/accessories.generated.ts packages/owl/artwork/keys.json
+          git commit -m "chore: regenerate cosmetics from artwork/ [skip ci]"
+          git push origin "HEAD:${{ github.head_ref }}"
+      # Still runs, on every event. After the step above it should always pass
+      # on a pull request; on main it is the thing that catches a registry that
+      # disagrees with the drawings however it got that way.
       - run: bun --filter @gryt/owl accessories:check
       - run: bun run build
       - run: bunx publint packages/theme
