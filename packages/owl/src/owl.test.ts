@@ -76,9 +76,9 @@ describe("the same name draws the same owl", () => {
    * get it, which is what buys the one-off.
    */
   it.each([
-    ["sivert", "08e0f6cac482bd90"],
-    ["ingy", "ef23823fe3db7b87"],
-    ["gryt", "dcf2a44b431e7c5b"],
+    ["sivert", "5696b9aa6095ea56"],
+    ["ingy", "ae9902b72ddb5d51"],
+    ["gryt", "92a8add559709f9b"],
   ])("%s is unchanged", (seed, expected) => {
     expect(digest(owlAvatarSvg(seed))).toBe(expected);
   });

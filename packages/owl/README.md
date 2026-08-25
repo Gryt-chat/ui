@@ -129,6 +129,9 @@ not whether anyone is wearing any.
 `src/accessories.generated.ts` is derived from the drawings and is rebuilt by
 `build`. `--all --check` fails when what is committed disagrees with `artwork/`.
 
+The full walkthrough, with the bird to download and a worked example, is at
+**[ui.gryt.chat/avatars/drawing](https://ui.gryt.chat/avatars/drawing)**.
+
 ## Who uses it
 
 - `@gryt/ui`'s `Avatar` generates one when it has a `seed` and no `src`.

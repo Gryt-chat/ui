@@ -61,26 +61,11 @@ const GENERATED = "src/accessories.generated.ts";
 /**
  * The bird the script draws and subtracts.
  *
- * The palette is only there so the drawing is pleasant to work on; the
- * subtraction matches on geometry and ignores colour except where it has
- * changed. `blob` eyes and `tufts` ears because that is the drawn owl, and an
- * accessory positioned against any other expression would sit a little wrong on
- * this one.
- *
- * Every slot is emptied explicitly, and that is not belt and braces. Left to the
- * seed, the bird would wear whatever the accessories already in the registry
- * rolled for it — so the moment the first one landed, the bird being subtracted
- * stopped being bare and every drawing failed to match. It is emptied here so
- * the base cannot depend on what has been added since.
+ * Defined in the package rather than here, because the drawing guide on the
+ * site hands the same bird out as a download and the two have to be the same
+ * one. See OWL_BASE for why that matters.
  */
-const BARE = { expression: null, eyewear: null, head: null, neck: null, body: null };
-const BASE = {
-  palette: "teal",
-  scheme: "day",
-  ears: "tufts",
-  size: 1024,
-  wearing: BARE,
-} satisfies owl.OwlOptions;
+const BASE = owl.OWL_BASE;
 
 /**
  * Where each slot lands unless told otherwise.
@@ -655,6 +640,26 @@ if (has("all")) {
     process.exit(1);
   }
 
+  // A family competes for its slot as one thing, so a rarity is a property of
+  // the family and not of each drawing in it. Two variants disagreeing has no
+  // answer — taking either one silently makes the other tag do nothing.
+  const rarityByFamily = new Map<string, Map<string, string[]>>();
+  for (const p of placements) {
+    if (!rarityByFamily.has(p.family)) rarityByFamily.set(p.family, new Map());
+    const seen = rarityByFamily.get(p.family)!;
+    if (!seen.has(p.rarity)) seen.set(p.rarity, []);
+    seen.get(p.rarity)!.push(p.file);
+  }
+  const split = [...rarityByFamily].filter(([, seen]) => seen.size > 1);
+  if (split.length) {
+    for (const [family, seen] of split) {
+      console.error(`${family} does not agree with itself about how rare it is:`);
+      for (const [rarity, files] of seen) console.error(`  ${rarity.padEnd(9)} ${files.join(", ")}`);
+    }
+    console.error("\nA rarity belongs to the family. Tag every variant the same, or none of them.");
+    process.exit(1);
+  }
+
   const weights = weightsFor(placements, owl.SLOT_PRESENCE, owl.EMPTY_WEIGHT.head);
 
   const blocks: string[] = [];
@@ -757,8 +762,12 @@ try {
     console.error(String(error instanceof Error ? error.message : error));
     process.exit(1);
   }
+  const fallbackName = fileName.replace(/\.svg$/i, "").toLowerCase().replace(/[_\s]+/g, "-");
   placement = {
-    name: fileName.replace(/\.svg$/i, "").toLowerCase().replace(/[_\s]+/g, "-"),
+    name: fallbackName,
+    type: fallbackName,
+    family: fallbackName,
+    variant: "",
     slot: accessorySlot(flagged, "--slot"),
     layer: "overAll",
     rarity: "common",

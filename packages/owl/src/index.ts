@@ -65,6 +65,7 @@ export {
   ACCESSORIES,
   EMPTY_WEIGHT,
   SLOT_PRESENCE,
+  OWL_BASE,
   accessoriesIn,
   accessoryByName,
   repaint,

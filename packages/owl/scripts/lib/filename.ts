@@ -6,16 +6,24 @@
  * it on an owl. Adding a cosmetic is now dropping an SVG into artwork/ and
  * running the script.
  *
- * The grammar is `Some_Words[.tag][.tag].svg`:
+ * The grammar is `type_family[_variant][.tag].svg`. Underscores separate the
+ * three fields; a hyphen joins words inside one of them.
  *
- *   Winter_Hat.svg                  a hat, called winter-hat
- *   Heart_Glasses.rare.svg          eyewear, and rarer than the rest of it
- *   Hoodie.covers-head.svg          a garment with a hood, so no hat over it
- *   Cravat.neck.svg                 a word the table below has never heard of
- *   _Winter_Hat_Small.svg           ignored entirely
+ *   scarf.svg                       a type on its own is its own family
+ *   glasses_round.svg               round glasses
+ *   glasses_round_gold.svg          the gold pair of them
+ *   hat_winter-beanie_red.svg       family of two words, variant of one
+ *   glasses_heart.rare.svg          seen less often than the other eyewear
+ *   hoodie_plain.covers-head.svg    a garment with a hood, so no hat over it
+ *   sporran_dress.neck.svg          a type word the table below has not met
+ *   _hat_winter_old.svg             ignored entirely
  *
- * The words give the name and, through KEYWORDS, the slot. Tags are optional
- * and each one is a single decision.
+ * The type is the first field and KEYWORDS turns it into a slot. Tags are
+ * optional and each one is a single decision.
+ *
+ * Type first is not only tidiness. The folder groups itself, the generated
+ * registry sorts by family, and a customiser gets type -> family -> variant
+ * without being told about it separately.
  *
  * Nothing here guesses. A word that is not in the table is an error naming the
  * file, not a default — an accessory silently landing in the wrong slot is the
@@ -147,8 +155,21 @@ const LAYERS: Record<string, string> = {
 };
 
 export interface Placement {
-  /** What the accessory is called in the registry. */
+  /** What the accessory is called in the registry. Unique across all of them. */
   name: string;
+  /** The first field, and what KEYWORDS reads to find the slot. */
+  type: string;
+  /**
+   * The thing itself, with its variants — round glasses, whatever colour.
+   *
+   * Families compete for the slot, and variants split whatever their family
+   * gets. Without that, six colourways of one pair of glasses take six shares
+   * of eyewear and end up 5.9x as likely as a pair drawn once, which is the
+   * slot-presence problem again one level down.
+   */
+  family: string;
+  /** Empty when the family has only the one drawing. */
+  variant: string;
   slot: AccessorySlot;
   layer: string;
   rarity: Rarity;
@@ -181,8 +202,26 @@ export function placementFor(filename: string, slots: readonly AccessorySlot[]):
   const base = filename.replace(/\.svg$/i, "");
   const [words, ...tags] = base.split(".");
 
-  const name = words.trim().toLowerCase().replace(/[_\s]+/g, "-");
-  if (!name) fail(filename, "has no name before its tags");
+  const fields = words
+    .trim()
+    .toLowerCase()
+    .split("_")
+    .map((f) => f.trim())
+    .filter(Boolean);
+
+  if (fields.length === 0) fail(filename, "has no name before its tags");
+  if (fields.length > 3) {
+    fail(
+      filename,
+      `has ${fields.length} fields. It is type_family_variant — join words ` +
+        `inside a field with a hyphen, e.g. ${fields[0]}_${fields.slice(1, -1).join("-")}_${fields[fields.length - 1]}.svg`,
+    );
+  }
+
+  // A type with nothing after it is its own family: scarf.svg rather than
+  // scarf_plain.svg, since the filler field says nothing.
+  const [type, family = type, variant = ""] = fields;
+  const name = fields.join("-");
 
   let slot: AccessorySlot | undefined;
   let rarity: Rarity = "common";
@@ -222,19 +261,13 @@ export function placementFor(filename: string, slots: readonly AccessorySlot[]):
   }
 
   if (!slot) {
-    // Every word gets a say, not just the last one, so Winter_Hat and
-    // Hat_Winter both work and Glasses_Hat is refused rather than resolved by
-    // whichever end this happened to read first.
+    // The type field only, not any word in the name. A family called "bow"
+    // under type "glasses" is a shape of frame, not a thing worn on the head,
+    // and reading every field would have made that a conflict to resolve.
     const found = new Map<AccessorySlot, string>();
-    for (const word of name.split("-")) {
-      const match = KEYWORDS[word];
-      if (match && !found.has(match)) found.set(match, word);
-    }
+    const match = KEYWORDS[type];
+    if (match) found.set(match, type);
 
-    if (found.size > 1) {
-      const which = [...found].map(([s, w]) => `"${w}" says ${s}`).join(", ");
-      fail(filename, `${which}. Add a slot tag to settle it, e.g. ${base}.${[...found.keys()][0]}.svg`);
-    }
     if (found.size === 0) {
       // Grouped by slot rather than listed flat. Fifty words on one line is a
       // wall to read past; grouped, it shows the convention as well as the
@@ -250,9 +283,9 @@ export function placementFor(filename: string, slots: readonly AccessorySlot[]):
 
       fail(
         filename,
-        `no word in "${name}" says which slot this goes in.\n` +
-          `  Rename it to include one of:${vocabulary}\n` +
-          `  Or tag it, e.g. ${base}.head.svg`,
+        `"${type}" is not a type this knows, so there is no slot to put it in.\n` +
+          `  Types:${vocabulary}\n` +
+          `  Or name the slot yourself, e.g. ${base}.head.svg`,
       );
     }
     slot = [...found.keys()][0];
@@ -262,7 +295,16 @@ export function placementFor(filename: string, slots: readonly AccessorySlot[]):
     if (!excludes.includes(also)) excludes.push(also);
   }
 
-  return { name, slot, layer: layer ?? DEFAULT_LAYER[slot], rarity, excludes };
+  return {
+    name,
+    type,
+    family: family === type ? type : `${type}-${family}`,
+    variant,
+    slot,
+    layer: layer ?? DEFAULT_LAYER[slot],
+    rarity,
+    excludes,
+  };
 }
 
 /**
@@ -277,7 +319,9 @@ export function placementFor(filename: string, slots: readonly AccessorySlot[]):
  * whatever is there means a new drawing changes which glasses you see rather
  * than whether you see any.
  */
-export function weightsFor<T extends { name: string; slot: AccessorySlot; rarity: Rarity }>(
+export function weightsFor<
+  T extends { name: string; slot: AccessorySlot; family: string; rarity: Rarity },
+>(
   items: readonly T[],
   presence: Record<AccessorySlot, number>,
   emptyWeight: number,
@@ -287,7 +331,23 @@ export function weightsFor<T extends { name: string; slot: AccessorySlot; rarity
   const slots = new Set(items.map((i) => i.slot));
   for (const slot of slots) {
     const inSlot = items.filter((i) => i.slot === slot);
-    const shares = inSlot.map((i) => RARITY_SHARE[i.rarity]);
+
+    /*
+     * Families compete for the slot; variants split what their family wins.
+     *
+     * The alternative is letting every drawing compete directly, and six
+     * colourways of round glasses then take six shares of eyewear — 5.9x as
+     * likely to turn up as a pair drawn once, for no reason anybody chose.
+     * That is the same thing SLOT_PRESENCE fixes between slots, and it needs
+     * fixing between families too or drawing variants quietly buries whatever
+     * only exists in one.
+     */
+    const families = [...new Set(inSlot.map((i) => i.family))].sort();
+    const shares = families.map((family) => {
+      const rarities = new Set(inSlot.filter((i) => i.family === family).map((i) => i.rarity));
+      // Checked in placementFor's caller; taking the first is safe here.
+      return RARITY_SHARE[[...rarities][0]];
+    });
     const shareTotal = shares.reduce((a, b) => a + b, 0);
 
     // p = filled / (filled + empty), so filled = empty * p / (1 - p).
@@ -303,10 +363,16 @@ export function weightsFor<T extends { name: string; slot: AccessorySlot; rarity
      * drops from 30% of owls to 23%. That error grows with the number of
      * drawings, which is the direction this repository goes in.
      */
-    const exact = shares.map((share) => (slotTotal * share) / shareTotal);
+    // A family's whole share first, then split between its variants, so the
+    // rounding is done once at each level rather than compounding.
+    const exact = shares.map((share, i) => {
+      const variants = inSlot.filter((item) => item.family === families[i]).length;
+      return (slotTotal * share) / shareTotal / variants;
+    });
+    const counts = families.map((family) => inSlot.filter((i) => i.family === family).length);
     const floors = exact.map((n) => Math.max(1, Math.floor(n)));
 
-    let left = slotTotal - floors.reduce((a, b) => a + b, 0);
+    let left = slotTotal - floors.reduce((sum, n, i) => sum + n * counts[i], 0);
 
     // Hand the leftover units to whoever was rounded down hardest. If there is
     // nothing left over — more drawings in the slot than it has weight to give
@@ -318,12 +384,14 @@ export function weightsFor<T extends { name: string; slot: AccessorySlot; rarity
       .sort((a, b) => b[1] - a[1]);
 
     for (const [i] of order) {
-      if (left <= 0) break;
+      if (left < counts[i]) continue;
       floors[i] += 1;
-      left -= 1;
+      left -= counts[i];
     }
 
-    inSlot.forEach((item, i) => weights.set(item.name, floors[i]));
+    // Every variant of a family carries the same weight, which is what makes
+    // the family's share independent of how many of them there are.
+    inSlot.forEach((item) => weights.set(item.name, floors[families.indexOf(item.family)]));
   }
 
   return weights;

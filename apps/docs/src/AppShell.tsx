@@ -43,7 +43,8 @@ const navSections: NavSection[] = [
       { href: "/installation", label: "Installation" },
       { href: "/theme", label: "Theme" },
       { href: "/theme/generator", label: "Theme generator", since: "0.11.0" },
-      { href: "/avatars", label: "Avatars", since: "0.19.0" }
+      { href: "/avatars", label: "Avatars", since: "0.19.0" },
+      { href: "/avatars/drawing", label: "Drawing a cosmetic", since: "0.20.0" }
     ]
   },
   // Above the components, not below them. Someone arriving at a component

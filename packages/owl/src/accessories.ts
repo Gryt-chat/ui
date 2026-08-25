@@ -43,6 +43,7 @@ import { GENERATED_ACCESSORIES } from "./accessories.generated";
 import type {
   AccessoryLayer,
   AccessorySlot,
+  OwlOptions,
   OwlPalette,
   OwlPart,
   PaletteSlot,
@@ -114,6 +115,40 @@ export interface Accessory {
   /** Drawn in order, back to front. Keep the design file's own order. */
   paths: readonly AccessoryPath[];
 }
+
+/**
+ * The bird an accessory is drawn on top of, and the one the extractor subtracts
+ * back out.
+ *
+ * Exported because two places need it and they have to agree exactly: the
+ * script that writes owl-base.svg, and the download on the site's drawing
+ * guide. A second copy that drifted would hand somebody a bird a little unlike
+ * the one their drawing is measured against, and every path would fail to
+ * match with nothing saying why.
+ *
+ * The palette is only there so the drawing is pleasant to work on — the
+ * subtraction matches on geometry and ignores colour except where it has
+ * changed. `tufts` ears because that is the drawn owl, and an accessory
+ * positioned against any other would sit a little wrong on this one.
+ *
+ * Every slot is emptied explicitly, and that is not belt and braces. Left to
+ * the seed the bird would wear whatever the registry rolled for it, so the
+ * moment the first accessory landed the bird being subtracted stopped being
+ * bare and every drawing failed to match. That happened.
+ */
+export const OWL_BASE = {
+  palette: "teal",
+  scheme: "day",
+  ears: "tufts",
+  size: 1024,
+  wearing: {
+    expression: null,
+    eyewear: null,
+    head: null,
+    neck: null,
+    body: null,
+  },
+} as const satisfies OwlOptions;
 
 /**
  * How often a slot is filled at all.

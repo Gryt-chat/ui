@@ -156,6 +156,15 @@ const staticPages: OgPage[] = [
     hero: namedImport("owlAvatarSvg"),
     caption: "One drawn character, not a face generator.",
     drawing: "avatar"
+  },
+  {
+    route: "avatars/drawing",
+    title: "Drawing a cosmetic — Gryt UI",
+    description:
+      "Draw on top of the bird, name the file, run the script. No path data, no manifest, and the filename decides where it goes.",
+    hero: namedImport("owlAvatarSvg"),
+    caption: "Draw on the bird. The script subtracts it back out.",
+    drawing: "avatar"
   }
 ];
 
