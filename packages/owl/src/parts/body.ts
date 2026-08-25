@@ -79,7 +79,8 @@ export function renderEars(m: OwlMetrics, style: EarStyle, fill: string): string
  * is worth saying out loud because getting it wrong is silent: the wing still
  * draws, still fills the same corner, and is simply the wrong shape.
  */
-export function renderWings(m: OwlMetrics, fill: string): string {
+/** One wing. `-1` sits on the left of the frame, `1` on the right. */
+export function renderWing(m: OwlMetrics, fill: string, side: 1 | -1): string {
   const at = (side: 1 | -1, fx: number, fy: number): Point => [
     m.cx + side * m.half * fx,
     m.shoulder + m.headHeight * fy,
@@ -104,5 +105,10 @@ export function renderWings(m: OwlMetrics, fill: string): string {
       at(side, 0.9999, 0),
     ])}" fill="${fill}"/>`;
 
-  return one(-1) + one(1);
+  return one(side);
+}
+
+/** Both, for callers that do not care which is which. */
+export function renderWings(m: OwlMetrics, fill: string): string {
+  return renderWing(m, fill, -1) + renderWing(m, fill, 1);
 }

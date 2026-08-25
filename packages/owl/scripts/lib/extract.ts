@@ -294,13 +294,31 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
     if (p.fill !== baseFills.get(key)) {
       const part = partOf.get(key);
 
-      // An expression brings its own eyes, and paints the drawn ones out to say
-      // so. Recorded as "do not draw them" rather than as a repaint: the eyes
-      // and the beak share a colour, so repainting the role would take the beak
-      // with it, and a plate-coloured disc is only invisible where the plate is
-      // what is behind it.
-      if (part === "eyes") {
-        hides.add("eyes");
+      /*
+       * An expression brings its own eyes and paints the drawn ones out to say
+       * so. Recorded as "do not draw this one" rather than as a repaint: the
+       * eyes and the beak share a colour, so repainting the role would take the
+       * beak with them, and a plate-coloured disc is only invisible where the
+       * plate is what happens to be behind it.
+       *
+       * Per side, because a wink is one closed eye and one open one. Hiding the
+       * pair lost the open eye and the wink came out with a blank face.
+       */
+      if (part === "eyeLeft" || part === "eyeRight") {
+        hides.add(part);
+        return false;
+      }
+
+      /*
+       * A part painted the background's colour is a part the drawing means to
+       * remove — a coat over an arm. Recorded as a hide of that one rather than
+       * as a repaint of the wing role, which would take both arms whether the
+       * drawing covered both or not.
+       *
+       * Anything painted some other colour is a genuine recolour and stays one.
+       */
+      if ((part === "wingLeft" || part === "wingRight") && p.fill === realPalette.background) {
+        hides.add(part);
         return false;
       }
 

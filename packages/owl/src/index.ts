@@ -29,8 +29,8 @@
 import { escapeXml, fmt, VIEWBOX } from "./geometry";
 import { OWL } from "./metrics";
 import { owlPalette, PALETTE_NAMES, PALETTE_SCHEMES } from "./palette";
-import { renderBody, renderEars, renderWings } from "./parts/body";
-import { renderEyes } from "./parts/eyes";
+import { renderBody, renderEars, renderWing } from "./parts/body";
+import { renderEye } from "./parts/eyes";
 import { renderBeak, renderFace } from "./parts/face";
 // pickWeighted still, for ears: EAR_WEIGHTS is a fixed pair that cannot grow,
 // so there is nothing for the by-name draw to protect, and switching it would
@@ -239,17 +239,26 @@ export function owlAvatarSvg(seed: Seed, options: OwlOptions = {}): string {
   // invisible where the plate is what happens to be behind it.
   const hidden = new Set<OwlPart>();
   for (const accessory of worn) for (const part of accessory.hides ?? []) hidden.add(part);
-  const draw = (part: OwlPart, markup: string) => (hidden.has(part) ? "" : markup);
+
+  // A drawing may name one of a pair or the pair itself, so a side is hidden by
+  // either. A wink hides one eye and leaves the other; an expression that
+  // brings both says "eyes" once.
+  const gone = (part: OwlPart, pair?: OwlPart) =>
+    hidden.has(part) || (pair !== undefined && hidden.has(pair));
+  const draw = (part: OwlPart, markup: string, pair?: OwlPart) =>
+    gone(part, pair) ? "" : markup;
 
   const parts =
     renderAccessories(worn, p, "behind") +
     draw("earTufts", renderEars(m, c.ears, p.body)) +
     draw("body", renderBody(m, p.body)) +
-    draw("wings", renderWings(m, p.wing)) +
+    draw("wingLeft", renderWing(m, p.wing, -1), "wings") +
+    draw("wingRight", renderWing(m, p.wing, 1), "wings") +
     renderAccessories(worn, p, "underFace") +
     draw("face", renderFace(m, p.face)) +
     renderAccessories(worn, p, "overFace") +
-    draw("eyes", renderEyes(m, p)) +
+    draw("eyeLeft", renderEye(m, p, -1), "eyes") +
+    draw("eyeRight", renderEye(m, p, 1), "eyes") +
     draw("beak", renderBeak(m, p.accent)) +
     renderAccessories(worn, p, "overEyes") +
     renderAccessories(worn, p, "overAll");
@@ -299,9 +308,11 @@ export function owlPartPaths(options: OwlOptions = {}): { part: OwlPart; d: stri
   return [
     ...shapes("earTufts", renderEars(m, c.ears, p.body)),
     ...shapes("body", renderBody(m, p.body)),
-    ...shapes("wings", renderWings(m, p.wing)),
+    ...shapes("wingLeft", renderWing(m, p.wing, -1)),
+    ...shapes("wingRight", renderWing(m, p.wing, 1)),
     ...shapes("face", renderFace(m, p.face)),
-    ...shapes("eyes", renderEyes(m, p)),
+    ...shapes("eyeLeft", renderEye(m, p, -1)),
+    ...shapes("eyeRight", renderEye(m, p, 1)),
     ...shapes("beak", renderBeak(m, p.accent)),
   ];
 }

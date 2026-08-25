@@ -22,7 +22,28 @@ export type EarStyle = "none" | "tufts";
  * brings its own eyes, so it hides the drawn ones rather than being painted
  * over them — see `hides` on Accessory.
  */
-export type OwlPart = "earTufts" | "body" | "wings" | "face" | "eyes" | "beak";
+/**
+ * A piece of the bird a drawing can replace.
+ *
+ * The paired ones are individually addressable, because a drawing usually only
+ * means one of them. A wink brings its own closed eye and leaves the open one
+ * alone; hiding "eyes" took both and the open one vanished. A coat covers one
+ * arm and not the other just as often as it covers both.
+ *
+ * `eyes` and `wings` still mean the pair, since a drawing that replaces both —
+ * most expressions do — should say so once.
+ */
+export type OwlPart =
+  | "earTufts"
+  | "body"
+  | "wings"
+  | "wingLeft"
+  | "wingRight"
+  | "face"
+  | "eyes"
+  | "eyeLeft"
+  | "eyeRight"
+  | "beak";
 
 /**
  * Where an accessory is worn. One per slot, drawn independently, so a hat and a
