@@ -37,6 +37,7 @@ import { renderBeak, renderFace } from "./parts/face";
 // move every owl's ears for no reason.
 import { hash32, pick, pickWeighted, pickWeightedByName } from "./rng";
 import {
+  ACCESSORY_SLOTS,
   accessoriesIn,
   accessoryByName,
   EMPTY_WEIGHT,
@@ -59,10 +60,19 @@ export * from "./types";
 // consumer draws from a nickname, and two of them disagreeing about whether
 // "Sivert" and "sivert" are one person is two people with two faces.
 export { avatarSeed } from "./avatarSeed";
+export {
+  encodeWorn,
+  decodeWorn,
+  wornToOptions,
+  EMPTY_FIELD,
+  WORN_LENGTH,
+  type WornLook,
+} from "./wearing";
 export { owlPalette, allOwlPalettes, hsl, PALETTE_NAMES, PALETTE_SCHEMES, TILE_HUES } from "./palette";
 export { OWL, type OwlMetrics } from "./metrics";
 export {
   ACCESSORIES,
+  ACCESSORY_SLOTS,
   EMPTY_WEIGHT,
   SLOT_PRESENCE,
   OWL_BASE,
@@ -74,16 +84,6 @@ export {
 } from "./accessories";
 
 export const EAR_STYLES: EarStyle[] = ["none", "tufts"];
-
-/**
- * The order slots are drawn in, and the order they are chosen in.
- *
- * Fixed, and it has to stay fixed: change it and everyone who owns two things
- * that exclude each other swaps one for the other.
- */
-export const ACCESSORY_SLOTS: AccessorySlot[] = [
-  "expression", "eyewear", "head", "neck", "body",
-];
 
 /** `tufts` beats `none` because the drawn owl has them. */
 const EAR_WEIGHTS: readonly (readonly [EarStyle, number])[] = [

@@ -243,6 +243,8 @@ const LADDER: owl.PaletteSlot[] = ["trimSoft", "trimLight", "trim", "trimDeep", 
 /** What extract needs to know about the accessory it is pulling out. */
 export interface ExtractOptions {
   name: string;
+  /** Permanent, from artwork/keys.json. See scripts/lib/keys.ts. */
+  key: string;
   slot: owl.AccessorySlot;
   /** Unset takes the slot's default from DEFAULT_LAYER. */
   layer?: string;
@@ -343,6 +345,7 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
   const literal =
     `  {\n` +
     `    name: "${opts.name}",\n` +
+    `    key: "${opts.key}",\n` +
     `    slot: "${opts.slot}",\n` +
     `    layer: "${layer}",\n` +
     `    weight: ${opts.weight},\n` +

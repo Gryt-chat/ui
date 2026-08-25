@@ -90,6 +90,14 @@ export interface Accessory {
    */
   weight: number;
   /**
+   * Its permanent two-letter name, for the string a person's look travels as.
+   *
+   * Assigned once from artwork/keys.json and never reused, including after the
+   * drawing has gone. Deriving it from position would mean a new drawing
+   * re-dressing everybody whose saved look sat after it in the folder.
+   */
+  key: string;
+  /**
    * Base parts this repaints, as role -> role.
    *
    * A coat covers the owl's arms, so the drawing paints the wings in the
@@ -195,6 +203,16 @@ export const SLOT_PRESENCE: Record<AccessorySlot, number> = {
  * at, and a slot with thirty of them in it still lands on the rate it asked
  * for rather than a few points under.
  */
+/**
+ * The order slots are drawn in, and the order they are chosen in.
+ *
+ * Fixed, and it has to stay fixed: change it and everyone who owns two things
+ * that exclude each other swaps one for the other.
+ */
+export const ACCESSORY_SLOTS: AccessorySlot[] = [
+  "expression", "eyewear", "head", "neck", "body",
+];
+
 export const EMPTY_WEIGHT: Record<AccessorySlot, number> = {
   expression: 1000,
   eyewear: 1000,

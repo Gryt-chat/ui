@@ -43,6 +43,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from 
 import path from "node:path";
 
 import { extract, realPalette, ROLES } from "./lib/extract";
+import { readLedger, updateLedger, writeLedger } from "./lib/keys";
 import {
   isIgnored,
   placementFor,
@@ -273,11 +274,21 @@ if (has("all")) {
 
   const weights = weightsFor(placements, owl.SLOT_PRESENCE, owl.EMPTY_WEIGHT.head);
 
+  /*
+   * Keys before anything is extracted, so a run that adds a drawing writes the
+   * ledger even if a later drawing fails to build. A half-written ledger is
+   * recoverable; a key handed out twice is not.
+   */
+  const ledgerPath = path.join(dir, "keys.json");
+  const ledger = updateLedger(readLedger(ledgerPath), placements.map((p) => p.name));
+  writeLedger(ledgerPath, ledger);
+
   const blocks: string[] = [];
   const unknownInks = new Map<string, string[]>();
   for (const entry of placements) {
     const built = extract(readFileSync(path.join(dir, entry.file), "utf8"), entry.file, {
       name: entry.name,
+      key: ledger.keys[entry.name]!,
       slot: entry.slot,
       layer: entry.layer,
       weight: weights.get(entry.name)!,
@@ -404,6 +415,8 @@ const built = extract(readFileSync(path.resolve(input), "utf8"), fileName, {
   // A single drawing has no slot to be a share of, so this is a placeholder.
   // --all is what sets the real one, from SLOT_PRESENCE and what else is drawn.
   weight: 0,
+  // A drawing looked at on its own has no key yet; --all is what assigns them.
+  key: "--",
   excludes: placement.excludes,
   places: Number(flag("places", "1")),
   tolerance: Number(flag("tolerance", "0.4")),

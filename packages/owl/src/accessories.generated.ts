@@ -11,6 +11,7 @@ import type { Accessory } from "./accessories";
 export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   {
     name: "eyes-annoyed",
+    key: "aa",
     slot: "expression",
     layer: "overFace",
     weight: 25,
@@ -24,6 +25,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-big",
+    key: "ab",
     slot: "expression",
     layer: "overFace",
     weight: 25,
@@ -35,6 +37,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-dead",
+    key: "ac",
     slot: "expression",
     layer: "overFace",
     weight: 25,
@@ -46,6 +49,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-evil",
+    key: "ad",
     slot: "expression",
     layer: "overFace",
     weight: 12,
@@ -57,6 +61,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-evil-sad",
+    key: "ae",
     slot: "expression",
     layer: "overFace",
     weight: 12,
@@ -68,6 +73,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-eyelashes",
+    key: "af",
     slot: "expression",
     layer: "overFace",
     weight: 8,
@@ -78,6 +84,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-eyelashes-closed",
+    key: "ag",
     slot: "expression",
     layer: "overFace",
     weight: 8,
@@ -89,6 +96,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-eyelashes-surprised",
+    key: "ah",
     slot: "expression",
     layer: "overFace",
     weight: 8,
@@ -99,6 +107,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-happy",
+    key: "ai",
     slot: "expression",
     layer: "overFace",
     weight: 25,
@@ -110,6 +119,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-starry",
+    key: "aj",
     slot: "expression",
     layer: "overFace",
     weight: 24,
@@ -121,6 +131,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-tired",
+    key: "ak",
     slot: "expression",
     layer: "overFace",
     weight: 12,
@@ -131,6 +142,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-tired-extreme",
+    key: "al",
     slot: "expression",
     layer: "overFace",
     weight: 12,
@@ -143,6 +155,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-wink-left",
+    key: "am",
     slot: "expression",
     layer: "overFace",
     weight: 12,
@@ -153,6 +166,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "eyes-wink-right",
+    key: "an",
     slot: "expression",
     layer: "overFace",
     weight: 12,
@@ -163,6 +177,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "glasses-blind",
+    key: "ao",
     slot: "eyewear",
     layer: "overEyes",
     weight: 77,
@@ -174,6 +189,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "glasses-fbi",
+    key: "ap",
     slot: "eyewear",
     layer: "overEyes",
     weight: 77,
@@ -185,6 +201,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "glasses-heart",
+    key: "aq",
     slot: "eyewear",
     layer: "overEyes",
     weight: 77,
@@ -196,6 +213,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "glasses-pilot",
+    key: "ar",
     slot: "eyewear",
     layer: "overEyes",
     weight: 77,
@@ -207,6 +225,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "glasses-round",
+    key: "as",
     slot: "eyewear",
     layer: "overEyes",
     weight: 77,
@@ -216,6 +235,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "glasses-secretary",
+    key: "at",
     slot: "eyewear",
     layer: "overEyes",
     weight: 76,
@@ -225,6 +245,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "glasses-square",
+    key: "au",
     slot: "eyewear",
     layer: "overEyes",
     weight: 76,
@@ -234,6 +255,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "glasses-superman",
+    key: "av",
     slot: "eyewear",
     layer: "overEyes",
     weight: 76,
@@ -243,6 +265,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "hat-bear",
+    key: "aw",
     slot: "head",
     layer: "overAll",
     weight: 36,
@@ -259,6 +282,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "hat-bear-oversize",
+    key: "ax",
     slot: "head",
     layer: "overAll",
     weight: 36,
@@ -275,6 +299,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "hat-bucket",
+    key: "ay",
     slot: "head",
     layer: "overAll",
     weight: 71,
@@ -288,6 +313,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "hat-cap",
+    key: "az",
     slot: "head",
     layer: "overAll",
     weight: 36,
@@ -307,6 +333,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "hat-cap-oversize",
+    key: "ba",
     slot: "head",
     layer: "overAll",
     weight: 36,
@@ -326,6 +353,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "hat-flower",
+    key: "bb",
     slot: "head",
     layer: "overAll",
     weight: 71,
@@ -338,6 +366,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "hat-headset",
+    key: "bc",
     slot: "head",
     layer: "overAll",
     weight: 71,
@@ -349,6 +378,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "hat-winter",
+    key: "bd",
     slot: "head",
     layer: "overAll",
     weight: 24,
@@ -375,6 +405,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "hat-winter-small",
+    key: "be",
     slot: "head",
     layer: "overAll",
     weight: 24,
@@ -395,6 +426,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "hat-winter-top",
+    key: "bf",
     slot: "head",
     layer: "overAll",
     weight: 24,
@@ -421,6 +453,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "necklace-bowtie",
+    key: "bg",
     slot: "neck",
     layer: "overAll",
     weight: 180,
@@ -432,6 +465,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "necklace-pearl",
+    key: "bh",
     slot: "neck",
     layer: "overAll",
     weight: 179,
@@ -451,6 +485,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "necklace-scarf",
+    key: "bi",
     slot: "neck",
     layer: "overAll",
     weight: 179,
@@ -461,6 +496,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "shirt-hoodie",
+    key: "bj",
     slot: "body",
     layer: "overAll",
     weight: 110,
@@ -480,6 +516,7 @@ export const GENERATED_ACCESSORIES: readonly Accessory[] = [
   },
   {
     name: "shirt-jacket-winter",
+    key: "bk",
     slot: "body",
     layer: "overAll",
     weight: 110,

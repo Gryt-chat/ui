@@ -56,6 +56,9 @@ function readDrawing(filename: string, svg: string): Report {
   try {
     const built = extract(svg, filename, {
       name: placement.name,
+      // An upload has no key. --all assigns those, from the ledger, and this is
+      // checking a file that is not in artwork/ yet.
+      key: "--",
       slot: placement.slot,
       layer: placement.layer,
       // The real one comes from SLOT_PRESENCE and what else is drawn, neither

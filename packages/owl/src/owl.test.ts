@@ -218,6 +218,7 @@ describe("accessories", () => {
     const swapped = repaint(base, [
       {
         name: "t",
+        key: "zz",
         slot: "body",
         layer: "behind",
         weight: 1,
