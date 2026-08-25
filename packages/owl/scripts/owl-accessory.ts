@@ -42,8 +42,8 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
 
-import { readShapes } from "./lib/svg-shapes.mjs";
-import { simplifyPath } from "./lib/svg-simplify.mjs";
+import { readShapes, type Shape } from "./lib/svg-shapes";
+import { simplifyPath } from "./lib/svg-simplify";
 
 import * as owl from "../src/index";
 
@@ -72,7 +72,7 @@ const BASE = {
   ears: "tufts",
   size: 1024,
   wearing: BARE,
-};
+} satisfies owl.OwlOptions;
 
 /**
  * Where each slot lands unless told otherwise.
@@ -84,7 +84,7 @@ const BASE = {
  * A garment goes on top of everything, collar included. It is drawn over the
  * bird rather than tucked behind it, which is what a coat does.
  */
-const DEFAULT_LAYER = {
+const DEFAULT_LAYER: Record<owl.AccessorySlot, string> = {
   expression: "overFace",
   eyewear: "overEyes",
   head: "overAll",
@@ -116,9 +116,9 @@ function header() {
  * that is subtly the wrong shape is harder to notice than one that refuses to
  * build.
  */
-function flatten(d) {
+function flatten(d: string) {
   const tokens = d.match(/[MmLlHhVvCcSsQqTtAaZz]|-?\d*\.?\d+(?:e-?\d+)?/gi) || [];
-  const points = [];
+  const points: Array<[number, number]> = [];
   let subpaths = 0;
   let i = 0;
   let x = 0;
@@ -129,7 +129,7 @@ function flatten(d) {
   const num = () => Number(tokens[i++]);
 
   /** Eight samples a curve: enough that two spellings of one arc agree. */
-  const cubic = (x1, y1, x2, y2, x3, y3) => {
+  const cubic = (x1: number, y1: number, x2: number, y2: number, x3: number, y3: number) => {
     for (let k = 1; k <= 8; k += 1) {
       const t = k / 8;
       const u = 1 - t;
@@ -212,7 +212,7 @@ function flatten(d) {
  * genuinely different shapes agreeing on all three is not something that
  * happens by accident.
  */
-function shapeKey(d) {
+function shapeKey(d: string): string {
   const { points, subpaths } = flatten(d);
   let minX = Infinity;
   let minY = Infinity;
@@ -230,7 +230,7 @@ function shapeKey(d) {
     length += Math.hypot(qx - px, qy - py);
     area += px * qy - qx * py;
   }
-  const r = (n) => Math.round(n * 2) / 2;
+  const r = (n: number) => Math.round(n * 2) / 2;
   return [
     r(minX), r(minY), r(maxX), r(maxY),
     Math.round(length), Math.round(Math.abs(area) / 2), subpaths,
@@ -238,7 +238,7 @@ function shapeKey(d) {
 }
 
 /** The frame itself, however it is spelled — a background rather than a hat. */
-function isBackground(d) {
+function isBackground(d: string): boolean {
   const { points } = flatten(d);
   const xs = points.map((p) => p[0]);
   const ys = points.map((p) => p[1]);
@@ -249,7 +249,7 @@ function isBackground(d) {
   );
 }
 
-function paths(svg) {
+function paths(svg: string): Shape[] {
   return readShapes(svg).shapes;
 }
 
@@ -265,8 +265,8 @@ function paths(svg) {
 const ROLES = [
   "background", "body", "face", "accent", "wing",
   "trimLight", "trim", "trimDeep", "trimSoft", "gold", "goldDeep",
-];
-const sentinels = Object.fromEntries(
+] as const satisfies readonly owl.PaletteSlot[];
+const sentinels: Partial<owl.OwlPalette> = Object.fromEntries(
   ROLES.map((role, i) => [role, `#${(i + 1).toString(16).padStart(6, "0")}`]),
 );
 const roleOf = new Map(
@@ -300,15 +300,48 @@ const baseFills = new Map(
 /* --- extraction ---------------------------------------------------------- */
 
 /** How light a hex is, for sorting. Rough on purpose; it only needs an order. */
-function lightness(hex) {
+function lightness(hex: string): number {
   const int = parseInt(hex.replace("#", ""), 16);
   return (((int >> 16) & 255) * 0.299 + ((int >> 8) & 255) * 0.587 + (int & 255) * 0.114) / 255;
 }
 
 /** Lightest first, which is the order the drawn accessories use their tones in. */
-const LADDER = ["trimSoft", "trimLight", "trim", "trimDeep", "accent"];
+const LADDER: owl.PaletteSlot[] = ["trimSoft", "trimLight", "trim", "trimDeep", "accent"];
 
-function extract(svg, label, opts) {
+/**
+ * One accessory's entry in artwork/accessories.json.
+ *
+ * The file is the source for the whole registry, so this is also the only
+ * written-down description of what a row in it may contain.
+ */
+interface ManifestEntry {
+  file: string;
+  name: string;
+  slot: owl.AccessorySlot;
+  layer?: string;
+  weight: number;
+  excludes?: string[];
+  /** Decimal places to round to, when the drawing needs more than the default. */
+  places?: number;
+  tolerance?: number;
+  /** Hex to palette role, for the colours the lightness ladder gets wrong. */
+  map?: Record<string, owl.PaletteSlot>;
+}
+
+/** What extract needs to know about the accessory it is pulling out. */
+interface ExtractOptions {
+  name: string;
+  slot: owl.AccessorySlot;
+  /** Unset takes the slot's default from DEFAULT_LAYER. */
+  layer?: string;
+  weight: number;
+  excludes: string[];
+  places: number;
+  tolerance: number;
+  map: Map<string, owl.PaletteSlot>;
+}
+
+function extract(svg: string, label: string, opts: ExtractOptions) {
   if (/<g\b[^>]*\btransform=/.test(svg)) {
     throw new Error(
       `${label} has a <g transform=...> in it. Flatten the transforms in the drawing ` +
@@ -325,11 +358,11 @@ function extract(svg, label, opts) {
     );
   }
 
-  const seen = new Set();
-  const recolour = {};
-  const hides = new Set();
-  const unplaceable = new Set();
-  const notes = [];
+  const seen = new Set<string>();
+  const recolour: Partial<Record<owl.PaletteSlot, string>> = {};
+  const hides = new Set<string>();
+  const unplaceable = new Set<string>();
+  const notes: string[] = [];
 
   const { shapes: drawn, unknown } = readShapes(svg);
   for (const tag of unknown) {
@@ -388,7 +421,7 @@ function extract(svg, label, opts) {
   const distinct = [
     ...new Set(kept.flatMap((p) => [p.fill, p.stroke].filter(Boolean))),
   ].sort((a, b) => lightness(b) - lightness(a));
-  const roles = new Map();
+  const roles = new Map<string, owl.PaletteSlot>();
   distinct.forEach((hex, i) => {
     roles.set(hex, opts.map.get(hex) ?? LADDER[Math.min(i, LADDER.length - 1)]);
   });
@@ -441,7 +474,7 @@ function extract(svg, label, opts) {
       : "") +
     notes.map((n) => `\n${pad}warning: ${n}`).join("");
 
-  const paint = (p, colour) =>
+  const paint = (p: Shape, colour: (hex: string) => string) =>
     `<path d="${p.d}"${p.evenodd ? ' fill-rule="evenodd" clip-rule="evenodd"' : ""}` +
     ` fill="${p.fill ? colour(p.fill) : "none"}"` +
     (p.stroke
@@ -465,8 +498,8 @@ const VALUED = new Set([
   "name", "slot", "layer", "weight", "map", "out", "excludes", "places", "tolerance",
 ]);
 
-const options = new Map();
-const positional = [];
+const options = new Map<string, string | true>();
+const positional: string[] = [];
 for (let i = 2; i < process.argv.length; i += 1) {
   const arg = process.argv[i];
   if (!arg.startsWith("--")) {
@@ -481,8 +514,45 @@ for (let i = 2; i < process.argv.length; i += 1) {
     options.set(key, true);
   }
 }
-const flag = (name, fallback) => options.get(name) ?? fallback;
-const has = (name) => options.get(name) === true;
+/**
+ * A valued flag's value, or the fallback. Switches are read with `has`, so a
+ * `true` sitting in the map here means the flag was given without its value and
+ * the fallback is the right answer.
+ */
+function flag(name: string, fallback: string): string;
+function flag(name: string, fallback?: string): string | undefined;
+function flag(name: string, fallback?: string): string | undefined {
+  const value = options.get(name);
+  return typeof value === "string" ? value : fallback;
+}
+
+const has = (name: string) => options.get(name) === true;
+
+/**
+ * The palette roles an accessory's paths may ask for, so `--map` and the
+ * manifest can be checked against them rather than trusted.
+ *
+ * A misspelled role used to travel all the way into accessories.generated.ts as
+ * a fill nothing resolves, and the first sign of it was an owl wearing an
+ * invisible hat.
+ */
+const PALETTE_ROLES = new Set<string>(ROLES);
+
+function paletteRole(value: string, where: string): owl.PaletteSlot {
+  if (!PALETTE_ROLES.has(value)) {
+    console.error(`${where}: "${value}" is not a palette role. One of: ${ROLES.join(", ")}`);
+    process.exit(1);
+  }
+  return value as owl.PaletteSlot;
+}
+
+function accessorySlot(value: string, where: string): owl.AccessorySlot {
+  if (!(owl.ACCESSORY_SLOTS as string[]).includes(value)) {
+    console.error(`${where}: "${value}" is not a slot. One of: ${owl.ACCESSORY_SLOTS.join(", ")}`);
+    process.exit(1);
+  }
+  return value as owl.AccessorySlot;
+}
 
 /* --- writing the bird ---------------------------------------------------- */
 
@@ -507,8 +577,10 @@ if (has("base")) {
 
 if (has("all")) {
   const dir = flag("out", path.join(root, "artwork"));
-  const manifest = JSON.parse(readFileSync(path.join(dir, "accessories.json"), "utf8"));
-  const blocks = [];
+  const manifest: ManifestEntry[] = JSON.parse(
+    readFileSync(path.join(dir, "accessories.json"), "utf8"),
+  );
+  const blocks: string[] = [];
   for (const entry of manifest) {
     const built = extract(readFileSync(path.join(dir, entry.file), "utf8"), entry.file, {
       name: entry.name,
@@ -518,7 +590,12 @@ if (has("all")) {
       excludes: entry.excludes ?? [],
       places: entry.places ?? Number(flag("places", "1")),
       tolerance: entry.tolerance ?? Number(flag("tolerance", "0.4")),
-      map: new Map(Object.entries(entry.map ?? {}).map(([k, v]) => [k.toLowerCase(), v])),
+      map: new Map(
+        Object.entries(entry.map ?? {}).map(([k, v]): [string, owl.PaletteSlot] => [
+          k.toLowerCase(),
+          paletteRole(v, `${entry.file} map.${k}`),
+        ]),
+      ),
     });
     blocks.push(built.literal);
     console.log(built.summary);
@@ -568,7 +645,7 @@ if (!input) {
   process.exit(1);
 }
 
-const slot = flag("slot", "head");
+const slot = accessorySlot(flag("slot", "head"), "--slot");
 const name = flag("name", path.basename(input, ".svg").toLowerCase().replace(/[_\s]+/g, "-"));
 const built = extract(readFileSync(path.resolve(input), "utf8"), path.basename(input), {
   name,
@@ -582,9 +659,9 @@ const built = extract(readFileSync(path.resolve(input), "utf8"), path.basename(i
     (flag("map", "") || "")
       .split(",")
       .filter(Boolean)
-      .map((pair) => {
+      .map((pair): [string, owl.PaletteSlot] => {
         const [hex, role] = pair.split("=");
-        return [hex.trim().toLowerCase(), role.trim()];
+        return [hex.trim().toLowerCase(), paletteRole(role.trim(), `--map ${pair}`)];
       }),
   ),
 });
@@ -601,7 +678,7 @@ if (has("preview")) {
   const bird = owl.owlAvatarSvg("preview", { ...BASE, size: 320 });
   const inner = bird.slice(bird.indexOf(">") + 1, bird.lastIndexOf("</svg>"));
   const recoloured = built.kept
-    .map((p) => built.paint(p, (hex) => realPalette[built.roles.get(hex)]))
+    .map((p) => built.paint(p, (hex) => realPalette[built.roles.get(hex)!]))
     .join("");
   writeFileSync(
     path.join(outDir, `${name}.preview.html`),

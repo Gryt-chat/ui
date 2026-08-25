@@ -28,6 +28,16 @@ jobs:
       # they go; the honest end state is 0.
       - run: bun run lint
       - run: bun run test
+      # Before the build, and that is the whole point: `bun run build`
+      # regenerates accessories.generated.ts as its first step, so after it
+      # has run there is nothing left to catch. This compares what is
+      # committed against what the drawings produce.
+      #
+      # The mode has existed since the file became derived and nothing ran
+      # it. A drawing changed without the regenerated file alongside it
+      # would have merged, built green, and shipped an owl wearing the old
+      # version of the hat.
+      - run: bun --filter @gryt/owl accessories:check
       - run: bun run build
       - run: bunx publint packages/theme
       - run: bunx publint packages/owl

@@ -48,10 +48,11 @@
   },
   "scripts": {
     "accessories": "bun scripts/owl-accessory.ts --all",
+    "accessories:check": "bun scripts/owl-accessory.ts --all --check",
     "accessories:base": "bun scripts/owl-accessory.ts --base",
     "dev": "vite build --watch",
     "build": "bun run accessories && vite build && bun scripts/fix-declarations.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.scripts.json",
     "test": "vitest run",
     "prepublishOnly": "bun run typecheck && bun run test && bun run build"
   },

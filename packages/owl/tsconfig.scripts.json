@@ -1,0 +1,20 @@
+{
+  // The scripts were outside every tsconfig in the repository, which is how two
+  // of them stayed plain JavaScript for as long as they did: nothing read them,
+  // so nothing could complain. tsconfig.json is the package's build config and
+  // emits declarations from src, so it cannot take them without emitting
+  // declarations for build tooling as well. This one only reads.
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "emitDeclarationOnly": false,
+    "declaration": false,
+    "declarationMap": false,
+    "rootDir": ".",
+    // These run under bun rather than in a browser or a React Native app, so
+    // they get node's globals. The DOM-free lib the package sets still applies,
+    // and should: nothing here needs a document either.
+    "types": ["node"]
+  },
+  "include": ["scripts"]
+}
