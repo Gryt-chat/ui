@@ -1,6 +1,6 @@
 {
   "name": "@gryt/ui-native",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "type": "module",
   "license": "MIT",
   "description": "Gryt's design system on React Native. Same tokens as @gryt/ui, a different renderer.",
@@ -40,7 +40,7 @@
     "react-native-svg": ">=15.0.0"
   },
   "dependencies": {
-    "@gryt/owl": "^0.1.0",
+    "@gryt/owl": "^0.2.0",
     "@gryt/theme": "^0.6.0"
   },
   "devDependencies": {
