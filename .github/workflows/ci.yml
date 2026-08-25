@@ -8,9 +8,13 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    # To push the regenerated registry back to the pull request branch.
     permissions:
+      # To push the regenerated registry back to the pull request branch.
       contents: write
+      # To ask the API which files the pull request touches. An explicit
+      # permissions block replaces the defaults rather than adding to them, so
+      # without this line `gh api .../pulls/N/files` gets a 403.
+      pull-requests: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,14 +56,21 @@ jobs:
       # test.
       - name: Check drawings added by this pull request
         if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          base=$(git merge-base HEAD "origin/${{ github.base_ref }}" 2>/dev/null || echo "")
-          if [ -z "$base" ]; then
-            git fetch --no-tags --depth=50 origin "${{ github.base_ref }}"
-            base=$(git merge-base HEAD FETCH_HEAD)
-          fi
-          # Added, copied or modified only — a deleted drawing has nothing to check.
-          mapfile -t drawings < <(git diff --name-only --diff-filter=ACM "$base" HEAD -- 'packages/owl/artwork/*.svg')
+          set -euo pipefail
+          # The API rather than git. actions/checkout is shallow, so
+          # `git merge-base HEAD origin/main` has no common ancestor to find and
+          # exits non-zero — which under `bash -e` failed this step with no
+          # output at all. Deepening the clone would work and costs a full
+          # history on every run; the pull request already knows its own files.
+          mapfile -t drawings < <(
+            gh api --paginate \
+              "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
+              --jq '.[] | select(.status != "removed") | .filename' \
+              | grep -E '^packages/owl/artwork/.*\.svg$' || true
+          )
           if [ ${#drawings[@]} -eq 0 ]; then
             echo "no drawings added or changed"
             exit 0
