@@ -209,6 +209,38 @@ export function DrawingPage() {
           drawn are already mapped — a drawing in those needs no configuration
           at all. A new colour is fine too; you will be asked which rung it is.
         </p>
+        <h3 className="not-prose mt-(--space-lg) text-[length:var(--text-base)] font-semibold text-gryt-text">
+          The colour you draw in is thrown away
+        </h3>
+        <p>
+          Worth knowing before you pick one. Nothing stores the colour you drew
+          — each shape stores <em>which rung of the palette</em> it is, and the
+          owl wearing it supplies the actual value. Draw a pair of glasses in
+          pink, say that pink is the dark rung, and they come out dark violet on
+          a violet owl and dark teal on a teal one. They are never pink again.
+        </p>
+        <p>There are two kinds of rung, and only five owls in ten get the same one:</p>
+        <ul>
+          <li>
+            <code>trimSoft</code>, <code>trimLight</code>, <code>trim</code>,{" "}
+            <code>trimDeep</code>, <code>accent</code> — near-white down to
+            near-black, all in the owl&rsquo;s own hue. Almost everything is one
+            of these.
+          </li>
+          <li>
+            <code>gold</code> and <code>goldDeep</code> — the one pair that
+            leaves the owl&rsquo;s hue. Not a fixed gold: it is whichever of
+            amber or a cold blue sits further from that owl&rsquo;s own colour,
+            so a teal owl gets the amber and an amber owl gets the blue. A gold
+            owl never ends up in a gold scarf.
+          </li>
+        </ul>
+        <p>
+          So a cosmetic cannot be one specific colour on every owl. A red hat, a
+          flag, a brand colour — none of those survive, and that is the trade
+          that lets one drawing work on all thirty palettes instead of thirty
+          drawings working on one each.
+        </p>
       </Step>
 
       <Step n={3} title="Export it as SVG, named for where it goes">
