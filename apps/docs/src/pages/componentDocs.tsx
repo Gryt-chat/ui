@@ -63,6 +63,7 @@ import { Preview } from "../components/Preview";
 
 import type { ComponentDoc } from "../componentMeta";
 import { componentDocs } from "../componentMeta";
+import { NestedDialogs } from "../examples/NestedDialogs";
 
 // The registry moved to ../componentMeta so a build script can read it without
 // pulling in @gryt/ui and its stylesheet. Re-exported here so the pages and
@@ -570,6 +571,19 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
               </Dialog.Popup>
             </Dialog.Portal>
           </Dialog.Root>
+
+          <div className="mt-6 border-t border-gryt-border pt-6">
+            <h3 className="mb-1 text-sm font-semibold text-gryt-text">
+              A dialog inside a dialog
+            </h3>
+            <p className="mb-3 text-sm text-gryt-muted">
+              Base UI drops a nested dialog&rsquo;s backdrop. That also takes
+              click-outside-to-dismiss with it, because a dialog only treats an
+              outside press as a dismissal when the click landed on its own
+              backdrop. <code>forceRender</code> gives it back.
+            </p>
+            <NestedDialogs />
+          </div>
         </>
       );
     case "drawer":

@@ -74,7 +74,18 @@ const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab(
         "gryt-tab inline-flex min-h-8 cursor-pointer items-center justify-center whitespace-nowrap",
         "rounded-(--gryt-radius-full) border-0 bg-transparent px-4 py-1.5",
         "text-sm font-medium text-gryt-muted select-none",
-        "relative z-10 transition-colors duration-150 hover:text-gryt-text",
+        // Scale as well as colour, matching Button exactly — 1.03 under the
+        // cursor, 0.96 pressed, on the spring duration and curve. A tab that
+        // only changed colour read as not being a button at all next to
+        // anything that did move, and the owl designer's rail was reported as
+        // "not using the Gryt UI tabs" for precisely that reason.
+        //
+        // motion-safe, so the whole thing is colour-only for anybody who asked
+        // for reduced motion.
+        "relative z-10 hover:text-gryt-text",
+        "transition-[scale,color,background-color] duration-(--gryt-dur-spring) ease-spring",
+        "motion-safe:hover:scale-[1.03] motion-safe:active:scale-[0.96]",
+        "motion-reduce:transition-colors motion-reduce:duration-150",
         // Base UI marks the selected tab with data-active, not data-selected.
         // The fill moved to Indicator so it can travel between tabs; the tab
         // itself only changes its text colour.
