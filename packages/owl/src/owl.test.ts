@@ -304,3 +304,71 @@ describe("the output", () => {
     expect(owlAvatarSvg("x", { background: false })).not.toContain("<rect");
   });
 });
+
+describe("painting one slot a different colour", () => {
+  const seed = "sivert";
+  const wearing = { head: "hat-winter", expression: null, eyewear: null, neck: null, body: null };
+
+  it("changes the owl when a slot is tinted", () => {
+    const plain = owlAvatarSvg(seed, { wearing });
+    const amber = owlAvatarSvg(seed, { wearing, tint: { head: "amber" } });
+    expect(amber).not.toBe(plain);
+  });
+
+  it("repaints the hat and nothing else", () => {
+    // "Colour my hat" must not quietly become "recolour me". Comparing the
+    // fills in order says exactly which paths moved: the bird's are drawn
+    // first, so the untinted ones at the front are the bird and the tail is the
+    // hat.
+    const fills = (svg: string) =>
+      [...svg.matchAll(/fill="(#[0-9a-f]{6})"/g)].map((m) => m[1]);
+
+    const bare = { expression: null, eyewear: null, head: null, neck: null, body: null };
+    const birdOnly = fills(owlAvatarSvg(seed, { wearing: bare }));
+
+    const plain = fills(owlAvatarSvg(seed, { wearing }));
+    const amber = fills(owlAvatarSvg(seed, { wearing, tint: { head: "amber" } }));
+
+    // A tint repaints; it never adds or drops a path.
+    expect(amber).toHaveLength(plain.length);
+
+    // Every fill the bare bird has is still exactly where it was.
+    expect(amber.slice(0, birdOnly.length)).toEqual(plain.slice(0, birdOnly.length));
+
+    // And the hat really did change, rather than the test passing on an owl
+    // whose hat happened to already be amber.
+    expect(amber.slice(birdOnly.length)).not.toEqual(plain.slice(birdOnly.length));
+  });
+
+  it("leaves an untinted slot alone", () => {
+    const both = { ...wearing, eyewear: "glasses-round" };
+    const onlyHat = owlAvatarSvg(seed, { wearing: both, tint: { head: "amber" } });
+    const neither = owlAvatarSvg(seed, { wearing: both });
+    const bothTinted = owlAvatarSvg(seed, { wearing: both, tint: { head: "amber", eyewear: "amber" } });
+
+    expect(onlyHat).not.toBe(neither);
+    expect(bothTinted).not.toBe(onlyHat);
+  });
+
+  it("ignores a palette name it does not know", () => {
+    const plain = owlAvatarSvg(seed, { wearing });
+    // @ts-expect-error deliberately not a PaletteName — this is what a string
+    // from a newer build looks like arriving at an older one.
+    const bogus = owlAvatarSvg(seed, { wearing, tint: { head: "chartreuse" } });
+    expect(bogus).toBe(plain);
+  });
+
+  it("does nothing for a slot wearing nothing", () => {
+    const bare = { expression: null, eyewear: null, head: null, neck: null, body: null };
+    expect(owlAvatarSvg(seed, { wearing: bare, tint: { head: "amber" } })).toBe(
+      owlAvatarSvg(seed, { wearing: bare }),
+    );
+  });
+
+  it("is the same on both sides of the wire", () => {
+    // The property the whole package exists for: the same input draws the same
+    // owl every time, tints included.
+    const opts = { wearing, tint: { head: "amber" as const } };
+    expect(owlAvatarSvg(seed, opts)).toBe(owlAvatarSvg(seed, opts));
+  });
+});

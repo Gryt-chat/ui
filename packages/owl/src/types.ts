@@ -126,6 +126,24 @@ export interface OwlOptions {
    */
   wearing?: Partial<Record<AccessorySlot, string | null>>;
 
+  /**
+   * A palette to paint one slot's accessory in, instead of the owl's own.
+   *
+   * Per slot rather than per part. "The hat" is a thing somebody can point at;
+   * "the second darkest tone in the hat" is not, and letting people set that is
+   * how you get an owl that is all hot pink except the beak. A slot picks a
+   * palette and the drawing's five accessory roles resolve from it, so every
+   * choice is a ramp somebody drew rather than a colour somebody mixed.
+   *
+   * Omit a slot, or leave it undefined, and it follows the owl — which is what
+   * every avatar drawn before this did, and still does.
+   *
+   * The scheme is not part of it. A tint takes the owl's own scheme so a day
+   * owl does not end up wearing a night hat, which reads as a hole in the
+   * picture rather than as a colour.
+   */
+  tint?: Partial<Record<AccessorySlot, PaletteName>>;
+
   /** `false` draws the owl on nothing, for a caller that brings its own tile. */
   background?: boolean | string;
 
@@ -145,6 +163,8 @@ export interface ResolvedOwl {
   ears: EarStyle;
   /** The accessory chosen in each slot, by name. Absent means nothing. */
   wearing: Partial<Record<AccessorySlot, string>>;
+  /** The palette each slot is painted in, where it is not the owl's own. */
+  tint: Partial<Record<AccessorySlot, PaletteName>>;
   background: string | null;
   cornerRadius: number;
   title?: string;
