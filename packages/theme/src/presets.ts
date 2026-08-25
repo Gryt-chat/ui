@@ -166,6 +166,290 @@ export const grytPresets: GrytThemePreset[] = [
       radius: SOFT
     }
   },
+
+  /*
+   * The owl palettes, as themes.
+   *
+   * Six drawings of the Gryt owl, each in a different set of colours. They were
+   * made as artwork rather than as themes, so what is here is derived from them
+   * rather than lifted: a drawing names four or five colours and a theme needs
+   * eleven hues and seven neutrals in each of two appearances.
+   *
+   * Derived in OKLCH, and the reason is visible in the result — a ramp built by
+   * darkening sRGB drifts grey, so the surfaces stop belonging to the theme
+   * about three steps down. Holding hue and chroma while moving lightness keeps
+   * Rose's greys pink and Forest's greys green, which is the whole point of a
+   * themed neutral.
+   *
+   * Secondaries are analogous rather than complementary, matching Ember above.
+   * A true complement put Indigo's secondary on orange and Ice's on tan, which
+   * read as colours borrowed from another theme.
+   *
+   * `onAccent` is chosen per theme rather than assumed: whichever of the light
+   * or dark ink has more contrast on that accent is the one that ships. Forest's
+   * sage takes dark ink at 8.1:1; Indigo's periwinkle takes light at 4.7:1.
+   *
+   * Every one is checked in both appearances — text 14.8:1 or better on its own
+   * background, muted 5.7:1 or better on its surface.
+   */
+  {
+    id: "owl-rose",
+    name: "Rose",
+    note: "Dusty rose over plum. The warmest of the six.",
+    group: "Gryt",
+    source: "Gryt owl palettes",
+    theme: {
+      name: "Rose",
+      hue: {
+        accent: "#D87489",
+        accentLight: "#EDAAAF",
+        secondary: "#d7906f",
+        secondaryLight: "#efb499",
+        success: "#69b27a",
+        danger: "#da534f",
+        dangerLight: "#f07f77",
+        warning: "#e6ac3d",
+        onAccent: "#2b0614",
+        onSecondary: "#2b0614",
+        onDanger: "#2b0a08"
+      },
+      lightHue: null,
+      dark: {
+        bg: "#1f020b",
+        surface: "#2b0c16",
+        surfaceRaised: "#34151e",
+        surfaceHover: "#45202b",
+        border: "#4c2933",
+        muted: "#a38b90",
+        text: "#f4ede9"
+      },
+      light: {
+        bg: "#fbf1ed",
+        surface: "#fffcfb",
+        surfaceRaised: "#fdf5f1",
+        surfaceHover: "#f3e6e1",
+        border: "#e4d6d0",
+        muted: "#765b61",
+        text: "#31151d"
+      },
+      radius: ROUND
+    }
+  },
+  {
+    id: "owl-amber",
+    name: "Amber",
+    note: "Amber on aubergine — a warm accent over cool-dark neutrals.",
+    group: "Gryt",
+    source: "Gryt owl palettes",
+    theme: {
+      name: "Amber",
+      hue: {
+        accent: "#E39336",
+        accentLight: "#ECC07C",
+        secondary: "#c0b760",
+        secondaryLight: "#ddd793",
+        success: "#69b27a",
+        danger: "#da534f",
+        dangerLight: "#f07f77",
+        warning: "#e6ac3d",
+        onAccent: "#1e101e",
+        onSecondary: "#1e101e",
+        onDanger: "#2b0a08"
+      },
+      lightHue: null,
+      dark: {
+        bg: "#140814",
+        surface: "#20131f",
+        surfaceRaised: "#281c27",
+        surfaceHover: "#372836",
+        border: "#3e303d",
+        muted: "#988f97",
+        text: "#f1eee8"
+      },
+      light: {
+        bg: "#f7f3ec",
+        surface: "#fffdfa",
+        surfaceRaised: "#faf6f0",
+        surfaceHover: "#efe9df",
+        border: "#dfd8cd",
+        muted: "#6a5f69",
+        text: "#261b26"
+      },
+      radius: ROUND
+    }
+  },
+  {
+    id: "owl-wine",
+    name: "Wine",
+    note: "Deep red throughout. Neutrals carry the same hue as the accent.",
+    group: "Gryt",
+    source: "Gryt owl palettes",
+    theme: {
+      name: "Wine",
+      hue: {
+        accent: "#CE7072",
+        accentLight: "#E29A98",
+        secondary: "#c88d61",
+        secondaryLight: "#e0b08d",
+        success: "#69b27a",
+        danger: "#da534f",
+        dangerLight: "#f07f77",
+        warning: "#e6ac3d",
+        onAccent: "#250d16",
+        onSecondary: "#250d16",
+        onDanger: "#2b0a08"
+      },
+      lightHue: null,
+      dark: {
+        bg: "#1a050d",
+        surface: "#261118",
+        surfaceRaised: "#2e1920",
+        surfaceHover: "#3e252e",
+        border: "#452e35",
+        muted: "#9d8d92",
+        text: "#f4edea"
+      },
+      light: {
+        bg: "#faf1ee",
+        surface: "#fffdfb",
+        surfaceRaised: "#fdf5f1",
+        surfaceHover: "#f2e7e2",
+        border: "#e3d6d0",
+        muted: "#705d63",
+        text: "#2c191f"
+      },
+      radius: ROUND
+    }
+  },
+  {
+    id: "owl-indigo",
+    name: "Indigo",
+    note: "Periwinkle on deep indigo. The closest to the Gryt mark.",
+    group: "Gryt",
+    source: "Gryt owl palettes",
+    theme: {
+      name: "Indigo",
+      hue: {
+        accent: "#786FF6",
+        accentLight: "#9E97FA",
+        secondary: "#ba70cb",
+        secondaryLight: "#d397e1",
+        success: "#69b27a",
+        danger: "#da534f",
+        dangerLight: "#f07f77",
+        warning: "#e6ac3d",
+        onAccent: "#121329",
+        onSecondary: "#121329",
+        onDanger: "#2b0a08"
+      },
+      lightHue: null,
+      dark: {
+        bg: "#0a0b1e",
+        surface: "#151629",
+        surfaceRaised: "#1d1e32",
+        surfaceHover: "#2a2c42",
+        border: "#323348",
+        muted: "#8f919f",
+        text: "#eeeef3"
+      },
+      light: {
+        bg: "#f3f2f9",
+        surface: "#fdfdff",
+        surfaceRaised: "#f6f6fc",
+        surfaceHover: "#e9e8f1",
+        border: "#d9d8e2",
+        muted: "#606272",
+        text: "#1c1d2f"
+      },
+      radius: ROUND
+    }
+  },
+  {
+    id: "owl-forest",
+    name: "Forest",
+    note: "Sage over slate. The only one whose accent is the quiet colour.",
+    group: "Gryt",
+    source: "Gryt owl palettes",
+    theme: {
+      name: "Forest",
+      hue: {
+        accent: "#98B4A1",
+        accentLight: "#C7D7CA",
+        secondary: "#a2bfbe",
+        secondaryLight: "#c5dddc",
+        success: "#69b27a",
+        danger: "#da534f",
+        dangerLight: "#f07f77",
+        warning: "#e6ac3d",
+        onAccent: "#13161e",
+        onSecondary: "#13161e",
+        onDanger: "#2b0a08"
+      },
+      lightHue: null,
+      dark: {
+        bg: "#0a0d14",
+        surface: "#15181f",
+        surfaceRaised: "#1d2028",
+        surfaceHover: "#2a2e36",
+        border: "#32353d",
+        muted: "#909297",
+        text: "#edefed"
+      },
+      light: {
+        bg: "#f2f4f2",
+        surface: "#fdfefd",
+        surfaceRaised: "#f5f7f6",
+        surfaceHover: "#e7eae8",
+        border: "#d7dad7",
+        muted: "#616369",
+        text: "#1d1f26"
+      },
+      radius: ROUND
+    }
+  },
+  {
+    id: "owl-ice",
+    name: "Ice",
+    note: "Steel blue on near-white. Built light first.",
+    group: "Gryt",
+    source: "Gryt owl palettes",
+    theme: {
+      name: "Ice",
+      hue: {
+        accent: "#7495B9",
+        accentLight: "#BADDFC",
+        secondary: "#9c99bc",
+        secondaryLight: "#bcbad6",
+        success: "#69b27a",
+        danger: "#da534f",
+        dangerLight: "#f07f77",
+        warning: "#e6ac3d",
+        onAccent: "#10171e",
+        onSecondary: "#10171e",
+        onDanger: "#2b0a08"
+      },
+      lightHue: null,
+      dark: {
+        bg: "#080e14",
+        surface: "#13191f",
+        surfaceRaised: "#1b2127",
+        surfaceHover: "#272f36",
+        border: "#2f363d",
+        muted: "#8e9397",
+        text: "#eeeeef"
+      },
+      light: {
+        bg: "#f3f3f4",
+        surface: "#fdfdfe",
+        surfaceRaised: "#f6f7f8",
+        surfaceHover: "#e9e9eb",
+        border: "#d8d9da",
+        muted: "#5f6469",
+        text: "#1a2025"
+      },
+      radius: ROUND
+    }
+  },
   {
     id: "signal",
     name: "Signal",
