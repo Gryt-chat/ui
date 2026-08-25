@@ -1,5 +1,55 @@
 # @gryt/owl
 
+## 0.4.0
+
+### Minor Changes
+
+- 04ac872: `OwlOptions.tint` paints one slot's accessory from a different palette, so an
+  owl's hat need not be the same colours as the owl.
+
+  Per slot rather than per part. "The hat" is a thing somebody can point at; "the
+  second darkest tone in the hat" is not, and letting people set that is how you
+  get an owl that is all hot pink except the beak. A slot picks one of the ten
+  palettes and the drawing's accessory roles resolve from it, so every choice is a
+  ramp somebody drew rather than a colour somebody mixed.
+
+  The tint takes the owl's own scheme rather than bringing one. A day owl in a
+  night hat reads as a hole in the picture rather than as a colour.
+
+  The worn string grows five fields, one per slot, **appended**. `decodeWorn` has
+  always read positionally for exactly this reason: a string written before the
+  field existed still decodes, and decodes to no tint. An unknown palette key
+  reads as no tint, the same rule an unknown accessory key already gets.
+
+  Nothing existing moves. An untinted owl renders byte-identically and the three
+  pinned hashes did not change.
+
+### Patch Changes
+
+- d11a52c: A colour written `#6cdac8ff` or `rgb(108, 218, 200)` is now the same colour as
+  `#6cdac8`.
+
+  Everything downstream compares colours as strings. The extractor decides "this
+  arm is painted the background, so the drawing means to drop it" with an exact
+  match, and the ink table is keyed on hex — so a drawing tool that spells a
+  colour the other way produced a cosmetic that quietly did the wrong thing.
+
+  Quietly is the problem. A wing whose colour matched nothing fell through to
+  "could not place this", which drops the path and adds a warning, so the arm was
+  neither hidden nor recoloured, the bird's own wing drew, and the run succeeded.
+  Coats and jackets stopped dropping their arms with a warning line as the only
+  sign.
+
+  `#rgb`, `rgb()` and `rgba()` fold to six-digit hex; an eight-digit hex folds
+  when its alpha is `ff`. A real alpha is left exactly as it was — `#6cdac880` is
+  a translucent colour and genuinely is not the background, and flattening it
+  would trade a silent miss for a silent lie.
+
+  When a bird part still cannot be placed, the message now names the part and, for
+  an arm, the exact colour to paint it.
+
+  All 37 shipped cosmetics regenerate byte-identically. No avatar moves.
+
 ## 0.3.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@gryt/theme",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Gryt's design tokens, colour scales and OKLCH maths. No renderer, no DOM.",
   "type": "module",
   "license": "MIT",
