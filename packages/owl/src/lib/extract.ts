@@ -330,8 +330,22 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
       const role = roleOf.get(key);
       const to = roleByColour.get(p.fill);
       if (!role) unplaceable.add(`${p.fill} — could not tell which part that is`);
-      else if (!to) unplaceable.add(`${p.fill} — not one of the base owl's colours`);
-      else recolour[role] = to;
+      else if (!to) {
+        // A part of the bird repainted in a colour that is not one of the
+        // bird's. The drawing asked for something and gets nothing: the path is
+        // dropped and the bird's own part draws underneath, unchanged.
+        //
+        // Worth naming the common case, because the fix is not obvious from
+        // "not one of the base owl's colours". An arm painted the background
+        // colour is how a coat drops the arms, and it used to miss whenever the
+        // drawing tool spelled that colour a different way. Colours are
+        // normalised now, so reaching here means the colour really is different.
+        const hint =
+          part === "wingLeft" || part === "wingRight"
+            ? ` (to drop an arm, paint it exactly ${realPalette.background})`
+            : "";
+        unplaceable.add(`${p.fill} on ${part} — not one of the base owl's colours${hint}`);
+      } else recolour[role] = to;
     }
     return false;
   });
