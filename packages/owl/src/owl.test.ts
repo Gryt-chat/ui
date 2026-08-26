@@ -234,10 +234,23 @@ describe("a drawing that replaces one of a pair", () => {
     expect(happy).not.toContain(pathFor("eyeRight"));
   });
 
-  it("takes the arm a coat covers", () => {
+  /*
+   * A coat keeps the arms and covers them, so what has to hold is the order.
+   *
+   * It used to hide them, inferred from a background-coloured shape painted
+   * over each one, and this asserted the arm's path was gone from the markup.
+   * The drawings say what they hide now, and the coats say nothing: their
+   * sleeves cover both arms completely — measured at 1024px, zero uncovered
+   * pixels — so there is nothing to declare. What would break that is the coat
+   * moving off `overAll` and drawing before the arms instead of after them.
+   */
+  it("draws a coat after the arms it covers", () => {
     const coat = wearing({ body: "shirt-jacket-winter" });
-    expect(coat).not.toContain(pathFor("wingLeft"));
-    expect(coat).not.toContain(pathFor("wingRight"));
+    const jacket = ACCESSORIES.find((a) => a.name === "shirt-jacket-winter")!;
+
+    const arm = coat.indexOf(pathFor("wingLeft"));
+    expect(arm).toBeGreaterThan(-1);
+    expect(coat.indexOf(jacket.paths[0]!.d)).toBeGreaterThan(arm);
   });
 
   it("leaves both arms on when nothing is worn over them", () => {
