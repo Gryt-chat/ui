@@ -45,6 +45,19 @@ export interface Shape {
    * rewrites a curve.
    */
   inOwl?: boolean;
+  /**
+   * Whether this was drawn before the group named `owl` opened.
+   *
+   * An SVG paints in document order, so a shape ahead of the bird is a shape
+   * behind the bird. That is how a drawing says "this goes underneath" without
+   * anybody naming a layer in the filename, and it is the only thing telling
+   * the two headsets apart: read off their geometry they are the same three
+   * paths, and one wears its band behind the ear tufts.
+   *
+   * False once the group has been seen, and false throughout a drawing that
+   * has no group at all.
+   */
+  beforeOwl?: boolean;
 }
 
 export interface ReadShapesResult {
@@ -211,6 +224,7 @@ export function readShapes(svg: string): ReadShapesResult {
    */
   let depth = 0;
   let owlDepth: number | null = null;
+  let seenOwl = false;
 
   for (const m of body.matchAll(/<(\/?)([A-Za-z][\w-]*)\b([^>]*?)(\/?)>/g)) {
     const closing = m[1] === "/";
@@ -226,6 +240,7 @@ export function readShapes(svg: string): ReadShapesResult {
         depth += 1;
         if (owlDepth === null && (attr(attrs, "id") ?? "").trim().toLowerCase() === "owl") {
           owlDepth = depth;
+          seenOwl = true;
         }
       }
       continue;
@@ -264,6 +279,7 @@ export function readShapes(svg: string): ReadShapesResult {
       evenodd: /fill-rule="evenodd"/.test(attrs),
       id: attr(attrs, "id"),
       inOwl: owlDepth !== null,
+      beforeOwl: !seenOwl,
     });
   }
 

@@ -476,7 +476,23 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
     roles.set(hex, opts.map.get(hex) ?? LADDER[Math.min(i, LADDER.length - 1)]);
   });
 
-  const layer = opts.layer ?? DEFAULT_LAYER[opts.slot] ?? "overAll";
+  /*
+   * A drawing that sits ahead of the bird in the file is drawn behind it.
+   *
+   * Same statement of fact as the group itself, one level up: document order
+   * is what an SVG paints in, so a headset band drawn before `<g id="owl">` is
+   * a band the ear tufts come through. Without this the two headsets extract
+   * to the same three paths in the same layer and are one accessory holding
+   * two of the head slot's shares.
+   *
+   * Only when the filename did not say. A `.behind` or `.over-all` tag is
+   * somebody overriding this on purpose, and it wins.
+   */
+  const named = opts.layer ?? DEFAULT_LAYER[opts.slot] ?? "overAll";
+  const sitsBehind =
+    structural && kept.length > 0 && kept.every((p) => p.beforeOwl);
+  const layer =
+    sitsBehind && named === (DEFAULT_LAYER[opts.slot] ?? "overAll") ? "behind" : named;
   const repaints = Object.entries(recolour);
   const literal =
     `  {\n` +
