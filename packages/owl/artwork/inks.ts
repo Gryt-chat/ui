@@ -72,6 +72,35 @@ export const INKS: Record<string, PaletteSlot> = {
   "#282d33": "accent",
   "#0f4a53": "accent",       // hat_cap
 
+  /*
+   * The canonical swatch: one colour per role, and the only one new work uses.
+   *
+   * These are `realPalette` — the exact colours `--base` paints the bird in, so
+   * they are already on the artboard to eyedrop from, and they are what the
+   * Figma styles are named after. A drawing made from them needs no entry here
+   * at all, because every colour is definitionally its own role. There is
+   * nothing to decide and so nothing to get wrong.
+   *
+   * The forty-odd entries below are what that replaces: seven roles wearing
+   * forty coats of paint, because every drawing picked its own teal. `trim`
+   * alone is eleven near-identical hexes. Each new one was a judgement call by
+   * whoever ran the script about which rung it belonged to, and a wrong call is
+   * an owl wearing something the wrong shade with nothing to say so.
+   *
+   * They stay because the drawings that used them are in the history. Nothing
+   * new should need them.
+   */
+  "#6cdac8": "background",
+  "#33665a": "body",
+  "#cdeaef": "face",
+  "#244c43": "wing",
+  "#d4e9ed": "trimSoft",
+  "#95d0cc": "trimLight",
+  "#65b3a9": "trim",
+  "#438e87": "trimDeep",
+  "#c98936": "gold",
+  "#a36c2e": "goldDeep",
+
   // Warm, and outside the palette's hue on purpose.
   "#e7c25d": "gold",
   "#c88735": "gold",

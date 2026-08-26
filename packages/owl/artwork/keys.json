@@ -36,7 +36,20 @@
     "necklace-pearl": "bh",
     "necklace-scarf": "bi",
     "shirt-hoodie": "bj",
-    "shirt-jacket-winter": "bk"
+    "shirt-jacket-winter": "bk",
+    "eyes-hollow": "bl",
+    "eyes-nosleep": "bm",
+    "eyes-sleeping": "bn",
+    "eyes-small": "bo",
+    "eyes-star": "bp",
+    "hat-bowtie": "bq",
+    "hat-bowties": "br",
+    "hat-bucket-large": "bs",
+    "hat-headset-overears": "bt",
+    "hat-tophat": "bu",
+    "hat-tophat-huge": "bv",
+    "hat-tophat-small": "bw",
+    "hat-winter-oversize": "bx"
   },
   "retired": []
 }
