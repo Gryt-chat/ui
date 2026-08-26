@@ -17,7 +17,9 @@ import { CosmeticChecker } from "../components/CosmeticChecker";
    example that only worked for a bow tie would leave the interesting half out. */
 const EXAMPLE = "shirt-jacket-winter";
 
-const DISCORD = "https://discord.gg/Q3JKUGsnHE";
+/* The redirect on Gryt's own domain rather than the raw invite. An invite code
+   can be regenerated; this link then keeps working and only the redirect moves. */
+const DISCORD = "https://gryt.chat/discord";
 
 /* The Figma file to duplicate, once there is one to link. Almost everything in
    artwork/ was drawn in Figma against a component, and that component is the
