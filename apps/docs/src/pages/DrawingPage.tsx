@@ -135,7 +135,7 @@ export function DrawingPage() {
         An owl wears up to five things at once, and every one of them started as
         a drawing of the whole bird. You draw on top of the bird and a script
         subtracts the bird back out, so nothing here involves writing path data
-        or measuring anything. There are {ACCESSORIES.length} in the game today.
+        or measuring anything. There are {ACCESSORIES.length} of them today.
       </p>
 
       <Step n={1} title="Start from the bird">
