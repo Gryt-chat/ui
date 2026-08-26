@@ -102,6 +102,17 @@ bun scripts/owl-accessory.ts --base   # the bare bird, to draw on
 bun scripts/owl-accessory.ts --all    # regenerate the registry
 ```
 
+`--base` writes the bird as a group called `owl` with a layer per part: `Left
+Eye`, `Right Arm`, `Nose`. Draw on top of it and hide whatever you draw over.
+Which layers are missing on the way back in is which parts the accessory
+replaces, so a wink is one hidden eye and a coat is two hidden arms. Where the
+drawing sits relative to the group says whether it is worn over the bird or
+behind it.
+
+Export with layer names on — `Include id attribute` in Figma. Without them the
+bird has to be recognised by its geometry, which holds only while the drawing
+sits on a bird nobody has nudged.
+
 The filename is the configuration. A word in it says which slot the drawing
 belongs in — `Winter_Hat.svg` is a hat, `Heart_Glasses.svg` is eyewear — and
 optional dot-tags cover the rest:
@@ -112,6 +123,8 @@ optional dot-tags cover the rest:
 | `Heart_Glasses.rare.svg` | seen less often than the rest of its slot |
 | `Hoodie.covers-head.svg` | cannot be worn with a hat |
 | `Round_Glasses.over-face.svg` | drawn as holes, so the eyes show through |
+| `Hollow_Eyes.over-eyes.svg` | drawn on the eyes rather than instead of them |
+| `Headset.behind.svg` | worn behind the bird, whatever the export's order says |
 | `_Old_Hat.svg` | kept in the folder, left out of the registry |
 
 A word the script does not know stops the run and says so, rather than putting

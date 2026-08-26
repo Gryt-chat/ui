@@ -43,6 +43,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from 
 import path from "node:path";
 
 import { extract, realPalette, ROLES } from "../src/lib/extract";
+import { owlBaseSvg } from "../src/lib/owl-group";
 import { readLedger, updateLedger, writeLedger } from "./lib/keys";
 import {
   isIgnored,
@@ -193,10 +194,10 @@ function reportSlots(
 if (has("base")) {
   const out = flag("out", root);
   mkdirSync(out, { recursive: true });
-  writeFileSync(path.join(out, "owl-base.svg"), owl.owlAvatarSvg("base", BASE) + "\n");
+  writeFileSync(path.join(out, "owl-base.svg"), owlBaseSvg(BASE) + "\n");
   writeFileSync(
     path.join(out, "owl-base-no-background.svg"),
-    owl.owlAvatarSvg("base", { ...BASE, background: false }) + "\n",
+    owlBaseSvg({ ...BASE, background: false }) + "\n",
   );
   const m = owl.OWL;
   console.log(`wrote owl-base.svg and owl-base-no-background.svg to ${out}`);

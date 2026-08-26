@@ -17,6 +17,7 @@ import * as owl from "../index";
 import type { OwlPart } from "../types";
 
 import { readShapes, type Shape } from "./svg-shapes";
+import { GROUPED_PARTS, PART_BY_LAYER } from "./owl-group";
 import { simplifyPath } from "./svg-simplify";
 import { DEFAULT_LAYER } from "./filename";
 
@@ -319,13 +320,6 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
    * Drawings without the group still go the old way, because there are fifty of
    * them in the history and they have to keep extracting the same.
    */
-  const NAMED_PART: Record<string, OwlPart> = {
-    "left ear": "earTufts", "right ear": "earTufts",
-    body: "body", face: "face",
-    "left arm": "wingLeft", "right arm": "wingRight",
-    "left eye": "eyeLeft", "right eye": "eyeRight",
-    nose: "beak",
-  };
   const structural = allShapes.some((s) => s.inOwl);
   let drawn = allShapes;
   if (structural) {
@@ -334,11 +328,11 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
 
     const present = new Set<OwlPart>();
     for (const s of inside) {
-      const part = NAMED_PART[(s.id ?? "").trim().toLowerCase()];
+      const part = PART_BY_LAYER.get((s.id ?? "").trim().toLowerCase());
       if (part) present.add(part);
       else if (s.id) notes.push(`a layer inside the owl group is named "${s.id}", which is not a part of the bird`);
     }
-    for (const part of Object.values(NAMED_PART)) {
+    for (const part of GROUPED_PARTS) {
       if (!present.has(part)) hides.add(part);
     }
   }

@@ -16,4 +16,5 @@
  */
 
 export * from "../src/lib/extract";
+export * from "../src/lib/owl-group";
 export { INKS } from "../artwork/inks";

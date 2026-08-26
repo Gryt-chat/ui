@@ -33,6 +33,7 @@ import {
   TILE_HUES,
   type AccessorySlot,
 } from "./index";
+import { OWL_LAYERS, PART_BY_LAYER } from "./lib/owl-group";
 
 const BARE = Object.fromEntries(ACCESSORY_SLOTS.map((s) => [s, null])) as Record<
   AccessorySlot,
@@ -180,6 +181,29 @@ describe("the parts draw", () => {
     expect(parts.filter((p) => p.part === "wingRight")).toHaveLength(1);
     expect(parts.filter((p) => p.part === "beak")).toHaveLength(1);
     expect(parts.every((p) => p.d.length > 0)).toBe(true);
+  });
+});
+
+/*
+ * The bird handed out to draw on carries a named layer per path, and the
+ * extractor reads those names back to work out what a drawing replaces. Two
+ * files have to agree for that to hold, and nothing else would notice them
+ * drifting: a part added to the generator without an entry in owl-group.ts
+ * gets written into the group unlabelled or, worse, wearing the next part's
+ * name.
+ */
+describe("the bird's layer names", () => {
+  it("names every path the bird draws, in draw order", () => {
+    const parts = owlPartPaths(OWL_BASE);
+    expect(OWL_LAYERS.map((l) => l.part)).toEqual(parts.map((p) => p.part));
+  });
+
+  it("gives every layer a distinct name that reads back to its part", () => {
+    const names = OWL_LAYERS.map((l) => l.name);
+    expect(new Set(names).size).toBe(names.length);
+    for (const l of OWL_LAYERS) {
+      expect(PART_BY_LAYER.get(l.name.toLowerCase())).toBe(l.part);
+    }
   });
 });
 
