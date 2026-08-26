@@ -67,26 +67,39 @@ function findInks(from: string): { path: string; inks: Map<string, PaletteSlot> 
 
 const BULLET = "  ";
 
-function report(file: string): boolean {
+/**
+ * What checking one file came to.
+ *
+ * `skipped` exists because a file the registry walks past cannot be usable or
+ * unusable — there is nothing to check. It used to fall through to the
+ * filename parser, which threw on `_palette.svg` ("palette is not a type"),
+ * and a run over `artwork/*.svg` therefore always failed on the one file that
+ * is in the folder on purpose and not in the registry.
+ */
+type Verdict = "ok" | "skipped" | "bad";
+
+function report(file: string): Verdict {
   const name = basename(file);
 
   if (!existsSync(file)) {
     console.error(`${name}: no such file`);
-    return false;
+    return "bad";
   }
   if (!/\.svg$/i.test(name)) {
     console.error(`${name}: not an .svg. This reads the SVG a drawing tool exports.`);
-    return false;
+    return "bad";
   }
 
   console.log(name);
 
   if (isIgnored(name)) {
-    // Worth saying rather than silently checking it anyway. A leading
-    // underscore is how a drawing is kept beside the ones in use without being
-    // one, so somebody who has just added it and is wondering why nothing
-    // changed is asking this exact question.
-    console.log(`${BULLET}starts with "_" or ".", so the registry would walk past it`);
+    // Said rather than checked anyway. A leading underscore is how a drawing
+    // is kept beside the ones in use without being one, so somebody who has
+    // just added it and is wondering why nothing changed is asking this exact
+    // question — and everything below it would be answering about a file
+    // nothing reads.
+    console.log(`${BULLET}starts with "_" or ".", so the registry walks past it — not checked`);
+    return "skipped";
   }
 
   let placement;
@@ -94,7 +107,7 @@ function report(file: string): boolean {
     placement = placementFor(name, ACCESSORY_SLOTS);
   } catch (err) {
     console.error(`${BULLET}${err instanceof Error ? err.message : String(err)}`);
-    return false;
+    return "bad";
   }
 
   console.log(
@@ -127,7 +140,7 @@ function report(file: string): boolean {
     });
   } catch (err) {
     console.error(`${BULLET}${err instanceof Error ? err.message : String(err)}`);
-    return false;
+    return "bad";
   }
 
   console.log(
@@ -155,11 +168,11 @@ function report(file: string): boolean {
         `${BULLET}deleted, or this was not drawn on the base bird at all. Export the bird with\n` +
         `${BULLET}\`--base\`, draw on that, and keep its layers where they are.`,
     );
-    return false;
+    return "bad";
   }
 
   console.log(`${BULLET}\n${BULLET}looks usable.`);
-  return true;
+  return "ok";
 }
 
 function main(argv: string[]): number {
@@ -177,14 +190,22 @@ function main(argv: string[]): number {
     return args.length === 0 ? 1 : 0;
   }
 
+  let ok = 0;
+  let skipped = 0;
   let bad = 0;
   args.forEach((file, i) => {
     if (i > 0) console.log("");
-    if (!report(file)) bad++;
+    const verdict = report(file);
+    if (verdict === "ok") ok += 1;
+    else if (verdict === "skipped") skipped += 1;
+    else bad += 1;
   });
 
   if (args.length > 1) {
-    console.log(`\n${args.length - bad}/${args.length} usable.`);
+    console.log(
+      `\n${ok}/${args.length - skipped} usable` +
+        (skipped > 0 ? `, ${skipped} not checked.` : "."),
+    );
   }
   return bad > 0 ? 1 : 0;
 }
