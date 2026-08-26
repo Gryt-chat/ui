@@ -117,6 +117,23 @@ function farHue(h: number): number {
  */
 export function owlPalette(name: PaletteName, scheme: PaletteScheme): OwlPalette {
   const h = HUE_BY_NAME[name];
+  /*
+   * A name nothing knows is a hue of `undefined`, and `hsl` then returns
+   * `#d062NaN` — a string that is not a colour, that every renderer ignores,
+   * and that no type checker sees because the parameter is typed. The docs
+   * site asked for "plum" for months and the third preview on the drawing
+   * guide painted an owl in nothing at all.
+   *
+   * Throwing here rather than falling back, because this is the low-level
+   * function and by the time it is reached the name has been chosen. The path
+   * that takes a name from a caller — `resolveOwl` — filters first, so an
+   * avatar never fails on one.
+   */
+  if (h === undefined) {
+    throw new Error(
+      `"${name}" is not one of the owl palettes. One of: ${PALETTE_NAMES.join(", ")}.`,
+    );
+  }
   const far = farHue(h);
   const gold = hsl(far, 58, 50);
   const goldDeep = hsl(far - 2, 56, 41);

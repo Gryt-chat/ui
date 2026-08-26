@@ -33,6 +33,7 @@ import {
   TILE_HUES,
   type AccessorySlot,
 } from "./index";
+import { OWL_LAYERS, PART_BY_LAYER } from "./lib/owl-group";
 
 const BARE = Object.fromEntries(ACCESSORY_SLOTS.map((s) => [s, null])) as Record<
   AccessorySlot,
@@ -75,9 +76,21 @@ describe("the same name draws the same owl", () => {
    * doing it. It is 4.4% now, and the remainder is the slot holding its overall
    * rate steady. This is the last time a new accessory moves people who do not
    * get it, which is what buys the one-off.
+   *
+   * `sivert` moved again on 2026-08-26, adding thirteen drawings (GRYT-615).
+   * He was bare and now wears hat-tophat, which is the intended case: he moved
+   * because he got one of the new things. `ingy` and `gryt` did not move, which
+   * is the evidence the draw did not reshuffle underneath them.
+   *
+   * Measured over 20,000 seeds rather than these three: 32.2% moved, 62% of
+   * them because they gained one of the thirteen. The other 2,462 lost an
+   * accessory they had, which is the slot holding its rate steady as the note
+   * above describes — but it is a larger share than "4.4%" reads as promising,
+   * and one drawing on its own moves 7.05%. Whoever tunes this next should know
+   * the number in that sentence is per-drawing and optimistic, not a ceiling.
    */
   it.each([
-    ["sivert", "5696b9aa6095ea56"],
+    ["sivert", "8e6200915eb65797"],
     ["ingy", "ae9902b72ddb5d51"],
     ["gryt", "ddd680cd5c4e30a9"],
   ])("%s is unchanged", (seed, expected) => {
@@ -172,6 +185,57 @@ describe("the parts draw", () => {
 });
 
 /*
+ * The bird handed out to draw on carries a named layer per path, and the
+ * extractor reads those names back to work out what a drawing replaces. Two
+ * files have to agree for that to hold, and nothing else would notice them
+ * drifting: a part added to the generator without an entry in owl-group.ts
+ * gets written into the group unlabelled or, worse, wearing the next part's
+ * name.
+ */
+/*
+ * A palette name nothing knows used to make a hue of `undefined`, which `hsl`
+ * turned into `#d062NaN` — not a colour, ignored by every renderer, invisible
+ * to the type checker because the parameter is typed. The docs site asked for
+ * "plum" and one preview painted an owl in nothing.
+ */
+describe("a palette name nothing knows", () => {
+  it("is refused by owlPalette, which names the ones there are", () => {
+    expect(() => owlPalette("plum" as never, "dusk")).toThrow(/not one of the owl palettes/);
+  });
+
+  it("never reaches a colour value", () => {
+    for (const name of PALETTE_NAMES) {
+      for (const scheme of PALETTE_SCHEMES) {
+        for (const hex of Object.values(owlPalette(name, scheme))) {
+          expect(hex).toMatch(/^#[0-9a-f]{6}$/);
+        }
+      }
+    }
+  });
+
+  it("falls back to the seed's own when an owl is drawn with it", () => {
+    const asked = owlAvatarSvg("sivert", { palette: "plum" as never });
+    expect(asked).toBe(owlAvatarSvg("sivert"));
+    expect(asked).not.toContain("NaN");
+  });
+});
+
+describe("the bird's layer names", () => {
+  it("names every path the bird draws, in draw order", () => {
+    const parts = owlPartPaths(OWL_BASE);
+    expect(OWL_LAYERS.map((l) => l.part)).toEqual(parts.map((p) => p.part));
+  });
+
+  it("gives every layer a distinct name that reads back to its part", () => {
+    const names = OWL_LAYERS.map((l) => l.name);
+    expect(new Set(names).size).toBe(names.length);
+    for (const l of OWL_LAYERS) {
+      expect(PART_BY_LAYER.get(l.name.toLowerCase())).toBe(l.part);
+    }
+  });
+});
+
+/*
  * A wink is one closed eye and one open one. It came out with a blank face,
  * because `hides` could only name the pair and the drawing only supplied the
  * closed one.
@@ -198,10 +262,23 @@ describe("a drawing that replaces one of a pair", () => {
     expect(happy).not.toContain(pathFor("eyeRight"));
   });
 
-  it("takes the arm a coat covers", () => {
+  /*
+   * A coat keeps the arms and covers them, so what has to hold is the order.
+   *
+   * It used to hide them, inferred from a background-coloured shape painted
+   * over each one, and this asserted the arm's path was gone from the markup.
+   * The drawings say what they hide now, and the coats say nothing: their
+   * sleeves cover both arms completely — measured at 1024px, zero uncovered
+   * pixels — so there is nothing to declare. What would break that is the coat
+   * moving off `overAll` and drawing before the arms instead of after them.
+   */
+  it("draws a coat after the arms it covers", () => {
     const coat = wearing({ body: "shirt-jacket-winter" });
-    expect(coat).not.toContain(pathFor("wingLeft"));
-    expect(coat).not.toContain(pathFor("wingRight"));
+    const jacket = ACCESSORIES.find((a) => a.name === "shirt-jacket-winter")!;
+
+    const arm = coat.indexOf(pathFor("wingLeft"));
+    expect(arm).toBeGreaterThan(-1);
+    expect(coat.indexOf(jacket.paths[0]!.d)).toBeGreaterThan(arm);
   });
 
   it("leaves both arms on when nothing is worn over them", () => {

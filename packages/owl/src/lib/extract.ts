@@ -14,8 +14,10 @@
  */
 
 import * as owl from "../index";
+import type { OwlPart } from "../types";
 
 import { readShapes, type Shape } from "./svg-shapes";
+import { GROUPED_PARTS, PART_BY_LAYER } from "./owl-group";
 import { simplifyPath } from "./svg-simplify";
 import { DEFAULT_LAYER } from "./filename";
 
@@ -148,8 +150,20 @@ function flatten(d: string) {
  * Extent, perimeter and area. Serialisation changes none of them, and two
  * genuinely different shapes agreeing on all three is not something that
  * happens by accident.
- */
-function shapeKey(d: string): string {
+ *
+ * The tolerance is deliberately tight, and widening it was tried. A drawing
+ * whose bird has been nudged or rescaled by a fraction stops matching, and that
+ * looks like something to paper over — but it is the tool working. The whole
+ * method depends on the drawing sitting on an unmodified base, and a drawing
+ * that no longer does produces an accessory in the wrong place. Rounding the
+ * extent to whole units let the drift through the first check and left it
+ * failing on perimeter and area anyway, so all it bought was a later and less
+ * obvious error.
+ *
+ * When this stops matching, the fix is in the drawing: put it back on a clean
+ * base. The "not found" note below says how many of the bird's paths went
+ * missing, which is the number to watch.
+ */function shapeKey(d: string): string {
   const { points, subpaths } = flatten(d);
   let minX = Infinity;
   let minY = Infinity;
@@ -283,9 +297,44 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
   const unplaceable = new Set<string>();
   const notes: string[] = [];
 
-  const { shapes: drawn, unknown } = readShapes(svg);
+  const { shapes: allShapes, unknown } = readShapes(svg);
   for (const tag of unknown) {
     notes.push(`<${tag}> is not something this can read — it was left out`);
+  }
+
+  /*
+   * When the drawing says which shapes are the bird, believe it.
+   *
+   * A Figma export with "Include id attribute" on wraps the bird in
+   * `<g id="owl">` and names every part inside it. That is a statement of fact
+   * from the drawing, and it beats recognising the bird by its geometry —
+   * which is what everything below does, and which breaks whenever the tool
+   * rewrites a curve, turns a segment into `H`, or moves something half a unit.
+   * A day was lost to exactly that.
+   *
+   * So the bird is lifted out here and the geometry matcher below never sees
+   * it. What is left is the accessory, and which parts are missing from the
+   * group is which parts the drawing means to replace — deleting the eye you
+   * are drawing over says "left" or "right" for free.
+   *
+   * Drawings without the group still go the old way, because there are fifty of
+   * them in the history and they have to keep extracting the same.
+   */
+  const structural = allShapes.some((s) => s.inOwl);
+  let drawn = allShapes;
+  if (structural) {
+    const inside = allShapes.filter((s) => s.inOwl);
+    drawn = allShapes.filter((s) => !s.inOwl);
+
+    const present = new Set<OwlPart>();
+    for (const s of inside) {
+      const part = PART_BY_LAYER.get((s.id ?? "").trim().toLowerCase());
+      if (part) present.add(part);
+      else if (s.id) notes.push(`a layer inside the owl group is named "${s.id}", which is not a part of the bird`);
+    }
+    for (const part of GROUPED_PARTS) {
+      if (!present.has(part)) hides.add(part);
+    }
   }
 
   const kept = drawn.filter((p) => {
@@ -316,13 +365,21 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
 
       /*
        * A part painted the background's colour is a part the drawing means to
-       * remove — a coat over an arm. Recorded as a hide of that one rather than
-       * as a repaint of the wing role, which would take both arms whether the
-       * drawing covered both or not.
+       * remove — a coat over an arm, a hat over the ear tufts. Recorded as a
+       * hide of that part rather than as a repaint of its role, which would
+       * take everything sharing the role whether the drawing covered it or not.
        *
-       * Anything painted some other colour is a genuine recolour and stays one.
+       * This was the wings only, and the rest of the bird fell through to the
+       * role. That made an oversize hat delete the whole torso: the ear tufts
+       * are drawn in the body's colour, so painting over the two of them read
+       * as "repaint body" and repainted the chest with them. The drawing had
+       * covered two shapes near the crown and lost everything below the face.
+       *
+       * Anything painted some other colour is a genuine recolour and stays one,
+       * and stays keyed by role — a coat that turns the arms brown means the
+       * role, not one arm.
        */
-      if ((part === "wingLeft" || part === "wingRight") && p.fill === realPalette.background) {
+      if (part && p.fill === realPalette.background) {
         hides.add(part);
         return false;
       }
@@ -350,11 +407,47 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
     return false;
   });
 
-  const missed = [...baseFills.keys()].filter((k) => !seen.has(k)).length;
-  if (missed > 0) {
+  /*
+   * A part of the bird the drawing does not contain is a part the drawing means
+   * to replace.
+   *
+   * Deleting the eye you are drawing over is the natural thing to do — hide the
+   * layer in the component instance and draw the new one — and it already says
+   * exactly which side. eyes_wink_left removes the left eye and keeps the
+   * right; eyes_wink_right does the mirror. That is the whole signal, per side,
+   * for free.
+   *
+   * It used to be read the other way round: the eye had to be *present* for the
+   * hide to be recorded, so deleting it left the bird's own eye drawing
+   * underneath the new one. Every expression broke at once the day the drawings
+   * moved to a Figma component, because the component made deleting a layer the
+   * obvious move.
+   *
+   * Only the parts an accessory legitimately replaces. A missing body or face
+   * is not an intention, it is a drawing that was not made on this bird, and
+   * silently hiding the torso is the worst way to find that out.
+   */
+  const REPLACEABLE = new Set<OwlPart>([
+    "eyeLeft", "eyeRight", "beak", "earTufts", "wingLeft", "wingRight",
+  ]);
+  /*
+   * Only when the drawing did not say. With `<g id="owl">` the bird was lifted
+   * out above and never offered to the matcher, so every base path would look
+   * absent and the whole bird would be hidden — which is what happened the
+   * first time this ran.
+   */
+  const absent = structural ? [] : [...baseFills.keys()].filter((k) => !seen.has(k));
+  const unexplained: string[] = [];
+  for (const key of absent) {
+    const part = partOf.get(key);
+    if (part && REPLACEABLE.has(part)) hides.add(part);
+    else unexplained.push(part ?? "an unidentified path");
+  }
+  if (unexplained.length > 0) {
     notes.push(
-      `${missed} of the bird's ${baseFills.size} paths were not found — a layer was ` +
-        "edited or moved, or this was not drawn on the base",
+      `${unexplained.length} of the bird's ${baseFills.size} paths were not found ` +
+        `(${[...new Set(unexplained)].join(", ")}) — a layer was edited or moved, ` +
+        "or this was not drawn on the base",
     );
   }
   for (const f of unplaceable) notes.push(`repainted in a colour this cannot place: ${f}`);
@@ -377,7 +470,23 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
     roles.set(hex, opts.map.get(hex) ?? LADDER[Math.min(i, LADDER.length - 1)]);
   });
 
-  const layer = opts.layer ?? DEFAULT_LAYER[opts.slot] ?? "overAll";
+  /*
+   * A drawing that sits ahead of the bird in the file is drawn behind it.
+   *
+   * Same statement of fact as the group itself, one level up: document order
+   * is what an SVG paints in, so a headset band drawn before `<g id="owl">` is
+   * a band the ear tufts come through. Without this the two headsets extract
+   * to the same three paths in the same layer and are one accessory holding
+   * two of the head slot's shares.
+   *
+   * Only when the filename did not say. A `.behind` or `.over-all` tag is
+   * somebody overriding this on purpose, and it wins.
+   */
+  const named = opts.layer ?? DEFAULT_LAYER[opts.slot] ?? "overAll";
+  const sitsBehind =
+    structural && kept.length > 0 && kept.every((p) => p.beforeOwl);
+  const layer =
+    sitsBehind && named === (DEFAULT_LAYER[opts.slot] ?? "overAll") ? "behind" : named;
   const repaints = Object.entries(recolour);
   const literal =
     `  {\n` +
@@ -457,15 +566,21 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
     /*
      * How much of the bird was found, and how much there was to find.
      *
-     * The number that says whether this was drawn on the base at all. Anything
-     * short of all of them means a part was moved, rescaled or deleted, and a
-     * drawing that finds none of the bird still extracts perfectly happily —
-     * it just keeps every path in the file, including the bird's, and produces
-     * an accessory shaped like a whole owl. The summary carries this as prose;
-     * a caller that has to decide pass or fail needs the number.
+     * The number that says whether this was drawn on the base at all. A drawing
+     * that finds none of the bird still extracts perfectly happily — it just
+     * keeps every path in the file, including the bird's, and produces an
+     * accessory shaped like a whole owl. The summary carries this as prose; a
+     * caller that has to decide pass or fail needs the number.
+     *
+     * Deliberate replacements are not counted here. Deleting the eye you are
+     * drawing over is how an expression says which eye it replaces, so counting
+     * it as damage would fail every expression ever drawn. `replaced` has those
+     * separately, and `found` is the honest count of what was located either
+     * way — so found + missed does not have to equal ofBird.
      */
-    missed,
-    found: baseFills.size - missed,
+    missed: unexplained.length,
+    replaced: [...hides],
+    found: baseFills.size - absent.length,
     ofBird: baseFills.size,
     notes,
   };

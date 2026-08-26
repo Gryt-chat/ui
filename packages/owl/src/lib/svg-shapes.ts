@@ -28,6 +28,36 @@ export interface Shape {
   linecap?: string;
   linejoin?: string;
   evenodd: boolean;
+  /**
+   * The layer name, when the drawing tool was asked to write one.
+   *
+   * Figma emits layer names as `id` only if "Include id attribute" is on, so
+   * this is absent on any older export and everything downstream has to cope
+   * without it.
+   */
+  id?: string;
+  /**
+   * Whether this sat inside a group named `owl`.
+   *
+   * That group is the whole point: it says which shapes are the bird and which
+   * are the thing being drawn on it, so the extractor does not have to
+   * recognise the bird by its geometry and cannot be fooled when a drawing tool
+   * rewrites a curve.
+   */
+  inOwl?: boolean;
+  /**
+   * Whether this was drawn before the group named `owl` opened.
+   *
+   * An SVG paints in document order, so a shape ahead of the bird is a shape
+   * behind the bird. That is how a drawing says "this goes underneath" without
+   * anybody naming a layer in the filename, and it is the only thing telling
+   * the two headsets apart: read off their geometry they are the same three
+   * paths, and one wears its band behind the ear tufts.
+   *
+   * False once the group has been seen, and false throughout a drawing that
+   * has no group at all.
+   */
+  beforeOwl?: boolean;
 }
 
 export interface ReadShapesResult {
@@ -186,10 +216,36 @@ export function readShapes(svg: string): ReadShapesResult {
   const shapes: Shape[] = [];
   const unknown = new Set<string>();
 
-  for (const m of body.matchAll(/<([A-Za-z][\w-]*)\b([^>]*?)\/?>/g)) {
-    const tag = m[1].toLowerCase();
-    const attrs = m[2];
-    if (IGNORED.has(tag)) continue;
+  /*
+   * Containers are tracked rather than skipped, so a shape can say whether it
+   * sat inside the group named `owl`. Only the outermost such group counts —
+   * a layer inside the bird called "owl" again would otherwise close the real
+   * one early and hand half the bird to the accessory.
+   */
+  let depth = 0;
+  let owlDepth: number | null = null;
+  let seenOwl = false;
+
+  for (const m of body.matchAll(/<(\/?)([A-Za-z][\w-]*)\b([^>]*?)(\/?)>/g)) {
+    const closing = m[1] === "/";
+    const tag = m[2].toLowerCase();
+    const attrs = m[3];
+    const selfClosing = m[4] === "/";
+
+    if (tag === "g" || tag === "svg") {
+      if (closing) {
+        if (owlDepth !== null && depth === owlDepth) owlDepth = null;
+        depth -= 1;
+      } else if (!selfClosing) {
+        depth += 1;
+        if (owlDepth === null && (attr(attrs, "id") ?? "").trim().toLowerCase() === "owl") {
+          owlDepth = depth;
+          seenOwl = true;
+        }
+      }
+      continue;
+    }
+    if (closing || IGNORED.has(tag)) continue;
 
     let d: string | undefined;
     if (tag === "path") d = attr(attrs, "d");
@@ -221,6 +277,9 @@ export function readShapes(svg: string): ReadShapesResult {
       linecap: attr(attrs, "stroke-linecap"),
       linejoin: attr(attrs, "stroke-linejoin"),
       evenodd: /fill-rule="evenodd"/.test(attrs),
+      id: attr(attrs, "id"),
+      inOwl: owlDepth !== null,
+      beforeOwl: !seenOwl,
     });
   }
 

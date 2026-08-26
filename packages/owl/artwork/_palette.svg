@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="752" viewBox="0 0 900 752">
+  <rect width="900" height="752" fill="#15171c"/>
+  <g id="background">
+    <rect x="24" y="24" width="54" height="54" rx="8" fill="#6cdac8"/>
+    <text x="96" y="48" font-family="monospace" font-size="16" fill="#e6e6e6">background</text>
+    <text x="96" y="68" font-family="monospace" font-size="13" fill="#8a8f98">#6cdac8  —  the field behind the bird — paint a shape in this to cut a hole</text>
+  </g>
+  <g id="body">
+    <rect x="24" y="88" width="54" height="54" rx="8" fill="#33665a"/>
+    <text x="96" y="112" font-family="monospace" font-size="16" fill="#e6e6e6">body</text>
+    <text x="96" y="132" font-family="monospace" font-size="13" fill="#8a8f98">#33665a  —  the bird's torso</text>
+  </g>
+  <g id="face">
+    <rect x="24" y="152" width="54" height="54" rx="8" fill="#cdeaef"/>
+    <text x="96" y="176" font-family="monospace" font-size="16" fill="#e6e6e6">face</text>
+    <text x="96" y="196" font-family="monospace" font-size="13" fill="#8a8f98">#cdeaef  —  the face plate</text>
+  </g>
+  <g id="wing">
+    <rect x="24" y="216" width="54" height="54" rx="8" fill="#244c43"/>
+    <text x="96" y="240" font-family="monospace" font-size="16" fill="#e6e6e6">wing</text>
+    <text x="96" y="260" font-family="monospace" font-size="13" fill="#8a8f98">#244c43  —  the arms</text>
+  </g>
+  <g id="accent">
+    <rect x="24" y="280" width="54" height="54" rx="8" fill="#254b40"/>
+    <text x="96" y="304" font-family="monospace" font-size="16" fill="#e6e6e6">accent</text>
+    <text x="96" y="324" font-family="monospace" font-size="13" fill="#8a8f98">#254b40  —  the bird's eyes and beak, and any outline or frame</text>
+  </g>
+  <g id="trimSoft">
+    <rect x="24" y="344" width="54" height="54" rx="8" fill="#d4e9ed"/>
+    <text x="96" y="368" font-family="monospace" font-size="16" fill="#e6e6e6">trimSoft</text>
+    <text x="96" y="388" font-family="monospace" font-size="13" fill="#8a8f98">#d4e9ed  —  near-white: pearls, a hat's crown, petals</text>
+  </g>
+  <g id="trimLight">
+    <rect x="24" y="408" width="54" height="54" rx="8" fill="#95d0cc"/>
+    <text x="96" y="432" font-family="monospace" font-size="16" fill="#e6e6e6">trimLight</text>
+    <text x="96" y="452" font-family="monospace" font-size="13" fill="#8a8f98">#95d0cc  —  the highlight rung on a garment</text>
+  </g>
+  <g id="trim">
+    <rect x="24" y="472" width="54" height="54" rx="8" fill="#65b3a9"/>
+    <text x="96" y="496" font-family="monospace" font-size="16" fill="#e6e6e6">trim</text>
+    <text x="96" y="516" font-family="monospace" font-size="13" fill="#8a8f98">#65b3a9  —  the body of an accessory — most of the drawing</text>
+  </g>
+  <g id="trimDeep">
+    <rect x="24" y="536" width="54" height="54" rx="8" fill="#438e87"/>
+    <text x="96" y="560" font-family="monospace" font-size="16" fill="#e6e6e6">trimDeep</text>
+    <text x="96" y="580" font-family="monospace" font-size="13" fill="#8a8f98">#438e87  —  its shaded half</text>
+  </g>
+  <g id="gold">
+    <rect x="24" y="600" width="54" height="54" rx="8" fill="#c98936"/>
+    <text x="96" y="624" font-family="monospace" font-size="16" fill="#e6e6e6">gold</text>
+    <text x="96" y="644" font-family="monospace" font-size="13" fill="#8a8f98">#c98936  —  warm, and outside the palette's hue on purpose</text>
+  </g>
+  <g id="goldDeep">
+    <rect x="24" y="664" width="54" height="54" rx="8" fill="#a36c2e"/>
+    <text x="96" y="688" font-family="monospace" font-size="16" fill="#e6e6e6">goldDeep</text>
+    <text x="96" y="708" font-family="monospace" font-size="13" fill="#8a8f98">#a36c2e  —  the shaded half of that</text>
+  </g>
+</svg>

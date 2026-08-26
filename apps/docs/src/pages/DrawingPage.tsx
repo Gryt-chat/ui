@@ -2,10 +2,9 @@ import {
   ACCESSORIES,
   OWL_BASE,
   accessoryByName,
-  owlAvatarDataUri,
-  owlAvatarSvg
+  owlAvatarDataUri
 } from "@gryt/owl";
-import { KEYWORDS } from "@gryt/owl/authoring";
+import { KEYWORDS, owlBaseSvg } from "@gryt/owl/authoring";
 import { Button, Surface } from "@gryt/ui";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -18,7 +17,17 @@ import { CosmeticChecker } from "../components/CosmeticChecker";
    example that only worked for a bow tie would leave the interesting half out. */
 const EXAMPLE = "shirt-jacket-winter";
 
-const DISCORD = "https://discord.gg/Q3JKUGsnHE";
+/* The redirect on Gryt's own domain rather than the raw invite. An invite code
+   can be regenerated; this link then keeps working and only the redirect moves. */
+const DISCORD = "https://gryt.chat/discord";
+
+/* The Figma file to duplicate. Almost everything in artwork/ was drawn against
+   the component in it, and that component is the thing worth handing out: it
+   carries the 1024 frame, the bird's layer names, and an instance you can hide
+   layers on without touching the original. The SVG below stays for anyone not
+   in Figma — it is the same bird, and the extractor cannot tell which one a
+   drawing came from. */
+const FIGMA_TEMPLATE: string = "https://www.figma.com/community/file/1674379263156144233";
 
 /* The type words a filename may start with, grouped by the slot each one puts
    the drawing in. Module scope rather than a useMemo: KEYWORDS is a constant,
@@ -112,7 +121,7 @@ export function DrawingPage() {
      a second copy that drifted would hand you a bird a little unlike the one
      your drawing is measured against. */
   const baseHref = useMemo(() => {
-    const svg = owlAvatarSvg("base", OWL_BASE);
+    const svg = owlBaseSvg(OWL_BASE);
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
   }, []);
 
@@ -125,7 +134,7 @@ export function DrawingPage() {
         An owl wears up to five things at once, and every one of them started as
         a drawing of the whole bird. You draw on top of the bird and a script
         subtracts the bird back out, so nothing here involves writing path data
-        or measuring anything. There are {ACCESSORIES.length} in the game today.
+        or measuring anything. There are {ACCESSORIES.length} of them today.
       </p>
 
       <Step n={1} title="Start from the bird">
@@ -134,19 +143,36 @@ export function DrawingPage() {
             <Owl label="The bare owl" seed="base" />
           </Surface>
           <div className="flex flex-col items-start gap-(--space-sm)">
-            <Button render={<a download="owl-base.svg" href={baseHref} />}>
+            {FIGMA_TEMPLATE ? (
+              <Button
+                render={
+                  <a href={FIGMA_TEMPLATE} rel="noreferrer noopener" target="_blank" />
+                }
+              >
+                Open the Figma template
+              </Button>
+            ) : null}
+            <Button
+              render={<a download="owl-base.svg" href={baseHref} />}
+              tone={FIGMA_TEMPLATE ? "neutral" : "primary"}
+            >
               Download owl-base.svg
             </Button>
             <p className="m-0 text-sm text-gryt-muted">
-              The exact bird the script subtracts, on a 1024 x 1024 frame. Open
-              it in whatever you draw in.
+              The Figma file has the bird as a component, a walkthrough, and
+              every drawing made so far to look at. The SVG is the same bird for
+              anyone not in Figma: a 1024 x 1024 frame, with the bird in a group
+              called <code>owl</code> and a layer per part.
             </p>
           </div>
         </div>
         <p>
-          Do not move it, resize it, or redraw any part of it. The script finds
-          the bird in your file by shape, and a nudged path is one it cannot
-          find. Its colours are only there to draw against.
+          The group is read by layer name rather than by shape, so nothing you
+          do inside it can break the export. Hiding a layer is the edit that
+          carries meaning, and that is step 2. Moving or restyling a part
+          carries none: the bird that ships is the generator&rsquo;s own, so a
+          rearranged one shows up in Figma and nowhere else. Its colours are
+          only there to draw against.
         </p>
       </Step>
 
@@ -184,24 +210,21 @@ export function DrawingPage() {
             worse than one that fails.
           </li>
           <li>
-            Never delete a part of the bird. The script finds it by shape, and a
-            missing part reads as a drawing made on something other than the
-            base.
+            Hide the layers you draw over. The jacket above hides{" "}
+            <code>Left Arm</code> and <code>Right Arm</code>, so the arms are
+            not drawn at all rather than drawn and covered. Hiding one{" "}
+            <code>Left Eye</code> and not <code>Right Eye</code> is how a wink
+            works.
           </li>
         </ul>
         <p>
-          You can recolour the bird, and that is how a part is taken away.
-          Recolour it to a colour already in the drawing rather than a new one,
-          because what gets recorded is not the colour — it is which part now
-          follows which.
-        </p>
-        <p>
-          Paint the body in the background&rsquo;s colour and what is written
-          down is <em>body follows background</em>. On every one of the thirty
-          palettes the body then takes that palette&rsquo;s background, so it
-          keeps disappearing rather than turning into one particular shade of
-          teal. That is how the jacket above loses the wings, and why it still
-          works on the amber owl next to it.
+          You can also recolour a part, for a coat that dyes the arms rather
+          than covering them. Use a colour already in the drawing rather than a
+          new one: what gets recorded is not the colour but which part now
+          follows which. Paint the arms in the jacket&rsquo;s own dark tone and
+          what is written down is <em>arms follow that tone</em>, so they move
+          with the owl through all thirty palettes instead of landing on one
+          particular teal.
         </p>
         <p>
           Reuse colours from a cosmetic that already exists wherever you can.
@@ -245,10 +268,19 @@ export function DrawingPage() {
 
       <Step n={3} title="Export it as SVG, named for where it goes">
         <p>
-          Export at <strong>1x</strong> as <strong>SVG</strong>. Name the layer
-          in Figma and the export takes its name from it, so the naming below is
-          something you do once in the layers panel rather than every time you
-          export.
+          Export at <strong>1x</strong> as <strong>SVG</strong>, with{" "}
+          <strong>Include id attribute</strong> on. That is the setting that
+          writes your layer names into the file, and the names are what say
+          which parts of the bird you hid. Without it the bird has to be
+          recognised by its geometry, which holds only while nothing has nudged
+          a path. Name the layer in Figma and the export takes its name from it, so the
+          naming below is something you do once in the layers panel rather than
+          every time you export.
+        </p>
+        <p>
+          Order counts too. A drawing that sits <em>above</em> the{" "}
+          <code>owl</code> group is worn over the bird; one that sits below it
+          is worn behind, which is the only difference between the two headsets.
         </p>
         <div className="not-prose my-(--space-md) max-w-[280px]">
           <Surface className="flex flex-col gap-3 p-4">
@@ -265,6 +297,15 @@ export function DrawingPage() {
               <span className="flex-1 rounded-(--gryt-radius-sm) border border-gryt-border px-2 py-1 text-xs text-gryt-text">
                 SVG
               </span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-gryt-text">
+              <span
+                aria-hidden="true"
+                className="grid size-4 place-items-center rounded-(--gryt-radius-sm) border border-gryt-border text-[10px]"
+              >
+                &#10003;
+              </span>
+              Include id attribute
             </div>
             <span className="rounded-(--gryt-radius-sm) border border-gryt-border px-2 py-1.5 text-center text-xs text-gryt-text">
               Export shirt_jacket_winter

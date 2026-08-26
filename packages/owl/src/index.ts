@@ -147,8 +147,17 @@ function chooseAccessories(
 export function resolveOwl(seed: Seed, options: OwlOptions = {}): ResolvedOwl {
   const s = String(seed);
 
+  /*
+   * A name nothing knows falls back to the seed's own, the same rule `tint`
+   * below applies: one unknown thing costs that thing, not the whole avatar.
+   * Drawing an owl is not a place to throw — the name may have come from a
+   * preference saved by a build that had a palette this one does not.
+   */
+  const asked = options.palette;
   const paletteName =
-    typeof options.palette === "string" ? options.palette : pick(s, "palette", PALETTE_NAMES);
+    typeof asked === "string" && (PALETTE_NAMES as string[]).includes(asked)
+      ? asked
+      : pick(s, "palette", PALETTE_NAMES);
   const scheme = options.scheme ?? pick(s, "scheme", PALETTE_SCHEMES);
 
   const base = owlPalette(paletteName, scheme);

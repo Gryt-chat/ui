@@ -20,7 +20,7 @@ const inks = new Map(
 const PREVIEWS = [
   { seed: "your drawing", palette: OWL_BASE.palette, scheme: OWL_BASE.scheme },
   { seed: "ingy", palette: "amber", scheme: "night" },
-  { seed: "gryt", palette: "plum", scheme: "dusk" }
+  { seed: "gryt", palette: "violet", scheme: "dusk" }
 ] as const;
 
 type Report =

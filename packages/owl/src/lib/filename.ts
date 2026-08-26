@@ -149,6 +149,10 @@ export const DEFAULT_LAYER: Record<AccessorySlot, string> = {
 };
 
 const LAYERS: Record<string, string> = {
+  // Where the drawing sits relative to `<g id="owl">` already says this, so a
+  // tag is only for overriding that — a drawing exported with the bird in
+  // front of it that is meant to be worn on top, or the other way round.
+  behind: "behind",
   "over-face": "overFace",
   "over-eyes": "overEyes",
   "over-all": "overAll",
