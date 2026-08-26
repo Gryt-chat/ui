@@ -102,8 +102,11 @@ bun scripts/owl-accessory.ts --base   # the bare bird, to draw on
 bun scripts/owl-accessory.ts --all    # regenerate the registry
 ```
 
-`--base` writes the bird as a group called `owl` with a layer per part: `Left
-Eye`, `Right Arm`, `Nose`. Draw on top of it and hide whatever you draw over.
+Most of these were drawn in Figma, against
+[Build A Gryt](https://www.figma.com/community/file/1674379263156144233), which
+carries the bird as a component and a walkthrough. `--base` writes the same bird
+as an SVG for anyone not in Figma: a group called `owl` with a layer per part,
+`Left Eye`, `Right Arm`, `Nose`. Draw on top of it and hide whatever you draw over.
 Which layers are missing on the way back in is which parts the accessory
 replaces, so a wink is one hidden eye and a coat is two hidden arms. Where the
 drawing sits relative to the group says whether it is worn over the bird or

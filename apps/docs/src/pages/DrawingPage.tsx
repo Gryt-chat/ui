@@ -21,16 +21,13 @@ const EXAMPLE = "shirt-jacket-winter";
    can be regenerated; this link then keeps working and only the redirect moves. */
 const DISCORD = "https://gryt.chat/discord";
 
-/* The Figma file to duplicate, once there is one to link. Almost everything in
-   artwork/ was drawn in Figma against a component, and that component is the
-   thing worth handing out: it carries the 1024 frame, the bird's layer names,
-   and an instance you can hide layers on without touching the original. The
-   SVG below stays for anyone not in Figma — it is the same bird, and the
-   extractor cannot tell which one a drawing came from.
-
-   Empty until the file is published, and the button is left out while it is. A
-   link to a file nobody can open is worse than no link. */
-const FIGMA_TEMPLATE: string = "";
+/* The Figma file to duplicate. Almost everything in artwork/ was drawn against
+   the component in it, and that component is the thing worth handing out: it
+   carries the 1024 frame, the bird's layer names, and an instance you can hide
+   layers on without touching the original. The SVG below stays for anyone not
+   in Figma — it is the same bird, and the extractor cannot tell which one a
+   drawing came from. */
+const FIGMA_TEMPLATE: string = "https://www.figma.com/community/file/1674379263156144233";
 
 /* The type words a filename may start with, grouped by the slot each one puts
    the drawing in. Module scope rather than a useMemo: KEYWORDS is a constant,
@@ -155,13 +152,17 @@ export function DrawingPage() {
                 Open the Figma template
               </Button>
             ) : null}
-            <Button render={<a download="owl-base.svg" href={baseHref} />}>
+            <Button
+              render={<a download="owl-base.svg" href={baseHref} />}
+              tone={FIGMA_TEMPLATE ? "neutral" : "primary"}
+            >
               Download owl-base.svg
             </Button>
             <p className="m-0 text-sm text-gryt-muted">
-              The exact bird the script subtracts, on a 1024 x 1024 frame, in a
-              group called <code>owl</code> with a layer per part. Open it in
-              whatever you draw in.
+              The Figma file has the bird as a component, a walkthrough, and
+              every drawing made so far to look at. The SVG is the same bird for
+              anyone not in Figma: a 1024 x 1024 frame, with the bird in a group
+              called <code>owl</code> and a layer per part.
             </p>
           </div>
         </div>
