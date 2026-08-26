@@ -1,6 +1,6 @@
 {
   "name": "@gryt/owl",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Gryt's owl avatars. Give it a name, get an SVG. No renderer, no DOM, no dependencies.",
   "type": "module",
   "license": "MIT",

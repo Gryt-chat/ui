@@ -1,5 +1,12 @@
 # @gryt/ui
 
+## 0.21.1
+
+### Patch Changes
+
+- Updated dependencies [6c18ef4]
+  - @gryt/owl@0.5.0
+
 ## 0.21.0
 
 ### Minor Changes
