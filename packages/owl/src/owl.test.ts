@@ -192,6 +192,34 @@ describe("the parts draw", () => {
  * gets written into the group unlabelled or, worse, wearing the next part's
  * name.
  */
+/*
+ * A palette name nothing knows used to make a hue of `undefined`, which `hsl`
+ * turned into `#d062NaN` — not a colour, ignored by every renderer, invisible
+ * to the type checker because the parameter is typed. The docs site asked for
+ * "plum" and one preview painted an owl in nothing.
+ */
+describe("a palette name nothing knows", () => {
+  it("is refused by owlPalette, which names the ones there are", () => {
+    expect(() => owlPalette("plum" as never, "dusk")).toThrow(/not one of the owl palettes/);
+  });
+
+  it("never reaches a colour value", () => {
+    for (const name of PALETTE_NAMES) {
+      for (const scheme of PALETTE_SCHEMES) {
+        for (const hex of Object.values(owlPalette(name, scheme))) {
+          expect(hex).toMatch(/^#[0-9a-f]{6}$/);
+        }
+      }
+    }
+  });
+
+  it("falls back to the seed's own when an owl is drawn with it", () => {
+    const asked = owlAvatarSvg("sivert", { palette: "plum" as never });
+    expect(asked).toBe(owlAvatarSvg("sivert"));
+    expect(asked).not.toContain("NaN");
+  });
+});
+
 describe("the bird's layer names", () => {
   it("names every path the bird draws, in draw order", () => {
     const parts = owlPartPaths(OWL_BASE);

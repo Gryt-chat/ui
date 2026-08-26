@@ -164,10 +164,12 @@ export function DrawingPage() {
           </div>
         </div>
         <p>
-          Leave the group alone except to hide layers in it. Moving a part,
-          resizing it or redrawing it gives you a drawing that no longer sits on
-          the bird it is measured against, and the export carries the change out
-          with it. Its colours are only there to draw against.
+          The group is read by layer name rather than by shape, so nothing you
+          do inside it can break the export. Hiding a layer is the edit that
+          carries meaning, and that is step 2. Moving or restyling a part
+          carries none: the bird that ships is the generator&rsquo;s own, so a
+          rearranged one shows up in Figma and nowhere else. Its colours are
+          only there to draw against.
         </p>
       </Step>
 

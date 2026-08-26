@@ -17,3 +17,9 @@ The two headsets were the same three paths and rendered identically. They are
 meant to differ by where the band sits, and now do: `hat-headset` goes behind
 the ear tufts, `hat-headset-overears` over them. Anyone wearing the first one
 looks different.
+
+A palette name nothing recognises used to produce `#d062NaN` — a string that is
+not a colour and that every renderer ignores. `owlPalette` refuses it and names
+the ten there are; `owlAvatarSvg` falls back to the seed's own palette, because
+drawing an owl is not a place to throw. The drawing guide had been asking for
+`plum` for months, so one of its three previews painted an owl in nothing.

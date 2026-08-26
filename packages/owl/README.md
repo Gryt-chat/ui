@@ -109,9 +109,11 @@ replaces, so a wink is one hidden eye and a coat is two hidden arms. Where the
 drawing sits relative to the group says whether it is worn over the bird or
 behind it.
 
-Export with layer names on — `Include id attribute` in Figma. Without them the
-bird has to be recognised by its geometry, which holds only while the drawing
-sits on a bird nobody has nudged.
+Export with layer names on — `Include id attribute` in Figma. With them, the
+group is read by name and nothing done inside it can break the extraction; only
+what you draw outside it travels, so a bird you rearranged shows up in the
+drawing tool and nowhere else. Without them the bird has to be recognised by its
+geometry, which holds only while the drawing sits on a bird nobody has nudged.
 
 The filename is the configuration. A word in it says which slot the drawing
 belongs in — `Winter_Hat.svg` is a hat, `Heart_Glasses.svg` is eyewear — and
