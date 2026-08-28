@@ -21,6 +21,7 @@ import { HomePage } from "./pages/HomePage";
 import { InstallationPage } from "./pages/InstallationPage";
 import { DrawingPage } from "./pages/DrawingPage";
 import { ServerIconsPage } from "./pages/ServerIconsPage";
+import { ServerIconSheetPage } from "./pages/ServerIconSheetPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ThemeGeneratorPage } from "./pages/ThemeGeneratorPage";
 import { ThemePage } from "./pages/ThemePage";
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
       { path: "avatars", element: <AvatarsPage /> },
       { path: "avatars/drawing", element: <DrawingPage /> },
       { path: "server-icons", element: <ServerIconsPage /> },
+      { path: "server-icons/sheet", element: <ServerIconSheetPage /> },
       {
         path: "components",
         element: <Navigate replace to="/components/button" />

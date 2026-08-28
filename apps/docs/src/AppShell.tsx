@@ -45,7 +45,8 @@ const navSections: NavSection[] = [
       { href: "/theme/generator", label: "Theme generator", since: "0.11.0" },
       { href: "/avatars", label: "Avatars", since: "0.19.0" },
       { href: "/avatars/drawing", label: "Drawing a cosmetic", since: "0.20.0" },
-      { href: "/server-icons", label: "Server icons", since: "0.21.0" }
+      { href: "/server-icons", label: "Server icons", since: "0.21.0" },
+      { href: "/server-icons/sheet", label: "600 server icons", since: "0.21.0" }
     ]
   },
   // Above the components, not below them. Someone arriving at a component
@@ -90,7 +91,7 @@ const paletteEntries: PaletteEntry[] = navSections
   );
 
 /** Routes that render a tool rather than a document, and want the full width. */
-const WIDE_ROUTES = ["/theme/generator"];
+const WIDE_ROUTES = ["/theme/generator", "/server-icons/sheet"];
 
 /**
  * Whether a page added in `since` is still new.

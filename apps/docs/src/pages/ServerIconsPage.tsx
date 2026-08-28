@@ -8,6 +8,7 @@ import {
   type EggOptions
 } from "@gryt/owl";
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import { CodeBlock } from "../components/CodeBlock";
 
 const rawCode = `import { eggAvatarDataUri, eggAvatarColour } from "@gryt/owl";
@@ -130,6 +131,11 @@ export function ServerIconsPage() {
         the egg at the back: that is the one the icon is read as, and letting it
         wander would make the field's colour and the icon's colour two different
         answers to what colour a server is.
+      </p>
+      <p>
+        Seventy-two is enough to see that it works and not enough to see the
+        mix. <Link to="/server-icons/sheet">Six hundred of them</Link> is, and
+        it is where a change to the weights shows up.
       </p>
 
       <h2>It does look like Easter</h2>
