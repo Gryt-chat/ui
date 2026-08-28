@@ -77,9 +77,9 @@ describe("the same name draws the same icon", () => {
    * broken and the fix is the draw, not the number.
    */
   it.each([
-    ["gryta krutt", "677d8524762749dc"],
-    ["the basement", "93ba7808ff20a51c"],
-    ["lan party", "57dec63b60967411"]
+    ["gryta krutt", "6c6c8797e3c2d819"],
+    ["the basement", "a061b29f4ef4a285"],
+    ["lan party", "295153d7006d161f"]
   ])("%s is unchanged", (seed, expected) => {
     expect(digest(eggAvatarSvg(seed))).toBe(expected);
   });

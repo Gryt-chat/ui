@@ -203,11 +203,24 @@ A server is not a person and should not be drawn as one, which is why server
 icons were never owls. They were DiceBear Planets, which was fine and was also
 somebody else's drawing sitting next to Gryt's own.
 
+```tsx
+import { Avatar } from "@gryt/ui";
+
+// The corner is the theme's, in pixels. Avatar clips; the drawing is square.
+<Avatar serverSeed={server.name} className="rounded-(--gryt-radius-md)" />;
+```
+
+Or without React:
+
 ```ts
 import { eggAvatarDataUri } from "@gryt/owl";
 
 const src = eggAvatarDataUri(server.name);
 ```
+
+`cornerRadius` exists and is usually the wrong answer for an icon in a themed
+container. It is a fraction of the drawing, so it is a different corner at every
+size; a container that clips gets the theme's radius in pixels at all of them.
 
 Same seeds, same rules, same ten hues and three schemes. What the seed picks is
 the arrangement (one, two or three eggs, drawn back to front deep, mid and

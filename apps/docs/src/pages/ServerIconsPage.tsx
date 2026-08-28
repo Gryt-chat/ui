@@ -7,9 +7,14 @@ import {
   resolveEggs,
   type EggOptions
 } from "@gryt/owl";
+import { Avatar } from "@gryt/ui";
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
 import { CodeBlock } from "../components/CodeBlock";
+
+const uiCode = `import { Avatar } from "@gryt/ui";
+
+// The corner is the theme's, in pixels. Avatar clips; the drawing is square.
+<Avatar serverSeed={server.name} className="rounded-(--gryt-radius-md)" />`;
 
 const rawCode = `import { eggAvatarDataUri, eggAvatarColour } from "@gryt/owl";
 
@@ -30,6 +35,17 @@ const SAMPLE = 3000;
 const sheetSeeds = Array.from({ length: SHEET }, (_, i) => `server-${i}`);
 const sampleSeeds = Array.from({ length: SAMPLE }, (_, i) => `sample-${i}`);
 
+/**
+ * One icon, in the container the client puts it in.
+ *
+ * `Avatar` with `rounded-(--gryt-radius-md)`, which is what sidebar.tsx renders
+ * — so the corner on this page is the theme's radius in pixels and follows the
+ * theme picker, rather than a fraction of the drawing baked into the SVG.
+ *
+ * `serverSeed` covers the seeded case. Anything this page wants to fix — a
+ * palette, a single pattern, a zoom — is drawn directly instead, since those
+ * are illustrations rather than the thing the client does.
+ */
 function Egg({
   seed,
   options,
@@ -41,14 +57,31 @@ function Egg({
   size?: number;
   label?: string;
 }) {
+  const box = { width: size, height: size };
+
+  if (!options) {
+    return (
+      <Avatar
+        alt={label ?? seed}
+        className="rounded-(--gryt-radius-md)"
+        serverSeed={seed}
+        style={box}
+      />
+    );
+  }
+
   return (
-    <img
-      alt={label ?? seed}
-      className="block h-full w-full rounded-(--radius-md)"
-      height={size}
-      src={eggAvatarDataUri(seed, { size, ...options })}
-      width={size}
-    />
+    <span
+      className="inline-flex overflow-hidden rounded-(--gryt-radius-md) align-middle"
+      style={box}
+    >
+      <img
+        alt={label ?? seed}
+        height={size}
+        src={eggAvatarDataUri(seed, { size, ...options })}
+        width={size}
+      />
+    </span>
   );
 }
 
@@ -99,6 +132,16 @@ export function ServerIconsPage() {
         its icon and a server that has not been reached yet still has one to
         draw. A server that has uploaded an icon never gets here.
       </p>
+      <CodeBlock code={uiCode} language="tsx" />
+      <p>
+        The corner comes from the container. <code>Avatar</code> clips to
+        whatever radius its class sets and the drawing is square, so a rail
+        asking for <code>--gryt-radius-md</code> gets the theme's twelve pixels
+        — not a fraction of the box, which would be a different corner at every
+        size. Every icon on this page is drawn that way, so the theme picker
+        above changes them.
+      </p>
+      <p>Without React, or anywhere the markup is wanted directly:</p>
       <CodeBlock code={rawCode} language="ts" />
 
       <h2>What a seed picks</h2>
@@ -131,11 +174,6 @@ export function ServerIconsPage() {
         the egg at the back: that is the one the icon is read as, and letting it
         wander would make the field's colour and the icon's colour two different
         answers to what colour a server is.
-      </p>
-      <p>
-        Seventy-two is enough to see that it works and not enough to see the
-        mix. <Link to="/server-icons/sheet">Six hundred of them</Link> is, and
-        it is where a change to the weights shows up.
       </p>
 
       <h2>It does look like Easter</h2>
