@@ -1,7 +1,7 @@
 # @gryt/owl
 
-Gryt's owl avatars. Give it a name, get an SVG. No renderer, no DOM, no
-dependencies.
+Gryt's owl avatars, and its egg icons for servers. Give it a name, get an SVG.
+No renderer, no DOM, no dependencies.
 
 MIT, like the rest of the UI packages, and unlike the AGPL-3.0 apps that use
 them.
@@ -41,6 +41,8 @@ overrides for the palette, the ear tufts and each accessory slot.
 - `owlPalette`, `allOwlPalettes`, `TILE_HUES` — the thirty palettes
 - `ACCESSORIES`, `accessoriesIn`, `accessoryByName` — what an owl can wear
 - `OWL` — the fixed geometry, in artboard units
+- `eggAvatarSvg`, `eggAvatarDataUri`, `eggAvatarColour` — a server's icon
+- `resolveEggs`, `eggPalette`, `EGG_PATTERNS` — the same three for the eggs
 
 A bare owl is about 2.1 kB of markup, and about 4.1 kB with accessories on.
 
@@ -192,6 +194,101 @@ That one needs this repository checked out; this one needs Node.
 
 - `@gryt/ui`'s `Avatar` generates one when it has a `seed` and no `src`.
 - `@gryt/ui-native`'s does the same through `react-native-svg`.
-- The Gryt web client and mobile app draw people from it. Server icons are
-  still DiceBear Planets, because a server is not a person and should not be
-  drawn as one.
+- The Gryt web client and mobile app draw people from it, and servers from the
+  eggs.
+
+## Eggs, for servers
+
+A server is not a person and should not be drawn as one, which is why server
+icons were never owls. They were DiceBear Planets, which was fine and was also
+somebody else's drawing sitting next to Gryt's own.
+
+```ts
+import { eggAvatarDataUri } from "@gryt/owl";
+
+const src = eggAvatarDataUri(server.name);
+```
+
+Same seeds, same rules, same ten hues and three schemes. What the seed picks is
+the arrangement (one, two or three eggs, drawn back to front deep, mid and
+light), a pattern and an angle for each, a texture for the field behind them,
+and how close the tile crops in.
+
+The patterns are tiles from [pattern.monster](https://pattern.monster), MIT
+licensed and listed in `artwork/eggs/patterns.json`. Upstream ships 330; that
+file names the forty that are surfaces rather than decorations: grids, hatches,
+waves, contours, speckles, scales, tessellations. `bun scripts/egg-pattern.ts`
+pulls them in, and adding one is a line in that file. The draw is keyed on the
+tile's own name, so a server that was not going to wear the new tile keeps the
+one it had.
+
+The field is the owl's own background, the same string `owlPalette` returns
+rather than a colour chosen to go with it. On top of it sits a ladder: three
+shells that separate from each other and from the field, each with the ink its
+pattern is drawn in. `palette.test.ts` asserts every gap on that ladder, at all
+ten hues, because a tweak that reads fine in violet is the one that loses the
+middle egg in gold.
+
+### It does look like Easter
+
+Four things fight that, and no one of them is enough on its own:
+
+- **No pastel on pastel.** Either the field is deep and the eggs are pale, or
+  the field is bright and the eggs are deep. A soft egg on a soft field is the
+  Easter signature, and the palette test refuses one.
+- **Surfaces, not decorations.** The ink sits about 22 points of lightness off
+  its shell rather than 50, and the test bounds that from above as well as
+  below, so "make it pop" fails the build. No zigzag bands, no plaid, no
+  flowers, no stars, no big spots.
+- **Shading.** One gradient across the whole arrangement, so an egg reads as a
+  form rather than a flat sticker with a pattern printed on it.
+- **Cropping.** Whole eggs with room around them is a nest; eggs running off the
+  edge is a mark. `zoom` is that dial, and the seed picks between 1.05 and 1.5.
+
+```ts
+eggAvatarSvg(server.name, { zoom: 1.6 }); // further still
+eggAvatarSvg(server.name, { zoom: 1 });   // the drawing as painted
+```
+
+Still open: the shells themselves. There are three arrangements and each egg in
+them is the shape it was drawn as, and varying that per seed (taller, narrower,
+tilted) would help. It wants more drawings rather than a transform that squashes
+the ones there are.
+
+### The drawings
+
+`artwork/eggs/egg_base_1.svg` through `_3.svg`, one arrangement each, on the same
+1024 frame the owl uses. Each egg is one closed path tagged `id="Egg-N"`, and N
+is the order it stacks in, which is also the order the shell tones are handed
+out in. `bun scripts/egg-base.ts` turns them into path data;
+`--check` fails when what is committed disagrees with the drawings.
+
+## Licences
+
+The package is MIT, like the rest of the UI packages.
+
+The pattern tiles in `src/eggs/patterns.generated.ts` are Pattern Monster's,
+used under its own MIT licence:
+
+> Copyright (c) 2020-2023 Pattern Monster —
+> [github.com/catchspider2002/svelte-svg-patterns](https://github.com/catchspider2002/svelte-svg-patterns)
+>
+> Permission is hereby granted, free of charge, to any person obtaining a copy
+> of this software and associated documentation files (the "Software"), to deal
+> in the Software without restriction, including without limitation the rights
+> to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+> copies of the Software, and to permit persons to whom the Software is
+> furnished to do so, subject to the following conditions:
+>
+> The above copyright notice and this permission notice shall be included in all
+> copies or substantial portions of the Software.
+>
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+> IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+> FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+> AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+> LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+> OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+> SOFTWARE.
+
+The same notice travels in the generated file, which is what ends up in `dist`.

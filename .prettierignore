@@ -1,0 +1,6 @@
+# Generated files. The script that writes them is the formatter — running
+# prettier over one makes it disagree with its own `--check`, which then fails
+# a build nobody changed.
+packages/owl/src/accessories.generated.ts
+packages/owl/src/eggs/bases.generated.ts
+packages/owl/src/eggs/patterns.generated.ts
