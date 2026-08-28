@@ -20,10 +20,10 @@ pnpm add @gryt/ui
 yarn add @gryt/ui
 ```
 
-`@gryt/ui` includes Base UI, Phosphor icons, and the compiled Gryt styles. Your app provides `react` and `react-dom`. There is no CSS-in-JS runtime.
+`@gryt/ui` includes Base UI, Phosphor icons, and the compiled Gryt styles. Your app provides `react` and `react-dom`. There's no CSS-in-JS runtime.
 
-For React Native, install [`@gryt/ui-native`](packages/ui-native) instead. It is
-the same design system through a different renderer, and it is covered below.
+For React Native, install [`@gryt/ui-native`](packages/ui-native) instead. It's
+the same design system through a different renderer, and it's covered below.
 
 ```sh
 npm install @gryt/ui-native
@@ -103,7 +103,7 @@ The colour maths is shared rather than copied. `neutralScale`, `hueScale` and
 `alphaScale` are exported from this package, and `ui-native` composes them into
 plain values instead of CSS custom properties. A curve tuned here moves there.
 
-It is published, and short of ten of the 42 components in `@gryt/ui` — mostly
+It's published, and short of ten of the 42 components in `@gryt/ui` — mostly
 the Gryt-specific ones, which want a screen to design against rather than a web
 component to copy. Its README carries the list, and a table of the places where
 a component deliberately behaves differently on a phone. See GRYT-342.
@@ -121,10 +121,10 @@ in one place rather than ten, so it cannot fall out of step across repositories.
 
 MIT — see [LICENSE](LICENSE).
 
-This is the one Gryt repository that is not AGPL. The apps it is used by — client,
-server, SFU and the rest — are AGPL-3.0, and the argument for copyleft there is that
+This is the one Gryt repository that isn't AGPL. The apps it's used by — client,
+server, SFU and the rest — are AGPL-3.0, and the argument for copyleft there's that
 somebody running a modified Gryt as a service should publish their changes. A
-component library is a different thing: it is meant to be picked up and used in
+component library is a different thing: it's meant to be picked up and used in
 whatever somebody is building, including things that have nothing to do with Gryt,
 and AGPL would make that impossible for most of them.
 
