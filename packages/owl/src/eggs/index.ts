@@ -1,16 +1,20 @@
 /**
- * Gryt's eggs: a deterministic icon generator for servers.
+ * Gryt's eggs: a deterministic generated image for something that is not a
+ * person.
  *
  * The same rules as the owls, and for the same reason — the same seed draws the
  * same icon on every client, forever, so every draw is keyed on a channel name
  * and nothing touches Math.random, Date or Intl. See rng.ts.
  *
- * What it is not is an owl. A server is not a person and should not be drawn as
- * one, which is why server icons were a separate DiceBear style to begin with.
- * This replaces that style rather than the reasoning behind it: an owl is one
- * character wearing things, an egg is a shape with a surface. Put a member list
- * and a server rail side by side and the two read as different kinds of thing,
- * which is the job.
+ * What it draws for is a group chat with no picture uploaded. It was written for
+ * server icons, those are getting their own generator instead, and nothing here
+ * is named for either — the seed is a string and what it stands for is the
+ * caller's business.
+ *
+ * What it is not is an owl, and that is the job. An owl is one character wearing
+ * things; this is a shape with a surface. Put a member list beside a list of
+ * these and the two read as different kinds of thing without anybody having to
+ * look twice.
  *
  * Back to front: the field, the field's own texture, then the eggs, each one
  * clipped to its shell with a tile of pattern inside it. The eggs are drawn in
@@ -77,7 +81,7 @@ const TILE_WEIGHT = 10;
  * The share is the weight against every tile's: 60 against 43 tiles at 10 each
  * is one egg in eight. That share drifts down as tiles are added, and it has to
  * — the alternative is deriving the weight from the tile count, which would
- * re-roll "is this egg bare" for every server the next time one is added, which
+ * re-roll "is this egg bare" for every seed the next time one is added, which
  * is the exact thing the by-name draw exists to prevent.
  *
  * One in eight, because a plain egg beside two patterned ones is a rest and
@@ -120,7 +124,7 @@ function choosePattern(
  *
  * Never the back one, because that is the egg the icon is read as. Letting it
  * wander makes the field's hue and the icon's hue two different answers to
- * "what colour is this server".
+ * "what colour is this thing".
  */
 const HUE_WEIGHTS: readonly (readonly [boolean, number])[] = [
   [false, 78],
@@ -160,12 +164,12 @@ function chooseHue(
  * 1 is the drawing as painted, eggs whole and clear of the edge. Around 1.5
  * they start running off it, and the icon stops reading as objects in a nest
  * and starts reading as a mark — which is the dial for the one real problem
- * with drawing servers as eggs.
+ * with drawing eggs at all.
  *
  * The seeded four run from 1.05 to 1.5 rather than sitting at 1, because whole
  * eggs arranged with room around them is the composition that reads as Easter,
  * and one that crops is the composition that reads as an icon. Four steps,
- * because the point is a composition that differs between servers, not a zoom
+ * because the point is a composition that differs between seeds, not a zoom
  * slider.
  *
  * It scales the eggs and not the field. The field is the tile, and a field that
@@ -359,10 +363,10 @@ function renderTile(
 }
 
 /**
- * `seed`'s server icon, as SVG markup.
+ * `seed`'s eggs, as SVG markup.
  *
- * Every id in here is suffixed with a hash of the seed, because a server rail
- * draws twenty of these inline on one page and two `<pattern id="a">` in one
+ * Every id in here is suffixed with a hash of the seed, because a list can
+ * draw twenty of these inline on one page and two `<pattern id="a">` in one
  * document is one pattern. The owls learned this the same way.
  */
 export function eggAvatarSvg(seed: Seed, options: EggOptions = {}): string {
@@ -485,7 +489,7 @@ export function eggAvatarDataUri(seed: Seed, options: EggOptions = {}): string {
  *
  * The top of the gradient rather than an average of it, so the answer is a
  * colour that is actually on the icon. Same contract as `owlAvatarColour`: it
- * is what a tile tinted from this server should be tinted with.
+ * is what a tile tinted from this seed should be tinted with.
  */
 export function eggAvatarColour(seed: Seed, options: EggOptions = {}): string {
   return resolveEggs(seed, options).palette.field;

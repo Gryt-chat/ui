@@ -1,14 +1,14 @@
 /**
- * The vocabulary of a server's egg.
+ * The vocabulary of an egg.
  *
  * An owl is one drawn character and everything about it is a choice inside that
- * character. An egg is the opposite on purpose: a server is not a person, and
- * the icon should not read as one. What it is instead is a shape and a surface
+ * character. An egg is the opposite on purpose: it stands for something that is
+ * not a person, and should not read as one. What it is instead is a shape and a surface
  * — one, two or three eggs, each with a pattern on it, on a field that carries
  * a pattern of its own.
  *
  * The colours are the owl's. That is the whole reason this lives in the same
- * package: a member list and a server rail sit next to each other on screen,
+ * package: a member list and a list of these sit next to each other on screen,
  * and two generators with two palettes is how you get a product that looks
  * assembled rather than drawn.
  */

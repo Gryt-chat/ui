@@ -14,14 +14,14 @@ import { CodeBlock } from "../components/CodeBlock";
 const uiCode = `import { Avatar } from "@gryt/ui";
 
 // The corner is the theme's, in pixels. Avatar clips; the drawing is square.
-<Avatar serverSeed={server.name} className="rounded-(--gryt-radius-md)" />`;
+<Avatar eggSeed={chat.id} className="rounded-(--gryt-radius-md)" />`;
 
 const rawCode = `import { eggAvatarDataUri, eggAvatarColour } from "@gryt/owl";
 
-const src = eggAvatarDataUri(server.name);
-const tint = eggAvatarColour(server.name); // "#1c2f3d"`;
+const src = eggAvatarDataUri(chat.id);
+const tint = eggAvatarColour(chat.id); // "#1c2f3d"`;
 
-const zoomCode = `eggAvatarSvg(server.name, { zoom: 1.6 });`;
+const zoomCode = `eggAvatarSvg(chat.id, { zoom: 1.6 });`;
 
 /** How many icons the sheet draws, and how many the tally counts. */
 const SHEET = 72;
@@ -32,7 +32,7 @@ const SAMPLE = 3000;
  * uses them: a contact sheet is for checking the mix, and the mix has to be the
  * same every time somebody looks at it.
  */
-const sheetSeeds = Array.from({ length: SHEET }, (_, i) => `server-${i}`);
+const sheetSeeds = Array.from({ length: SHEET }, (_, i) => `egg-${i}`);
 const sampleSeeds = Array.from({ length: SAMPLE }, (_, i) => `sample-${i}`);
 
 /**
@@ -42,7 +42,7 @@ const sampleSeeds = Array.from({ length: SAMPLE }, (_, i) => `sample-${i}`);
  * — so the corner on this page is the theme's radius in pixels and follows the
  * theme picker, rather than a fraction of the drawing baked into the SVG.
  *
- * `serverSeed` covers the seeded case. Anything this page wants to fix — a
+ * `eggSeed` covers the seeded case. Anything this page wants to fix — a
  * palette, a single pattern, a zoom — is drawn directly instead, since those
  * are illustrations rather than the thing the client does.
  */
@@ -64,7 +64,7 @@ function Egg({
       <Avatar
         alt={label ?? seed}
         className="rounded-(--gryt-radius-md)"
-        serverSeed={seed}
+        eggSeed={seed}
         style={box}
       />
     );
@@ -85,7 +85,7 @@ function Egg({
   );
 }
 
-export function ServerIconsPage() {
+export function EggsPage() {
   /* Counted from the generator rather than written down, so the numbers here
      cannot drift from the weights they describe. `resolveEggs` picks without
      drawing, which is what makes three thousand of them cheap. */
@@ -117,20 +117,23 @@ export function ServerIconsPage() {
 
   return (
     <article className="prose prose-invert max-w-[68ch] prose-headings:font-display prose-headings:tracking-[-0.022em] prose-h1:text-[length:var(--text-2xl)] prose-h2:mt-(--space-xl) prose-h2:text-[length:var(--text-lg)] prose-p:text-gryt-muted prose-p:leading-7">
-      <h1>Server icons</h1>
+      <h1>Eggs</h1>
       <p className="lead text-[length:var(--text-md)]">
-        Give <code>@gryt/owl</code> a server's name and it returns an SVG of
-        eggs. A server is not a person and should not be drawn as one, so it is
-        not an owl: an owl is one character wearing things, and an icon here is
-        a shape with a surface. Every icon on this page is drawn by the library
-        as you read it.
+        Give <code>@gryt/owl</code> a string and it returns an SVG of eggs. They
+        are the generated image for something that is not a person — a group
+        chat that has not had a picture uploaded, today. Not an owl, because an
+        owl is one character wearing things and this is a shape with a surface,
+        and the two should not be confused at a glance. Every image on this page
+        is drawn by the library as you read it.
       </p>
 
       <h2>Using it</h2>
       <p>
-        Seeded on the name rather than the address, so renaming a server changes
-        its icon and a server that has not been reached yet still has one to
-        draw. A server that has uploaded an icon never gets here.
+        Any stable string works. Prefer an id over a name for anything that gets
+        renamed often, since the image changes with its seed and people
+        recognise these by the picture. Normalise it in one place and share that
+        helper, the way <code>avatarSeed</code> is shared — two clients drawing
+        one thing as two different pictures is the whole failure this avoids.
       </p>
       <CodeBlock code={uiCode} language="tsx" />
       <p>
@@ -160,7 +163,7 @@ export function ServerIconsPage() {
         ))}
       </ul>
       <p>
-        {pct(tally.arrangements.get(1) ?? 0)} of servers get one egg,{" "}
+        {pct(tally.arrangements.get(1) ?? 0)} of seeds get one egg,{" "}
         {pct(tally.arrangements.get(2) ?? 0)} get two and{" "}
         {pct(tally.arrangements.get(3) ?? 0)} get three, counted over{" "}
         {SAMPLE.toLocaleString("en")} seeds on this page. An egg comes up bare{" "}
@@ -173,7 +176,7 @@ export function ServerIconsPage() {
         {pct(tally.mixed)} of icons take one egg's tone from another hue. Never
         the egg at the back: that is the one the icon is read as, and letting it
         wander would make the field's colour and the icon's colour two different
-        answers to what colour a server is.
+        answers to what colour a thing is.
       </p>
 
       <h2>It does look like Easter</h2>
@@ -212,7 +215,7 @@ export function ServerIconsPage() {
       <p>
         The field is the owl's own background: the same string{" "}
         <code>owlPalette</code> returns, not a colour picked to go with it, so a
-        server rail and a member list cannot drift apart on the next edit. What
+        list of these and a member list cannot drift apart on the next edit. What
         sits on it is a ladder rather than named roles — three shells that
         separate from each other and from the field, each carrying the ink its
         pattern is drawn in.
@@ -277,16 +280,16 @@ export function ServerIconsPage() {
       <p>
         Adding one is a line in <code>artwork/eggs/patterns.json</code>. The
         draw is keyed on the tile's own name rather than laid out along a shared
-        range, so a server that was not going to wear the new tile keeps the one
+        range, so a seed that was not going to wear the new tile keeps the one
         it had — the same rule the owl accessories run on, and the reason adding
         a drawing there stopped reshuffling a fifth of everybody.
       </p>
 
       <h2>The same seed draws the same icon</h2>
       <p>
-        Weaker than it is for an avatar and still worth holding: a server that
-        has set its own icon never reaches this code, so what moves when the
-        output moves is every server that has not. Nothing in the package
+        Weaker than it is for an avatar and still worth holding: anything with
+        an uploaded picture never reaches this code, so what moves when the
+        output moves is everything that has not. Nothing in the package
         depends on the platform, and three seeds are pinned in its tests against
         their exact output.
       </p>
