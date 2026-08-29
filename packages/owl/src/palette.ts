@@ -37,7 +37,8 @@ export const PALETTE_NAMES: PaletteName[] = [
 
 export const PALETTE_SCHEMES: PaletteScheme[] = ["night", "day", "dusk"];
 
-const HUE_BY_NAME: Record<PaletteName, number> = {
+/** Exported for the eggs, which build their own ramp on the same hues. */
+export const HUE_BY_NAME: Record<PaletteName, number> = {
   violet: 280,
   amber: 24,
   teal: 170,

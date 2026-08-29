@@ -1,0 +1,53 @@
+{
+  "source": "https://github.com/catchspider2002/svelte-svg-patterns",
+  "revision": "master",
+  "note": "Slugs are pattern.monster's own. `tile` is how wide one repeat is drawn on the 1024 artboard; `ink` is the stroke weight in artboard units. `rows` only means anything for the patterns whose tile stacks rows of the same shape, and says how many to keep. `tile` runs from about 195 to 290 artboard units, against an egg roughly 640 wide before the crop — so a surface shows a handful of repeats rather than a mesh. Under about 180 the tile stops being a texture you can see and becomes noise at icon size; over about 300 one repeat fills the smallest egg in a trio and that egg loses its surface. Everything here is a surface — a grid, a hatch, a wave, a contour, a speckle, a scale, a tessellation. Nothing decorative: no zigzag bands, no flowers, no plaid, no stars, no big spots. Those are what make an egg read as an Easter egg.",
+  "patterns": [
+    { "slug": "cross-section", "tile": 245 },
+    { "slug": "brick-wall-1", "tile": 255 },
+    { "slug": "railroad", "tile": 240 },
+    { "slug": "squares-3", "tile": 255 },
+    { "slug": "squares-4", "tile": 255 },
+    { "slug": "squares-6", "tile": 290 },
+    { "slug": "new-17", "tile": 225 },
+    { "slug": "new-2", "tile": 255 },
+
+    { "slug": "herringbone-2", "tile": 225 },
+    { "slug": "lines-2", "tile": 255 },
+    { "slug": "lines-4", "tile": 270 },
+    { "slug": "lines-6", "tile": 225 },
+    { "slug": "new-15", "tile": 240 },
+    { "slug": "cubes-1", "tile": 290 },
+    { "slug": "straight-lines", "tile": 290, "rows": 2 },
+
+    { "slug": "waves-11", "tile": 240 },
+    { "slug": "waves-12", "tile": 225 },
+    { "slug": "waves-14", "tile": 240 },
+
+    { "slug": "circles-7", "tile": 285 },
+    { "slug": "circles-15", "tile": 240 },
+    { "slug": "concentric-circles-2", "tile": 290 },
+    { "slug": "adjointed-circles", "tile": 275 },
+    { "slug": "tiles-1", "tile": 285 },
+
+    { "slug": "circles-3", "tile": 195 },
+    { "slug": "circles-6", "tile": 210 },
+    { "slug": "circles-13", "tile": 255 },
+    { "slug": "triangles-18", "tile": 240 },
+
+    { "slug": "scales-1", "tile": 225 },
+    { "slug": "scales-3", "tile": 240, "ink": 12 },
+    { "slug": "scales-4", "tile": 240, "ink": 12 },
+
+    { "slug": "hexagon-1", "tile": 275 },
+    { "slug": "hexagon-2", "tile": 285 },
+    { "slug": "hexagon-5", "tile": 285 },
+    { "slug": "diamonds-3", "tile": 285 },
+    { "slug": "diamonds-11", "tile": 255 },
+    { "slug": "diamonds-12", "tile": 225 },
+    { "slug": "triangles-4", "tile": 290 },
+    { "slug": "triangles-19", "tile": 270 },
+    { "slug": "japanese-pattern-1", "tile": 290 },
+    { "slug": "japanese-pattern-2", "tile": 290 }
+  ]
+}

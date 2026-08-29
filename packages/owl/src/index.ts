@@ -71,6 +71,32 @@ export {
 } from "./wearing";
 export { owlPalette, allOwlPalettes, hsl, PALETTE_NAMES, PALETTE_SCHEMES, TILE_HUES } from "./palette";
 export { OWL, type OwlMetrics } from "./metrics";
+// Servers, not people. The eggs are a second generator on the same seeds and the
+// same hues — see eggs/index.ts for why a server should not be drawn as an owl.
+//
+// Spelled out to the file rather than to the folder. vite-plugin-dts copies the
+// specifier through and scripts/fix-declarations.ts appends `.js` to it, so
+// `./eggs` comes out as `./eggs.js`, which is not a file that exists — and
+// arethetypeswrong catches it, several steps after the build has said fine.
+export {
+  eggAvatarSvg,
+  eggAvatarDataUri,
+  eggAvatarColour,
+  resolveEggs,
+  eggPalette,
+  allEggPalettes,
+  eggPatternByName,
+  EGG_COUNTS,
+  EGG_PATTERNS,
+  EGG_BASES,
+  type EggCount,
+  type EggOptions,
+  type EggPalette,
+  type EggPattern,
+  type EggPatternMode,
+  type ResolvedEgg,
+  type ResolvedEggs,
+} from "./eggs/index";
 export {
   ACCESSORIES,
   ACCESSORY_SLOTS,

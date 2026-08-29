@@ -1,5 +1,5 @@
 import { Avatar as BaseAvatar } from "@base-ui/react/avatar";
-import { owlAvatarDataUri } from "@gryt/owl";
+import { eggAvatarDataUri, owlAvatarDataUri } from "@gryt/owl";
 import { forwardRef, useMemo } from "react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../utils/cn";
@@ -18,8 +18,10 @@ const sizeStyles: Record<AvatarSize, string> = {
 // than one per person per size.
 const OWL_SIZE = 256;
 
-export interface AvatarProps
-  extends Omit<ComponentPropsWithoutRef<typeof BaseAvatar.Root>, "className"> {
+export interface AvatarProps extends Omit<
+  ComponentPropsWithoutRef<typeof BaseAvatar.Root>,
+  "className"
+> {
   src?: string;
   alt?: string;
   size?: AvatarSize;
@@ -37,13 +39,37 @@ export interface AvatarProps
    * that rule exists to prevent.
    */
   seed?: string;
+  /**
+   * Draws this server's icon, from @gryt/owl's eggs. The server's name is the
+   * seed, so renaming it changes the icon.
+   *
+   * A server is not a person and is not drawn as one, so this is a separate
+   * prop rather than a flag on `seed` — passing the wrong one gives the wrong
+   * kind of thing rather than the same thing in another colour.
+   *
+   * The corner is the caller's. This component clips to whatever radius its
+   * className sets, and the SVG is drawn square, so a server rail asking for
+   * `rounded-(--gryt-radius-md)` gets the theme's radius in pixels rather than
+   * a fraction of the box baked into the drawing.
+   */
+  serverSeed?: string;
   // Shown while the image loads and if it fails. Falls back to children, which
   // is how the old MUI-based Avatar was called: <Avatar>G</Avatar>.
   fallback?: ReactNode;
 }
 
 export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
-  { alt, children, className, fallback, seed, size = "medium", src, ...props },
+  {
+    alt,
+    children,
+    className,
+    fallback,
+    seed,
+    serverSeed,
+    size = "medium",
+    src,
+    ...props
+  },
   ref
 ) {
   // Memoised because avatars render in member lists that repaint often, and
@@ -52,6 +78,18 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
     () => (seed ? owlAvatarDataUri(seed, { size: OWL_SIZE }) : undefined),
     [seed]
   );
+
+  // No cornerRadius: the root clips, so the corner is whatever the theme's
+  // radius is in pixels rather than a fraction of the drawing.
+  const egg = useMemo(
+    () =>
+      serverSeed ? eggAvatarDataUri(serverSeed, { size: OWL_SIZE }) : undefined,
+    [serverSeed]
+  );
+
+  // A person wins a server, on the grounds that passing both is a caller bug
+  // and drawing the more specific thing makes it the more obvious one.
+  const generated = owl ?? egg;
 
   return (
     <BaseAvatar.Root
@@ -81,8 +119,12 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
           It also gets the broken-upload case for free: an avatar URL that 404s
           leaves Base UI on the fallback, which is this person's owl. */}
       <BaseAvatar.Fallback className="flex h-full w-full items-center justify-center">
-        {owl ? (
-          <img src={owl} alt={alt} className="h-full w-full object-cover" />
+        {generated ? (
+          <img
+            src={generated}
+            alt={alt}
+            className="h-full w-full object-cover"
+          />
         ) : (
           (fallback ?? children)
         )}

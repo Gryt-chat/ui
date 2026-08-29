@@ -40,8 +40,14 @@ jobs:
       # they go; the honest end state is 0.
       - run: bun run lint
       - run: bun run test
-      # Check any drawing this pull request adds or changes, before anything
-      # tries to build with it.
+      # Check any accessory drawing this pull request adds or changes, before
+      # anything tries to build with it.
+      #
+      # The accessory drawings sit directly in artwork/ and nothing else does,
+      # which is why the filter stops at one path segment. Subfolders hold
+      # drawings for the other generators — artwork/eggs/ is the egg bases —
+      # and those are not owls wearing anything, so this checker reports every
+      # one of them as having no slot and fails a build that is fine.
       #
       # This is the same checker `npx @gryt/owl check` ships, run from source,
       # and it exists so that adding a cosmetic fails here with a report about
@@ -69,7 +75,7 @@ jobs:
             gh api --paginate \
               "repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files" \
               --jq '.[] | select(.status != "removed") | .filename' \
-              | grep -E '^packages/owl/artwork/.*\.svg$' || true
+              | grep -E '^packages/owl/artwork/[^/]+\.svg$' || true
           )
           if [ ${#drawings[@]} -eq 0 ]; then
             echo "no drawings added or changed"
@@ -115,6 +121,11 @@ jobs:
       # on a pull request; on main it is the thing that catches a registry that
       # disagrees with the drawings however it got that way.
       - run: bun --filter @gryt/owl accessories:check
+      # The eggs' own version of the same check. Their drawings are not
+      # regenerated and pushed back the way the accessories are, because there
+      # are three of them and they change about never — so this just fails and
+      # says which command to run.
+      - run: bun --filter @gryt/owl eggs:check
       - run: bun run build
       - run: bunx publint packages/theme
       - run: bunx publint packages/owl

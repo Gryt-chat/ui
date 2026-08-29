@@ -20,6 +20,7 @@ import { AvatarsPage } from "./pages/AvatarsPage";
 import { HomePage } from "./pages/HomePage";
 import { InstallationPage } from "./pages/InstallationPage";
 import { DrawingPage } from "./pages/DrawingPage";
+import { ServerIconsPage } from "./pages/ServerIconsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ThemeGeneratorPage } from "./pages/ThemeGeneratorPage";
 import { ThemePage } from "./pages/ThemePage";
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
       { path: "theme/generator", element: <ThemeGeneratorPage /> },
       { path: "avatars", element: <AvatarsPage /> },
       { path: "avatars/drawing", element: <DrawingPage /> },
+      { path: "server-icons", element: <ServerIconsPage /> },
       {
         path: "components",
         element: <Navigate replace to="/components/button" />
