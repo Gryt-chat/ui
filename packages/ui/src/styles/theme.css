@@ -14,10 +14,30 @@
        Inter, so the default the library shipped was a face Gryt does not use
        and every consumer had to override it. The font itself is not shipped
        here; naming it only decides what is asked for first. */
-    --font-sans: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui,
-        sans-serif;
-    --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, Consolas,
-        monospace;
+    /* Each one falls through a --gryt-font-* variable a theme may set, to the
+       library's own face when it has not. A theme carrying no fonts therefore
+       renders exactly as it did before fonts existed, which is what every
+       theme and every already-shared link is.
+
+       --font-display is new and defaults to the body face rather than to a
+       second choice nobody made. Gryt sets its headings in the same face
+       today; the token exists so a theme can disagree. */
+    --font-sans: var(
+        --gryt-font-body,
+        "Atkinson Hyperlegible Next",
+        ui-sans-serif,
+        system-ui,
+        sans-serif
+    );
+    --font-display: var(--gryt-font-display, var(--font-sans));
+    --font-mono: var(
+        --gryt-font-mono,
+        "Atkinson Hyperlegible Mono",
+        ui-monospace,
+        Menlo,
+        Consolas,
+        monospace
+    );
     --color-gryt-bg: #111318;
     --color-gryt-surface: #1a1d24;
     --color-gryt-surface-raised: #1e2028;

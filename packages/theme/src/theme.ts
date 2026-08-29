@@ -49,12 +49,68 @@ export const GRYT_NEUTRAL_KEYS = [
 
 export const GRYT_RADIUS_KEYS = ["sm", "md", "lg", "xl", "full"] as const;
 
+/**
+ * The three jobs a typeface does here.
+ *
+ * Three because that is what the interface actually distinguishes: the text
+ * you read, the headings above it, and the places where characters have to
+ * line up — code, hex values, timestamps, a fingerprint read aloud. Finer than
+ * that is a knob nobody turns, and coarser loses the one distinction that
+ * matters, which is that a proportional face cannot do the third job.
+ */
+export const GRYT_FONT_KEYS = ["body", "display", "mono"] as const;
+
 export type GrytHueKey = (typeof GRYT_HUE_KEYS)[number];
 export type GrytNeutralKey = (typeof GRYT_NEUTRAL_KEYS)[number];
 export type GrytRadiusKey = (typeof GRYT_RADIUS_KEYS)[number];
+export type GrytFontKey = (typeof GRYT_FONT_KEYS)[number];
 
 export type GrytHues = Record<GrytHueKey, string>;
 export type GrytNeutrals = Record<GrytNeutralKey, string>;
+
+/**
+ * A whole CSS font stack per role, not a family name.
+ *
+ * The fallbacks are the point. A theme names a face the machine reading it may
+ * not have — that is the ordinary case for anything a shared link asks for —
+ * and what it falls back to decides whether the note reads as a different
+ * choice or as a broken one. Carrying the stack means the theme's author picks
+ * that, rather than every consumer inventing its own tail.
+ */
+export type GrytFonts = Record<GrytFontKey, string>;
+
+/**
+ * What the library is set in.
+ *
+ * Atkinson Hyperlegible, which is a legibility face rather than a taste one:
+ * its letterforms are drawn to be told apart at a glance, and Gryt is read in
+ * a sidebar at twelve pixels. `display` is the body face here — the default
+ * theme does not set headings in anything else, and a default that quietly
+ * differed from what ships would be a second thing to keep in step.
+ */
+export const grytFonts: GrytFonts = {
+  body: '"Atkinson Hyperlegible Next", ui-sans-serif, system-ui, sans-serif',
+  display: '"Atkinson Hyperlegible Next", ui-sans-serif, system-ui, sans-serif',
+  mono: '"Atkinson Hyperlegible Mono", ui-monospace, Menlo, Consolas, monospace'
+};
+
+/** Long enough for a real stack, short enough not to be a payload. */
+export const GRYT_FONT_STACK_MAX = 200;
+
+/**
+ * A font stack that is safe to put in a stylesheet.
+ *
+ * This arrives from a link somebody was sent, so it is a string from a
+ * stranger heading for a CSS declaration. Anything that could close the
+ * declaration and start another one is refused outright rather than escaped —
+ * a font stack has no legitimate use for a brace, a semicolon or a comment
+ * marker, so there is nothing to lose by requiring it to look like one.
+ */
+export function isFontStack(value: string): boolean {
+  const text = value.trim();
+  if (text === "" || text.length > GRYT_FONT_STACK_MAX) return false;
+  return !/[;{}()<>\\]|\/\*|@import|url\s*\(/i.test(text);
+}
 
 export interface GrytTheme {
   /**
@@ -72,6 +128,12 @@ export interface GrytTheme {
   dark: GrytNeutrals;
   light: GrytNeutrals;
   radius: Record<GrytRadiusKey, number>;
+  /**
+   * Null when the theme does not care, which is every theme written before
+   * this existed and every link already shared. Absent means the library's
+   * own, so nothing that predates fonts renders differently for having them.
+   */
+  fonts?: GrytFonts | null;
 }
 
 /** Long enough for a name, short enough not to be a payload. */
@@ -125,7 +187,8 @@ export function cloneGrytTheme(theme: GrytTheme): GrytTheme {
     lightHue: theme.lightHue === null ? null : { ...theme.lightHue },
     dark: { ...theme.dark },
     light: { ...theme.light },
-    radius: { ...theme.radius }
+    radius: { ...theme.radius },
+    ...(theme.fonts == null ? {} : { fonts: { ...theme.fonts } })
   };
 }
 
@@ -152,7 +215,10 @@ export function grytThemeToOptions(
   return {
     appearance,
     color: { ...grytThemeHues(theme, appearance), ...theme[appearance] },
-    radius: { ...theme.radius }
+    radius: { ...theme.radius },
+    // Fonts do not vary by appearance — a theme that changed typeface when
+    // somebody flipped to light would be two themes.
+    ...(theme.fonts == null ? {} : { fonts: { ...theme.fonts } })
   };
 }
 
@@ -239,6 +305,15 @@ export function encodeGrytTheme(
       params.set(`r-${key}`, String(theme.radius[key]));
     }
   }
+  // Only what differs, same as the colours. A theme that set no fonts is a
+  // link with nothing about fonts in it, which is most of them.
+  if (theme.fonts != null) {
+    for (const key of GRYT_FONT_KEYS) {
+      if (theme.fonts[key] !== grytFonts[key]) {
+        params.set(`f-${key}`, theme.fonts[key]);
+      }
+    }
+  }
   if (appearance === "light") params.set("mode", "light");
 
   return params;
@@ -315,6 +390,17 @@ function decodeParams(params: URLSearchParams): DecodedGrytTheme | null {
     }
   }
 
+  /* A stack that does not look like a font stack is dropped rather than
+     escaped, and the role falls back to the library's. One suspicious value in
+     a link should cost that value, not the theme it arrived with. */
+  for (const key of GRYT_FONT_KEYS) {
+    const raw = params.get(`f-${key}`);
+    if (raw === null) continue;
+    if (!isFontStack(raw)) continue;
+    theme.fonts = { ...(theme.fonts ?? grytFonts), [key]: raw.trim() };
+    present = true;
+  }
+
   if (!present) return null;
   return {
     theme,
@@ -361,6 +447,17 @@ function decodeJson(text: string): DecodedGrytTheme | null {
     const light = { ...theme.hue };
     colors(source.lightHue, light);
     theme.lightHue = light;
+  }
+
+  if (typeof source.fonts === "object" && source.fonts !== null) {
+    for (const [key, raw] of Object.entries(
+      source.fonts as Record<string, unknown>
+    )) {
+      if (!(GRYT_FONT_KEYS as readonly string[]).includes(key)) continue;
+      if (typeof raw !== "string" || !isFontStack(raw)) continue;
+      theme.fonts = { ...(theme.fonts ?? grytFonts), [key]: raw.trim() };
+      present = true;
+    }
   }
 
   if (typeof source.radius === "object" && source.radius !== null) {

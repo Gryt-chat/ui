@@ -1,4 +1,8 @@
 import type { CSSProperties } from "react";
+/* Type-only, so the cycle with theme.ts is erased at compile time. The font
+   stacks are part of the theme document, which is that file's subject; this
+   one only needs to know their shape. */
+import type { GrytFonts } from "./theme";
 import {
   alphaScale,
   hueScale,
@@ -54,6 +58,14 @@ export interface GrytThemeOptions {
    * puts each result behind its own selector.
    */
   appearance?: "dark" | "light";
+  /**
+   * The typeface per role, as whole CSS stacks.
+   *
+   * Emitted as variables the stylesheet's own font tokens fall back through,
+   * so a theme that names none leaves the library's in place rather than
+   * blanking them.
+   */
+  fonts?: Partial<GrytFonts>;
 }
 
 // This used to return a MUI theme object. There is no theme object now — the
@@ -197,8 +209,16 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
     });
   }
 
+  const fontVars: Record<string, string> = {};
+  for (const [role, stack] of Object.entries(options.fonts ?? {})) {
+    if (typeof stack === "string" && stack.trim() !== "") {
+      fontVars[`--gryt-font-${role}`] = stack;
+    }
+  }
+
   return {
     ...scaleVars,
+    ...fontVars,
     "--gryt-bg": color.bg,
     "--gryt-surface": color.surface,
     "--gryt-surface-raised": color.surfaceRaised,

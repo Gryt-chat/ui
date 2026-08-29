@@ -24,8 +24,14 @@
  * Import stays, because pasting a link somebody sent you is the other half of
  * sharing one and it needs nothing but the decoder.
  */
-import type { GrytAppearance } from "@gryt/theme";
-import { GRYT_THEME_NAME_MAX, grytPresets, grytPresetsById } from "@gryt/theme";
+import type { GrytAppearance, GrytFontKey } from "@gryt/theme";
+import {
+  GRYT_FONT_KEYS,
+  GRYT_THEME_NAME_MAX,
+  grytFonts,
+  grytPresets,
+  grytPresetsById
+} from "@gryt/theme";
 import { ArrowsClockwise } from "@phosphor-icons/react";
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
@@ -37,6 +43,7 @@ import { TextField } from "../TextField/TextField";
 import { Toggle, ToggleGroup } from "../Toggle/Toggle";
 import { cn } from "../utils/cn";
 import { ColorField } from "./ColorField";
+import { FontField } from "./FontField";
 import { ContrastReport } from "./ContrastReport";
 import { ScaleStrip } from "./ScaleStrip";
 import { contrastChecks } from "./contrast";
@@ -100,6 +107,15 @@ export interface ThemeEditorProps {
    */
   appearance: GrytAppearance;
   onAppearanceChange: (next: GrytAppearance) => void;
+  /**
+   * Whether a face this machine has to fetch will actually be fetched.
+   *
+   * The client keeps that behind a setting, so the picker says when a choice
+   * will not take effect rather than letting somebody pick a font and wonder
+   * why nothing changed. Defaults to true, which is right for the docs site
+   * and for anything with no such setting.
+   */
+  remoteFontsAllowed?: boolean;
   /** End of the header row. Where a host puts its own copy or save control. */
   actions?: ReactNode;
   /** Under the controls. Where the docs site puts the export tabs. */
@@ -112,6 +128,7 @@ export function ThemeEditor({
   onChange,
   appearance,
   onAppearanceChange,
+  remoteFontsAllowed = true,
   actions,
   footer,
   className
@@ -261,6 +278,16 @@ export function ThemeEditor({
     // Kept as typed and tidied on the way out, so a trailing space while
     // somebody is still typing does not disappear under the cursor.
     commit((current) => ({ ...current, name: value === "" ? undefined : value }));
+  }
+
+  /* Fonts are not per-appearance, so this writes one block rather than one
+     per half. A theme that changed typeface when somebody flipped to light
+     would be two themes. */
+  function setFont(role: GrytFontKey, stack: string) {
+    commit((current) => ({
+      ...current,
+      fonts: { ...(current.fonts ?? grytFonts), [role]: stack }
+    }));
   }
 
   function setRadius(key: RadiusKey, value: number) {
@@ -450,6 +477,18 @@ export function ThemeEditor({
           <ScaleStrip label="success" steps={scaleFrom(theme, "success")} />
           <ScaleStrip label="danger" steps={scaleFrom(theme, "danger")} />
           <ScaleStrip label="warning" steps={scaleFrom(theme, "warning")} />
+        </Group>
+
+        <Group title="Type">
+          {GRYT_FONT_KEYS.map((role) => (
+            <FontField
+              key={role}
+              fonts={draft.fonts}
+              onChange={(stack) => setFont(role, stack)}
+              remoteAllowed={remoteFontsAllowed}
+              role={role}
+            />
+          ))}
         </Group>
 
         <Group title="Radius">
