@@ -451,6 +451,74 @@ export const grytPresets: GrytThemePreset[] = [
     }
   },
   {
+    /* Four photographs: snow-loaded spruces through a gym window, a dark room
+       lit by white strips, a white can on black rubber, grey sweatpants.
+
+       Paper is already near-monochrome, so this earns its place by being cold
+       rather than neutral. Every grey carries the blue that overcast snow
+       light has — Paper's are hueless, and side by side the difference is the
+       whole theme.
+
+       The accent is the white can on the black floor, which is why this is the
+       only Gryt preset with a split `lightHue`. A near-white accent is the
+       point in the dark half and invisible in the light one, so light gets the
+       colour of a wet window frame instead and keeps the same job. */
+    id: "winter-arc",
+    name: "Winter Arc",
+    note: "Cold monochrome. A near-white accent in the dark, snow-light greys.",
+    group: "Gryt",
+    theme: {
+      name: "Winter Arc",
+      hue: {
+        accent: "#dce6ec",
+        accentLight: "#f0f6f9",
+        secondary: "#7d95a3",
+        secondaryLight: "#9db1bc",
+        success: "#7fa88d",
+        danger: "#c2686b",
+        dangerLight: "#d68b8d",
+        warning: "#b9a068",
+        onAccent: "#0b0d0f",
+        onSecondary: "#0b1114",
+        onDanger: "#1b0c0d"
+      },
+      lightHue: {
+        accent: "#2b3a44",
+        accentLight: "#43596a",
+        secondary: "#55707f",
+        secondaryLight: "#6f8b9a",
+        success: "#4a7059",
+        danger: "#a4494c",
+        dangerLight: "#b96b6e",
+        warning: "#856c33",
+        onAccent: "#eef3f6",
+        onSecondary: "#eef3f6",
+        onDanger: "#fdf2f2"
+      },
+      dark: {
+        bg: "#0b0d0f",
+        surface: "#111417",
+        surfaceRaised: "#171b1f",
+        surfaceHover: "#1f252a",
+        border: "#2a3238",
+        muted: "#8b979f",
+        text: "#eef3f6"
+      },
+      light: {
+        bg: "#eaeef1",
+        surface: "#ffffff",
+        surfaceRaised: "#f4f7f9",
+        surfaceHover: "#dde4e9",
+        border: "#c6d0d7",
+        muted: "#55626b",
+        text: "#0f1417"
+      },
+      /* Hard corners on purpose. The reference is window mullions, plate
+         edges and rubber floor tiles, and Paper already has the soft set. */
+      radius: CRISP
+    }
+  },
+  {
     id: "signal",
     name: "Signal",
     note: "Black, white, and a yellow that cannot be missed.",
