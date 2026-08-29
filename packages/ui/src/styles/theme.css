@@ -392,8 +392,22 @@
     --gryt-radius-xl: 28px;
     --gryt-radius-full: 999px;
 
-    /* Each spring curve is shaped for one length. Changing a duration without
-       changing the curve moves where the overshoot lands. */
+    /* The tiers, in proportion to each other: a drawer takes longer than a
+       button because it travels further.
+
+       This used to warn that changing a duration without changing the curve
+       moves where the overshoot lands. It does not, and motion.ts says the
+       opposite two files away — the curve is duration-invariant, because
+       linear() samples are positions against normalised time and the duration
+       only stretches the axis. Measured in Chrome on 2026-08-29: the same
+       --ease-spring at 200ms and at 2000ms puts the element at 104.5, 110.6,
+       102.7, 98.7, 99.0 and 100.2 percent of travel at the same six fractions
+       of the animation, identical to two decimals, peaking at the same 10.6%
+       past target.
+
+       Worth correcting rather than deleting, because the false warning is the
+       reason a theme could not offer a speed control: it said the safe thing
+       was dangerous. */
     --gryt-dur-spring: 500ms;
     --gryt-dur-spring-soft: 700ms;
     --gryt-dur-spring-slow: 900ms;

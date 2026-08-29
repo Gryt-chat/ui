@@ -24,7 +24,7 @@
  * Import stays, because pasting a link somebody sent you is the other half of
  * sharing one and it needs nothing but the decoder.
  */
-import type { GrytAppearance, GrytFontKey } from "@gryt/theme";
+import type { GrytAppearance, GrytFontKey, GrytMotion } from "@gryt/theme";
 import {
   GRYT_FONT_KEYS,
   GRYT_THEME_NAME_MAX,
@@ -44,6 +44,7 @@ import { Toggle, ToggleGroup } from "../Toggle/Toggle";
 import { cn } from "../utils/cn";
 import { ColorField } from "./ColorField";
 import { FontField } from "./FontField";
+import { MotionField } from "./MotionField";
 import { ContrastReport } from "./ContrastReport";
 import { ScaleStrip } from "./ScaleStrip";
 import { contrastChecks } from "./contrast";
@@ -290,6 +291,10 @@ export function ThemeEditor({
     }));
   }
 
+  function setMotion(next: GrytMotion) {
+    commit((current) => ({ ...current, motion: next }));
+  }
+
   function setRadius(key: RadiusKey, value: number) {
     commit((current) => ({
       ...current,
@@ -489,6 +494,10 @@ export function ThemeEditor({
               role={role}
             />
           ))}
+        </Group>
+
+        <Group title="Motion">
+          <MotionField motion={draft.motion} onChange={setMotion} />
         </Group>
 
         <Group title="Radius">

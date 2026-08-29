@@ -28,6 +28,21 @@ export {
   isFontStack
 } from "@gryt/theme";
 export type { GrytFontKey, GrytFonts } from "@gryt/theme";
+/* The motion half. `grytDurations` and the two sample arrays are already
+   exported below; these are what a theme carries rather than what it ships. */
+export {
+  GRYT_MOTION_CURVES,
+  GRYT_MOTION_SCALE_MAX,
+  grytMotion,
+  isBezier,
+  isValidBezier
+} from "@gryt/theme";
+export type {
+  GrytBezier,
+  GrytMotion,
+  GrytMotionCurve,
+  GrytNamedCurve
+} from "@gryt/theme";
 export {
   alphaScale,
   hexToRgb,
