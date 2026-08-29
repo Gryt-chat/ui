@@ -579,6 +579,38 @@ function decodeJson(text: string): DecodedGrytTheme | null {
     theme.lightHue = light;
   }
 
+  /* Motion, on the JSON path as well as the query-string one.
+     
+     It was only on the query string, which meant a theme round-tripped
+     through a link and lost its motion through JSON — and the client stores
+     saved themes as JSON and re-reads them with this function, so every saved
+     theme dropped its motion on load. Nothing failed; the app just moved at
+     the default speed and the setting looked like it had never been made.
+
+     Caught by watching a 2.5x theme animate at 1x in the running client, with
+     the whole test suite green: the link path was tested and this one was
+     not. */
+  if (typeof source.motion === "object" && source.motion !== null) {
+    const raw = source.motion as Record<string, unknown>;
+    const scale = Number(raw.scale);
+    if (Number.isFinite(scale) && scale >= 0 && scale <= GRYT_MOTION_SCALE_MAX) {
+      theme.motion = { ...(theme.motion ?? grytMotion), scale };
+      present = true;
+    }
+    if (typeof raw.curve === "string") {
+      if ((GRYT_MOTION_CURVES as readonly string[]).includes(raw.curve)) {
+        theme.motion = {
+          ...(theme.motion ?? grytMotion),
+          curve: raw.curve as GrytNamedCurve
+        };
+        present = true;
+      }
+    } else if (isValidBezier(raw.curve)) {
+      theme.motion = { ...(theme.motion ?? grytMotion), curve: raw.curve };
+      present = true;
+    }
+  }
+
   if (typeof source.fonts === "object" && source.fonts !== null) {
     for (const [key, raw] of Object.entries(
       source.fonts as Record<string, unknown>

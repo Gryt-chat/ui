@@ -5,6 +5,7 @@ import { grytDurations } from "./motion";
 import {
   decodeGrytTheme,
   encodeGrytTheme,
+  grytFonts,
   grytMotion,
   grytTheme,
   grytThemeToOptions,
@@ -116,5 +117,67 @@ describe("motion as variables", () => {
   it("leaves the durations alone at 1x, so the stylesheet's own stand", () => {
     const vars = varsFor({ scale: 1, curve: "spring" });
     expect(Object.keys(vars).some((n) => n.startsWith("--gryt-dur-"))).toBe(false);
+  });
+});
+
+/* The path the client actually uses.
+ *
+ * A saved theme lives in localStorage as JSON and is read back through
+ * decodeGrytTheme, so the JSON decoder is what every saved theme goes through
+ * on every launch — not the query string, which only a shared link uses.
+ *
+ * Motion was on the link path and not this one. Everything was green: the link
+ * round trip had a test, the variables had a test, and a saved theme still
+ * quietly lost its motion every time the app started. So both halves are
+ * tested through both doors now.
+ */
+describe("through JSON, which is how a saved theme comes back", () => {
+  const roundTrip = (theme: object) =>
+    decodeGrytTheme(JSON.stringify(theme))?.theme;
+
+  it("keeps a speed and a named curve", () => {
+    const theme = { ...grytTheme, motion: { scale: 2.5, curve: "smooth" } };
+    expect(roundTrip(theme)?.motion).toEqual({ scale: 2.5, curve: "smooth" });
+  });
+
+  it("keeps a drawn curve", () => {
+    const theme = {
+      ...grytTheme,
+      motion: { scale: 1, curve: [0.3, 1.7, 0.7, 1] }
+    };
+    expect(roundTrip(theme)?.motion?.curve).toEqual([0.3, 1.7, 0.7, 1]);
+  });
+
+  it("keeps typefaces", () => {
+    const theme = {
+      ...grytTheme,
+      fonts: {
+        body: '"Inter", ui-sans-serif, sans-serif',
+        display: '"Archivo", ui-sans-serif, sans-serif',
+        mono: '"JetBrains Mono", ui-monospace, monospace'
+      }
+    };
+    expect(roundTrip(theme)?.fonts?.body).toBe('"Inter", ui-sans-serif, sans-serif');
+  });
+
+  it("keeps both at once, which is what a real saved theme looks like", () => {
+    const theme = {
+      ...grytTheme,
+      fonts: { ...grytFonts, body: '"Inter", ui-sans-serif, sans-serif' },
+      motion: { scale: 0.5, curve: "linear" }
+    };
+    const back = roundTrip(theme);
+    expect(back?.fonts?.body).toBe('"Inter", ui-sans-serif, sans-serif');
+    expect(back?.motion).toEqual({ scale: 0.5, curve: "linear" });
+  });
+
+  it("drops a curve CSS would refuse and keeps the rest", () => {
+    const theme = {
+      ...grytTheme,
+      motion: { scale: 0.8, curve: [2, 0, 3, 1] }
+    };
+    const back = roundTrip(theme);
+    expect(back?.motion?.scale).toBe(0.8);
+    expect(back?.motion?.curve).toBe(grytMotion.curve);
   });
 });
