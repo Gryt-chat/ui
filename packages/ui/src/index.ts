@@ -196,6 +196,21 @@ export {
 } from "./components/ThemeEditor/draft";
 export type { ThemeDraft } from "./components/ThemeEditor/draft";
 export { encodeDraft, importTheme, themeCode, themeJson } from "./components/ThemeEditor/share";
+
+/* The owl designer, which lived in two places until GRYT-641 — the client, and a
+   copy the site took for its front page. `packages/client` is not published, so
+   the site could not import it, and CLAUDE.md rules out a path dependency across
+   repositories. Here it is one component both of them install.
+
+   `OwlDesigner` is the editor on its own, for a host that wants it inline;
+   `OwlDesignerDialog` is that in a dialog, which is what the client uses. The
+   split came from the site's copy and the client never had it. */
+export { AvatarChoiceDialog, OwlDesigner, OwlDesignerDialog } from "./components/OwlDesigner/owlDesigner";
+export { EXPORT_FORMATS, EXPORT_SIZE, exportFilename, renderOwl } from "./components/OwlDesigner/owlExport";
+export type { ExportFormat } from "./components/OwlDesigner/owlExport";
+export { markAllCosmeticsSeen, markCosmeticSeen, readNewCosmetics } from "./components/OwlDesigner/owlSeen";
+export { forgetLook, readWardrobe, rememberLook } from "./components/OwlDesigner/owlWardrobe";
+export type { WardrobeEntry } from "./components/OwlDesigner/owlWardrobe";
 export { Toggle, ToggleGroup } from "./components/Toggle/Toggle";
 export type { ToggleGroupProps, ToggleProps } from "./components/Toggle/Toggle";
 export { Meter } from "./components/Meter/Meter";
