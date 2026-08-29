@@ -60,10 +60,33 @@ export const GRYT_RADIUS_KEYS = ["sm", "md", "lg", "xl", "full"] as const;
  */
 export const GRYT_FONT_KEYS = ["body", "display", "mono"] as const;
 
+/**
+ * How a theme is allowed to change the way Gryt moves.
+ *
+ * Two things, because they are the two a person can answer. How fast, which is
+ * one number over every tier, and what shape, which is one curve.
+ *
+ * Not per-tier durations. The tiers are already in proportion to each other —
+ * a drawer takes longer than a button because it travels further — and a
+ * theme that set them independently would be re-deciding a relationship
+ * somebody worked out once, five sliders at a time, with no way to tell it had
+ * gone wrong except by opening a drawer.
+ *
+ * `scale` at 0 means nothing animates. That is a real setting rather than a
+ * degenerate one: some people find movement unpleasant, and the honest way to
+ * offer that is a value in the theme rather than asking them to lie to their
+ * operating system about `prefers-reduced-motion`.
+ */
+export const GRYT_MOTION_CURVES = ["spring", "smooth", "linear"] as const;
+
 export type GrytHueKey = (typeof GRYT_HUE_KEYS)[number];
 export type GrytNeutralKey = (typeof GRYT_NEUTRAL_KEYS)[number];
 export type GrytRadiusKey = (typeof GRYT_RADIUS_KEYS)[number];
 export type GrytFontKey = (typeof GRYT_FONT_KEYS)[number];
+export type GrytNamedCurve = (typeof GRYT_MOTION_CURVES)[number];
+/** x1, y1, x2, y2 — the two control points of a cubic bezier. */
+export type GrytBezier = readonly [number, number, number, number];
+export type GrytMotionCurve = GrytNamedCurve | GrytBezier;
 
 export type GrytHues = Record<GrytHueKey, string>;
 export type GrytNeutrals = Record<GrytNeutralKey, string>;
@@ -93,6 +116,60 @@ export const grytFonts: GrytFonts = {
   display: '"Atkinson Hyperlegible Next", ui-sans-serif, system-ui, sans-serif',
   mono: '"Atkinson Hyperlegible Mono", ui-monospace, Menlo, Consolas, monospace'
 };
+
+/**
+ * The motion half of a theme.
+ *
+ * `curve` names one of the shipped shapes or carries a cubic bezier.
+ *
+ * A named curve keeps the library's two apart: `--ease-spring` overshoots and
+ * is for things that scale in place, `--ease-spring-tight` does not and is for
+ * things that travel inside their bounds. A bezier cannot express both, so
+ * setting one collapses them into a single shape — which is the honest cost of
+ * letting a theme draw its own, and is worth knowing before drawing one that
+ * overshoots.
+ */
+export interface GrytMotion {
+  /**
+   * Multiplier on every duration. 0 is no animation at all.
+   *
+   * One number rather than five, so the tiers keep the proportions they were
+   * given. The curves are duration-invariant — measured, not assumed: the same
+   * `linear()` sampled at 200ms and at 2000ms puts the element in the same
+   * place at every fraction of the animation, and peaks at the same 10.6% past
+   * its target — so scaling time changes how long it takes and nothing else
+   * about how it looks.
+   */
+  scale: number;
+  curve: GrytMotionCurve;
+}
+
+export const grytMotion: GrytMotion = { scale: 1, curve: "spring" };
+
+/** Past this and it is somebody testing rather than choosing. */
+export const GRYT_MOTION_SCALE_MAX = 3;
+
+export function isBezier(curve: GrytMotionCurve): curve is GrytBezier {
+  return Array.isArray(curve);
+}
+
+/**
+ * A bezier CSS will accept.
+ *
+ * The x values are the time axis and have to stay inside it; a control point
+ * outside 0..1 horizontally is not a slower curve, it is an invalid one and
+ * the whole declaration is dropped. The y values may go outside, which is how
+ * a bezier overshoots, and that is allowed on purpose.
+ */
+export function isValidBezier(value: unknown): value is GrytBezier {
+  if (!Array.isArray(value) || value.length !== 4) return false;
+  const [x1, y1, x2, y2] = value as number[];
+  if (![x1, y1, x2, y2].every((n) => typeof n === "number" && Number.isFinite(n))) {
+    return false;
+  }
+  if (x1 < 0 || x1 > 1 || x2 < 0 || x2 > 1) return false;
+  return Math.abs(y1) <= 10 && Math.abs(y2) <= 10;
+}
 
 /** Long enough for a real stack, short enough not to be a payload. */
 export const GRYT_FONT_STACK_MAX = 200;
@@ -134,6 +211,8 @@ export interface GrytTheme {
    * own, so nothing that predates fonts renders differently for having them.
    */
   fonts?: GrytFonts | null;
+  /** Null for the library's own motion, same reasoning as `fonts`. */
+  motion?: GrytMotion | null;
 }
 
 /** Long enough for a name, short enough not to be a payload. */
@@ -188,7 +267,17 @@ export function cloneGrytTheme(theme: GrytTheme): GrytTheme {
     dark: { ...theme.dark },
     light: { ...theme.light },
     radius: { ...theme.radius },
-    ...(theme.fonts == null ? {} : { fonts: { ...theme.fonts } })
+    ...(theme.fonts == null ? {} : { fonts: { ...theme.fonts } }),
+    ...(theme.motion == null
+      ? {}
+      : {
+          motion: {
+            scale: theme.motion.scale,
+            curve: isBezier(theme.motion.curve)
+              ? ([...theme.motion.curve] as GrytBezier)
+              : theme.motion.curve
+          }
+        })
   };
 }
 
@@ -217,8 +306,9 @@ export function grytThemeToOptions(
     color: { ...grytThemeHues(theme, appearance), ...theme[appearance] },
     radius: { ...theme.radius },
     // Fonts do not vary by appearance — a theme that changed typeface when
-    // somebody flipped to light would be two themes.
-    ...(theme.fonts == null ? {} : { fonts: { ...theme.fonts } })
+    // somebody flipped to light would be two themes. Nor does motion.
+    ...(theme.fonts == null ? {} : { fonts: { ...theme.fonts } }),
+    ...(theme.motion == null ? {} : { motion: theme.motion })
   };
 }
 
@@ -305,6 +395,19 @@ export function encodeGrytTheme(
       params.set(`r-${key}`, String(theme.radius[key]));
     }
   }
+  if (theme.motion != null) {
+    if (theme.motion.scale !== grytMotion.scale) {
+      params.set("m-scale", String(theme.motion.scale));
+    }
+    if (theme.motion.curve !== grytMotion.curve) {
+      params.set(
+        "m-curve",
+        isBezier(theme.motion.curve)
+          ? theme.motion.curve.join(",")
+          : theme.motion.curve
+      );
+    }
+  }
   // Only what differs, same as the colours. A theme that set no fonts is a
   // link with nothing about fonts in it, which is most of them.
   if (theme.fonts != null) {
@@ -387,6 +490,33 @@ function decodeParams(params: URLSearchParams): DecodedGrytTheme | null {
     if (Number.isFinite(value) && value >= 0 && value <= 999 && params.has(`r-${key}`)) {
       theme.radius[key] = Math.round(value);
       present = true;
+    }
+  }
+
+  {
+    const rawScale = params.get("m-scale");
+    if (rawScale !== null) {
+      const scale = Number(rawScale);
+      if (Number.isFinite(scale) && scale >= 0 && scale <= GRYT_MOTION_SCALE_MAX) {
+        theme.motion = { ...(theme.motion ?? grytMotion), scale };
+        present = true;
+      }
+    }
+    const rawCurve = params.get("m-curve");
+    if (rawCurve !== null) {
+      if ((GRYT_MOTION_CURVES as readonly string[]).includes(rawCurve)) {
+        theme.motion = {
+          ...(theme.motion ?? grytMotion),
+          curve: rawCurve as GrytNamedCurve
+        };
+        present = true;
+      } else {
+        const parts = rawCurve.split(",").map(Number);
+        if (isValidBezier(parts)) {
+          theme.motion = { ...(theme.motion ?? grytMotion), curve: parts };
+          present = true;
+        }
+      }
     }
   }
 

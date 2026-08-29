@@ -99,6 +99,17 @@
         }
     }
 
+    /* Travel for the theme editor's motion preview. A curve is a shape until
+       you watch something move along it. */
+    @keyframes gryt-motion-preview {
+        from {
+            transform: translateX(0);
+        }
+        to {
+            transform: translateX(calc(100% * 8));
+        }
+    }
+
     .gryt-progress-indeterminate {
         width: 40%;
         animation: gryt-progress-sweep var(--gryt-dur-sweep) ease-in-out infinite;
@@ -111,6 +122,26 @@
             width: 100%;
             opacity: 0.4;
             animation: none;
+        }
+
+        /* A theme cannot animate a machine that asked not to be animated.
+           
+           `!important` because a theme's durations arrive as inline style on
+           the root element, and an inline declaration beats a media query —
+           without this, opening a link somebody sent would start a machine
+           moving for a person who had turned movement off in their operating
+           system. That is the one case this rule exists for, and it is the one
+           case the normal cascade loses.
+
+           The durations rather than `animation: none` on everything: a
+           transition that takes 1ms has already finished, and components stay
+           in whatever state they were transitioning to rather than needing to
+           know about this. */
+        :root {
+            --gryt-dur-spring: 1ms !important;
+            --gryt-dur-spring-soft: 1ms !important;
+            --gryt-dur-spring-slow: 1ms !important;
+            --gryt-dur-fast: 1ms !important;
         }
     }
 

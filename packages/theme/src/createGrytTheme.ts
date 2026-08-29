@@ -2,7 +2,14 @@ import type { CSSProperties } from "react";
 /* Type-only, so the cycle with theme.ts is erased at compile time. The font
    stacks are part of the theme document, which is that file's subject; this
    one only needs to know their shape. */
-import type { GrytFonts } from "./theme";
+import type { GrytFonts, GrytMotion } from "./theme";
+/* Types only from ./theme, deliberately. theme.ts imports grytTokens from this
+   file at module scope, so a value imported back the other way is a cycle the
+   loader resolves as undefined — `grytTheme` builds itself from
+   `grytTokens.color` while that is still uninitialised, and every test in the
+   package fails on "Cannot read properties of undefined". Types are erased and
+   cost nothing; `isBezier` is one Array.isArray and is not worth the cycle. */
+import { grytDurations, springSamples, springTightSamples } from "./motion";
 import {
   alphaScale,
   hueScale,
@@ -66,6 +73,13 @@ export interface GrytThemeOptions {
    * blanking them.
    */
   fonts?: Partial<GrytFonts>;
+  /**
+   * How fast and in what shape.
+   *
+   * Emitted as the same duration and easing variables the stylesheet already
+   * declares, so nothing downstream has to know a theme can carry motion.
+   */
+  motion?: GrytMotion;
 }
 
 // This used to return a MUI theme object. There is no theme object now — the
@@ -209,6 +223,46 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
     });
   }
 
+  /* The samples, as a linear() an easing property will take. The library's own
+     two are the shipped springs; anything else a theme asks for replaces both,
+     which is the one thing to understand about a custom curve — see GrytMotion. */
+  const linearFn = (samples: readonly number[]) =>
+    `linear(${samples.map((n) => Number(n.toFixed(4))).join(", ")})`;
+
+  const motionVars: Record<string, string> = {};
+  if (options.motion !== undefined) {
+    const { scale, curve } = options.motion;
+
+    /* Scaled rather than replaced, so the tiers keep the proportions they were
+       given. Rounded to whole milliseconds because a duration is read by a
+       person in the editor and 449.99999ms is not a number anybody chose. */
+    if (scale !== 1) {
+      for (const [name, ms] of Object.entries(grytDurations)) {
+        const token = name.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+        motionVars[`--gryt-dur-${token}`] = `${Math.round(ms * scale)}ms`;
+      }
+    }
+
+    if (Array.isArray(curve)) {
+      const fn = `cubic-bezier(${curve.join(", ")})`;
+      motionVars["--ease-spring"] = fn;
+      motionVars["--ease-spring-tight"] = fn;
+    } else if (curve === "smooth") {
+      // Both roles on the critically damped curve: it settles without passing
+      // the target, which is the shape somebody picking "smooth" is asking for.
+      motionVars["--ease-spring"] = linearFn(springTightSamples);
+      motionVars["--ease-spring-tight"] = linearFn(springTightSamples);
+    } else if (curve === "linear") {
+      motionVars["--ease-spring"] = "linear";
+      motionVars["--ease-spring-tight"] = "linear";
+    } else {
+      // "spring" is what the stylesheet already declares. Emitting it again
+      // would be two copies of the same 27 numbers to keep in step.
+      motionVars["--ease-spring"] = linearFn(springSamples);
+      motionVars["--ease-spring-tight"] = linearFn(springTightSamples);
+    }
+  }
+
   const fontVars: Record<string, string> = {};
   for (const [role, stack] of Object.entries(options.fonts ?? {})) {
     if (typeof stack === "string" && stack.trim() !== "") {
@@ -218,6 +272,7 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
 
   return {
     ...scaleVars,
+    ...motionVars,
     ...fontVars,
     "--gryt-bg": color.bg,
     "--gryt-surface": color.surface,
