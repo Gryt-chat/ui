@@ -22,7 +22,7 @@ import {
   grytThemeToOptions,
   isHexColor,
   normalizeHexColor
-} from "@gryt/ui";
+} from "@gryt/theme";
 import type {
   GrytAppearance,
   GrytHueKey,
@@ -31,7 +31,7 @@ import type {
   GrytNeutrals,
   GrytRadiusKey,
   GrytTheme
-} from "@gryt/ui";
+} from "@gryt/theme";
 import type { CSSProperties } from "react";
 
 export type Appearance = GrytAppearance;

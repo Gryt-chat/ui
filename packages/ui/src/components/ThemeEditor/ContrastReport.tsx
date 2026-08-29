@@ -1,6 +1,6 @@
-import { Button } from "@gryt/ui";
+import { Button } from "../Button/Button";
 import { Check, Warning, X } from "@phosphor-icons/react";
-import type { ContrastCheck } from "../../lib/theme/contrast";
+import type { ContrastCheck } from "./contrast";
 
 export interface ContrastReportProps {
   checks: ContrastCheck[];

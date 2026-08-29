@@ -160,6 +160,17 @@ export type {
   ScrollAreaScrollbarProps,
   ScrollAreaViewportProps
 } from "./components/ScrollArea/ScrollArea";
+export { ThemeEditor } from "./components/ThemeEditor/ThemeEditor";
+export type { ThemeEditorProps } from "./components/ThemeEditor/ThemeEditor";
+/* The editor's own vocabulary. A host needs the draft type to hold one, and
+   the encoder to put it in a link; the rest is the editor's business. */
+export {
+  cloneDraft,
+  grytDraft,
+  themeStyle
+} from "./components/ThemeEditor/draft";
+export type { ThemeDraft } from "./components/ThemeEditor/draft";
+export { encodeDraft, importTheme, themeCode, themeJson } from "./components/ThemeEditor/share";
 export { Toggle, ToggleGroup } from "./components/Toggle/Toggle";
 export type { ToggleGroupProps, ToggleProps } from "./components/Toggle/Toggle";
 export { Meter } from "./components/Meter/Meter";
