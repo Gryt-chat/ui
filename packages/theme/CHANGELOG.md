@@ -1,5 +1,83 @@
 # @gryt/theme
 
+## 0.9.0
+
+### Minor Changes
+
+- cef19b9: A theme carries how Gryt moves.
+
+  `GrytTheme.motion` is a speed and a curve. Optional and null means the
+  library's own, so every theme written before this renders and moves exactly as
+  it did.
+
+  **Speed is one multiplier over every tier**, not a slider each. The tiers are
+  already in proportion — a drawer takes longer than a button because it travels
+  further — and five sliders would be re-deciding that with no way to tell it had
+  gone wrong except by opening a drawer. `0` means nothing animates, which is a
+  real setting rather than a degenerate one.
+
+  **Curve** is `spring`, `smooth`, `linear`, or a cubic bezier you drag on a
+  graph. The named ones keep the library's two curves apart: the overshooting
+  spring for things that grow in place, the critically damped one for things
+  that travel inside their bounds. A bezier cannot be both, so drawing one
+  collapses them — the panel says so, because a curve that overshoots is fine on
+  a button and throws a drawer outside its own container.
+
+  The graph draws whichever curve is actually in effect. A spring is not a cubic
+  bezier, so a named curve renders as its samples with no handles rather than as
+  a prominent line that is not the curve you have.
+
+  `prefers-reduced-motion` beats the theme, and needs `!important` to do it: a
+  theme's durations arrive as inline style on the root element, and an inline
+  declaration beats a media query. Without that, opening a link somebody sent
+  would start a machine moving for a person who had turned movement off.
+
+  Also corrects a comment in `theme.css` that said changing a duration moves
+  where the overshoot lands. It does not — `linear()` samples are positions
+  against normalised time — and `motion.ts` said the opposite two files away.
+  Measured in Chrome: the same `--ease-spring` at 200ms and 2000ms puts the
+  element at the same six positions at the same six fractions, identical to two
+  decimals, peaking at the same 10.6% past target. That false warning is why a
+  theme could not offer a speed control before: it said the safe thing was
+  dangerous.
+
+- fb817a9: A theme carries its typefaces.
+
+  Three roles — `body`, `display` for headings, `mono` for code, hex values and
+  timestamps. Three because that is what the interface actually distinguishes;
+  finer is a knob nobody turns, and coarser loses the one that matters, which is
+  that a proportional face cannot do the third job.
+
+  `GrytTheme.fonts` is optional and null means the library's own, so every theme
+  written before this and every link already shared renders exactly as it did.
+  `createGrytTheme` emits `--gryt-font-body|display|mono` only for what a theme
+  sets, and the stylesheet's `--font-sans`, the new `--font-display` and
+  `--font-mono` fall through them. A theme that names no fonts emits no
+  variables and changes nothing.
+
+  Whole CSS stacks rather than family names, because the fallback is the point:
+  a theme names a face the reader may not have, and what it falls back to
+  decides whether that reads as a different choice or a broken one.
+
+  `isFontStack` refuses anything that could close a CSS declaration and start
+  another — braces, semicolons, comment markers, `url(`, `@import`. A font stack
+  has no legitimate use for any of them, and this is the first field in a theme
+  that is free text rather than a hex value. A role that fails the check falls
+  back to the library's instead of taking the value, so one bad parameter in a
+  link costs that parameter rather than the theme.
+
+  `ThemeEditor` grows a Type group: a curated list of thirteen faces, a
+  free-text box for everything else, and a specimen line set in whichever face
+  is chosen. Faces that need fetching are marked, and `remoteFontsAllowed`
+  lets a host say they will not be — the client keeps that behind a setting, so
+  the picker can say a choice will not take effect rather than leaving somebody
+  to wonder why nothing changed.
+
+  The list is curated rather than Google's catalogue on purpose. The catalogue
+  is about sixteen hundred families and fetching it is itself a request to
+  Google, which would leave the picker empty for exactly the people who left
+  that setting off.
+
 ## 0.8.0
 
 ### Minor Changes
