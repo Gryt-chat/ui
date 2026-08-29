@@ -40,19 +40,25 @@ export interface AvatarProps extends Omit<
    */
   seed?: string;
   /**
-   * Draws this server's icon, from @gryt/owl's eggs. The server's name is the
-   * seed, so renaming it changes the icon.
+   * Draws this seed's eggs, from @gryt/owl.
    *
-   * A server is not a person and is not drawn as one, so this is a separate
-   * prop rather than a flag on `seed` — passing the wrong one gives the wrong
-   * kind of thing rather than the same thing in another colour.
+   * Named for the drawing rather than for what it stands for, because what it
+   * stands for has already changed once. These were written for server icons,
+   * and are now the generated image for a group chat that has not uploaded
+   * one; server icons are getting their own generator. A prop called
+   * `serverSeed` would have been wrong twice over — wrong for group chats, and
+   * squatting on the name the real server one will want.
    *
-   * The corner is the caller's. This component clips to whatever radius its
-   * className sets, and the SVG is drawn square, so a server rail asking for
-   * `rounded-(--gryt-radius-md)` gets the theme's radius in pixels rather than
-   * a fraction of the box baked into the drawing.
+   * Separate from `seed` rather than a flag on it. `seed` draws a person's
+   * owl, and passing the wrong prop should give you the wrong kind of thing
+   * rather than the same thing in another colour.
+   *
+   * The corner is the caller's. This clips to whatever radius its className
+   * sets and the drawing is square, so asking for `rounded-(--gryt-radius-md)`
+   * gets the theme's radius in pixels rather than a fraction of the box baked
+   * into the SVG.
    */
-  serverSeed?: string;
+  eggSeed?: string;
   // Shown while the image loads and if it fails. Falls back to children, which
   // is how the old MUI-based Avatar was called: <Avatar>G</Avatar>.
   fallback?: ReactNode;
@@ -65,7 +71,7 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
     className,
     fallback,
     seed,
-    serverSeed,
+    eggSeed,
     size = "medium",
     src,
     ...props
@@ -83,12 +89,12 @@ export const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(function Avatar(
   // radius is in pixels rather than a fraction of the drawing.
   const egg = useMemo(
     () =>
-      serverSeed ? eggAvatarDataUri(serverSeed, { size: OWL_SIZE }) : undefined,
-    [serverSeed]
+      eggSeed ? eggAvatarDataUri(eggSeed, { size: OWL_SIZE }) : undefined,
+    [eggSeed]
   );
 
-  // A person wins a server, on the grounds that passing both is a caller bug
-  // and drawing the more specific thing makes it the more obvious one.
+  // A person wins, on the grounds that passing both is a caller bug and
+  // drawing the more specific thing makes it the more obvious one.
   const generated = owl ?? egg;
 
   return (

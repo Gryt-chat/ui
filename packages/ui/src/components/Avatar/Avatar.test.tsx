@@ -33,10 +33,10 @@ describe("Avatar", () => {
     );
   });
 
-  it("draws the server seed's eggs", () => {
+  it("draws the egg seed's eggs", () => {
     render(
       <GrytProvider>
-        <Avatar serverSeed="the basement" alt="The Basement" />
+        <Avatar eggSeed="the basement" alt="The Basement" />
       </GrytProvider>
     );
 
@@ -47,15 +47,15 @@ describe("Avatar", () => {
   });
 
   /*
-   * The corner belongs to the caller, not to the drawing. The server rail asks
-   * for `rounded-(--gryt-radius-md)` and the root clips to it, so the radius is
-   * the theme's in pixels — an SVG that baked its own would be a fraction of
-   * the box and would not match the theme at any size.
+   * The corner belongs to the caller, not to the drawing. A caller asks for
+   * `rounded-(--gryt-radius-md)` and the root clips to it, so the radius is the
+   * theme's in pixels — an SVG that baked its own would be a fraction of the
+   * box and would not match the theme at any size.
    */
   it("draws the eggs square and lets the root round them", () => {
     render(
       <GrytProvider>
-        <Avatar serverSeed="the basement" alt="The Basement" />
+        <Avatar eggSeed="the basement" alt="The Basement" />
       </GrytProvider>
     );
 
@@ -65,12 +65,12 @@ describe("Avatar", () => {
     expect(decodeURIComponent(src)).not.toContain("rx=");
   });
 
-  // A server is not a person, so the two are separate props. Both at once is a
-  // caller bug, and the more specific thing wins.
+  // A person and a not-a-person are separate props. Both at once is a caller
+  // bug, and the more specific thing wins.
   it("draws the person when handed both", () => {
     render(
       <GrytProvider>
-        <Avatar seed="sivert" serverSeed="the basement" alt="Sivert" />
+        <Avatar seed="sivert" eggSeed="the basement" alt="Sivert" />
       </GrytProvider>
     );
 

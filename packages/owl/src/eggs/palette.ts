@@ -2,7 +2,7 @@
  * The colours an egg icon comes in.
  *
  * The field is the owl's own background, the same string `owlPalette` returns,
- * not a colour picked to go with it. A server rail and a member list sit next
+ * not a colour picked to go with it. A list of these and a member list sit next
  * to each other on screen, and "the same family" is a thing that drifts on the
  * next edit where "the same value" is not.
  *
@@ -15,7 +15,7 @@
  * loses the middle egg in gold.
  *
  * Two things here are deliberate defences against the icon reading as Easter,
- * which is the failure mode of drawing servers as eggs:
+ * which is the failure mode of drawing eggs at all:
  *
  *   - The shells are never pastel on pastel. Either the field is deep and the
  *     eggs are pale, or the field is bright and the eggs are deep. A soft egg

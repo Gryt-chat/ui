@@ -1,6 +1,6 @@
 # @gryt/owl
 
-Gryt's owl avatars, and its egg icons for servers. Give it a name, get an SVG.
+Gryt's owl avatars, and its eggs. Give it a name, get an SVG.
 No renderer, no DOM, no dependencies.
 
 MIT, like the rest of the UI packages, and unlike the AGPL-3.0 apps that use
@@ -41,7 +41,7 @@ overrides for the palette, the ear tufts and each accessory slot.
 - `owlPalette`, `allOwlPalettes`, `TILE_HUES` — the thirty palettes
 - `ACCESSORIES`, `accessoriesIn`, `accessoryByName` — what an owl can wear
 - `OWL` — the fixed geometry, in artboard units
-- `eggAvatarSvg`, `eggAvatarDataUri`, `eggAvatarColour` — a server's icon
+- `eggAvatarSvg`, `eggAvatarDataUri`, `eggAvatarColour` — eggs, for a group chat
 - `resolveEggs`, `eggPalette`, `EGG_PATTERNS` — the same three for the eggs
 
 A bare owl is about 2.1 kB of markup, and about 4.1 kB with accessories on.
@@ -194,20 +194,24 @@ That one needs this repository checked out; this one needs Node.
 
 - `@gryt/ui`'s `Avatar` generates one when it has a `seed` and no `src`.
 - `@gryt/ui-native`'s does the same through `react-native-svg`.
-- The Gryt web client and mobile app draw people from it, and servers from the
-  eggs.
+- The Gryt web client and mobile app draw people from it. The eggs are for group
+  chats.
 
-## Eggs, for servers
+## Eggs
 
-A server is not a person and should not be drawn as one, which is why server
-icons were never owls. They were DiceBear Planets, which was fine and was also
-somebody else's drawing sitting next to Gryt's own.
+A generated image for something that is not a person. Today that is a group chat
+with no picture uploaded; it was written for server icons and those are getting
+their own generator instead, so do not read anything about servers into it.
+
+Not an owl, deliberately. An owl is one character wearing things and this is a
+shape with a surface, and a list holding both should not make you look twice to
+tell which is which.
 
 ```tsx
 import { Avatar } from "@gryt/ui";
 
 // The corner is the theme's, in pixels. Avatar clips; the drawing is square.
-<Avatar serverSeed={server.name} className="rounded-(--gryt-radius-md)" />;
+<Avatar eggSeed={chat.id} className="rounded-(--gryt-radius-md)" />;
 ```
 
 Or without React:
@@ -215,7 +219,7 @@ Or without React:
 ```ts
 import { eggAvatarDataUri } from "@gryt/owl";
 
-const src = eggAvatarDataUri(server.name);
+const src = eggAvatarDataUri(chat.id);
 ```
 
 `cornerRadius` exists and is usually the wrong answer for an icon in a themed
@@ -232,7 +236,7 @@ licensed and listed in `artwork/eggs/patterns.json`. Upstream ships 330; that
 file names the forty that are surfaces rather than decorations: grids, hatches,
 waves, contours, speckles, scales, tessellations. `bun scripts/egg-pattern.ts`
 pulls them in, and adding one is a line in that file. The draw is keyed on the
-tile's own name, so a server that was not going to wear the new tile keeps the
+tile's own name, so a seed that was not going to wear the new tile keeps the
 one it had.
 
 The field is the owl's own background, the same string `owlPalette` returns
@@ -259,8 +263,8 @@ Four things fight that, and no one of them is enough on its own:
   edge is a mark. `zoom` is that dial, and the seed picks between 1.05 and 1.5.
 
 ```ts
-eggAvatarSvg(server.name, { zoom: 1.6 }); // further still
-eggAvatarSvg(server.name, { zoom: 1 });   // the drawing as painted
+eggAvatarSvg(chat.id, { zoom: 1.6 }); // further still
+eggAvatarSvg(chat.id, { zoom: 1 });   // the drawing as painted
 ```
 
 Still open: the shells themselves. There are three arrangements and each egg in
