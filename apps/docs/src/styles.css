@@ -32,14 +32,34 @@
 }
 
 @theme {
-    --font-sans: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui,
-        sans-serif;
-    /* Headings are the same face. One family, two cuts, which is what the site
-       does — a display face here would be a fourth typeface in one product. */
-    --font-display: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui,
-        sans-serif;
-    --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, Consolas,
-        monospace;
+    /* Through --gryt-font-* first, the same as the library's own block, so a
+       theme built in the generator changes the page it is being built on.
+       Without this the site restated the faces and won, and picking a font
+       set a variable that nothing read — which is the exact failure the
+       picker warns about when Google fonts are off, arriving for a different
+       reason and with no warning at all.
+
+       The @font-face rules above still load the two Atkinson files, because
+       those ship with the site and are what the fallbacks name. */
+    --font-sans: var(
+        --gryt-font-body,
+        "Atkinson Hyperlegible Next",
+        ui-sans-serif,
+        system-ui,
+        sans-serif
+    );
+    /* Headings are the same face unless a theme says otherwise. One family,
+       two cuts, which is what the site does — a display face here would be a
+       fourth typeface in one product. */
+    --font-display: var(--gryt-font-display, var(--font-sans));
+    --font-mono: var(
+        --gryt-font-mono,
+        "Atkinson Hyperlegible Mono",
+        ui-monospace,
+        Menlo,
+        Consolas,
+        monospace
+    );
 }
 
 html {

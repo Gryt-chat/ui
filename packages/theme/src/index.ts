@@ -48,14 +48,18 @@ export type { GrytThemePreset } from "./presets";
 export {
   GRYT_HUE_KEYS,
   GRYT_NEUTRAL_KEYS,
+  GRYT_FONT_KEYS,
+  GRYT_FONT_STACK_MAX,
   GRYT_RADIUS_KEYS,
   GRYT_THEME_NAME_MAX,
   cloneGrytTheme,
   decodeGrytTheme,
   encodeGrytTheme,
+  grytFonts,
   grytTheme,
   grytThemeHues,
   grytThemeToOptions,
+  isFontStack,
   isHexColor,
   normalizeHexColor,
   normalizeThemeName
@@ -67,6 +71,8 @@ export type {
   GrytHues,
   GrytNeutralKey,
   GrytNeutrals,
+  GrytFontKey,
+  GrytFonts,
   GrytRadiusKey,
   GrytTheme
 } from "./theme";

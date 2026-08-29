@@ -18,6 +18,16 @@ export type { GrytThemeOptions, GrytTokens } from "@gryt/theme";
 // only other caller. Keeping it internal would mean a second copy of the OKLab
 // matrices somewhere, which is exactly what one generator was meant to avoid.
 export { contrast, hexToOklch, oklchToHex } from "@gryt/theme";
+/* The typeface half of a theme. `isFontStack` is exported because a host that
+   accepts a font name from a person has to check it before it reaches a
+   stylesheet, and the check belongs with the format rather than in each app. */
+export {
+  GRYT_FONT_KEYS,
+  GRYT_FONT_STACK_MAX,
+  grytFonts,
+  isFontStack
+} from "@gryt/theme";
+export type { GrytFontKey, GrytFonts } from "@gryt/theme";
 export {
   alphaScale,
   hexToRgb,

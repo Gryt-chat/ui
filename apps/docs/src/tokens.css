@@ -31,13 +31,28 @@
   /* One family, two cuts, the same as the client and the site. These used to
      name Geist, Inter and JetBrains Mono, and they are defined here as well as
      in the @theme block in styles.css — so setting only that one left headings
-     and code on the old faces while the body text changed. */
-  --font-display: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui,
-    sans-serif;
-  --font-body: "Atkinson Hyperlegible Next", ui-sans-serif, system-ui,
-    sans-serif;
-  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, Menlo, Consolas,
-    monospace;
+     and code on the old faces while the body text changed.
+
+     Which happened again the moment a theme could carry fonts: the @theme
+     block learned to read --gryt-font-*, these did not, and the generator set
+     a heading font that nothing rendered. Both places now fall through the
+     same variables, and the note above is the reason to check both. */
+  --font-display: var(--gryt-font-display, var(--font-body));
+  --font-body: var(
+    --gryt-font-body,
+    "Atkinson Hyperlegible Next",
+    ui-sans-serif,
+    system-ui,
+    sans-serif
+  );
+  --font-mono: var(
+    --gryt-font-mono,
+    "Atkinson Hyperlegible Mono",
+    ui-monospace,
+    Menlo,
+    Consolas,
+    monospace
+  );
 
   --space-3xs: 0.25rem;
   --space-2xs: 0.5rem;
