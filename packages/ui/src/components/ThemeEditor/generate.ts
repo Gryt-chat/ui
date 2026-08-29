@@ -14,7 +14,7 @@
  * rolls look unrelated while both of them still work.
  */
 
-import { contrast as ratio, hexToOklch, oklchToHex } from "@gryt/ui";
+import { contrast as ratio, hexToOklch, oklchToHex } from "@gryt/theme";
 import { contrastChecks } from "./contrast";
 import type { Appearance, HueSet, RadiusKey, ThemeDraft } from "./draft";
 import { cloneDraft, themeStyle } from "./draft";

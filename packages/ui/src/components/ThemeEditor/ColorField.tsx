@@ -1,7 +1,7 @@
-import { TextField } from "@gryt/ui";
+import { TextField } from "../TextField/TextField";
 import { Warning } from "@phosphor-icons/react";
 import { useId, useState } from "react";
-import { isHex, normalizeHex } from "../../lib/theme/draft";
+import { isHex, normalizeHex } from "./draft";
 
 export interface ColorFieldProps {
   label: string;

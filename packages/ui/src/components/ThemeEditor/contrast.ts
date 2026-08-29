@@ -14,7 +14,7 @@
  * preference as a failure.
  */
 
-import { contrast } from "@gryt/ui";
+import { contrast } from "@gryt/theme";
 import type { CSSProperties } from "react";
 import type { Appearance, DraftPath, ThemeDraft } from "./draft";
 import { hueSlot, huesFor, scaleFrom } from "./draft";

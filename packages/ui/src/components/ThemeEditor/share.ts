@@ -17,7 +17,7 @@ import {
   grytLightTokens,
   grytTokens,
   normalizeHexColor
-} from "@gryt/ui";
+} from "@gryt/theme";
 import { RADIUS_KEYS, colorsFor } from "./draft";
 import type { Appearance, RadiusKey, ThemeDraft } from "./draft";
 
