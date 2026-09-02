@@ -587,8 +587,32 @@ export function OwlDesigner({
   const options = activeSlot ? accessoriesIn(activeSlot) : [];
   const paneLabel = SLOTS.find((s) => s.slot === pane)?.label ?? "Colour";
 
+  /*
+   * `@container`, and the container variants below, rather than `md:`.
+   *
+   * What decides whether three columns fit is how wide *this* is, and this is
+   * a dialog: `w-[64rem]` capped by `max-w-[calc(100vw-2rem)]`. A viewport
+   * breakpoint answers a different question, and the gap between them is a
+   * 1024px dialog stacking itself in a window a little under 768px — the
+   * category rail across the top, the grid full width beneath it, and Use this
+   * owl below the fold of a panel whose scroll is not where anybody looks.
+   *
+   * 48rem is the same number `md` was. Nothing changes for a dialog at its
+   * full width; the breakpoint is now measured against the thing it describes.
+   */
   return (
-      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto md:flex-row">
+    /*
+     * The container is this wrapper, and the layout switch is on the child.
+     *
+     * `@3xl:` asks the nearest *ancestor* container, so an element carrying
+     * both `@container` and `@3xl:flex-row` never answers its own question —
+     * it stays a column at every width while its children, which do have an
+     * ancestor container, switch correctly. That is a 1024px panel with a
+     * 192px rail stacked on top of a full-width grid, which is precisely the
+     * bug this was meant to fix.
+     */
+    <div className="@container flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto @3xl:flex-row">
         {/*
           Gryt UI's vertical Tabs, not a row of buttons.
 
@@ -605,7 +629,7 @@ export function OwlDesigner({
           spring duration and curve.
         */}
         <Tabs
-          className="shrink-0 border-b border-gryt-border bg-gryt-surface md:w-48 md:border-r md:border-b-0"
+          className="shrink-0 border-b border-gryt-border bg-gryt-surface @3xl:w-48 @3xl:border-r @3xl:border-b-0"
           onValueChange={(value) => setPane(String(value) as typeof pane)}
           orientation="vertical"
           value={pane}
@@ -862,7 +886,7 @@ export function OwlDesigner({
         </div>
 
         {/* the owl */}
-        <div className="flex shrink-0 flex-col items-center gap-3 border-t border-gryt-border bg-gryt-surface p-4 md:w-56 md:border-t-0 md:border-l">
+        <div className="flex shrink-0 flex-col items-center gap-3 border-t border-gryt-border bg-gryt-surface p-4 @3xl:w-56 @3xl:border-t-0 @3xl:border-l">
           <CrossfadeOwl className="h-40 w-40" src={preview} />
           <span className="text-xs text-gryt-muted">{nickname}</span>
           <div className="mt-auto flex w-full flex-col gap-2">
@@ -886,6 +910,7 @@ export function OwlDesigner({
           </div>
         </div>
       </div>
+    </div>
   );
 }
 
