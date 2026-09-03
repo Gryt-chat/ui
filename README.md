@@ -108,6 +108,11 @@ the Gryt-specific ones, which want a screen to design against rather than a web
 component to copy. Its README carries the list, and a table of the places where
 a component deliberately behaves differently on a phone. See GRYT-342.
 
+## Issues
+
+Please report bugs and request features in the
+[main Gryt repository](https://github.com/Gryt-chat/gryt/issues).
+
 ## Sponsors
 
 What sponsoring pays for, the tiers, and everyone who has sponsored:
