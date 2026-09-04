@@ -13,19 +13,16 @@ import "./signIn.css";
  * across a Template, a Form and a Page because Keycloak needs it to; here it is
  * one file, because that is the useful thing to copy.
  *
- * Two things are worth knowing before you lift it:
+ * The layout is CSS, not components: the two columns and the brand panel are in
+ * ./signIn.css, because no component owns a page.
  *
- * - The layout is CSS, not components. Buttons, fields, the checkbox and the
- *   palette come from @gryt/ui; the two columns and the brand panel are in
- *   ./signIn.css, because no component owns a page.
- * - The form posts nowhere. In the theme, `action` is Keycloak's login URL and
- *   the field names — `username`, `password`, `rememberMe` — are its contract,
- *   so they are kept exactly. Wire them to your own endpoint and the markup
- *   does not change.
+ * The form posts nowhere. In the theme, `action` is Keycloak's login URL and
+ * the field names — `username`, `password`, `rememberMe` — are its contract, so
+ * they are kept exactly. Wire them to your own endpoint and the markup does not
+ * change.
  *
  * The `palette` prop is for the theme generator, which changes the theme
- * without remounting this. Leave it off and the background reads the colours
- * off the CSS custom properties itself.
+ * without remounting this.
  */
 export function SignInScreen({ palette }: { palette?: ShaderPalette } = {}) {
   const [submitting, setSubmitting] = useState(false);

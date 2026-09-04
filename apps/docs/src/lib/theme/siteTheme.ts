@@ -2,17 +2,15 @@
  *
  * The generator previews a theme in a panel. The more convincing thing is the
  * site around it — reading the whole of ui.gryt.chat in Nord, or in light, is
- * what tells somebody whether the library survives their palette, and a 38rem
- * box cannot say that.
+ * what tells somebody whether the library survives their palette.
  *
  * One store, two readers. The header picks from it and the generator writes to
- * it, so building a theme and then walking the docs in it is not a step: the
- * page you are already on is wearing it before you go anywhere.
+ * it, so the page you are already on is wearing the theme before you go
+ * anywhere.
  *
  * useSyncExternalStore rather than context, because the applying happens on
  * document.documentElement — overlays portal to document.body, so anything
- * lower would leave every dialog and menu on the old palette — and a provider
- * that only exists to reach the root element is a provider that does nothing.
+ * lower would leave every dialog and menu on the old palette.
  */
 
 import {

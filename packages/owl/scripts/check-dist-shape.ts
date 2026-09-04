@@ -1,11 +1,9 @@
 /**
  * `dist/index.js` is one file that imports nothing. Keep it that way.
  *
- * The package's README says so, and two things depend on it: a plain
- * `<script type="module">` can take the file as-is, and the mobile app's
- * bundler gets one module rather than a graph. Neither breaks loudly when it
- * stops being true — the web client would carry on working, and the failure
- * would surface somewhere else entirely, months later.
+ * Two things depend on it: a plain `<script type="module">` can take the file
+ * as-is, and the mobile app's bundler gets one module rather than a graph.
+ * Neither breaks loudly when it stops being true.
  *
  * It is one `entry:` away from being undone. Adding a second entry to the main
  * vite config makes rollup hoist whatever the two share into a chunk, and

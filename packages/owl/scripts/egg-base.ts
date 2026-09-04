@@ -4,17 +4,15 @@
  *   bun scripts/egg-base.ts
  *   bun scripts/egg-base.ts --check
  *
- * `artwork/eggs/egg_base_1.svg` through `egg_base_3.svg` are the source: three
- * arrangements holding one, two and three eggs, drawn on the same 1024 artboard
- * the owl uses. Each egg is one closed path tagged `id="Egg-N"`, and N is the
- * order it is stacked in — Egg-1 at the back, Egg-3 in front — which is also
- * the order the shell tones are handed out in.
+ * `artwork/eggs/egg_base_1.svg` through `egg_base_3.svg` hold one, two and
+ * three eggs, drawn on the same 1024 artboard the owl uses. Each egg is one
+ * closed path tagged `id="Egg-N"`, and N is the order it is stacked in —
+ * Egg-1 at the back — which is also the order the shell tones are handed out.
  *
- * The extraction is a regex rather than an XML parse on purpose. The input is
- * three files exported from one drawing tool, every egg is a bare `<path>`, and
- * a parser here would be a dependency the package does not otherwise have. If a
- * drawing ever stops matching, this fails loudly rather than writing half of
- * one.
+ * The extraction is a regex rather than an XML parse: the input is three files
+ * from one drawing tool, every egg is a bare `<path>`, and a parser would be a
+ * dependency the package does not otherwise have. If a drawing stops matching,
+ * this fails loudly rather than writing half of one.
  */
 
 import { readFileSync, writeFileSync } from "node:fs";

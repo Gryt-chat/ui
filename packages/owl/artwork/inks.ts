@@ -6,16 +6,13 @@
  * all thirty palettes, so its colours are recorded as roles and repainted per
  * owl. This is that lookup.
  *
- * It is one table for every drawing rather than one per drawing, and that is
- * not a simplification: the seventeen `map` blocks this replaced held thirty
- * distinct colours between them and never once disagreed about what one meant.
- * `#282d33` was `accent` in superman-glasses, fbi-glasses and headset alike.
- * They were seventeen copies of one palette.
+ * One table for every drawing rather than one per drawing, which is not a
+ * simplification: the seventeen `map` blocks this replaced held thirty distinct
+ * colours between them and never once disagreed about what one meant.
  *
  * Which is what makes adding an accessory free. Draw it in colours already
- * below and there is nothing to edit — drop the SVG in this folder and run the
- * script. A colour that is not here stops the build and prints the line to add,
- * because the alternative is guessing, and a guessed role is an owl wearing
+ * below and there is nothing to edit. A colour that is not here stops the build
+ * and prints the line to add, because a guessed role is an owl wearing
  * something the wrong shade with nothing to say so.
  *
  * Grouped by role, lightest first inside each.
@@ -78,17 +75,14 @@ export const INKS: Record<string, PaletteSlot> = {
    * These are `realPalette` — the exact colours `--base` paints the bird in, so
    * they are already on the artboard to eyedrop from, and they are what the
    * Figma styles are named after. A drawing made from them needs no entry here
-   * at all, because every colour is definitionally its own role. There is
-   * nothing to decide and so nothing to get wrong.
+   * at all, because every colour is definitionally its own role.
    *
    * The forty-odd entries below are what that replaces: seven roles wearing
    * forty coats of paint, because every drawing picked its own teal. `trim`
-   * alone is eleven near-identical hexes. Each new one was a judgement call by
-   * whoever ran the script about which rung it belonged to, and a wrong call is
-   * an owl wearing something the wrong shade with nothing to say so.
+   * alone is eleven near-identical hexes, and each was a judgement call by
+   * whoever ran the script about which rung it belonged to.
    *
-   * They stay because the drawings that used them are in the history. Nothing
-   * new should need them.
+   * They stay because the drawings that used them are in the history.
    */
   "#6cdac8": "background",
   "#33665a": "body",

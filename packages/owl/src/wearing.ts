@@ -11,16 +11,12 @@
  *                 ^body
  *                    ^palette
  *
- * The last five are a palette per slot. **New fields are appended, never
- * inserted** — see decodeWorn.
+ * **New fields are appended, never inserted** — see decodeWorn. Fixed width
+ * rather than delimited, so a missing field cannot shift the ones after it.
+ * `--` means "deliberately nothing", which is not the same as an absence.
  *
- * Fixed width rather than delimited, so a missing field cannot shift the ones
- * after it. `--` is a value meaning "deliberately nothing", which is not the
- * same as an absence.
- *
- * **The keys never move.** See scripts/lib/keys.ts for why that is a ledger
- * rather than an index; PALETTE_NAMES is frozen here for the same reason, since
- * reordering an array would re-colour everybody.
+ * **The keys never move**, and PALETTE_NAMES is frozen for the same reason:
+ * reordering an array would re-colour everybody. See scripts/lib/keys.ts.
  */
 
 import { ACCESSORY_SLOTS, accessoryByName, accessoriesIn } from "./accessories";

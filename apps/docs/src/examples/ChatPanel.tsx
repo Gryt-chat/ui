@@ -14,14 +14,12 @@ import type { FormEvent } from "react";
 /**
  * A channel view: header, message list, composer.
  *
- * The parts that are easy to get wrong and are done properly here:
- *
- * - The list scrolls, the header and composer do not. Only the middle region
- *   is a ScrollArea, and it is the only thing in the column allowed to grow.
+ * - The list scrolls, the header and composer do not. Only the middle region is
+ *   a ScrollArea, and it is the only thing in the column allowed to grow.
  * - New messages scroll into view. Without that the composer sends into a
  *   viewport that never moves, which reads as the message not having sent.
  * - Consecutive messages from the same person drop the avatar and the name.
- *   Repeating them on every line is what makes a chat log look like a table.
+ *   Repeating them on every line makes a chat log look like a table.
  */
 
 interface Message {

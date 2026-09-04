@@ -25,11 +25,10 @@ import { useEffect, useState } from "react";
  * A voice channel while you are in it: who is connected, and the controls for
  * your own device.
  *
- * The states this has to show at once are what makes it fiddly. Someone can be
- * muted by themselves, deafened, speaking, or sharing a screen, and those are
- * independent — deafened implies muted, but muted says nothing about deafened.
- * Each one gets its own mark rather than being folded into a single "status",
- * because folding them is how a muted person ends up looking offline.
+ * Someone can be muted by themselves, deafened, speaking, or sharing a screen,
+ * and those are independent — deafened implies muted, but muted says nothing
+ * about deafened. Each gets its own mark rather than being folded into a single
+ * "status", because folding them is how a muted person looks offline.
  *
  * The speaking ring is on the avatar and nothing else moves. A tile that grows
  * or reorders when someone talks makes a busy channel unreadable.

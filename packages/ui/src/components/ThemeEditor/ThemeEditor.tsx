@@ -1,14 +1,9 @@
 /* The theme controls, as a component rather than as a page.
  *
- * These lived in the docs site, which made the docs site the only place a
- * theme could be built. That is the wrong way round: what somebody wants to
- * know is whether a colour survives a member list, a voice tile and a mention,
- * and none of those are on a documentation page. The client needs the same
- * controls over the top of the real app, and two copies of a thousand lines
- * drift the moment one of them is touched.
- *
- * So it ships here, next to the components it is editing, and both mount the
- * same one — the argument the presets file already makes for itself.
+ * These lived in the docs site, which made the docs site the only place a theme
+ * could be built. What somebody wants to know is whether a colour survives a
+ * member list, a voice tile and a mention, and none of those are on a
+ * documentation page. So it ships here and both hosts mount the same one.
  *
  * What is deliberately not in here:
  *
@@ -17,9 +12,8 @@
  * - **The address bar.** The docs page writes the theme into the query string
  *   so the link in the bar is the link you paste. There is no bar in a desktop
  *   app, so copying is a slot the host fills.
- * - **Export as code.** Rendering `createGrytTheme` needs a syntax
- *   highlighter, which is a docs dependency and not something to drag into a
- *   component library. `footer` is where that goes.
+ * - **Export as code.** Rendering `createGrytTheme` needs a syntax highlighter,
+ *   which is a docs dependency. `footer` is where that goes.
  *
  * Import stays, because pasting a link somebody sent you is the other half of
  * sharing one and it needs nothing but the decoder.

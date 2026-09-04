@@ -6,24 +6,17 @@ import { useState } from "react";
  * work.
  *
  * Base UI drops a dialog's backdrop when that dialog is nested inside another —
- * `enabled: forceRender || !nested` in its DialogBackdrop. The reasoning is
- * sound on its own: two backdrops at 60% black stack to 84%, and a chain of
- * them walks the screen to black.
+ * `enabled: forceRender || !nested` in its DialogBackdrop. Two backdrops at 60%
+ * black stack to 84%, so the reasoning is sound on its own.
  *
  * It stops being what you want the moment the outer dialog is a whole screen
  * rather than a prompt. Gryt's settings panel is a Dialog, so everything opened
- * from settings is nested — and shipped with no backdrop, which cost two things
- * rather than one:
+ * from settings is nested — and shipped with no backdrop, which cost two
+ * things: nothing dimmed, and it could not be dismissed by clicking away,
+ * because Base UI only treats an outside press as a dismissal when the click
+ * landed on *that dialog's own* backdrop.
  *
- *   - nothing dimmed, so the inner dialog looked like it was floating on the
- *     outer one rather than over it;
- *   - it could not be dismissed by clicking away, because Base UI only treats
- *     an outside press as a dismissal when the click landed on *that dialog's
- *     own* backdrop. With no backdrop there is nothing to land on, and the only
- *     way out is a button.
- *
- * `forceRender` on the inner backdrop fixes both. Toggle it below and click the
- * dark area outside the second dialog.
+ * `forceRender` on the inner backdrop fixes both.
  */
 export function NestedDialogs() {
   const [outer, setOuter] = useState(false);

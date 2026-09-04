@@ -1,19 +1,18 @@
 /* Every concrete path this site serves, as plain data.
  *
- * There used to be two lists that had to agree and had no way of noticing when
- * they did not: the router's, in main.tsx, and `ogPages`, which is only the
- * subset of routes that get a share card. nginx papered over the gap by falling
- * back to /index.html, so a path that did not exist answered 200 and rendered
- * React Router's own "404 Not Found". A status check called a missing page fine,
- * and crawlers indexed every typo as a duplicate of the front page.
+ * There used to be two lists that had to agree and no way of noticing when they
+ * did not: the router's, in main.tsx, and `ogPages`. nginx papered over the gap
+ * by falling back to /index.html, so a path that did not exist answered 200 and
+ * rendered React Router's own "404 Not Found". A status check called a missing
+ * page fine, and crawlers indexed every typo as a duplicate of the front page.
  *
  * nginx now returns a real 404 for anything it cannot find on disk, which only
- * works if the filesystem holds every real route. This is that list.
- * scripts/prerender.ts writes a file per entry and fails the build if `ogPages`
- * names a route that is not here. Adding a route means adding it here too.
+ * works if the filesystem holds every real route. scripts/prerender.ts writes a
+ * file per entry and fails the build if `ogPages` names a route that is not
+ * here. Adding a route means adding it here too.
  *
- * No @gryt/ui import, for the same reason componentMeta.ts has none: a Bun build
- * script reads this, and @gryt/ui imports CSS.
+ * No @gryt/ui import, for the same reason componentMeta.ts has none: a Bun
+ * build script reads this, and @gryt/ui imports CSS.
  */
 
 import { componentDocs } from "./componentMeta";

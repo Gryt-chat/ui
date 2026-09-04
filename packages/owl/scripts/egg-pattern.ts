@@ -7,15 +7,14 @@
  * The eggs are patterned with tiles from pattern.monster
  * (github.com/catchspider2002/svelte-svg-patterns, MIT). Upstream ships 330 of
  * them in one 970 kB module; `artwork/eggs/patterns.json` names the few dozen
- * that read as themselves at 32 px, and this writes those into the package.
+ * that read as themselves at 32 px.
  *
  * Fetching rather than vendoring the module, because vendoring a megabyte to
- * keep forty tiles is a megabyte in every diff and every clone. This is a
- * development command — it is not part of `build`, nothing installs from it,
- * and the file it writes is checked in.
+ * keep forty tiles is a megabyte in every diff and every clone. A development
+ * command: not part of `build`, and the file it writes is checked in.
  *
- * Everything upstream computes from its sliders is computed here instead, and
- * baked. The generator draws a tile; it does not know what a "colorCount" is.
+ * Everything upstream computes from its sliders is baked here. The generator
+ * draws a tile; it does not know what a "colorCount" is.
  */
 
 import { readFileSync, writeFileSync } from "node:fs";

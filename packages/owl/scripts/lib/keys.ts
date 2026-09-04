@@ -5,16 +5,13 @@
  * string, two letters per field, so it has to survive the drawings changing
  * underneath it. The obvious encoding — "third hat in the slot" — does not:
  * dropping hat_apple.svg into artwork/ re-sorts the folder and every hat after
- * it shifts by one, quietly re-dressing everybody who saved a look. That is the
- * same positional-identity bug the accessory draw had, except persisted, so it
- * turns up as somebody's saved outfit changing rather than as a rendering
- * oddity.
+ * it shifts by one, quietly re-dressing everybody who saved a look.
  *
  * So a key is assigned once and never moves. artwork/keys.json is the ledger:
- * every accessory that has ever existed, with the key it was given. New
- * drawings take the next unused key. A deleted drawing keeps its entry, marked
- * retired, so its key is never handed to something else and an old string
- * decodes to "that is gone" rather than to a hat somebody never chose.
+ * every accessory that has ever existed, with the key it was given. A deleted
+ * drawing keeps its entry, marked retired, so its key is never handed to
+ * something else and an old string decodes to "that is gone" rather than to a
+ * hat somebody never chose.
  *
  * 26 x 26 is 676. There are 37 drawings.
  */

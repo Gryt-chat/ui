@@ -3,9 +3,8 @@
  *
  * The check itself is not new. `bun scripts/owl-accessory.ts <file>` has always
  * done it, and does more: it writes the registry. What it needs is the
- * repository, which means anybody who wants to draw an owl a hat has to clone a
- * monorepo before they can find out whether their export is usable. That is a
- * long way to go to be told the viewBox is wrong.
+ * repository, so anybody who wants to draw an owl a hat has to clone a monorepo
+ * before finding out whether their export is usable.
  *
  * So this reports and writes nothing. It answers the questions somebody has
  * standing in front of a drawing tool with a file they just exported:
@@ -16,9 +15,6 @@
  *   - did it find the bird, all of it
  *   - what is left once the bird is taken back out
  *   - are any of these colours ones nothing knows the meaning of
- *
- * Failing here is the good outcome. The same drawing failing after it is
- * committed fails in the build, on somebody else's afternoon.
  *
  * Exit code is 0 when the drawing would build and 1 when it would not, so this
  * is usable in a hook. Warnings do not fail it: a colour with no role is a

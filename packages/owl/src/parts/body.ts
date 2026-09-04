@@ -75,9 +75,9 @@ export function renderEars(m: OwlMetrics, style: EarStyle, fill: string): string
  * the two never show a hairline between them at any size. Only the inner edge
  * is the wing's own.
  *
- * Measured from the shoulder rather than the crown, unlike the silhouette. That
- * is worth saying out loud because getting it wrong is silent: the wing still
- * draws, still fills the same corner, and is simply the wrong shape.
+ * Measured from the shoulder rather than the crown, unlike the silhouette.
+ * Getting that wrong is silent: the wing still draws, still fills the same
+ * corner, and is simply the wrong shape.
  */
 /** One wing. `-1` sits on the left of the frame, `1` on the right. */
 export function renderWing(m: OwlMetrics, fill: string, side: 1 | -1): string {

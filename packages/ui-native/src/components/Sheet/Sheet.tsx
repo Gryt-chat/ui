@@ -32,13 +32,12 @@ import { nextPresentation } from "./presentation";
 /**
  * A bottom sheet, which is the phone's modal. `@gryt/ui` has no counterpart on
  * purpose: a sheet is dragged, settles at heights the user chooses, and is
- * dismissed with a flick, so it is an addition rather than a web component
- * ported across.
+ * dismissed with a flick, so it is an addition rather than a port.
  *
  * On `@gorhom/bottom-sheet` rather than by hand, unlike Slider and Tabs —
  * velocity dismiss, snap points, keyboard avoidance and the drag-to-scroll
- * handoff are generic and are months of edge cases. The library supplies
- * behaviour only; every colour and dimension comes from the theme.
+ * handoff are months of edge cases. The library supplies behaviour only; every
+ * colour and dimension comes from the theme.
  *
  * **`SheetProvider` has to be mounted above anything that renders a Sheet.**
  * This is `BottomSheetModal`, which portals to the provider at the app root —

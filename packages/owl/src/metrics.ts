@@ -2,17 +2,12 @@
  * Where everything is.
  *
  * Every number here came off the 1024 artboard, and none of them varies. That
- * is a decision, not a shortcut: the accessories are drawn on the same 1024
- * frame and dropped in at their own coordinates, so anything that moved an eye
- * would move it out from behind its glasses. Fixing the bird is what makes
- * importing a drawing a paste rather than a fitting exercise.
- *
- * What the seed still decides is the colour, the expression, the ear tufts and
- * what the owl is wearing.
+ * is a decision: the accessories are drawn on the same 1024 frame and dropped
+ * in at their own coordinates, so anything that moved an eye would move it out
+ * from behind its glasses.
  *
  * Parts take these rather than reading the constants directly, so a part is
- * still a function of where things are rather than of a global. Useful when the
- * next question is "what would it take to draw this at another size".
+ * still a function of where things are rather than of a global.
  */
 
 export interface OwlMetrics {

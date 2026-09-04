@@ -4,39 +4,34 @@
  * The workflow this exists for: `--base` writes the bare bird as an SVG, you
  * open it, draw a hat on it, save it into `artwork/`, and this subtracts the
  * bird back out and leaves the hat. No measuring, no anchor point, no scale
- * factor — the hat is already in the coordinates the generator draws in,
- * because you drew it there.
+ * factor — the hat is already in the coordinates the generator draws in.
  *
  *   bun scripts/owl-accessory.ts --base
  *   bun scripts/owl-accessory.ts --all
  *   bun scripts/owl-accessory.ts artwork/Winter_Hat.svg --slot head
  *
- * `--all` is the usual one. It rebuilds every accessory listed in
- * `artwork/accessories.json` and writes the registry, so a corrected drawing is
- * one command rather than a hand-edit.
+ * `--all` rebuilds every accessory listed in `artwork/accessories.json` and
+ * writes the registry, so a corrected drawing is one command.
  *
  * The bird it subtracts is generated on the spot from the same code that draws
- * avatars, not read from a file kept beside it. A stored copy is a copy that can
- * go stale, and a stale one fails in the worst way available: it stops matching,
- * every path survives the subtraction, and the accessory you get is an entire
- * second owl.
+ * avatars, not read from a file kept beside it. A stored copy can go stale, and
+ * a stale one fails in the worst way available: it stops matching, every path
+ * survives the subtraction, and the accessory you get is a second owl.
  *
  * Paths are matched on what they draw, not on how they are written down. A
- * drawing tool rewrites path data on the way out — it rounds numbers, it turns
- * a degenerate curve into `H`, it drops a redundant control point — so
- * comparing strings finds nothing at all. Each path is flattened into a
- * polyline instead and identified by its extent, its length and its area, none
- * of which care how the file spells them.
+ * drawing tool rewrites path data on the way out — rounding numbers, turning a
+ * degenerate curve into `H`, dropping a redundant control point — so comparing
+ * strings finds nothing. Each path is flattened into a polyline and identified
+ * by its extent, its length and its area.
  *
  * Recolouring part of the bird counts as part of the accessory. A coat covers
  * the owl's arms, so the drawing paints the wings in the background's colour and
- * they disappear. Subtracting that path as "unchanged base" would throw the
- * intent away, so a matched path whose fill has moved is recorded as a repaint
- * instead — see `recolour` on Accessory.
+ * they disappear. Subtracting that as "unchanged base" would throw the intent
+ * away, so a matched path whose fill has moved is recorded as a repaint — see
+ * `recolour` on Accessory.
  *
- * Keep the source drawings. They are a few kilobytes each, they are the only
- * record of how an accessory was positioned, and the day one needs a nudge the
- * alternative is redrawing it from the exported result.
+ * Keep the source drawings. They are the only record of how an accessory was
+ * positioned, and the day one needs a nudge the alternative is redrawing it.
  */
 
 import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";

@@ -6,29 +6,22 @@
  * to each other on screen, and "the same family" is a thing that drifts on the
  * next edit where "the same value" is not.
  *
- * What differs from the owls is the shape of the rest. An owl needs named roles
- * for a bird that is always drawn the same way. An icon needs a ladder: three
- * shells that separate from each other and from the field, each with the ink
- * its pattern is drawn in. The numbers below are lightnesses on that ladder and
- * the gaps between them are the design, so `palette.test.ts` asserts every one
- * — at all ten hues, because a tweak that reads fine in violet is the kind that
- * loses the middle egg in gold.
+ * An icon needs a ladder: three shells that separate from each other and from
+ * the field, each with the ink its pattern is drawn in. The numbers below are
+ * lightnesses on that ladder and the gaps between them are the design, so
+ * `palette.test.ts` asserts every one — at all ten hues, because a tweak that
+ * reads fine in violet is the kind that loses the middle egg in gold.
  *
- * Two things here are deliberate defences against the icon reading as Easter,
- * which is the failure mode of drawing eggs at all:
+ * Two of those bounds are defences against the icon reading as Easter:
  *
  *   - The shells are never pastel on pastel. Either the field is deep and the
- *     eggs are pale, or the field is bright and the eggs are deep. A soft egg
- *     on a soft field is the Easter signature and no scheme here produces one.
- *   - The inks sit about 22 to 26 points off their shell, not 50. That is a
- *     surface rather than a decoration — the test has an upper bound as well as
- *     a lower one, so "make it pop" fails.
+ *     eggs are pale, or the field is bright and the eggs are deep.
+ *   - The inks sit about 22 to 26 points off their shell, not 50. The test has
+ *     an upper bound as well as a lower one, so "make it pop" fails.
  *
- * `day` and `dusk` are close to each other, and that is honest rather than
- * hidden: both are deep eggs on a bright field, separated by saturation and a
- * few points of lightness, exactly as the owls' two bright schemes are. There
- * are only two families once a shell has to clear the field by a visible
- * margin, and inventing a third would mean one of them not clearing it.
+ * `day` and `dusk` are close to each other. There are only two families once a
+ * shell has to clear the field by a visible margin, and inventing a third would
+ * mean one of them not clearing it.
  */
 
 import { hsl, HUE_BY_NAME, PALETTE_NAMES } from "../palette";

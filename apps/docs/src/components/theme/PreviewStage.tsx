@@ -14,10 +14,8 @@ import type { ComponentDoc } from "../../componentMeta";
  * The theme, against things that already exist.
  *
  * Every demo here is one the docs already ship — the component previews from
- * the reference pages, and the example screens. Nothing is built for this page,
- * which is the point: a preview that drifts from what the library renders is
- * worse than no preview, and a second set of demos would drift the first time
- * somebody improved one of them.
+ * the reference pages, and the example screens. Nothing is built for this page:
+ * a second set of demos would drift the first time somebody improved one.
  *
  * Only the visible tab is mounted. Base UI unmounts an inactive panel, and the
  * sign-in screen holds a WebGL context — five of those behind hidden tabs is

@@ -2,11 +2,10 @@
  * The eyes the bird is drawn with.
  *
  * One shape, traced off the artboard, and no styles. Expressions used to live
- * here as ten hand-built variants — arcs for pleased, a wedge for cross. They
- * were fine, but they were code pretending to be artwork, and they had to be
- * kept in step with a drawing they were only approximating. They are drawings
- * now, like everything else that varies: see the `expression` slot in
- * `accessories.ts`. An expression brings its own eyes and hides these.
+ * here as ten hand-built variants — arcs for pleased, a wedge for cross — which
+ * had to be kept in step with a drawing they were only approximating. They are
+ * drawings now: see the `expression` slot in `accessories.ts`. An expression
+ * brings its own eyes and hides these.
  */
 
 import { closedPath, type Point } from "../geometry";
