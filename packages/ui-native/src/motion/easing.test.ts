@@ -3,15 +3,9 @@ import { sampleCurve, springSamples, springTightSamples } from "@gryt/theme";
 import { easeSpring, easeSpringTight } from "./easing";
 
 /**
- * The easings interpolate their samples inline instead of calling
- * `sampleCurve`, because a worklet cannot call a JS-thread function — doing so
- * throws "[Worklets] Tried to synchronously call a Remote Function" on the
- * first frame of every animation, which is how 0.3.0 shipped with unusable
- * motion.
- *
- * That duplication is the cost of running on the UI thread. These assert the
- * two implementations stay identical, so the copy cannot drift from the shared
- * definition the web renders from.
+ * The easings inline their samples rather than calling `sampleCurve`, because a
+ * worklet cannot call a JS-thread function — that is how 0.3.0 shipped with
+ * unusable motion. These assert the copy cannot drift.
  */
 describe("the inlined easing matches sampleCurve", () => {
   const pairs = [

@@ -53,16 +53,10 @@ describe("motion tokens match the stylesheet", () => {
 });
 
 /**
- * Every duration in @gryt/theme has a variable, whatever it is called.
- *
- * The assertions above name three, and that list being hand-written is how
- * `--gryt-dur-fast` came to be used by ScrollArea and OtpField while being
- * declared nowhere: both transitions were instant, nothing failed, and the
- * test passed because `fast` was simply not among the names anyone had thought
- * to check. GRYT-381.
- *
- * This derives the names instead, so a fourth duration cannot be added and then
- * silently go undeclared.
+ * Every duration in @gryt/theme has a variable, whatever it is called. Derived
+ * rather than listed: a hand-written list is how `--gryt-dur-fast` was used by
+ * two components while declared nowhere, with both transitions instant and
+ * nothing failing (GRYT-381).
  */
 describe("every duration in the theme is declared in the stylesheet", () => {
   /** `springSoft` -> `--gryt-dur-spring-soft`. */

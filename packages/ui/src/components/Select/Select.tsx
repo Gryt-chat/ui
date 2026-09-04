@@ -31,33 +31,19 @@ export interface SelectProps
 }
 
 /*
- * The popup portals to the document body, and no caller can change that per
- * call site. It follows GrytProvider's `containOverlays` and nothing else.
+ * **The popup portals to the document body and no caller can change that per
+ * call site.** It follows GrytProvider's `containOverlays` and nothing else.
  *
- * A `portalContainer` prop existed briefly so a Select inside a dialog could
- * render into it rather than beside it. It does not work, and it caused the
- * dropdowns in the client's server settings to open in the wrong place.
+ * A `portalContainer` prop existed briefly and does not work. Base UI computes
+ * the popup's coordinates against the viewport, and a dialog is `position:
+ * fixed` with `translate: -50% -50%` — both make it a containing block, so the
+ * dialog's own offset is counted twice. Measured with the dialog at (16, 226):
+ * the popup landed 227px low and 17px right. `positionMethod="fixed"` changes
+ * nothing, and removing the translate fixes only the vertical error.
  *
- * Base UI positions the popup by computing coordinates against the viewport. A
- * dialog is `position: fixed` and centres itself with `translate: -50% -50%`,
- * and both of those make it a containing block for positioned descendants — so
- * the coordinates get resolved against the dialog and its own offset is counted
- * twice. Measured in a browser, with the dialog at (16, 226): the popup landed
- * 227px too low and 17px too far right, matching the dialog's origin.
- *
- * Neither escape works. `positionMethod="fixed"` changes nothing. Removing the
- * translate fixes the vertical error and leaves the horizontal one, because the
- * dialog is still positioned.
- *
- * Portalling to the body is correct on both axes and already renders above the
- * dialog, so there was never a stacking problem to solve.
- *
- * The other half of GRYT-242 — a popup that genuinely needs to live inside a
- * themed subtree, because a second theme is being previewed inside a page — is
- * now `containOverlays` on GrytProvider. Deliberately not this prop back: the
- * container is set once, for a subtree, by whoever established the theme. A
- * per-call prop is the thing somebody reaches for to fix a layout problem,
- * which is how the bug above got made.
+ * The other half of GRYT-242 — a popup that has to live inside a themed subtree
+ * — is `containOverlays`, set once for a subtree by whoever established the
+ * theme rather than per call.
  */
 export function Select({
   className,

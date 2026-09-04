@@ -11,16 +11,9 @@ import { useTheme } from "../theme/useTheme";
 export type TextInputProps = RNTextInputProps;
 
 /**
- * `TextInput`, in whatever face the theme was given.
- *
- * The same job the internal `Text` does, for the one other primitive that draws
- * glyphs. Without it a field's own text stays on the platform font while its
- * label above it changes — which is more obviously wrong than either being
- * consistently wrong, and is the kind of thing that only shows up once
- * somebody types.
- *
- * The placeholder comes along for free: React Native styles it from the same
- * `fontFamily`.
+ * `TextInput`, in whatever face the theme was given — the same job the internal
+ * `Text` does. Without it a field's text stays on the platform font while its
+ * label changes, which only shows up once somebody types.
  */
 export const TextInput = forwardRef<RNTextInput, TextInputProps>(function GrytTextInput(
   { style, ...props },

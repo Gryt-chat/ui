@@ -1,26 +1,16 @@
 /**
  * Gryt's eggs: a deterministic generated image for something that is not a
- * person.
+ * person. **Nothing here may touch Math.random, Date or Intl** — the same seed
+ * has to draw the same icon on every client, forever. See rng.ts.
  *
- * The same rules as the owls, and for the same reason — the same seed draws the
- * same icon on every client, forever, so every draw is keyed on a channel name
- * and nothing touches Math.random, Date or Intl. See rng.ts.
+ * Not an owl, and that is the job. An owl is one character wearing things; this
+ * is a shape with a surface, so a member list and a list of these read as
+ * different kinds of thing.
  *
- * What it draws for is a group chat with no picture uploaded. It was written for
- * server icons, those are getting their own generator instead, and nothing here
- * is named for either — the seed is a string and what it stands for is the
- * caller's business.
- *
- * What it is not is an owl, and that is the job. An owl is one character wearing
- * things; this is a shape with a surface. Put a member list beside a list of
- * these and the two read as different kinds of thing without anybody having to
- * look twice.
- *
- * Back to front: the field, the field's own texture, then the eggs, each one
- * clipped to its shell with a tile of pattern inside it. The eggs are drawn in
- * the order Sivert painted them — deep at the back, light at the front — and
- * the palette hands out its shell tones in that order, so an arrangement of
- * three reads as three objects rather than one blob.
+ * Back to front: the field, its texture, then the eggs, each clipped to its
+ * shell with a tile of pattern inside. Drawn deep at the back and light at the
+ * front, and the palette hands out shell tones in that order, so three eggs
+ * read as three objects rather than one blob.
  */
 
 import { escapeXml, fmt, VIEWBOX } from "../geometry";
@@ -72,20 +62,10 @@ export function eggPatternByName(
 const TILE_WEIGHT = 10;
 
 /**
- * How often an egg comes up bare.
- *
- * "Nothing" is a candidate like any other, and its id is the empty string, so
- * adding a tile cannot move the draw that decides whether an egg is patterned
- * at all — only which tile it gets.
- *
- * The share is the weight against every tile's: 60 against 43 tiles at 10 each
- * is one egg in eight. That share drifts down as tiles are added, and it has to
- * — the alternative is deriving the weight from the tile count, which would
- * re-roll "is this egg bare" for every seed the next time one is added, which
- * is the exact thing the by-name draw exists to prevent.
- *
- * One in eight, because a plain egg beside two patterned ones is a rest and
- * three plain eggs is a missing icon.
+ * How often an egg comes up bare. "Nothing" is a candidate with an empty id, so
+ * adding a tile moves only which tile an egg gets, never whether it is
+ * patterned. **The share drifts down as tiles are added and has to** — deriving
+ * it from the tile count would re-roll every seed's answer.
  */
 const BARE_WEIGHT = 60;
 
@@ -114,17 +94,10 @@ function choosePattern(
 }
 
 /**
- * How often an egg borrows another hue: about one in five, and never the one at
- * the back.
- *
- * A borrowed rung is the same rung — rung 1 of violet has the lightness rung 1
- * of teal has, because the scheme decides lightness and only the hue moves. So
- * everything palette.test.ts asserts about separation still holds across a
- * mixed icon, by construction rather than by luck.
- *
- * Never the back one, because that is the egg the icon is read as. Letting it
- * wander makes the field's hue and the icon's hue two different answers to
- * "what colour is this thing".
+ * How often an egg borrows another hue: about one in five, **never the one at
+ * the back**, which is the egg the icon is read as. A borrowed rung is the same
+ * rung, since the scheme decides lightness and only the hue moves — so what
+ * palette.test.ts asserts about separation holds across a mixed icon.
  */
 const HUE_WEIGHTS: readonly (readonly [boolean, number])[] = [
   [false, 78],
@@ -159,22 +132,13 @@ function chooseHue(
 }
 
 /**
- * How much of the arrangement the tile shows.
+ * How much of the arrangement the tile shows. At 1 the eggs are whole and clear
+ * of the edge, which reads as Easter; around 1.5 they crop, which reads as an
+ * icon. Four steps, because the point is a composition that differs between
+ * seeds rather than a zoom slider.
  *
- * 1 is the drawing as painted, eggs whole and clear of the edge. Around 1.5
- * they start running off it, and the icon stops reading as objects in a nest
- * and starts reading as a mark — which is the dial for the one real problem
- * with drawing eggs at all.
- *
- * The seeded four run from 1.05 to 1.5 rather than sitting at 1, because whole
- * eggs arranged with room around them is the composition that reads as Easter,
- * and one that crops is the composition that reads as an icon. Four steps,
- * because the point is a composition that differs between seeds, not a zoom
- * slider.
- *
- * It scales the eggs and not the field. The field is the tile, and a field that
- * grew with them would put the gradient's ends off-screen and make the texture
- * a different size on every icon for no reason.
+ * **It scales the eggs and not the field**, which is the tile — a field that
+ * grew would put the gradient's ends off-screen.
  */
 const ZOOMS = [1.05, 1.2, 1.35, 1.5];
 
@@ -403,16 +367,9 @@ export function eggAvatarSvg(seed: Seed, options: EggOptions = {}): string {
   }
 
   /*
-   * The shade under every egg.
-   *
    * One gradient for the whole icon rather than one per egg, so the light comes
-   * from one direction across the arrangement instead of each egg being lit on
-   * its own. Black at a low alpha rather than a darker tone of the shell,
-   * because a shell already carries a pattern in two inks and a third tone
-   * would be a fourth thing to keep off the other three.
-   *
-   * It is what stops an egg reading as a flat sticker with a pattern printed on
-   * it — which, at three to a tile, is a decorated egg.
+   * from one direction. Black at a low alpha rather than a darker shell tone: a
+   * shell already carries a pattern in two inks.
    */
   const shade = `s${key}`;
   if (c.eggs.length > 0) {

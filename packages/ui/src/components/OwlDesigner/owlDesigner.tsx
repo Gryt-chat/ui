@@ -1,18 +1,12 @@
 /**
  * Choosing what your owl looks like, instead of only what your name hashes to.
  *
- * Everybody already has an owl — `@gryt/owl` draws one from the nickname, and
- * that is what a member list shows for anyone who has not uploaded a picture.
- * This lets somebody take that owl and choose its colours, its expression and
- * what it is wearing.
+ * Three columns: slots on a rail, every option for the chosen slot as a grid of
+ * owls, and the owl pinned on the right where it does not scroll away —
+ * comparing two hats should be looking rather than remembering.
  *
- * Three columns: the slots on a rail, every option for the chosen slot as a
- * grid of owls, and the owl itself pinned on the right where it does not scroll
- * away. That last part is the whole reason for this shape — comparing two hats
- * should be looking rather than remembering.
- *
- * Options are drawn, never named. The expression slot holds fourteen things and
- * `eyes-eyelashes-surprised` in a dropdown tells nobody anything.
+ * **Options are drawn, never named.** `eyes-eyelashes-surprised` in a dropdown
+ * tells nobody anything.
  */
 
 import {
@@ -189,22 +183,12 @@ async function renderToPng(seed: string, look: WornLook, size = 512): Promise<Bl
 }
 
 /**
- * The preview owl, cross-faded rather than swapped.
+ * The preview owl, cross-faded rather than swapped — changing an `<img>`'s src
+ * leaves a frame of nothing while the new one decodes, so every equip flashed.
  *
- * Changing an `<img>`'s src tears the old picture down, decodes the new one and
- * puts it up, and the gap between those is a frame of nothing. Every equip
- * flashed.
- *
- * So each look is a layer of its own, stacked, and the new one fades in over
- * the old. Two rules make it never blank:
- *
- *   - a layer does not start fading until its own image has decoded, so there
- *     is always a finished picture underneath the one arriving;
- *   - the layers below are only dropped once the top one is fully opaque.
- *
- * Clicking quickly is fine. Several layers can be in flight, they fade on their
- * own timers, and whichever finishes last wins — there is no queue to get out of
- * order and nothing to cancel.
+ * Two rules keep it from ever going blank: a layer does not start fading until
+ * its own image has decoded, and the layers below are dropped only once the top
+ * one is fully opaque. Several can be in flight; whichever finishes last wins.
  */
 function CrossfadeOwl({ src, className }: { src?: string; className?: string }) {
   // Newest last. Each entry is one rendered look.
@@ -460,15 +444,9 @@ export function AvatarChoiceDialog({
 /* --- the editor ---------------------------------------------------------- */
 
 /**
- * The designer itself, with no dialog around it.
- *
- * Split out so it can sit in a page as well as in a modal. The client opens it
- * from settings and wants the dialog; gryt.chat puts it straight on the front
- * page, where a modal would mean asking somebody to open a window to look at a
- * toy. `OwlDesignerDialog` below is now a thin wrapper around this.
- *
- * `onCancel` is optional. Inline there is nothing to cancel back to, so the
- * button is simply absent rather than present and inert.
+ * The designer itself, with no dialog around it, so it can sit in a page as well
+ * as a modal. `onCancel` is optional: inline there is nothing to cancel back to,
+ * so the button is absent rather than present and inert.
  */
 export function OwlDesigner({
   nickname,
@@ -588,28 +566,15 @@ export function OwlDesigner({
   const paneLabel = SLOTS.find((s) => s.slot === pane)?.label ?? "Colour";
 
   /*
-   * `@container`, and the container variants below, rather than `md:`.
-   *
-   * What decides whether three columns fit is how wide *this* is, and this is
-   * a dialog: `w-[64rem]` capped by `max-w-[calc(100vw-2rem)]`. A viewport
-   * breakpoint answers a different question, and the gap between them is a
-   * 1024px dialog stacking itself in a window a little under 768px — the
-   * category rail across the top, the grid full width beneath it, and Use this
-   * owl below the fold of a panel whose scroll is not where anybody looks.
-   *
-   * 48rem is the same number `md` was. Nothing changes for a dialog at its
-   * full width; the breakpoint is now measured against the thing it describes.
+   * `@container` rather than `md:`: what decides whether three columns fit is
+   * how wide *this* is, and a viewport breakpoint had a 1024px dialog stacking
+   * itself in a window just under 768px. 48rem is the same number `md` was.
    */
   return (
     /*
-     * The container is this wrapper, and the layout switch is on the child.
-     *
+     * **The container is this wrapper and the layout switch is on the child.**
      * `@3xl:` asks the nearest *ancestor* container, so an element carrying
-     * both `@container` and `@3xl:flex-row` never answers its own question —
-     * it stays a column at every width while its children, which do have an
-     * ancestor container, switch correctly. That is a 1024px panel with a
-     * 192px rail stacked on top of a full-width grid, which is precisely the
-     * bug this was meant to fix.
+     * both never answers its own question and stays a column at every width.
      */
     <div className="@container flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto @3xl:flex-row">

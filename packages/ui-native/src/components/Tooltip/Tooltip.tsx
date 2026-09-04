@@ -9,17 +9,10 @@ import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
 import { useTheme } from "../../theme";
 
 /**
- * A tooltip on a device with no pointer.
- *
- * The web shows one on hover, after a delay, and hides it when the pointer
- * leaves. A phone has no hover, so this opens on a long press and closes when
- * the press ends, which is the convention on both platforms for "tell me what
- * this is without activating it".
- *
- * That makes it a different interaction wearing the same name, and it is the
- * component where 1:1 is least achievable. It is in the exceptions table. An
- * interface that depends on tooltips to be usable will not survive the port, and
- * that is worth knowing at design time rather than at QA.
+ * A tooltip on a device with no pointer: opens on a long press, closes when the
+ * press ends. **A different interaction wearing the same name**, and the
+ * component where 1:1 is least achievable — an interface that depends on
+ * tooltips to be usable will not survive the port. In the exceptions table.
  */
 
 interface TooltipContextValue {

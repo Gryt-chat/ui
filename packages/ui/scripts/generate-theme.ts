@@ -1,12 +1,8 @@
 /**
- * Writes the scale block in src/styles/theme.css from the generator in
- * the OKLCH maths in @gryt/theme.
- *
- * The stylesheet has to hold literal values — a CSS custom property cannot be
- * computed at parse time, and dist/styles.css is what a consumer imports — but
- * literals are exactly what drifts. So they are emitted rather than typed, and
- * theme.test.ts fails the build if the file stops matching what comes out of
- * here.
+ * Writes the scale block in src/styles/theme.css from the OKLCH maths in
+ * @gryt/theme. The stylesheet has to hold literals, and literals drift — so
+ * they are emitted, and theme.test.ts fails the build if the file stops
+ * matching.
  *
  *   bun scripts/generate-theme.ts
  */

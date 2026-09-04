@@ -1,15 +1,10 @@
 import type { NativeTheme, Ramp } from "./createNativeTheme";
 
 /**
- * Roles to ramps.
- *
- * `@gryt/ui` names its component tones by role — primary, secondary, neutral,
- * danger — while the ramps are named by hue. On the web the mapping is buried in
- * Tailwind classes, one component at a time: Button says
- * `primary: "bg-gryt-accent"`, Checkbox says the same thing again.
- *
- * Written once here, because four copies of "primary means accent" is how one of
- * them eventually stops meaning it.
+ * Roles to ramps. `@gryt/ui` names tones by role and the ramps are named by
+ * hue; on the web that mapping is repeated in Tailwind classes one component at
+ * a time. Written once here, because four copies of "primary means accent" is
+ * how one of them stops meaning it.
  */
 export type ComponentTone =
   | "primary"

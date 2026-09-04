@@ -11,20 +11,14 @@ import {
 } from "@gryt/theme";
 
 /**
- * The same theme, without CSS.
+ * The same theme, without CSS. React Native has no custom properties and no
+ * cascade, so it cannot consume `createGrytTheme`'s output — but it can consume
+ * the maths underneath, and `neutralScale`, `hueScale` and `alphaScale` are
+ * exported for exactly this. **A copy here would drift the moment somebody
+ * tunes a curve on the web.**
  *
- * `createGrytTheme` in `@gryt/theme` returns `CSSProperties` — a map of
- * `--gryt-accent-9` style custom properties. React Native has no custom
- * properties and no cascade, so it cannot consume that at all.
- *
- * What it can consume is the maths underneath. `neutralScale`, `hueScale` and
- * `alphaScale` are exported from `@gryt/theme` for exactly this, so the two
- * renderers compute their ramps from one implementation of the OKLab
- * conversions rather than two. A copy here would drift the moment somebody
- * tunes a curve on the web.
- *
- * Same inputs as `createGrytTheme`, so a theme a person built in the web client
- * — and which travels as an encoded document — produces the same colours here.
+ * Same inputs as `createGrytTheme`, so a theme built in the web client produces
+ * the same colours here.
  */
 
 export type GrytAppearance = "dark" | "light";
@@ -39,23 +33,15 @@ export interface NativeThemeOptions {
 /**
  * The faces an app has registered, by the names React Native knows them as.
  *
- * **The library ships no font files and is not going to.** A font is a
- * megabyte-scale asset with a licence attached, and bundling one would make
- * every consumer carry it whether they use it or not. What the library can do
- * is stop hard-coding the platform default: an app loads its own faces —
- * `expo-font`, `Font.loadAsync`, a native `Info.plist` entry, whichever — and
- * passes the resulting family names in here.
+ * **The library ships no font files and is not going to.** An app loads its own
+ * and passes the resulting family names in here.
  *
  * **One family per weight rather than one family with weights inside it.**
- * Grouping faces under a single family name and letting `fontWeight` select
- * between them works on iOS, where the OS reads the name table and assembles
- * the family itself. Android does not: a custom family there wants an XML
- * definition per weight, and a `fontWeight` it cannot satisfy is ignored rather
- * than synthesised. Naming each face is the shape that behaves the same on both.
+ * Grouping under a single name and letting `fontWeight` select works on iOS,
+ * where the OS reads the name table; Android wants an XML definition per weight
+ * and ignores a `fontWeight` it cannot satisfy rather than synthesising it.
  *
- * Every field is optional. A gap falls back to the nearest lighter face that
- * was given, and a theme with no faces at all behaves exactly as this library
- * did before any of this existed.
+ * Every field is optional. A gap falls back to the nearest lighter face given.
  */
 export interface FontFaces {
   /** 400. The one everything else falls back to. */

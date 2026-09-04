@@ -1,14 +1,10 @@
 /**
- * sRGB and OKLCH, and the scale generator that runs on both sides of the build.
+ * sRGB and OKLCH, and the scale generator. At runtime rather than only in a
+ * script because overriding a colour has to regenerate its whole scale — a
+ * theme that set `--gryt-accent` and left `--gryt-accent-9` alone would change
+ * almost nothing, since the components read the scale.
  *
- * This exists at runtime rather than only in a script because overriding a
- * colour has to regenerate that colour's whole scale. A theme that set
- * --gryt-accent and left --gryt-accent-9 alone would change almost nothing:
- * the components read the scale.
- *
- * No dependency. The conversions are the published OKLab matrices, and the
- * whole file is about eighty lines of arithmetic — a colour library would be
- * more weight than the maths it replaces.
+ * No dependency: the published OKLab matrices are eighty lines of arithmetic.
  */
 
 export interface Oklch {
@@ -96,13 +92,10 @@ const HUE_L = [0.195, 0.24, 0.27, 0.3, 0.33, 0.37, 0.43, 0.52];
 const HUE_C = [0.014, 0.026, 0.04, 0.052, 0.062, 0.072, 0.084, 0.1];
 
 /**
- * Twelve steps for a hue, from its solid step and the lighter one beside it.
- *
- * Steps 1 to 8 are the hue sunk into the dark end of the ramp — backgrounds,
- * then borders. 9 and 10 are the anchors themselves. 11 and 12 are text, and
- * they are placed relative to 10 rather than at a fixed lightness: the -light
- * tokens differ family to family, so a fixed value puts the text step above the
- * fill in one scale and below it in another.
+ * Twelve steps for a hue. 1-8 are backgrounds and borders, 9 and 10 the
+ * anchors, 11 and 12 text — **placed relative to 10 rather than at a fixed
+ * lightness**, since the -light tokens differ family to family and a fixed
+ * value puts text above the fill in one scale and below it in another.
  */
 export function hueScale(solid: string, solidHover: string): string[] {
   const { h } = hexToOklch(solid);
@@ -186,15 +179,12 @@ export function alphaScale(scale: string[], background: string): string[] {
 }
 
 /* ── light ──────────────────────────────────────────────────────────────
-   Not a mirror of the dark ramps, because elevation does not mirror. In dark,
-   a surface sitting on the page is lighter than the page; in light it is
-   whiter and the page is the grey one. So step 1 is a light grey page and step
-   2 is white, and the ramp is deliberately not monotonic across those two —
-   that non-monotonicity *is* the elevation.
+   Not a mirror of the dark ramps, because elevation does not mirror: step 1 is
+   a light grey page and step 2 is white, so **the ramp is deliberately not
+   monotonic across those two** — that non-monotonicity is the elevation.
 
-   The text steps are the ones that had to be measured. In dark they need to be
-   light enough on near-black; here they need to be dark enough on white, which
-   is a different and tighter constraint because step 2 is pure white. */
+   The text steps were measured. Here they have to be dark enough on white,
+   which is tighter than being light enough on near-black. */
 
 const LIGHT_NEUTRAL_L = [
   0.962, 1.0, 0.978, 0.952, 0.928, 0.898, 0.855, 0.79, 0.66, 0.61, 0.48, 0.25

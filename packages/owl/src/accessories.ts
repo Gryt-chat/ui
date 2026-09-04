@@ -1,44 +1,26 @@
 /**
- * What an owl can wear.
+ * What an owl can wear. Empty on purpose — the drawings go in below, and this
+ * file is the whole of what adding one involves.
  *
- * Empty on purpose. The drawings go in below, and this file is the whole of
- * what adding one involves.
+ * **An accessory is exported on the same 1024 x 1024 frame as the owl**,
+ * positioned where it should sit, with the background, body, face plate, eyes
+ * and beak layers removed. Its path data goes in verbatim: no scaling, no
+ * anchor point, no arithmetic. An earlier pass gave each drawing its own
+ * coordinate space and needed two numbers guessed by eye per accessory, which
+ * is where the crooked ones came from.
  *
- * ## Adding one
+ * Each path names a colour role rather than a hex, so a teal owl and a pink owl
+ * wear the same hat in their own colours. The roles are the keys of
+ * `OwlPalette`.
  *
- * An accessory is exported from the design file on the **same 1024 x 1024 frame
- * as the owl**, positioned exactly where it should sit, with the background,
- * body, face plate, eyes and beak layers removed. Its path data then goes in
- * here verbatim — no scaling, no anchor point, no arithmetic. That is the entire
- * reason for the 1024 frame: an earlier pass had each drawing in its own
- * coordinate space and every one of them needed two numbers guessed by eye,
- * which is where the crooked ones came from.
- *
- * Each path names a colour role rather than carrying a hex, so a teal owl and a
- * pink owl wear the same hat in their own colours. The roles are the keys of
- * `OwlPalette` — `trim`, `trimDeep`, `trimSoft`, `gold`, `goldDeep`, `accent`,
- * `wing`, `face`. The drawn accessories mostly used the bird's own hue at a
- * different lightness, which is what `trim` and its two neighbours are for;
- * `gold` is the odd one out and it is what the scarf and the pilot frames were
- * painted in.
- *
- * ## Slots and layers
- *
- * `slot` is where it is worn, and one accessory is drawn per slot. Four slots
- * means a hat and glasses and a scarf are three independent rolls that can all
- * come up at once — and that two hats never can.
- *
- * `layer` is where it lands in the stack, and it is per accessory rather than
- * per slot because two things worn in the same place do not always sit at the
- * same depth. A pair of glasses whose lenses are painted rather than punched
- * has to go under the eyes, so the owl's own eyes land on top of it and the
- * expression still shows through the glass. A frame with real holes in it wants
- * to be over them. Both are `slot: "eyes"`.
+ * `slot` is where it is worn and one accessory is drawn per slot, so two hats
+ * never come up at once. `layer` is per accessory rather than per slot, because
+ * glasses with painted lenses go under the eyes so the expression shows
+ * through, while a frame with real holes wants to be over them.
  *
  * `excludes` is for the pairs that are each fine alone and wrong together — a
  * scarf under a buttoned jacket, a hat under a hood.
  */
-
 import { GENERATED_ACCESSORIES } from "./accessories.generated";
 import type {
   AccessoryLayer,
@@ -55,12 +37,8 @@ export interface AccessoryPath {
   /** Which palette colour fills this path. Absent on a stroke-only line. */
   fill?: PaletteSlot;
   /**
-   * A line rather than a shape.
-   *
-   * Not every drawn thing is a filled outline — the winter jacket's sleeve
-   * seams are drawn with the pen tool and come out as a stroke with no fill at
-   * all. Treated as a fill they turn into solid blobs across the sleeve, so the
-   * stroke has to survive the trip.
+   * A line rather than a shape. Pen-tool seams come out as a stroke with no
+   * fill, and treated as a fill they become solid blobs across the sleeve.
    */
   stroke?: PaletteSlot;
   /** In artwork units, on the 1024 frame. */
@@ -98,26 +76,15 @@ export interface Accessory {
    */
   key: string;
   /**
-   * Base parts this repaints, as role -> role.
-   *
-   * A coat covers the owl's arms, so the drawing paints the wings in the
-   * background's colour and they vanish. That is a change to the bird rather
-   * than a shape drawn on top of it, and it has to travel with the coat: the
-   * extractor spots the recoloured path and records `{ wing: "background" }`
-   * here rather than quietly subtracting it away and losing the intent.
-   *
-   * Repaints a role, not a path, so both wings go together and it still works
-   * on all thirty palettes.
+   * Base parts this repaints, as role -> role — a coat covers the arms, so the
+   * drawing paints the wings in the background's colour. A role rather than a
+   * path, so both wings go together and it works on all thirty palettes.
    */
   recolour?: Readonly<Partial<Record<PaletteSlot, PaletteSlot>>>;
   /**
-   * Parts of the bird this replaces, which are then not drawn at all.
-   *
-   * An expression brings its own eyes. In the drawing that reads as the eyes
-   * being painted the same colour as the face plate, but painting them out is
-   * not the same as leaving them out: the eyes and the beak are both drawn in
-   * `accent`, so a repaint would take the beak with them, and a plate-coloured
-   * disc is wrong anywhere the plate is not what is behind it.
+   * Parts of the bird this replaces, not drawn at all. Painting them out is not
+   * the same: the eyes and the beak share `accent`, so a repaint takes the beak
+   * with them, and a plate-coloured disc is wrong wherever the plate is not.
    */
   hides?: readonly OwlPart[];
   /** Drawn in order, back to front. Keep the design file's own order. */
@@ -126,23 +93,14 @@ export interface Accessory {
 
 /**
  * The bird an accessory is drawn on top of, and the one the extractor subtracts
- * back out.
+ * back out. Exported because the script writing owl-base.svg and the download
+ * on the site's drawing guide **have to agree exactly** — a drifted copy hands
+ * somebody a bird unlike the one their drawing is measured against, and every
+ * path fails to match with nothing saying why.
  *
- * Exported because two places need it and they have to agree exactly: the
- * script that writes owl-base.svg, and the download on the site's drawing
- * guide. A second copy that drifted would hand somebody a bird a little unlike
- * the one their drawing is measured against, and every path would fail to
- * match with nothing saying why.
- *
- * The palette is only there so the drawing is pleasant to work on — the
- * subtraction matches on geometry and ignores colour except where it has
- * changed. `tufts` ears because that is the drawn owl, and an accessory
- * positioned against any other would sit a little wrong on this one.
- *
- * Every slot is emptied explicitly, and that is not belt and braces. Left to
- * the seed the bird would wear whatever the registry rolled for it, so the
- * moment the first accessory landed the bird being subtracted stopped being
- * bare and every drawing failed to match. That happened.
+ * `tufts` ears because that is the drawn owl. **Every slot is emptied
+ * explicitly**: left to the seed the bird wears whatever the registry rolls, so
+ * the first accessory to land made the subtracted bird not bare.
  */
 export const OWL_BASE = {
   palette: "teal",
@@ -159,27 +117,14 @@ export const OWL_BASE = {
 } as const satisfies OwlOptions;
 
 /**
- * How often a slot is filled at all.
+ * How often a slot is filled at all. A generated weight is a share of its slot;
+ * these decide how big the slot is against nothing, and the generator sizes the
+ * weights to hit them — so **these numbers hold however many drawings land in
+ * artwork/**. An eighth pair of glasses changes which glasses turn up, not
+ * whether anyone is wearing any.
  *
- * The knob that matters, and the one that used to not exist. A weight in the
- * generated list is a share of its slot; these decide how big the slot is
- * against nothing, and the generator sizes the weights to hit them. So the
- * numbers here hold however many drawings land in artwork/ — an eighth pair of
- * glasses changes which glasses turn up, not whether anyone is wearing any.
- *
- * That was not true before. Weights were written by hand against a fixed
- * EMPTY_WEIGHT, so every drawing added to a slot made that slot more likely to
- * be filled: eight pairs of glasses had put eyewear on 38% of owls, and a ninth
- * would have pushed it past that without anybody choosing it. The comment here
- * used to describe that as adding "a fifth hat makes hats a little more common",
- * which was accurate and is the drift.
- *
- * Kept low on purpose. A uniform draw over a slot's contents plus nothing puts
- * a hat on most of a member list, and at that rate the hat stops being a thing
- * about that person and becomes noise.
- *
- * These are the rates the hand-written weights happened to produce, carried
- * over so adopting the model moved nobody by itself.
+ * Kept low on purpose: at a higher rate a hat stops being a thing about that
+ * person and becomes noise.
  */
 export const SLOT_PRESENCE: Record<AccessorySlot, number> = {
   // Empty here is not a face with no eyes — it is the eyes the bird is drawn
@@ -192,16 +137,9 @@ export const SLOT_PRESENCE: Record<AccessorySlot, number> = {
 };
 
 /**
- * How much weight "nothing" carries in each slot.
- *
- * The same in every slot now, and it is only the denominator SLOT_PRESENCE is
- * measured against — the generator picks weights to suit it. Change
- * SLOT_PRESENCE to make a slot rarer; this number does nothing on its own.
- *
- * A thousand rather than a hundred so there is room to divide. Weights are
- * whole numbers, so this is the resolution the split between drawings is cut
- * at, and a slot with thirty of them in it still lands on the rate it asked
- * for rather than a few points under.
+ * The denominator SLOT_PRESENCE is measured against. **Change SLOT_PRESENCE to
+ * make a slot rarer; this number does nothing on its own.** A thousand rather
+ * than a hundred so a slot with thirty drawings still lands on its rate.
  */
 /**
  * The order slots are drawn in, and the order they are chosen in.
@@ -222,12 +160,9 @@ export const EMPTY_WEIGHT: Record<AccessorySlot, number> = {
 };
 
 /**
- * Everything an owl can wear.
- *
- * Generated from `artwork/` by `scripts/owl-accessory.mjs --all`, which takes a
- * drawing of the bird wearing something and subtracts the bird back out. The
- * drawings are the source; this list is derived from them, and editing it by
- * hand means the next run of that script throws the edit away.
+ * Everything an owl can wear, generated from `artwork/` by
+ * `scripts/owl-accessory.mjs --all`. **Editing this by hand means the next run
+ * throws the edit away.**
  */
 export const ACCESSORIES: readonly Accessory[] = GENERATED_ACCESSORIES;
 
@@ -240,12 +175,10 @@ export function accessoryByName(name: string): Accessory | undefined {
 }
 
 /**
- * The palette after everything worn has had its say.
- *
- * Applied in slot order so two garments asking for the same repaint settle it
- * the same way on every client. Reads every role off the original palette, not
- * off the half-updated copy, so `{ wing: "background", background: "wing" }`
- * swaps them rather than collapsing both into one.
+ * The palette after everything worn has had its say. In slot order, so two
+ * garments asking for the same repaint settle it the same way everywhere.
+ * **Reads roles off the original palette**, so a swap swaps rather than
+ * collapsing both into one.
  */
 export function repaint(palette: OwlPalette, worn: readonly Accessory[]): OwlPalette {
   let out = palette;
