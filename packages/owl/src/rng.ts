@@ -40,30 +40,26 @@ export function pick<T>(seed: string, channel: string, list: readonly T[]): T {
  * One entry from `entries`, by weight, drawing each on its own channel so the
  * result does not depend on what else was in the running.
  *
- * This is the rule at the top of this file, finally applied to accessories.
  * `pickWeighted` lays every candidate out along one range and rolls once, so
  * the range is shared: add a drawing to a slot and every boundary after it
  * moves, and people who do not even end up wearing the new thing are handed
  * something different. Measured on the seventeen accessories before this
- * existed, adding one hat changed 28.6% of owls while only 8.7% wore the hat —
- * a fifth of everybody reshuffled for nothing, and that was the price of every
- * drawing ever added.
+ * existed, adding one hat changed 28.6% of owls while only 8.7% wore the hat.
  *
- * Instead each candidate gets an independent draw and the best one wins, which
- * is the exponential-clock trick: with `u` uniform on [0,1), the largest
+ * Instead each candidate gets an independent draw and the best one wins — the
+ * exponential-clock trick: with `u` uniform on [0,1), the largest
  * `u ** (1 / weight)` picks exactly in proportion to weight. A candidate's key
  * depends only on the seed, the channel and its own name and weight, so adding
- * one can only take owls from the others — never trade two untouched
- * candidates against each other.
+ * one can only take owls from the others, never trade two untouched candidates
+ * against each other.
  *
  * Compared in log space, because `u ** (1 / weight)` underflows to zero for the
- * weights here. `log` is the one part of this that a JavaScript engine is
- * allowed to round differently — the same expression may land a bit apart on
- * V8 and on Hermes, which is a real problem for a package whose whole promise
- * is that the desktop app and the phone draw one person the same way. So the
- * keys are rounded well inside any plausible disagreement before they are
- * compared, and an exact tie falls back to the name. Nothing here can come out
- * differently on two devices.
+ * weights here. `log` is the one part of this a JavaScript engine is allowed to
+ * round differently — the same expression may land a bit apart on V8 and on
+ * Hermes, which is a real problem for a package whose whole promise is that the
+ * desktop app and the phone draw one person the same way. So the keys are
+ * rounded well inside any plausible disagreement before they are compared, and
+ * an exact tie falls back to the name.
  */
 export function pickWeightedByName<T>(
   seed: string,

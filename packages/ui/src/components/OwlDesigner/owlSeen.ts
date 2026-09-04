@@ -2,24 +2,16 @@
  * Which cosmetics somebody has already had a look at.
  *
  * Cosmetics get added and nothing says so, so the editor puts a dot on the ones
- * that are new — on the drawing itself, and on its slot in the rail so you know
- * which category to open.
+ * that are new — on the drawing itself, and on its slot in the rail.
  *
- * The whole feature turns on one decision, and it is the first-run case rather
- * than anything about drawing dots.
+ * The whole feature turns on the first-run case. A fresh install has no record,
+ * and treating "not in the record" as "new" would light up all thirty-seven on
+ * the first open: a badge on everything is a badge on nothing. So the first
+ * read writes the whole registry into the record and reports nothing as new,
+ * and the badge means exactly one thing — added since you last looked.
  *
- * A fresh install has no record. Treating "not in the record" as "new" would
- * light up all thirty-seven on the first open, which is worse than no badge at
- * all: a badge on everything is a badge on nothing, and it trains somebody to
- * ignore the dot before they have ever seen it mean something. So the first
- * read writes the whole registry into the record and reports nothing as new.
- *
- * The badge therefore means exactly one thing — added since you last looked —
- * which is the only thing it is any use for.
- *
- * localStorage, beside the wardrobe. It is a list of names; losing it costs a
- * dot rather than an avatar, and IndexedDB would be a lot of machinery for
- * something with that consequence.
+ * localStorage, beside the wardrobe. Losing it costs a dot rather than an
+ * avatar, and IndexedDB would be a lot of machinery for that consequence.
  */
 
 const STORAGE_KEY = "gryt.owlSeen";

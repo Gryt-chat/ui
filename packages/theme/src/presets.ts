@@ -5,12 +5,10 @@
  * above each preset rather than from memory. Where a palette defines both a
  * dark and a light variant both are here, which is why `lightHue` exists.
  *
- * Two limits the page states as well. Gryt names seven neutral anchors and most
- * palettes name fewer, so steps in between are `derived` — never invented, they
- * sit between two published values. And mapping a palette's names onto page,
- * surface, border, muted and text is a judgement.
- *
- * Radius is part of a preset: GitHub's buttons are not pills.
+ * Gryt names seven neutral anchors and most palettes name fewer, so steps in
+ * between are `derived` — never invented, they sit between two published
+ * values. Mapping a palette's names onto page, surface, border, muted and text
+ * is a judgement. Radius is part of a preset: GitHub's buttons are not pills.
  *
  * Names belong to their projects. Dracula, Nord, Catppuccin, Solarized and
  * shadcn/ui are MIT-licensed; the rest are referenced by name only.

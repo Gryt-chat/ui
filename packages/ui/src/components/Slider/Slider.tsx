@@ -16,24 +16,20 @@ export interface SliderProps
 const DRAG_SLOP = 3;
 
 /**
- * The travel is animated, on the spring.
- *
- * Two things about that are worth reading before changing it.
+ * The travel is animated, on the spring. Two things about that before changing
+ * it.
  *
  * It uses --ease-spring-tight rather than --ease-spring. The overshoot in the
  * standard spring is a percentage of the travel, which is texture on a control
  * that scales in place and a problem on one whose travel is its own width: a
  * full-track jump measured 110% along a 919px track, putting the thumb 96px
- * outside the slider before it came back. The thumb still scales on the
- * standard spring, where the overshoot belongs.
+ * outside the slider. The thumb still scales on the standard spring.
  *
  * And it animates on a click or an arrow key but not under a dragging pointer,
  * where a transition means the thumb lags behind the cursor. Base UI's
- * data-dragging is not the right signal for that: it appears on pointerdown,
- * which is also how you click the track, so keying off it would kill the
- * animation for the most common interaction there is. What matters is whether
- * the pointer has actually moved, so that is what is tracked here — with a few
- * pixels of slop, because a mouse rarely stays perfectly still through a click.
+ * data-dragging is not the right signal: it appears on pointerdown, which is
+ * also how you click the track. What matters is whether the pointer has moved,
+ * with a few pixels of slop, because a mouse rarely stays still through a click.
  */
 export function Slider({
   className,

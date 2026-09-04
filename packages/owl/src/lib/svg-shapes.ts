@@ -148,22 +148,18 @@ const IGNORED = new Set(["svg", "g", "defs", "clippath", "mask", "title", "desc"
  *
  * Everything downstream compares colours as strings — the extractor decides
  * "this arm is painted the background, so the drawing means to remove it" with
- * `p.fill === realPalette.background`, and the ink table is keyed on hex. A
- * tool that writes the same colour differently is therefore a tool whose
- * drawings quietly do the wrong thing.
+ * `p.fill === realPalette.background`, and the ink table is keyed on hex.
  *
- * Quietly is the problem. A wing whose colour matches nothing falls through to
- * "could not place this", which drops the path and adds a warning — so the arm
- * is neither hidden nor recoloured, the bird's own wing draws, and the run
- * succeeds. Figma writes `#6cdac8ff` and the jackets stopped dropping their
- * arms, with a warning line as the only sign.
+ * A wing whose colour matches nothing falls through to "could not place this",
+ * which drops the path and adds a warning — so the arm is neither hidden nor
+ * recoloured, the bird's own wing draws, and the run succeeds. Figma writes
+ * `#6cdac8ff` and the jackets stopped dropping their arms, with a warning line
+ * as the only sign.
  *
  * `#rgb`, `rgb()` and `rgba()` all fold to six-digit hex. An eight-digit hex
- * folds only when its alpha is `ff`.
- *
- * A real alpha is left exactly as it was. `#6cdac880` is a translucent colour
- * and genuinely is not the background; flattening it would trade a silent miss
- * for a silent lie, and failing loudly is the better of the two.
+ * folds only when its alpha is `ff`. A real alpha is left exactly as it was:
+ * `#6cdac880` genuinely is not the background, and flattening it would trade a
+ * silent miss for a silent lie.
  */
 export function colour(raw: string | undefined): string {
   const value = (raw || "none").trim().toLowerCase();

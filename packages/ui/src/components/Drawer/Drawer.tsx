@@ -10,11 +10,9 @@ export type DrawerSide = "left" | "right" | "top" | "bottom";
  * A panel pinned to an edge of the screen, and a sheet on small screens.
  *
  * Built on Base UI's `drawer` rather than on `dialog`, which is what this used
- * to be. A dialog pinned to an edge looks like a drawer and does none of what
- * one is for: it cannot be dragged away, it does not follow the finger, and it
- * does not know which edge it belongs to. The primitive brings swipe-to-dismiss,
- * snap points and nested stacking, and it drives the drag through CSS variables
- * so the panel tracks the pointer without a re-render per frame.
+ * to be. The primitive brings swipe-to-dismiss, snap points and nested
+ * stacking, and it drives the drag through CSS variables so the panel tracks
+ * the pointer without a re-render per frame.
  *
  * `side` lives on Root, not on Popup as it used to. It has to: the swipe
  * direction is Root's business, and Viewport and Popup both need to agree with

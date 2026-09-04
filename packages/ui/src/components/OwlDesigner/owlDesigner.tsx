@@ -531,11 +531,10 @@ export function OwlDesigner({
   /*
    * A thumbnail is your owl with the one thing swapped in, rather than a bare
    * bird wearing it alone. Seeing a hat on the face you already chose is the
-   * thing being decided; seeing it on a stranger is a different question.
+   * thing being decided.
    *
-   * The cost is that a hat sits in every expression thumbnail, which is fine
-   * and is arguably the point — if it hides the eyes, that is worth knowing
-   * before choosing rather than after.
+   * The cost is that a hat sits in every expression thumbnail — which is fine:
+   * if it hides the eyes, that is better known before choosing than after.
    */
   const thumb = useCallback(
     (over: Partial<WornLook>) =>

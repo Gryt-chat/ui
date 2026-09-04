@@ -5,15 +5,12 @@
  * silently degrades: `--base` writes these names into the bird it hands out,
  * and the extractor reads them back to work out which parts a drawing means to
  * replace. A drawing tool keeps layer names through an export, so the name is
- * the one piece of a drawing that survives the tool rewriting every number in
- * it.
+ * the one piece of a drawing that survives the tool rewriting every number.
  *
- * They read like something a person would call the part rather than like the
- * generator's own field — "Left Arm", not `wingLeft`. Somebody hiding a layer
- * in Figma sees this list, not the code, and the bird has arms.
+ * They read like something a person would call the part — "Left Arm", not
+ * `wingLeft` — because somebody hiding a layer in Figma sees this list.
  *
- * One entry per path, in the order the generator draws them, so the table can
- * be zipped straight onto `owlPartPaths`.
+ * One entry per path, in the order the generator draws them.
  */
 
 import * as owl from "../index";
@@ -44,19 +41,16 @@ export const GROUPED_PARTS: readonly OwlPart[] = [
 /**
  * The bird to draw on, with each of its parts on a named layer.
  *
- * This is the half of the contract the tool owes. Hide `Left Eye` in the
- * drawing and the extraction knows the drawing replaces the left eye — nothing
- * to configure, and nothing a re-export can rewrite, because a drawing tool
- * carries layer names through an export even as it re-rounds every number.
+ * Hide `Left Eye` in the drawing and the extraction knows the drawing replaces
+ * the left eye — nothing to configure, and nothing a re-export can rewrite.
  *
- * A drawing exported without the group still extracts: the bird gets
- * recognised by its geometry instead. That route only holds while the drawing
- * sits on a bird nobody nudged, which is the failure this replaces.
+ * A drawing exported without the group still extracts: the bird gets recognised
+ * by its geometry instead. That route only holds while the drawing sits on a
+ * bird nobody nudged, which is the failure this replaces.
  *
  * Built by putting ids into the generated markup rather than by drawing the
  * bird a second time here. `owlPartPaths` walks the same renderers in the same
- * order, so the two line up path for path — and when they stop, this throws
- * rather than handing out a bird with its arms labelled as eyes.
+ * order, so the two line up path for path — and when they stop, this throws.
  */
 export function owlBaseSvg(options: owl.OwlOptions = owl.OWL_BASE): string {
   const svg = owl.owlAvatarSvg("base", options);

@@ -48,16 +48,12 @@ function Trigger({ children, style }: { children?: ReactNode; style?: StyleProp<
 }
 
 /**
- * Animates its height, the same as the web.
+ * Animates its height, the same curve and duration as the web.
  *
- * The web transitions height on `ease-spring` at `--gryt-dur-spring`, and this
- * now does the same curve at the same duration.
- *
- * The content has to be measured before its height can be animated to, which
- * is why this was unmounted-when-closed to begin with. It is measured off an
+ * The content has to be measured before its height can be animated to, which is
+ * why this was unmounted-when-closed to begin with. It is measured off an
  * absolutely positioned copy that never affects layout, so nothing is drawn at
- * the wrong size on the way in — the earlier objection was to measuring the
- * visible content and paying a frame for it.
+ * the wrong size on the way in.
  *
  * Children stay mounted while closed, at height zero with `overflow: hidden`,
  * matching the web. That is a behaviour change as well as a visual one: state

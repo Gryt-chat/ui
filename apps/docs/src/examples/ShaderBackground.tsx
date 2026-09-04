@@ -36,24 +36,22 @@ function toRgb(value: string, fallback: string): [number, number, number] {
  * The animated page background.
  *
  * Raw WebGL rather than three.js. A fullscreen background is two triangles and
- * a fragment shader; three.js is a scene graph, and it would add roughly 170 KB
+ * a fragment shader; three.js is a scene graph and would add roughly 170 KB
  * gzipped to the page standing between someone and the product. The look lives
- * entirely in ./shader.ts, so changing it later is one file.
+ * entirely in ./shader.ts.
  *
- * The colours come from the theme. With no `palette` prop it reads
- * --gryt-bg, --gryt-accent and --gryt-secondary off its own element, so a
- * screen inside a themed provider gets a background that matches it. Pass the
- * prop when the theme changes without remounting — reading a custom property
- * is a one-off at setup, not something the draw loop watches.
+ * With no `palette` prop it reads --gryt-bg, --gryt-accent and --gryt-secondary
+ * off its own element. Pass the prop when the theme changes without remounting
+ * — reading a custom property is a one-off at setup, not something the draw
+ * loop watches.
  *
  * It degrades rather than breaks:
  * - No WebGL, or a shader that fails to compile, leaves the canvas absent and
- *   the CSS gradient underneath shows instead. Nobody sees a black rectangle.
- * - A custom property that is missing, or is some notation this cannot parse,
- *   falls back to the Gryt value rather than to black.
+ *   the CSS gradient underneath shows instead.
+ * - A custom property that is missing or unparseable falls back to the Gryt
+ *   value rather than to black.
  * - prefers-reduced-motion renders a single frame and stops.
- * - A hidden tab stops drawing, because a login page left open in a background
- *   tab has no business spinning the GPU.
+ * - A hidden tab stops drawing.
  */
 export function ShaderBackground({ palette }: { palette?: ShaderPalette }) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -247,14 +245,13 @@ export function ShaderBackground({ palette }: { palette?: ShaderPalette }) {
       gl.deleteBuffer(buffer);
       // The context itself is left to be collected with the canvas.
       //
-      // This used to call loseContext here, to free the GPU immediately rather
-      // than wait for collection. It had the opposite effect of the one
-      // intended: getContext on a canvas whose context was released hands the
-      // same, still-lost context back, so StrictMode's second mount in
-      // development got a dead context, every shader "failed to compile", and
-      // the canvas removed itself. The background has been the CSS fallback in
-      // development ever since — visible in the console, invisible on the page,
-      // because the fallback is in the same colours by design.
+      // This used to call loseContext here, which had the opposite effect of
+      // the one intended: getContext on a canvas whose context was released
+      // hands the same, still-lost context back, so StrictMode's second mount
+      // in development got a dead context, every shader "failed to compile",
+      // and the canvas removed itself. The background was the CSS fallback in
+      // development ever since — invisible on the page, because the fallback is
+      // in the same colours by design.
     };
   }, []);
 

@@ -27,13 +27,11 @@ import type { ComponentType, ReactElement, ReactNode } from "react";
  *
  * A copy of the client's settings dialog, rebuilt on @gryt/ui. The rail holds
  * five destinations named for what you are trying to do rather than which
- * subsystem owns the setting — that replaced fourteen flat tabs, two of which
- * held a single control each.
+ * subsystem owns the setting.
  *
  * The pieces worth lifting are the shape, not the settings: a Dialog wide
  * enough to hold a rail, a search field that filters the rail rather than the
- * panel, and one scroll region on the right so the rail stays put while the
- * panel moves.
+ * panel, and one scroll region on the right so the rail stays put.
  */
 
 interface Destination {

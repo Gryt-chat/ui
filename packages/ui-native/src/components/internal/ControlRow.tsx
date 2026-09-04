@@ -9,18 +9,15 @@ import { useTheme } from "../../theme";
 /**
  * A control and its label, where tapping either one works.
  *
- * The web gets this for free: the sign-in screen wraps `<Checkbox>` in a
- * `<label>` and the browser forwards the click. React Native has no `<label>`
- * and no `htmlFor`, so the association has to be structural — the label and the
- * control are inside one Pressable, and that Pressable is the target.
+ * The web gets this for free: a `<label>` wrapping the control, and the browser
+ * forwards the click. React Native has no `<label>` and no `htmlFor`, so the
+ * association has to be structural — the label and the control are inside one
+ * Pressable, and that Pressable is the target.
  *
- * This is a parity *match* reached through a different API, which is why the
- * exceptions table lists it as an API difference rather than a behaviour one.
- * Tapping a label toggles the control on both platforms; only the way you say
- * so differs.
+ * A parity *match* reached through a different API, which is why the exceptions
+ * table lists it as an API difference rather than a behaviour one.
  *
- * Without a label it renders the control alone, so the bare form still works
- * and nothing existing has to change.
+ * Without a label it renders the control alone, so the bare form still works.
  */
 
 /**

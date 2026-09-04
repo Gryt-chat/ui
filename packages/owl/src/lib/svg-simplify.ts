@@ -2,20 +2,15 @@
  * Shrinking a path without changing what it draws.
  *
  * There is a standard tool for this — SVGO, whose `convertPathData` does the
- * same job and more. It is not a dependency here because this is the only thing
- * in the repository that would want it, it runs at build time on fourteen
- * files, and the part that actually matters is fifty lines. If the artwork ever
- * grows past what this handles, reach for SVGO rather than growing this.
+ * same job and more. It is not a dependency because this is the only thing in
+ * the repository that would want it, it runs at build time on fourteen files,
+ * and the part that matters is fifty lines. If the artwork grows past what this
+ * handles, reach for SVGO rather than growing this.
  *
- * The problem it solves: a traced bitmap arrives with far more precision and far
- * more points than a 1024-unit box can show. The winter jacket is the extreme
- * case at 3850 numbers, most of them to three decimals — at the size an avatar
- * renders that is a ten thousandth of a pixel, and every one of those digits is
- * shipped to every client that sees somebody wearing it.
- *
- * This is the closest thing here to merging vertices by distance: rounding pulls
- * near-coincident points onto each other, and the passes after it delete what
- * that leaves behind.
+ * A traced bitmap arrives with far more precision and far more points than a
+ * 1024-unit box can show. The winter jacket is the extreme case at 3850
+ * numbers, most of them to three decimals — a ten thousandth of a pixel at the
+ * size an avatar renders, shipped to every client that sees it.
  */
 
 /**

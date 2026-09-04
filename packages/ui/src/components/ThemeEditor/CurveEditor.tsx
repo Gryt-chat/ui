@@ -7,15 +7,14 @@ import { useCallback, useRef, useState } from "react";
  * way everybody draws one: time left to right, progress bottom to top.
  *
  * The box has room above and below the unit square, because a curve worth
- * drawing usually leaves it. A control point above y=1 overshoots and comes
- * back, which is the whole reason to draw one rather than pick "smooth" — and
- * a graph that clipped it would make the interesting curves look like they
- * flatten out.
+ * drawing usually leaves it — a control point above y=1 overshoots and comes
+ * back, and a graph that clipped it would make the interesting curves look like
+ * they flatten out.
  *
- * x is clamped to 0..1 and y is not. That is not a stylistic choice: a cubic
- * bezier timing function with a control point outside the time axis is invalid
- * CSS and the browser drops the whole declaration, so a handle that could be
- * dragged there would be a handle that silently breaks the theme.
+ * x is clamped to 0..1 and y is not. A cubic bezier timing function with a
+ * control point outside the time axis is invalid CSS and the browser drops the
+ * whole declaration, so a handle that could be dragged there would be a handle
+ * that silently breaks the theme.
  */
 
 const PAD = 0.45;

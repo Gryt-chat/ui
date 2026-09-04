@@ -66,28 +66,22 @@ describe("the same name draws the same owl", () => {
    *
    * Regenerated once, on 2026-08-25, and it is the only time. GRYT-589 moved
    * accessory weights off a hand-written manifest and onto the filenames, and
-   * changed the draw so that a candidate's chance stops depending on what else
-   * is in its slot. Both change where a seed lands, so all three moved and so
-   * did most owls.
+   * changed the draw so a candidate's chance stops depending on what else is in
+   * its slot. Both change where a seed lands, so all three moved.
    *
-   * That was the point rather than a cost of it. Before, adding one drawing
-   * changed 28.6% of owls while 8.7% wore the new thing — every drawing ever
-   * added reshuffled a fifth of everybody for nothing, and would have gone on
-   * doing it. It is 4.4% now, and the remainder is the slot holding its overall
-   * rate steady. This is the last time a new accessory moves people who do not
-   * get it, which is what buys the one-off.
+   * That was the point. Before, adding one drawing changed 28.6% of owls while
+   * 8.7% wore the new thing. It is 4.4% now, and the remainder is the slot
+   * holding its overall rate steady.
    *
    * `sivert` moved again on 2026-08-26, adding thirteen drawings (GRYT-615).
-   * He was bare and now wears hat-tophat, which is the intended case: he moved
-   * because he got one of the new things. `ingy` and `gryt` did not move, which
-   * is the evidence the draw did not reshuffle underneath them.
+   * He was bare and now wears hat-tophat, which is the intended case. `ingy`
+   * and `gryt` did not move, which is the evidence the draw did not reshuffle
+   * underneath them.
    *
    * Measured over 20,000 seeds rather than these three: 32.2% moved, 62% of
    * them because they gained one of the thirteen. The other 2,462 lost an
-   * accessory they had, which is the slot holding its rate steady as the note
-   * above describes — but it is a larger share than "4.4%" reads as promising,
-   * and one drawing on its own moves 7.05%. Whoever tunes this next should know
-   * the number in that sentence is per-drawing and optimistic, not a ceiling.
+   * accessory they had. **The 4.4% above is per-drawing and optimistic, not a
+   * ceiling** — one drawing on its own moves 7.05%.
    */
   it.each([
     ["sivert", "8e6200915eb65797"],

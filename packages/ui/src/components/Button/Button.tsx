@@ -11,18 +11,13 @@ type ButtonSize = "xsmall" | "small" | "medium" | "large";
 // hang off not-data-disabled so they don't fire on a dead button.
 //
 // **Disabled drops the fill rather than fading it.** Every tone used to share
-// one `opacity-50`, and on the low-contrast tones that reads — they are already
-// quiet, so halving them puts them under the surrounding text. On a filled tone
-// it does not: the accent at half opacity over a dark page is still a saturated
-// purple button, and there is nothing in it that says it will not respond. On
-// the phone that cost somebody two taps on a Save button to believe it was
-// inert, and the somebody had written the disabled condition half an hour
-// earlier. GRYT-511.
+// one `opacity-50`, which reads on the quiet tones and does not on a filled
+// one: the accent at half opacity over a dark page is still a saturated purple
+// button. On the phone that cost somebody two taps on a Save button to believe
+// it was inert (GRYT-511).
 //
 // So a disabled filled button becomes the surface it sits on, with a muted
-// label — it keeps its size and its word and stops claiming to be the action.
-// Ghost has no fill to lose and its label is already muted, so the opacity
-// below is what carries it.
+// label. Ghost has no fill to lose, so the opacity below is what carries it.
 const toneStyles: Record<ButtonTone, string> = {
   primary:
     "bg-gryt-accent text-gryt-on-accent hover:not-data-disabled:bg-gryt-accent-light data-disabled:bg-gryt-surface-raised data-disabled:text-gryt-muted",

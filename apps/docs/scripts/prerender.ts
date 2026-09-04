@@ -2,11 +2,10 @@
  * nginx can tell a route from a typo.
  *
  * The docs are a SPA on createBrowserRouter: one index.html answers every
- * route, which means a crawler asking for /components/switch gets the same
- * <meta> as the root and every unfurl looks identical. This copies the built
- * index.html to dist/<route>/index.html with that page's title, description
- * and og:image patched in. The app itself is untouched — React still takes
- * over on load and routes client-side from there.
+ * route, so a crawler asking for /components/switch gets the same <meta> as the
+ * root and every unfurl looks identical. This copies the built index.html to
+ * dist/<route>/index.html with that page's title, description and og:image
+ * patched in. React still takes over on load and routes client-side.
  *
  * Every route in src/routes.ts gets a file, not just the ones with a share
  * card, because nginx now 404s anything that is not on disk. A route missing

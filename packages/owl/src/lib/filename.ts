@@ -14,9 +14,7 @@
  *   sporran_dress.neck.svg          a type word the table below has not met
  *   _hat_winter_old.svg             ignored entirely
  *
- * The type is the first field and KEYWORDS turns it into a slot. Type first is
- * not only tidiness: the folder groups itself and a customiser gets
- * type -> family -> variant without being told about it separately.
+ * The type is the first field and KEYWORDS turns it into a slot.
  *
  * **Nothing here guesses.** A word that is not in the table is an error naming
  * the file, not a default — a silent wrong slot looks like a scarf worn as a hat.

@@ -22,15 +22,12 @@ import type { ReactNode } from "react";
  * The two rails down the left of the client: servers, then that server's
  * channels.
  *
- * Worth knowing:
- *
  * - The server rail is icons only, so every one carries a Tooltip. An icon rail
  *   without names is a memory test for anyone who has joined more than three.
  * - Unread counts are a Badge on the server icon and bold text on the channel,
- *   not both in both places. Two treatments of the same fact in one column read
- *   as two different facts.
+ *   not both in both places. Two treatments of one fact read as two facts.
  * - Right-clicking a channel opens the same actions as its ⋯ button. People
- *   reach for the context menu first and are surprised when it is the browser's.
+ *   reach for the context menu first.
  */
 
 const SERVERS = [

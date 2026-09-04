@@ -50,16 +50,13 @@ const THUMB = 20;
  *
  * `activeOffsetX` is that distinction, declared rather than fought over. The
  * pan claims the gesture once the finger has clearly gone sideways, and a
- * vertical drag never activates it at all, so the scroll view keeps it. That
- * replaces `onPanResponderTerminationRequest: () => false` plus the `DragLock`
- * that had to switch the scroll view off, because refusing to hand back a JS
- * responder says nothing to the native recogniser that actually does the
- * scrolling on iOS.
+ * vertical drag never activates it. That replaces
+ * `onPanResponderTerminationRequest: () => false` plus the `DragLock` that had
+ * to switch the scroll view off, because refusing to hand back a JS responder
+ * says nothing to the native recogniser that does the scrolling on iOS.
  *
- * Both gestures run on the JS thread. The Drawer's stay worklets because they
- * only move a shared value; every callback here has to reach React state and
- * the consumer's `onValueChange`, so the hop is happening either way and
- * pretending otherwise would only add a way to get it wrong.
+ * Both gestures run on the JS thread. Every callback here has to reach React
+ * state and the consumer's `onValueChange`, so the hop happens either way.
  */
 export function Slider({
   value: controlled,

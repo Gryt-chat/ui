@@ -1,6 +1,6 @@
 /**
- * What an owl can wear. Empty on purpose — the drawings go in below, and this
- * file is the whole of what adding one involves.
+ * What an owl can wear. The drawings go in below, and this file is the whole of
+ * what adding one involves.
  *
  * **An accessory is exported on the same 1024 x 1024 frame as the owl**,
  * positioned where it should sit, with the background, body, face plate, eyes
@@ -10,16 +10,12 @@
  * is where the crooked ones came from.
  *
  * Each path names a colour role rather than a hex, so a teal owl and a pink owl
- * wear the same hat in their own colours. The roles are the keys of
- * `OwlPalette`.
+ * wear the same hat in their own colours.
  *
- * `slot` is where it is worn and one accessory is drawn per slot, so two hats
- * never come up at once. `layer` is per accessory rather than per slot, because
- * glasses with painted lenses go under the eyes so the expression shows
- * through, while a frame with real holes wants to be over them.
- *
- * `excludes` is for the pairs that are each fine alone and wrong together — a
- * scarf under a buttoned jacket, a hat under a hood.
+ * One accessory per `slot`, so two hats never come up at once. `layer` is per
+ * accessory rather than per slot: glasses with painted lenses go under the eyes
+ * so the expression shows through, a frame with real holes over them.
+ * `excludes` is for the pairs that are each fine alone and wrong together.
  */
 import { GENERATED_ACCESSORIES } from "./accessories.generated";
 import type {

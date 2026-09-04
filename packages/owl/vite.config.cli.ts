@@ -6,21 +6,17 @@ import { defineConfig } from "vite";
  *
  * A separate config rather than a second entry on the main one, and that is the
  * whole point of the file. `dist/index.js` is one self-contained file with no
- * imports — the README makes a point of it, and it is what lets a plain
- * `<script type="module">` and a React Native app both take the same generator
- * with nothing to install alongside it. Give the main build two entries that
+ * imports, which is what lets a plain `<script type="module">` and a React
+ * Native app both take the same generator. Give the main build two entries that
  * share code and vite hoists the shared half into a chunk: measured, adding one
- * entry took `dist/index.js` from 86kB to 13kB and two `import` statements at
- * the top of it. Nothing errors. It just stops being the thing the package says
- * it is.
+ * entry took `dist/index.js` from 86kB to 13kB and two `import` statements.
+ * Nothing errors.
  *
  * Two builds of one entry each cannot do that to each other. The cost is that
- * the generator is compiled twice and the CLI carries its own copy, which for a
- * command somebody runs by hand is not a cost at all.
+ * the generator is compiled twice and the CLI carries its own copy.
  *
  * `check-dist-shape.ts` runs after both and fails the build if `index.js` ever
- * grows an import, because the failure mode here is silent and this file is one
- * `entry:` away from being undone.
+ * grows an import.
  */
 export default defineConfig({
   build: {

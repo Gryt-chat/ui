@@ -11,8 +11,7 @@ import { popupMotion, popupSurface } from "../utils/styles";
  * The difference from Combobox is what the value is allowed to be: here the
  * typed text is the answer and the list is a suggestion, so a search box or a
  * tag input belongs here. Combobox is for when the value must come from the
- * list. They share item and input styling deliberately — two lists that look
- * different for no reason is worse than one that looks the same.
+ * list. They share item and input styling deliberately.
  */
 
 const Input = forwardRef<

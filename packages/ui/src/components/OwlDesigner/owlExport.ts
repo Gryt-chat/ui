@@ -1,25 +1,19 @@
 /**
  * Writing an owl out as a file, so it can be used somewhere other than Gryt.
  *
- * Four formats, and the differences between them are not cosmetic:
+ * Four formats, and the differences are not cosmetic:
  *
  *   - **SVG** is what the generator actually produces. A few kilobytes, no
- *     resolution at all, and it scales to a billboard. It is offered first
- *     because it is the honest answer to "give me my owl"; every other option
- *     here is that file, flattened.
- *   - **PNG** is the one to hand to something that will not take an SVG, which
- *     is most places. Keeps its transparency.
- *   - **WebP** is the same picture at roughly a third of the bytes, for anywhere
- *     that takes it.
+ *     resolution at all. Every other option here is that file, flattened.
+ *   - **PNG** is the one to hand to something that will not take an SVG. Keeps
+ *     its transparency.
+ *   - **WebP** is the same picture at roughly a third of the bytes.
  *   - **JPEG** has no alpha. The owl is drawn on its palette background, so
  *     there is something behind it rather than the black a transparent PNG
- *     collapses to — but it is the format where that stops being a detail, and
- *     it is last for that reason.
+ *     collapses to — but it is last for that reason.
  *
- * 1024 square for the rasters. That is the frame the generator draws on, so it
- * is a whole-number scale of the real geometry rather than a resample of a
- * smaller one, and it is past the point where the file is the limiting factor
- * anywhere somebody is likely to paste it.
+ * 1024 square for the rasters: the frame the generator draws on, so it is a
+ * whole-number scale of the real geometry rather than a resample.
  */
 
 import { owlAvatarDataUri, owlAvatarSvg, type WornLook,wornToOptions } from "@gryt/owl";
