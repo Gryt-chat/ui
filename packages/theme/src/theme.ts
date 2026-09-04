@@ -1,21 +1,12 @@
-/* A whole theme, as a thing you can hand to somebody.
+/* A whole theme, as a thing you can hand to somebody. Dark and light do not
+ * derive from each other, so a theme that travels has to carry both.
  *
- * createGrytTheme takes the colours for one appearance. That is the right shape
- * for the caller who wants one theme, and the wrong shape for a theme that
- * travels: dark and light do not derive from each other, so a theme somebody
- * shares has to carry both.
+ * Two sets of neutrals and one set of hues, because step 9 is the same colour
+ * in both appearances by design. `lightHue` is the exception, for palettes
+ * where it is not — Catppuccin's mauve is #cba6f7 in Mocha and #8839ef in Latte.
  *
- * Two sets of neutrals, then, and one set of hues — because step 9 is the same
- * colour in both appearances by design, so a filled button does not change
- * colour when somebody switches. `lightHue` is the exception, for palettes
- * where that is not true. Catppuccin's mauve is #cba6f7 in Mocha and #8839ef in
- * Latte; forcing one on it would make the theme wrong in one half.
- *
- * The encoding is a query string because that is the useful property of a
- * palette this small: a theme is a couple of dozen hex values, which fits in a
- * link, and a link is the thing people actually send each other. Only what
- * differs from Gryt's own values is carried, so a theme that changed one colour
- * is a link with one parameter in it.
+ * Encoded as a query string so a theme fits in a link. Only what differs from
+ * Gryt's own values is carried.
  */
 
 import { grytLightSurfaceHover, grytLightTokens, grytTokens } from "./createGrytTheme";
@@ -61,21 +52,15 @@ export const GRYT_RADIUS_KEYS = ["sm", "md", "lg", "xl", "full"] as const;
 export const GRYT_FONT_KEYS = ["body", "display", "mono"] as const;
 
 /**
- * How a theme is allowed to change the way Gryt moves.
+ * How a theme may change the way Gryt moves: how fast, one number over every
+ * tier, and what shape, one curve.
  *
- * Two things, because they are the two a person can answer. How fast, which is
- * one number over every tier, and what shape, which is one curve.
+ * **Not per-tier durations.** The tiers are already in proportion — a drawer
+ * takes longer than a button because it travels further — and setting them
+ * independently re-decides that five sliders at a time.
  *
- * Not per-tier durations. The tiers are already in proportion to each other —
- * a drawer takes longer than a button because it travels further — and a
- * theme that set them independently would be re-deciding a relationship
- * somebody worked out once, five sliders at a time, with no way to tell it had
- * gone wrong except by opening a drawer.
- *
- * `scale` at 0 means nothing animates. That is a real setting rather than a
- * degenerate one: some people find movement unpleasant, and the honest way to
- * offer that is a value in the theme rather than asking them to lie to their
- * operating system about `prefers-reduced-motion`.
+ * `scale` at 0 means nothing animates, which is a real setting rather than a
+ * degenerate one.
  */
 export const GRYT_MOTION_CURVES = ["spring", "smooth", "linear"] as const;
 
@@ -118,16 +103,10 @@ export const grytFonts: GrytFonts = {
 };
 
 /**
- * The motion half of a theme.
- *
- * `curve` names one of the shipped shapes or carries a cubic bezier.
- *
- * A named curve keeps the library's two apart: `--ease-spring` overshoots and
- * is for things that scale in place, `--ease-spring-tight` does not and is for
- * things that travel inside their bounds. A bezier cannot express both, so
- * setting one collapses them into a single shape — which is the honest cost of
- * letting a theme draw its own, and is worth knowing before drawing one that
- * overshoots.
+ * The motion half of a theme. `curve` names a shipped shape or carries a cubic
+ * bezier. **A bezier collapses the library's two curves into one** —
+ * `--ease-spring` overshoots for things that scale in place, `--ease-spring-tight`
+ * does not, for things that travel inside their bounds.
  */
 export interface GrytMotion {
   /**

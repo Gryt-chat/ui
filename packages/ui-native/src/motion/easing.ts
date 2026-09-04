@@ -11,24 +11,13 @@ import { springSamples, springTightSamples } from "@gryt/theme";
 export type Easing = (t: number) => number;
 
 /**
- * Turn a sample list into an easing.
+ * Turn a sample list into an easing. The body is a worklet so it runs on the UI
+ * thread; `points` is a plain array, which worklets capture by value.
  *
- * The body is a worklet so it runs on the UI thread — an easing evaluated on
- * the JS thread would drop frames under exactly the load this exists to
- * survive. `points` is a plain array, which worklets capture by value.
- *
- * The interpolation is written out rather than calling `sampleCurve` from
- * @gryt/theme, and that is not a style choice. A worklet cannot synchronously
- * call a JS-thread function: doing so throws
- *
- *   [Worklets] Tried to synchronously call a Remote Function
- *
- * on the first frame of every animation. That shipped in 0.3.0, because the
- * only thing exercising the UI thread in testing used React Native's own
- * easing rather than this one.
- *
- * easing.test.ts asserts this stays identical to `sampleCurve`, so the
- * duplication cannot drift from the definition the web renders from.
+ * **The interpolation is written out rather than calling `sampleCurve`.** A
+ * worklet cannot synchronously call a JS-thread function — it throws "[Worklets]
+ * Tried to synchronously call a Remote Function" on the first frame of every
+ * animation, which shipped in 0.3.0. easing.test.ts keeps the copy identical.
  */
 export function easingFromSamples(samples: readonly number[]): Easing {
   const points = [...samples];

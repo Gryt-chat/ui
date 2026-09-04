@@ -1,13 +1,8 @@
-/* The `@gryt/ui/theme` entry point, kept as a re-export.
+/* The `@gryt/ui/theme` entry point, kept as a re-export so existing imports
+ * keep resolving. The tokens and maths live in `@gryt/theme` — this package
+ * pulls Base UI and Phosphor, ~85 MB of DOM code, behind anything that only
+ * wanted the colours (GRYT-374).
  *
- * The tokens, scales, presets and OKLCH maths moved to `@gryt/theme` so a
- * React Native app can take them without pulling a web renderer behind them —
- * `@gryt/ui` depends on Base UI and Phosphor, both of which require react-dom,
- * so depending on this package at all dragged ~85 MB of DOM code into a phone
- * app that only wanted the colours (GRYT-374).
- *
- * This file stays so that `import { grytTokens } from "@gryt/ui/theme"` keeps
- * resolving for anyone already writing it. New code on the web can use either;
- * anything without a DOM should depend on `@gryt/theme` directly.
+ * **Anything without a DOM should depend on `@gryt/theme` directly.**
  */
 export * from "@gryt/theme";

@@ -1,10 +1,6 @@
 /**
  * Where an accessory goes, read off the name of the file it was drawn in.
- *
- * This used to be artwork/accessories.json: seventeen entries repeating what
- * the filenames already said, and a step between drawing something and seeing
- * it on an owl. Adding a cosmetic is now dropping an SVG into artwork/ and
- * running the script.
+ * Adding a cosmetic is dropping an SVG into artwork/ and running the script.
  *
  * The grammar is `type_family[_variant][.tag].svg`. Underscores separate the
  * three fields; a hyphen joins words inside one of them.
@@ -18,31 +14,21 @@
  *   sporran_dress.neck.svg          a type word the table below has not met
  *   _hat_winter_old.svg             ignored entirely
  *
- * The type is the first field and KEYWORDS turns it into a slot. Tags are
- * optional and each one is a single decision.
+ * The type is the first field and KEYWORDS turns it into a slot. Type first is
+ * not only tidiness: the folder groups itself and a customiser gets
+ * type -> family -> variant without being told about it separately.
  *
- * Type first is not only tidiness. The folder groups itself, the generated
- * registry sorts by family, and a customiser gets type -> family -> variant
- * without being told about it separately.
- *
- * Nothing here guesses. A word that is not in the table is an error naming the
- * file, not a default — an accessory silently landing in the wrong slot is the
- * failure this is meant to prevent, and it looks like a scarf worn as a hat.
+ * **Nothing here guesses.** A word that is not in the table is an error naming
+ * the file, not a default — a silent wrong slot looks like a scarf worn as a hat.
  */
 
 import type { AccessorySlot } from "../types";
 
 /**
- * How likely an accessory is against the others in its slot.
- *
- * Not against the owl as a whole: how often a slot is filled at all is
- * SLOT_PRESENCE's job, and it stays put however many drawings land here. These
- * only decide the split once that slot has been chosen, so marking something
- * rare makes it lose to its neighbours rather than making the slot emptier.
- *
- * Untagged is `common`, which means every drawing is equally likely until
- * somebody says otherwise. That is the honest default: a new drawing has no
- * claim to being seen more or less often than the ones already there.
+ * How likely an accessory is against the others in its slot — **not against the
+ * owl as a whole**, which is SLOT_PRESENCE's job. Marking something rare makes
+ * it lose to its neighbours rather than making the slot emptier. Untagged is
+ * `common`.
  */
 export const RARITY_SHARE = {
   common: 1,
@@ -313,15 +299,8 @@ export function placementFor(filename: string, slots: readonly AccessorySlot[]):
 
 /**
  * The weight each accessory gets, so its slot fills at the rate SLOT_PRESENCE
- * asks for however many drawings are in it.
- *
- * This is the part the old manifest could not do. A weight there was a share of
- * a slot measured against a fixed EMPTY_WEIGHT, so every drawing added to a
- * slot made that slot more likely to be filled at all — eight pairs of glasses
- * put eyewear on 38% of owls, and a ninth would have pushed it higher again
- * without anybody deciding that. Fixing the presence and splitting it among
- * whatever is there means a new drawing changes which glasses you see rather
- * than whether you see any.
+ * asks for however many drawings are in it — a new drawing changes which
+ * glasses you see rather than whether you see any.
  */
 export function weightsFor<
   T extends { name: string; slot: AccessorySlot; family: string; rarity: Rarity },

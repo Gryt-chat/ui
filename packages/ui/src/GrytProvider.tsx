@@ -44,17 +44,10 @@ export function GrytProvider({
   // when it does.
   const containerRef = useRef<HTMLDivElement | null>(null);
   /**
-   * No theme, no variables.
-   *
-   * This used to paint the full default palette onto the wrapper whenever the
-   * prop was absent, which looked harmless and was not: the stylesheet already
-   * declares those values on :root, so the copy added nothing, and it sat below
-   * the root in the cascade — an app that themed itself the documented way, by
-   * putting variables on the root element where overlays can reach them, found
-   * every one of them overridden by a provider re-stating the defaults.
-   *
-   * It cost this site an afternoon. The header can put the docs in Nord now,
-   * and the reason it could not before was one div.
+   * **No theme, no variables.** Painting the defaults onto the wrapper adds
+   * nothing — the stylesheet declares them on `:root` — and sits below the root
+   * in the cascade, so an app theming itself the documented way finds every
+   * variable overridden by a provider re-stating the defaults.
    */
   const style =
     theme === undefined

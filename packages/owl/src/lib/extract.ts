@@ -1,16 +1,13 @@
 /**
  * Taking a drawing of the bird wearing something and getting the something out.
  *
- * Pulled out of owl-accessory.ts so that more than one thing can run it. The
- * script does, and so does the drop zone on the site's drawing guide — the
- * point of which is that somebody can check an export without cloning a
- * monorepo first. Nothing in here touches the filesystem or process.argv, and
- * it has to stay that way: a browser is one of the callers.
+ * **Nothing here may touch the filesystem or process.argv** — the site's
+ * drawing guide runs this in a browser, so somebody can check an export without
+ * cloning the monorepo.
  *
- * The subtraction matches the bird on its geometry rather than on its path
- * data. A drawing tool rewrites path data on export — degenerate segments come
- * back as H and L, numbers get re-rounded — so comparing strings finds nothing.
- * Extent, perimeter and area survive that.
+ * The bird is matched on geometry rather than path data: a drawing tool
+ * rewrites path data on export, so comparing strings finds nothing. Extent,
+ * perimeter and area survive it.
  */
 
 import * as owl from "../index";
@@ -145,24 +142,14 @@ function flatten(d: string) {
 }
 
 /**
- * What a path draws, as a string two files can be compared on.
+ * What a path draws, as a string two files can be compared on: extent,
+ * perimeter and area, none of which serialisation changes.
  *
- * Extent, perimeter and area. Serialisation changes none of them, and two
- * genuinely different shapes agreeing on all three is not something that
- * happens by accident.
- *
- * The tolerance is deliberately tight, and widening it was tried. A drawing
- * whose bird has been nudged or rescaled by a fraction stops matching, and that
- * looks like something to paper over — but it is the tool working. The whole
- * method depends on the drawing sitting on an unmodified base, and a drawing
- * that no longer does produces an accessory in the wrong place. Rounding the
- * extent to whole units let the drift through the first check and left it
- * failing on perimeter and area anyway, so all it bought was a later and less
- * obvious error.
- *
- * When this stops matching, the fix is in the drawing: put it back on a clean
- * base. The "not found" note below says how many of the bird's paths went
- * missing, which is the number to watch.
+ * **The tolerance is tight on purpose and widening it was tried.** A drawing
+ * whose bird has been nudged stops matching, which looks like something to
+ * paper over and is the tool working — the method depends on an unmodified
+ * base, and a drifted one produces an accessory in the wrong place. When this
+ * stops matching, the fix is in the drawing.
  */function shapeKey(d: string): string {
   const { points, subpaths } = flatten(d);
   let minX = Infinity;
@@ -303,22 +290,14 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
   }
 
   /*
-   * When the drawing says which shapes are the bird, believe it.
+   * When the drawing says which shapes are the bird, believe it. A Figma export
+   * with "Include id attribute" wraps the bird in `<g id="owl">`, which beats
+   * the geometry matcher below — that breaks whenever the tool rewrites a curve
+   * or moves something half a unit.
    *
-   * A Figma export with "Include id attribute" on wraps the bird in
-   * `<g id="owl">` and names every part inside it. That is a statement of fact
-   * from the drawing, and it beats recognising the bird by its geometry —
-   * which is what everything below does, and which breaks whenever the tool
-   * rewrites a curve, turns a segment into `H`, or moves something half a unit.
-   * A day was lost to exactly that.
-   *
-   * So the bird is lifted out here and the geometry matcher below never sees
-   * it. What is left is the accessory, and which parts are missing from the
-   * group is which parts the drawing means to replace — deleting the eye you
-   * are drawing over says "left" or "right" for free.
-   *
-   * Drawings without the group still go the old way, because there are fifty of
-   * them in the history and they have to keep extracting the same.
+   * Which parts are missing from the group is which parts the drawing means to
+   * replace. Drawings without the group still go the old way; fifty of them in
+   * the history have to keep extracting the same.
    */
   const structural = allShapes.some((s) => s.inOwl);
   let drawn = allShapes;
@@ -349,14 +328,9 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
       const part = partOf.get(key);
 
       /*
-       * An expression brings its own eyes and paints the drawn ones out to say
-       * so. Recorded as "do not draw this one" rather than as a repaint: the
-       * eyes and the beak share a colour, so repainting the role would take the
-       * beak with them, and a plate-coloured disc is only invisible where the
-       * plate is what happens to be behind it.
-       *
-       * Per side, because a wink is one closed eye and one open one. Hiding the
-       * pair lost the open eye and the wink came out with a blank face.
+       * Recorded as "do not draw this one" rather than as a repaint: the eyes
+       * and the beak share a colour, so repainting the role takes the beak too.
+       * Per side, or a wink comes out with a blank face.
        */
       if (part === "eyeLeft" || part === "eyeRight") {
         hides.add(part);
@@ -364,20 +338,13 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
       }
 
       /*
-       * A part painted the background's colour is a part the drawing means to
-       * remove — a coat over an arm, a hat over the ear tufts. Recorded as a
-       * hide of that part rather than as a repaint of its role, which would
-       * take everything sharing the role whether the drawing covered it or not.
+       * A part painted the background colour is one the drawing means to remove.
+       * **Recorded per part, not per role** — the ear tufts are drawn in the
+       * body's colour, so a hat covering them read as "repaint body" and took
+       * the chest with it.
        *
-       * This was the wings only, and the rest of the bird fell through to the
-       * role. That made an oversize hat delete the whole torso: the ear tufts
-       * are drawn in the body's colour, so painting over the two of them read
-       * as "repaint body" and repainted the chest with them. The drawing had
-       * covered two shapes near the crown and lost everything below the face.
-       *
-       * Anything painted some other colour is a genuine recolour and stays one,
-       * and stays keyed by role — a coat that turns the arms brown means the
-       * role, not one arm.
+       * Any other colour is a genuine recolour and stays keyed by role: a coat
+       * that turns the arms brown means the role, not one arm.
        */
       if (part && p.fill === realPalette.background) {
         hides.add(part);
@@ -408,24 +375,12 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
   });
 
   /*
-   * A part of the bird the drawing does not contain is a part the drawing means
-   * to replace.
+   * A part of the bird the drawing does not contain is a part it means to
+   * replace — deleting the eye you draw over already says which side.
    *
-   * Deleting the eye you are drawing over is the natural thing to do — hide the
-   * layer in the component instance and draw the new one — and it already says
-   * exactly which side. eyes_wink_left removes the left eye and keeps the
-   * right; eyes_wink_right does the mirror. That is the whole signal, per side,
-   * for free.
-   *
-   * It used to be read the other way round: the eye had to be *present* for the
-   * hide to be recorded, so deleting it left the bird's own eye drawing
-   * underneath the new one. Every expression broke at once the day the drawings
-   * moved to a Figma component, because the component made deleting a layer the
-   * obvious move.
-   *
-   * Only the parts an accessory legitimately replaces. A missing body or face
-   * is not an intention, it is a drawing that was not made on this bird, and
-   * silently hiding the torso is the worst way to find that out.
+   * **Only the parts an accessory legitimately replaces.** A missing body or
+   * face is a drawing that was not made on this bird, and silently hiding the
+   * torso is the worst way to find that out.
    */
   const REPLACEABLE = new Set<OwlPart>([
     "eyeLeft", "eyeRight", "beak", "earTufts", "wingLeft", "wingRight",
@@ -471,16 +426,10 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
   });
 
   /*
-   * A drawing that sits ahead of the bird in the file is drawn behind it.
-   *
-   * Same statement of fact as the group itself, one level up: document order
-   * is what an SVG paints in, so a headset band drawn before `<g id="owl">` is
-   * a band the ear tufts come through. Without this the two headsets extract
-   * to the same three paths in the same layer and are one accessory holding
-   * two of the head slot's shares.
-   *
-   * Only when the filename did not say. A `.behind` or `.over-all` tag is
-   * somebody overriding this on purpose, and it wins.
+   * A drawing ahead of the bird in the file is drawn behind it — document order
+   * is what an SVG paints in, so a headset band before `<g id="owl">` is one the
+   * ear tufts come through. Only when the filename did not say; a `.behind` or
+   * `.over-all` tag wins.
    */
   const named = opts.layer ?? DEFAULT_LAYER[opts.slot] ?? "overAll";
   const sitsBehind =
@@ -564,19 +513,10 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
     paint,
     guessed,
     /*
-     * How much of the bird was found, and how much there was to find.
-     *
-     * The number that says whether this was drawn on the base at all. A drawing
-     * that finds none of the bird still extracts perfectly happily — it just
-     * keeps every path in the file, including the bird's, and produces an
-     * accessory shaped like a whole owl. The summary carries this as prose; a
-     * caller that has to decide pass or fail needs the number.
-     *
-     * Deliberate replacements are not counted here. Deleting the eye you are
-     * drawing over is how an expression says which eye it replaces, so counting
-     * it as damage would fail every expression ever drawn. `replaced` has those
-     * separately, and `found` is the honest count of what was located either
-     * way — so found + missed does not have to equal ofBird.
+     * Whether this was drawn on the base at all. A drawing that finds none of
+     * the bird extracts happily and produces an accessory shaped like a whole
+     * owl. Deliberate replacements are counted in `replaced`, not here, so
+     * found + missed does not have to equal ofBird.
      */
     missed: unexplained.length,
     replaced: [...hides],

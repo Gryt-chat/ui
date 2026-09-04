@@ -25,22 +25,13 @@ export interface MeterProps
 }
 
 /**
- * A measurement inside a known range — mic input level, disk used, how full a
- * server is.
+ * A measurement inside a known range — mic level, disk used, how full a server
+ * is. Deliberately not Progress: a reading at 100% is often the bad case rather
+ * than the finished one, and the two announce differently to a screen reader.
  *
- * Deliberately not Progress. Progress says "this task is 40% done and heading
- * for 100%"; a meter says "this is the reading right now", and a reading at
- * 100% is often the bad case rather than the finished one. They also announce
- * differently to a screen reader, which is the part that actually matters.
- *
- * The indicator moves rather than snapping, but only just — 120ms and ease-out,
- * no spring. This used to have no transition at all, on the grounds that the
- * common caller is a mic level updating every animation frame and easing a
- * value that changes 60 times a second only makes it lag behind the sound.
- * That reasoning holds for the mic and nothing else: disk used, server
- * capacity, a level polled a few times a second all read as broken when they
- * teleport. 120ms is shorter than the gap between polls at 4Hz, so a fast feed
- * still lands on every value it is handed.
+ * 120ms and ease-out, no spring. Shorter than the gap between polls at 4Hz, so
+ * a fast feed still lands on every value it is handed, while a slow one does
+ * not teleport.
  */
 export function Meter({
   className,

@@ -1,19 +1,12 @@
 /**
- * The theme layer on its own, with no components and no DOM.
+ * The theme layer on its own, with no components and no DOM. **Everything here
+ * has to stay framework-free** — `@gryt/ui`'s main entry bundles 95 components,
+ * imports Base UI and pulls `styles/index.css` in as a side effect, none of
+ * which React Native can take.
  *
- * `@gryt/ui`'s main entry bundles all 95 components, imports Base UI, and pulls
- * `styles/index.css` in as a side effect on its first line. React Native can
- * take none of that, and it does not need to: everything here is framework-free
- * — `oklch.ts` has no imports at all, `presets.ts` and `theme.ts` are data, and
- * `createGrytTheme.ts`'s only React import is `import type { CSSProperties }`,
- * which is erased at compile time.
- *
- * That is what makes an RN component library a second renderer for the same
- * design system rather than a second design system. It only holds if the tokens
- * can be imported without the components, which is what this entry is for.
- *
- * Everything exported here is also exported from the main entry, so nothing
- * changes for the web client. See GRYT-351.
+ * That is what makes the RN library a second renderer for one design system
+ * rather than a second design system. Everything here is also exported from the
+ * main entry, so nothing changes for the web (GRYT-351).
  */
 
 export {

@@ -27,36 +27,23 @@ export interface AvatarProps extends Omit<
   size?: AvatarSize;
   className?: string;
   /**
-   * Draws this person's owl, from @gryt/owl.
+   * Draws this person's owl, when there is no `src` and when one fails to load.
    *
-   * Used when there is no `src`, and also when `src` is given and fails to
-   * load — somebody whose uploaded avatar 404s should get their own owl back
-   * rather than a letter.
-   *
-   * Pass `avatarSeed(nickname)` rather than the nickname itself. The two
-   * differ for anyone whose name is not already lower case, and an avatar
-   * drawn from one seed beside a voice tile tinted from the other is the bug
-   * that rule exists to prevent.
+   * **Pass `avatarSeed(nickname)`, not the nickname.** The two differ for
+   * anyone whose name is not lower case, and an avatar drawn from one seed
+   * beside a voice tile tinted from the other is what that rule prevents.
    */
   seed?: string;
   /**
-   * Draws this seed's eggs, from @gryt/owl.
+   * Draws this seed's eggs. Named for the drawing rather than what it stands
+   * for, which has already changed once — `serverSeed` would be wrong for group
+   * chats and would squat on the name the real server one will want.
    *
-   * Named for the drawing rather than for what it stands for, because what it
-   * stands for has already changed once. These were written for server icons,
-   * and are now the generated image for a group chat that has not uploaded
-   * one; server icons are getting their own generator. A prop called
-   * `serverSeed` would have been wrong twice over — wrong for group chats, and
-   * squatting on the name the real server one will want.
+   * Separate from `seed` rather than a flag on it, so passing the wrong prop
+   * gives the wrong kind of thing rather than the same thing in another colour.
    *
-   * Separate from `seed` rather than a flag on it. `seed` draws a person's
-   * owl, and passing the wrong prop should give you the wrong kind of thing
-   * rather than the same thing in another colour.
-   *
-   * The corner is the caller's. This clips to whatever radius its className
-   * sets and the drawing is square, so asking for `rounded-(--gryt-radius-md)`
-   * gets the theme's radius in pixels rather than a fraction of the box baked
-   * into the SVG.
+   * The corner is the caller's: this clips to whatever radius its className
+   * sets, rather than baking a fraction of the box into the SVG.
    */
   eggSeed?: string;
   // Shown while the image loads and if it fails. Falls back to children, which

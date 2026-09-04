@@ -120,16 +120,9 @@ describe("motion as variables", () => {
   });
 });
 
-/* The path the client actually uses.
- *
- * A saved theme lives in localStorage as JSON and is read back through
- * decodeGrytTheme, so the JSON decoder is what every saved theme goes through
- * on every launch — not the query string, which only a shared link uses.
- *
- * Motion was on the link path and not this one. Everything was green: the link
- * round trip had a test, the variables had a test, and a saved theme still
- * quietly lost its motion every time the app started. So both halves are
- * tested through both doors now.
+/* The path the client actually uses: a saved theme is JSON in localStorage, not
+ * a query string. Motion was on the link path and not this one, so everything
+ * was green while a saved theme lost its motion on every launch.
  */
 describe("through JSON, which is how a saved theme comes back", () => {
   const roundTrip = (theme: object) =>

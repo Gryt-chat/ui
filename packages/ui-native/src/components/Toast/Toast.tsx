@@ -31,28 +31,16 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 /**
- * Toasts need somewhere to live, which on the web is a portal at the document
- * root and here is a provider near the top of the tree.
+ * Where toasts live: a provider near the top of the tree.
  *
- * **Mount it above everything else it has to cover.** The viewport is rendered
- * as a sibling *after* `children`, so it paints over anything inside them —
- * including a `Sheet`, whose content goes through `@gorhom/portal` to a host
- * that is itself inside those children. Put `ToastProvider` below
- * `SheetProvider` and the sheet wins instead, which is the wrong way round: a
- * sheet is a surface you are working in, and a toast is the app telling you
- * something happened while you work.
+ * **Mount it above everything else it has to cover.** The viewport renders as a
+ * sibling after `children`, so it paints over anything inside them — put it
+ * below `SheetProvider` and the sheet wins instead.
  *
- * They are deliberately not built on `Modal` like the dialogs are. A modal
- * intercepts touches for the whole screen, and a toast that blocked the app
- * until it faded would be worse than no toast.
- *
- * **What that costs, stated rather than discovered:** a `Modal` is a separate
- * native window, so anything built on one — `Dialog`, `AlertDialog`, `Drawer`,
- * and the platform's own `ActionSheetIOS` — draws *over* a toast, whatever the
- * z-index says. React Native has no z-index across windows. A flow that raises
- * a dialog and toasts at the same moment should toast after the dialog closes;
- * there is nothing this component can do about it from inside the tree, and
- * the alternative is a toast that can block the app, which is worse.
+ * **Deliberately not built on `Modal`**, which intercepts touches for the whole
+ * screen. The cost: a `Modal` is a separate native window, so `Dialog`,
+ * `Drawer` and `ActionSheetIOS` draw *over* a toast whatever the z-index says.
+ * A flow that raises a dialog should toast after it closes.
  */
 export function ToastProvider({ children }: { children?: ReactNode }) {
   const [toasts, setToasts] = useState<QueuedToast[]>([]);

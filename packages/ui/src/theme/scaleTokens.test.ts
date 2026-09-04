@@ -32,20 +32,13 @@ function scaleFor(css: string, state: "hover" | "active"): number {
 }
 
 /**
- * The press and hover scales exist twice: as arbitrary values in these class
- * strings, and as `grytScaleSteps` in @gryt/theme, which is what React Native
- * reads — there is no Tailwind there to read a class from.
+ * The press and hover scales exist twice — in these class strings and as
+ * `grytScaleSteps` in @gryt/theme, which React Native reads. Same interaction,
+ * so the same numbers: the next version of GRYT-390 is native pressing 0.96
+ * everywhere because nobody noticed a checkbox presses further than a button.
  *
- * They are the same interaction, so they have to be the same numbers, and they
- * are exactly the kind of thing that drifts. GRYT-390 was partly a report that
- * the native controls had no press feedback at all; the next version of that
- * bug is native having some and it being 0.96 everywhere because whoever added
- * it did not notice that a checkbox presses further than a button.
- *
- * `hover` is asserted too, even though React Native never uses it. It is in the
- * token so the pair stays together and so nobody ports it — the comment on
- * `grytScaleSteps` says to leave it alone, and a comment nobody tests is a
- * comment that stops being true.
+ * `hover` is asserted although React Native never uses it, so the pair stays
+ * together and nobody ports it.
  */
 describe("press and hover scales match @gryt/theme", () => {
   const cases: [keyof typeof grytScaleSteps, string][] = [

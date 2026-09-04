@@ -152,17 +152,10 @@ export interface TabsListProps {
 }
 
 /**
- * The pill rail, and the indicator that slides across it.
- *
- * The indicator lives here rather than in `Tabs.Indicator` because it needs
- * every tab's measured box, and the list is the only part that sees them all.
- * `Tabs.Indicator` is still exported and still renders nothing, so a call site
- * copied from the web keeps working.
- *
- * The previous version of this file drew a 2px underline per tab and said
- * sliding one pill was "real work for a decoration". It is real work, and the
- * decoration is most of what the component looks like — an underline and a
- * filled pill are not the same design with different paint.
+ * The pill rail, and the indicator that slides across it. The indicator is here
+ * rather than in `Tabs.Indicator` because it needs every tab's measured box and
+ * the list is the only part that sees them all — `Tabs.Indicator` still exports
+ * and renders nothing, so a call site copied from the web keeps working.
  */
 function List({ children, scrollable = false, style }: TabsListProps) {
   const theme = useTheme();

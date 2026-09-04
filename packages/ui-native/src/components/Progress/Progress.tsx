@@ -28,18 +28,12 @@ export interface ProgressProps {
 const SWEEP_FRACTION = 0.4;
 
 /**
- * Determinate travel follows the web deliberately: 300ms on ease-out rather
- * than the spring. A progress bar is a reading, and the spring's 12% overshoot
- * on a jump to 100% runs past the end of the track and comes back — which reads
- * as the job finishing, unfinishing, then finishing.
+ * Determinate travel is 300ms on ease-out rather than the spring: a 12%
+ * overshoot on a jump to 100% runs past the end of the track and comes back,
+ * which reads as the job finishing, unfinishing, then finishing.
  *
- * Indeterminate is a partial bar sweeping the track on a loop, at
- * `grytDurations.sweep`, from the same description the web's keyframe follows.
- * Both were empty until GRYT-382: the web passed `value={null}` to Base UI,
- * which leaves the indicator's width unset, and nothing styled it. This file
- * previously called that a parity exception, which it was not — both platforms
- * were missing the same feature, and writing it down as one-sided is what
- * closed the question for a while.
+ * Indeterminate is a partial bar sweeping the track at `grytDurations.sweep`.
+ * Both platforms were missing it until GRYT-382.
  */
 export function Progress({ value, tone = "accent", style }: ProgressProps) {
   const theme = useTheme();

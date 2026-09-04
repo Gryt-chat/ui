@@ -1,29 +1,20 @@
-/* The motion system, as numbers.
+/* The motion system, as numbers, so the React Native port does not hand-copy
+ * 54 of them out of `theme.css` and hope.
  *
- * These lived only in `theme.css` as `linear()` sample lists, which meant the
- * React Native port had to hand-copy 54 numbers and hope they stayed in step.
- * They are arithmetic with no renderer attached, so they belong here with the
- * colour maths.
- *
- * The curves are a damped spring solved analytically and sampled, rather than
- * a physics engine's approximation of one. That distinction is load-bearing:
- * anything reproducing this on another platform should interpolate these
- * samples, not reach for a spring simulator and tune constants until it looks
- * close. `theme.css` emits them into `linear()`; React Native interpolates
+ * The curves are a damped spring solved analytically and sampled, not a physics
+ * engine's approximation. **Anything reproducing this on another platform
+ * should interpolate these samples**, not reach for a spring simulator and tune
+ * constants. `theme.css` emits them into `linear()`; React Native interpolates
  * them as a timing easing. Same curve, same duration, same motion.
  */
 
 /**
- * A damped spring at ζ = 0.5591 — peaks 12% past the target and settles
- * without a second visible swing.
- *
- * Duration-invariant: the natural frequency scales with the duration, so one
- * curve serves every tier and only the duration changes.
+ * A damped spring at ζ = 0.5591 — peaks 12% past the target and settles without
+ * a second visible swing. Duration-invariant, so one curve serves every tier.
  *
  * **For things that scale.** Overshoot is a percentage of the *travel*, so on
- * a control that grows in place it is texture you feel rather than see. On
- * something that travels the width of its container it throws the element
- * outside its own bounds — use {@link springTight} there.
+ * something crossing its container it throws the element outside its own
+ * bounds — use {@link springTight} there.
  */
 export const springSamples: readonly number[] = [
   0, 0.1217, 0.3812, 0.6579, 0.883, 1.0304, 1.1034, 1.12, 1.1025, 1.0705,
@@ -94,16 +85,11 @@ export const grytScaleSteps = {
 } as const;
 
 /**
- * How far a Drawer or Sheet hangs past the edge it comes from, in points.
+ * How far a Drawer or Sheet hangs past the edge it comes from, in points. The
+ * spring settles onto its target from both directions, so a panel sized exactly
+ * to its resting place shows a seam of backdrop on the undershoot.
  *
- * The spring overshoots — that is the whole point of it — and it settles onto
- * its target from both directions. A panel sized exactly to its resting place
- * therefore shows a seam of backdrop down its edge on the undershoot, for a
- * frame or two, every time it opens.
- *
- * So the panel is built `bleed` larger than it needs to be and hangs that much
- * off-screen, with matching padding on the same side so the content sits where
- * it would have. 64 is 4rem, which is what `theme.css` has said since the web
+ * 64 is 4rem, which is what `theme.css` has said since the web
  * Drawer was written; `bleedTokens.test.ts` in @gryt/ui keeps the two equal.
  */
 export const grytDrawerBleed = 64;

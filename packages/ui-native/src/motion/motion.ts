@@ -1,14 +1,7 @@
-/* The web components' motion, on React Native.
- *
- * Deliberately not `withSpring`. The curve in @gryt/theme is a damped spring
- * solved analytically and sampled — `theme.css` calls it "the real curve of a
- * spring rather than a physics engine approximating one". Reanimated's
- * `withSpring` is a physics engine, so using it would mean approximating an
- * exact curve with the very thing that curve was chosen over, and then tuning
- * damping constants until it looked close.
- *
- * `withTiming` plus an easing that interpolates the same samples at the same
- * duration is both simpler and actually identical.
+/* The web components' motion, on React Native. **Deliberately not
+ * `withSpring`**: the curve in @gryt/theme is a damped spring solved
+ * analytically, and a physics engine would approximate the thing that curve was
+ * chosen over. `withTiming` over the same samples is identical.
  */
 import { Easing, withTiming, type WithTimingConfig } from "react-native-reanimated";
 

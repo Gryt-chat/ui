@@ -1,14 +1,9 @@
 /**
- * The colours an owl comes in.
- *
- * Derived from TILE_HUES rather than hand-picked, and that is load-bearing
- * rather than tidy. A voice tile is tinted from its occupant's avatar colour,
- * and the tint snaps to the nearest entry in that list — so a palette built on
- * anything else gets rounded to a hue it was never designed around. Building
- * the palettes from the list makes the snap exact by construction.
- *
- * The hand-written palette this replaced had four of its eight entries land in
- * the same orange band, which put six identical tiles in a nine-person grid.
+ * The colours an owl comes in. **Derived from TILE_HUES rather than
+ * hand-picked**: a voice tile snaps its tint to the nearest entry in that list,
+ * so a palette built on anything else is rounded to a hue it was never designed
+ * around. The hand-written set this replaced put four of eight in the same
+ * orange band, which was six identical tiles in a nine-person grid.
  */
 
 import type { OwlPalette, PaletteName, PaletteScheme } from "./types";
@@ -95,26 +90,17 @@ function farHue(h: number): number {
 }
 
 /**
- * The three ways an owl sits against its background.
+ * The three ways an owl sits against its background, all off the painted
+ * references. `dusk` needs a darker wing than the other two or the bird
+ * flattens into the field.
  *
- * All three come off the painted references. `night` is the pale owl on a deep
- * field; `day` is the dark owl on a bright one; `dusk` is the pale owl on a
- * saturated one, which needs a darker wing than the other two or the whole
- * bird flattens into the background.
+ * The face runs warm in every scheme, which is why a teal owl has a cream face
+ * and ten palettes do not read as one palette at ten temperatures. The plate is
+ * lighter against the body than on the artboard: at member-list size the
+ * reference's four points of lightness disappear and the owl loses its face.
  *
- * The face runs warm in every scheme — the hue offsets below are why a teal owl
- * still has a cream face rather than a teal one, and they are what stops ten
- * palettes reading as one palette at ten temperatures.
- *
- * The plate is also lighter against the body here than on the artboard. At the
- * size a member list draws an avatar, the reference's four points of lightness
- * between the two disappear and the owl loses its face.
- *
- * `trim` stays inside the palette's own hue, because that is what the drawn
- * accessories do — the bow tie, the winter hat and the headphone pads are the
- * bird's own colour at a different lightness, not a contrasting one. Which
- * lightness depends on the scheme: a dark owl needs a light bow tie and a pale
- * owl a dark one, and getting that backwards is a smudge under the chin.
+ * `trim` stays inside the palette's own hue, at a lightness that depends on the
+ * scheme — backwards, a bow tie is a smudge under the chin.
  */
 export function owlPalette(name: PaletteName, scheme: PaletteScheme): OwlPalette {
   const h = HUE_BY_NAME[name];

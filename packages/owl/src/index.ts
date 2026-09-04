@@ -1,29 +1,16 @@
 /**
- * Gryt's owls: a deterministic avatar generator.
- *
- * The same seed always draws the same owl, on every client, forever. That is
- * the only hard requirement — a person is recognised by their avatar, so an owl
- * that shifts when this library is upgraded has failed at the one job it has.
- * Two consequences that look like fussiness and are not:
+ * Gryt's owls: a deterministic avatar generator. **The same seed always draws
+ * the same owl, on every client, forever** — a person is recognised by their
+ * avatar. Two consequences that look like fussiness and are not:
  *
  *   - Every random draw is keyed on a channel name (see rng.ts), so adding a
  *     part does not reshuffle the parts that were already there.
- *   - Nothing depends on the platform. No Math.random, no Date, no locale, no
- *     Intl. The web client and the mobile app run this same file and have to
- *     agree byte for byte, and there is a test in both trees that checks they
- *     do.
+ *   - No Math.random, no Date, no locale, no Intl. The web client and the
+ *     mobile app run this file and have to agree byte for byte.
  *
- * This is not a DiceBear style and does not plug into one. It replaced DiceBear
- * outright for user avatars, because what was wanted was one drawn character
- * with variations rather than a generic face generator — DiceBear's model is a
- * style definition of interchangeable sprite layers, and the owl is a single
- * drawing. Server icons are still DiceBear Planets; a server is not a person
- * and should not be drawn as one.
- *
- * The bird itself never varies, in shape or in size. What the seed picks is the
- * palette, the expression, whether there are ear tufts, and what it is wearing.
- * See metrics.ts for why the geometry is nailed down and accessories.ts for
- * what wearing something involves.
+ * The bird never varies in shape or size. The seed picks the palette, the
+ * expression, the ear tufts and what it is wearing. See metrics.ts for why the
+ * geometry is nailed down and accessories.ts for what wearing involves.
  */
 
 import { escapeXml, fmt, VIEWBOX } from "./geometry";

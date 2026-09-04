@@ -12,15 +12,10 @@ const css = readFileSync(
 );
 
 /**
- * The drawer bleed exists twice: as `--gryt-drawer-bleed` here, which the web
- * Drawer reads, and as `grytDrawerBleed` in @gryt/theme, which React Native
- * reads because there is no CSS variable to read there.
- *
- * They are the same distance and they have to stay the same distance. If the
- * web widened its overhang and the native side did not, the seam of backdrop
- * the overhang exists to hide would come back on one platform only — which is
- * the kind of bug that gets reported as "the drawer flickers on my phone" and
- * looks like a rendering problem.
+ * The drawer bleed exists twice — `--gryt-drawer-bleed` here and
+ * `grytDrawerBleed` in @gryt/theme, which React Native reads. If one widened
+ * and the other did not, the seam of backdrop would come back on one platform
+ * only and be reported as "the drawer flickers on my phone".
  */
 describe("the drawer bleed matches theme.css", () => {
   it("is 4rem in the stylesheet", () => {

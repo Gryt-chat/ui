@@ -1,38 +1,19 @@
-/* Themes to start from.
+/* Themes to start from: the Gryt ones show the range, the ported ones are
+ * well-known palettes.
  *
- * Two kinds. The Gryt ones show the range — warm, near-monochrome,
- * high-contrast, and the palette the library ships. The ported ones are
- * well-known palettes, because "can it look like the thing I already use?" is
- * the question people arrive with, and a paragraph claiming yes is worth less
- * than a click.
+ * **Every ported value is the published one**, taken from the source named
+ * above each preset rather than from memory. Where a palette defines both a
+ * dark and a light variant both are here, which is why `lightHue` exists.
  *
- * Every ported value is the published one, taken from the source named in the
- * comment above each preset rather than from memory. Where a palette defines
- * both a dark and a light variant — Alucard, Latte, Snow Storm, GitHub Light,
- * Solarized Light — both are here, which is why lightHue exists: Catppuccin's
- * mauve and GitHub's blue are genuinely different colours in each half, and
- * sharing one would make the preset wrong in the other.
+ * Two limits the page states as well. Gryt names seven neutral anchors and most
+ * palettes name fewer, so steps in between are `derived` — never invented, they
+ * sit between two published values. And mapping a palette's names onto page,
+ * surface, border, muted and text is a judgement.
  *
- * Two honest limits, and the page says both:
- *
- * - Gryt names seven neutral anchors. Most palettes name fewer, so the steps
- *   in between are derived — marked `derived` where that happens. Nothing
- *   derived is invented out of nowhere; it sits between two published values.
- * - A palette is a set of names with colours behind them, and mapping those
- *   names onto "page, surface, border, muted, text" is a judgement. Somebody
- *   else mapping the same palette would put a couple of them elsewhere.
- *
- * Radius is part of a preset too. GitHub's buttons are not pills and
- * Solarized's are square; a preset that got the colours right and left
- * everything fully rounded would not look like the thing it names.
+ * Radius is part of a preset: GitHub's buttons are not pills.
  *
  * Names belong to their projects. Dracula, Nord, Catppuccin, Solarized and
  * shadcn/ui are MIT-licensed; the rest are referenced by name only.
- *
- * These ship with the library rather than with the docs site, because the docs
- * site is not the only thing that lists them: the client offers the same set,
- * and it should get a new one by taking a newer @gryt/ui rather than by
- * somebody copying twelve palettes across by hand.
  */
 
 import type { GrytRadiusKey, GrytTheme } from "./theme";
@@ -168,29 +149,18 @@ export const grytPresets: GrytThemePreset[] = [
   },
 
   /*
-   * The owl palettes, as themes.
+   * The owl palettes, as themes. Derived from the drawings rather than lifted:
+   * a drawing names four or five colours and a theme needs eleven hues and
+   * seven neutrals in each appearance.
    *
-   * Six drawings of the Gryt owl, each in a different set of colours. They were
-   * made as artwork rather than as themes, so what is here is derived from them
-   * rather than lifted: a drawing names four or five colours and a theme needs
-   * eleven hues and seven neutrals in each of two appearances.
+   * **Derived in OKLCH**, because a ramp built by darkening sRGB drifts grey
+   * and the surfaces stop belonging to the theme three steps down.
    *
-   * Derived in OKLCH, and the reason is visible in the result — a ramp built by
-   * darkening sRGB drifts grey, so the surfaces stop belonging to the theme
-   * about three steps down. Holding hue and chroma while moving lightness keeps
-   * Rose's greys pink and Forest's greys green, which is the whole point of a
-   * themed neutral.
+   * Secondaries are analogous rather than complementary — a true complement put
+   * Indigo's on orange and Ice's on tan.
    *
-   * Secondaries are analogous rather than complementary, matching Ember above.
-   * A true complement put Indigo's secondary on orange and Ice's on tan, which
-   * read as colours borrowed from another theme.
-   *
-   * `onAccent` is chosen per theme rather than assumed: whichever of the light
-   * or dark ink has more contrast on that accent is the one that ships. Forest's
-   * sage takes dark ink at 8.1:1; Indigo's periwinkle takes light at 4.7:1.
-   *
-   * Every one is checked in both appearances — text 14.8:1 or better on its own
-   * background, muted 5.7:1 or better on its surface.
+   * `onAccent` is chosen per theme: whichever ink has more contrast on that
+   * accent ships. Every one is checked in both appearances.
    */
   {
     id: "owl-rose",
@@ -454,15 +424,12 @@ export const grytPresets: GrytThemePreset[] = [
     /* Four photographs: snow-loaded spruces through a gym window, a dark room
        lit by white strips, a white can on black rubber, grey sweatpants.
 
-       Paper is already near-monochrome, so this earns its place by being cold
-       rather than neutral. Every grey carries the blue that overcast snow
-       light has — Paper's are hueless, and side by side the difference is the
-       whole theme.
+       Cold rather than neutral, which is what separates it from Paper: every
+       grey carries the blue of overcast snow light.
 
-       The accent is the white can on the black floor, which is why this is the
-       only Gryt preset with a split `lightHue`. A near-white accent is the
-       point in the dark half and invisible in the light one, so light gets the
-       colour of a wet window frame instead and keeps the same job. */
+       The accent is the white can, which is why this is the only Gryt preset
+       with a split `lightHue` — a near-white accent is invisible in the light
+       half, so that gets the colour of a wet window frame. */
     id: "winter-arc",
     name: "Winter Arc",
     note: "Cold monochrome. A near-white accent in the dark, snow-light greys.",

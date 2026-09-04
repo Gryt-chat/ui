@@ -19,29 +19,16 @@ export interface TextProps extends RNTextProps {
 }
 
 /**
- * `Text`, in whatever face the theme was given.
+ * `Text`, in whatever face the theme was given. React Native has no cascade, so
+ * every `Text` has to name its own family — **every component in this library
+ * imports it from here rather than from `react-native`**, which is what makes
+ * `GrytThemeProvider fonts={…}` reach a component written next year.
  *
- * React Native has no cascade: a font set on a parent does not reach the text
- * inside it, so there is no root rule an app can write and every `Text` has to
- * name its own family. Every component in this library imports `Text` from
- * here rather than from `react-native`, which is what makes
- * `GrytThemeProvider fonts={…}` reach all of them — and what makes a component
- * written next year get it without anybody remembering to.
+ * The style is flattened because the weight has to be read before the family
+ * can be chosen.
  *
- * The alternative was spreading `theme.font()` into every style in the library.
- * That works, and it is a rule somebody has to keep applying; this is the same
- * rule applied once. `theme.font()` stays exported for anyone styling their own
- * `Text` outside the library.
- *
- * The weight has to be read before the family can be chosen, which is why the
- * style is flattened. `StyleSheet.flatten` handles the array form and the
- * registered-id form, both of which components here use.
- *
- * **A `fontFamily` already in the style wins**, so a caller who deliberately
- * wants one specific face is not fought by the wrapper.
- *
- * **A theme with no faces changes nothing.** `theme.font` hands back the bare
- * `fontWeight` in that case, which is what the style already said.
+ * **A `fontFamily` already in the style wins**, and a theme with no faces
+ * changes nothing.
  */
 export const Text = forwardRef<RNText, TextProps>(function GrytText(
   { style, mono = false, ...props },
