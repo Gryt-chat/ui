@@ -11,6 +11,8 @@ const themeDtsPath = resolve(distDir, "theme.d.ts");
 const themeDCtsPath = resolve(distDir, "theme.d.cts");
 const themeSourcePath = resolve(import.meta.dir, "../src/styles/theme.css");
 const themeDistPath = resolve(distDir, "theme.css");
+const componentsSourcePath = resolve(import.meta.dir, "../src/styles/components.css");
+const componentsDistPath = resolve(distDir, "components.css");
 
 async function declarationFiles(directory: string): Promise<string[]> {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -59,3 +61,8 @@ await copyFile(themeDtsPath, themeDCtsPath);
 // useless as theme config. A consumer that wants bg-gryt-accent in its own app
 // needs the @theme block intact, so this one file bypasses the build.
 await copyFile(themeSourcePath, themeDistPath);
+
+// Same reason, one layer down: the @apply calls in components.css have to
+// resolve against the consuming app own Tailwind build, so this one is copied
+// rather than built too.
+await copyFile(componentsSourcePath, componentsDistPath);

@@ -56,6 +56,7 @@
       }
     },
     "./styles.css": "./dist/styles.css",
+    "./components.css": "./dist/components.css",
     "./theme.css": "./dist/theme.css",
     "./package.json": "./package.json"
   },

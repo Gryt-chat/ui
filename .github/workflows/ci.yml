@@ -131,14 +131,14 @@ jobs:
       - run: bunx publint packages/owl
       - run: bunx publint packages/ui
       - run: bunx publint packages/ui-native
-      # Both CSS entrypoints are excluded: attw checks that an entrypoint
+      # Every CSS entrypoint is excluded: attw checks that an entrypoint
       # resolves to type declarations or JavaScript, and a stylesheet is
       # neither. Any future CSS export needs adding here too.
       # No exclusions needed here: @gryt/theme has one entry point, ships no
       # CSS, and has both an ESM and a CommonJS build.
       - run: bunx @arethetypeswrong/cli --pack packages/theme
       - run: bunx @arethetypeswrong/cli --pack packages/owl
-      - run: bunx @arethetypeswrong/cli --pack packages/ui --exclude-entrypoints ./styles.css --exclude-entrypoints ./theme.css
+      - run: bunx @arethetypeswrong/cli --pack packages/ui --exclude-entrypoints ./styles.css --exclude-entrypoints ./theme.css --exclude-entrypoints ./components.css
 
       # ui-native is ESM only and ships no CommonJS build, the same as
       # @gryt/voice, so the CJS-resolves-to-ESM rule is the intended shape here
