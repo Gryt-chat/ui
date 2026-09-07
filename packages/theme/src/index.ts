@@ -36,8 +36,14 @@ export {
 } from "./oklch";
 
 export type { Oklch } from "./oklch";
-export { grytPresets, grytPresetsById } from "./presets";
-export type { GrytThemePreset } from "./presets";
+export {
+  GRYT_THEME_COLLECTIONS,
+  grytCollectionNotes,
+  grytPresets,
+  grytPresetsByCollection,
+  grytPresetsById
+} from "./presets";
+export type { GrytThemeCollection, GrytThemePreset } from "./presets";
 export {
   GRYT_HUE_KEYS,
   GRYT_NEUTRAL_KEYS,
