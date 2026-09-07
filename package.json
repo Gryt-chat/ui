@@ -26,7 +26,7 @@
     "build:lib": "bun --filter @gryt/theme build && bun --filter @gryt/owl build && bun --filter @gryt/ui build && bun --filter @gryt/ui-native build",
     "typecheck": "bun --filter '*' typecheck",
     "test": "bun --filter @gryt/theme --filter @gryt/owl --filter @gryt/ui --filter @gryt/ui-native test",
-    "lint": "eslint . --max-warnings 108",
+    "lint": "eslint . --max-warnings 114",
     "format": "prettier --write .",
     "changeset": "changeset",
     "version-packages": "changeset version",

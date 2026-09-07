@@ -348,7 +348,7 @@ function RadioExample() {
     slug: "badge",
     name: "Badge",
     description:
-      "Small counters and status markers layered on icons or avatars.",
+      "Small counters and status markers, pinned to any corner of an icon or avatar — or standing on their own at the end of a row.",
     importName: "Badge",
     preview: "badge",
     code: `import { Avatar, Badge } from "@gryt/ui";
@@ -367,7 +367,18 @@ function RadioExample() {
 </Badge>
 <Badge badgeContent="">
   <Avatar>G</Avatar>
-</Badge>`
+</Badge>
+
+// Any corner.
+<Badge badgeContent={7} placement="bottom-right">
+  <Avatar src="/owl.png" alt="Gryt" fallback="G" />
+</Badge>
+
+// With no children it is the pill on its own, in normal flow — for a row
+// that ends in a count rather than an avatar wearing one. Neutral for
+// messages that are merely unread, primary for the one that named you.
+<Badge badgeContent={4} tone="neutral" />
+<Badge badgeContent={2} tone="primary" />`
   },
   {
     slug: "chip",
@@ -723,8 +734,30 @@ function LayoutPicker() {
   <ContextMenu.Portal>
     <ContextMenu.Positioner>
       <ContextMenu.Popup>
-        <ContextMenu.Item>Reply</ContextMenu.Item>
-        <ContextMenu.Item>Copy text</ContextMenu.Item>
+        <ContextMenu.Group>
+          <ContextMenu.GroupLabel>#general</ContextMenu.GroupLabel>
+          <ContextMenu.Item>Reply</ContextMenu.Item>
+          <ContextMenu.Item>Copy text</ContextMenu.Item>
+        </ContextMenu.Group>
+        <ContextMenu.Separator />
+
+        {/* The trigger draws its own caret and stays highlighted while the
+            submenu is open. */}
+        <ContextMenu.SubmenuRoot>
+          <ContextMenu.SubmenuTrigger>Notifications</ContextMenu.SubmenuTrigger>
+          <ContextMenu.Portal>
+            <ContextMenu.Positioner>
+              <ContextMenu.Popup>
+                <ContextMenu.RadioGroup value={level} onValueChange={setLevel}>
+                  <ContextMenu.RadioItem value="all">Everything</ContextMenu.RadioItem>
+                  <ContextMenu.RadioItem value="mentions">Only mentions</ContextMenu.RadioItem>
+                  <ContextMenu.RadioItem value="none">Nothing</ContextMenu.RadioItem>
+                </ContextMenu.RadioGroup>
+              </ContextMenu.Popup>
+            </ContextMenu.Positioner>
+          </ContextMenu.Portal>
+        </ContextMenu.SubmenuRoot>
+
         <ContextMenu.Separator />
         <ContextMenu.Item>Delete</ContextMenu.Item>
       </ContextMenu.Popup>

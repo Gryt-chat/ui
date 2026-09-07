@@ -44,8 +44,16 @@ export type FieldSize = keyof typeof fieldSizes;
 
 // Every floating surface: menu, select list, tooltip, dialog, drawer. Flat —
 // a border rather than a shadow.
-export const popupSurface =
-  "rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface text-gryt-text";
+//
+// Split from its radius because Menu needs a different one. Its rows are
+// rounded-md and sit inside the popup's own padding, so a 28px outer corner
+// curves away from the row and shows a crescent of surface behind the
+// highlight. Anything that wants a corner of its own takes these colours and
+// states its radius; everything else takes popupSurface and gets xl.
+export const popupSurfaceColors =
+  "border border-gryt-border bg-gryt-surface text-gryt-text";
+
+export const popupSurface = `rounded-(--gryt-radius-xl) ${popupSurfaceColors}`;
 
 // Base UI sets data-starting-style and data-ending-style for one frame either
 // side of open and close. The element carries the transition itself.

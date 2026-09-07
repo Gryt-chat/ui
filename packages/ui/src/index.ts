@@ -106,7 +106,7 @@ export type { AvatarProps } from "./components/Avatar/Avatar";
 // generator stays in @gryt/owl, which a consumer can depend on directly.
 export { avatarSeed } from "@gryt/owl";
 export { Badge } from "./components/Badge/Badge";
-export type { BadgeProps } from "./components/Badge/Badge";
+export type { BadgePlacement, BadgeProps } from "./components/Badge/Badge";
 export { Chip } from "./components/Chip/Chip";
 export type { ChipProps, ChipTone } from "./components/Chip/Chip";
 export { Checkbox } from "./components/Checkbox/Checkbox";
@@ -152,7 +152,16 @@ export type {
   DrawerViewportProps
 } from "./components/Drawer/Drawer";
 export { Menu } from "./components/Menu/Menu";
-export type { MenuItemProps, MenuPopupProps } from "./components/Menu/Menu";
+export type {
+  MenuCheckboxItemProps,
+  MenuGroupLabelProps,
+  MenuGroupProps,
+  MenuItemProps,
+  MenuPopupProps,
+  MenuRadioGroupProps,
+  MenuRadioItemProps,
+  MenuSubmenuTriggerProps
+} from "./components/Menu/Menu";
 export { Tabs, Tab } from "./components/Tabs/Tabs";
 export type {
   TabProps,
