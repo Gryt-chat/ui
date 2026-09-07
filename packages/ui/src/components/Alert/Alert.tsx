@@ -27,7 +27,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
       ref={ref}
       role="alert"
       className={cn(
-        "gryt-alert rounded-(--gryt-radius-lg) border px-4 py-3 text-sm",
+        "gryt-alert rounded-(--gryt-radius-surface) border px-4 py-3 text-sm",
         severityStyles[severity],
         className
       )}

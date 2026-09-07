@@ -23,7 +23,7 @@ const Popup = forwardRef<HTMLDivElement, AlertDialogPopupProps>(
         className={cn(
           "gryt-alert-dialog fixed top-1/2 left-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
           "flex w-[32rem] max-w-[calc(100vw-3rem)] flex-col gap-4",
-          "rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-5 text-gryt-text",
+          "rounded-(--gryt-radius-surface) border border-gryt-border bg-gryt-surface p-5 text-gryt-text",
           "outline-none",
           "transition-[opacity,scale] duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none",
           "data-starting-style:scale-[0.98] data-starting-style:opacity-0",

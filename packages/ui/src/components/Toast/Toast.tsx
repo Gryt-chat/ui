@@ -74,7 +74,9 @@ const Root = forwardRef<HTMLDivElement, ToastRootProps>(function ToastRoot(
         // heavy for a card floating in the corner with nothing behind it. A
         // white hairline separates it from the page without drawing a box
         // around it.
-        "rounded-(--gryt-radius-xl) border text-gryt-text",
+        // The corner still follows the popup role — the note above is about the
+        // border colour, not the shape.
+        "rounded-(--gryt-radius-popup) border text-gryt-text",
         severityStyles[severity],
         // Swiping is a pointer gesture, so the toast follows the finger
         // through Base UI's swipe variables before it animates out.

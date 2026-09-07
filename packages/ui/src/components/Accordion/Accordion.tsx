@@ -23,7 +23,7 @@ const Root = forwardRef<HTMLDivElement, AccordionProps>(function AccordionRoot(
     <BaseAccordion.Root
       ref={ref}
       className={cn(
-        "gryt-accordion flex w-full flex-col gap-2 rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface p-2",
+        "gryt-accordion flex w-full flex-col gap-2 rounded-(--gryt-radius-surface) border border-gryt-border bg-gryt-surface p-2",
         className
       )}
       {...props}
