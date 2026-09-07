@@ -124,7 +124,11 @@ export type { SwitchProps } from "./components/Switch/Switch";
 export { Slider } from "./components/Slider/Slider";
 export type { SliderProps } from "./components/Slider/Slider";
 export { Select } from "./components/Select/Select";
-export type { SelectOption, SelectProps } from "./components/Select/Select";
+export type {
+  SelectOption,
+  SelectOptionGroup,
+  SelectProps
+} from "./components/Select/Select";
 export { Tooltip, TooltipProvider } from "./components/Tooltip/Tooltip";
 export type { TooltipProps } from "./components/Tooltip/Tooltip";
 export { Divider } from "./components/Divider/Divider";
