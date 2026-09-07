@@ -77,16 +77,8 @@ const GENERATED_RULES: [string, (p: GrytThemePreset["theme"]) => number, number]
   ["ink on danger", (t) => contrast(t.hue.onDanger, t.hue.danger), 7]
 ];
 
-/**
- * The collections generated in OKLCH, as opposed to ported or hand-picked.
- *
- * Winter Arc sits in Winter and predates them: its ink-on-secondary measures
- * 6.07 against a bar of 7, which is a real gap rather than a rounding one.
- * Changing a shipped theme's colour is a separate decision from adding new
- * ones, so it is excluded here rather than quietly adjusted (GRYT-994).
- */
+/** The collections generated in OKLCH, as opposed to ported or hand-picked. */
 const GENERATED = new Set(["Midnight", "Winter", "Spring", "Summer", "Autumn", "Nature", "Pastel"]);
-const PREDATES_THE_RULES = new Set(["winter-arc"]);
 
 describe("every preset stays readable", () => {
   for (const preset of grytPresets) {
@@ -102,16 +94,47 @@ describe("every preset stays readable", () => {
 });
 
 describe("the generated collections hold Gryt's own bar", () => {
-  const generated = grytPresets.filter(
-    (p) => GENERATED.has(p.collection) && !PREDATES_THE_RULES.has(p.id)
-  );
-  for (const preset of generated) {
+  for (const preset of grytPresets.filter((p) => GENERATED.has(p.collection))) {
     it(`${preset.collection} / ${preset.name}`, () => {
       for (const [what, measure, floor] of GENERATED_RULES) {
         expect(
           Number(measure(preset.theme).toFixed(2)),
           `${what} in ${preset.name}`
         ).toBeGreaterThanOrEqual(floor);
+      }
+    });
+  }
+});
+
+/*
+ * A theme with `lightHue` carries a second set of fills and a second set of ink
+ * to sit on them, and until GRYT-994 nothing looked at it. Winter Arc passed on
+ * its dark half and measured 4.68 on the light one.
+ *
+ * Only the generated collections are held here. Every ported palette with a
+ * lightHue misses this bar — Nord's light accent is 3.50 against its own ink —
+ * and those are published values, so holding them to it would mean changing the
+ * thing being ported.
+ */
+describe("a split light hue set is held to the same bar", () => {
+  const split = grytPresets.filter(
+    (preset) => GENERATED.has(preset.collection) && preset.theme.lightHue !== null
+  );
+
+  for (const preset of split) {
+    it(`${preset.collection} / ${preset.name}`, () => {
+      const hues = preset.theme.lightHue!;
+      const pairs = [
+        ["ink on accent", hues.onAccent, hues.accent],
+        ["ink on secondary", hues.onSecondary, hues.secondary],
+        ["ink on danger", hues.onDanger, hues.danger]
+      ] as const;
+
+      for (const [what, ink, fill] of pairs) {
+        expect(
+          Number(contrast(ink, fill).toFixed(2)),
+          `${what} in ${preset.name}'s light half`
+        ).toBeGreaterThanOrEqual(7);
       }
     });
   }
