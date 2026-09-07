@@ -11,6 +11,25 @@ export interface SelectOption {
   disabled?: boolean;
 }
 
+/**
+ * A run of options under a heading.
+ *
+ * `options` takes these mixed in with plain options, so a caller that never
+ * needed groups does not change. The theme library is what asked for it: the
+ * presets went to forty-seven across ten collections, and the docs switcher
+ * was putting the collection into every label to make one flat list scannable.
+ * That reads well enough and it says "Winter" forty-seven times to a screen
+ * reader instead of naming the group once.
+ */
+export interface SelectOptionGroup {
+  label: ReactNode;
+  options: SelectOption[];
+}
+
+function isGroup(entry: SelectOption | SelectOptionGroup): entry is SelectOptionGroup {
+  return "options" in entry;
+}
+
 export type SelectSize = "small" | "medium";
 
 const sizeStyles: Record<SelectSize, string> = {
@@ -23,7 +42,7 @@ export interface SelectProps
     ComponentPropsWithoutRef<typeof BaseSelect.Root>,
     "children" | "items"
   > {
-  options?: SelectOption[];
+  options?: (SelectOption | SelectOptionGroup)[];
   label?: ReactNode;
   placeholder?: string;
   size?: SelectSize;
@@ -45,6 +64,27 @@ export interface SelectProps
  * — is `containOverlays`, set once for a subtree by whoever established the
  * theme rather than per call.
  */
+function renderItem(option: SelectOption) {
+  return (
+    <BaseSelect.Item
+      key={String(option.value)}
+      value={option.value}
+      disabled={option.disabled}
+      className={cn(
+        "flex cursor-pointer items-center justify-between gap-2",
+        "rounded-(--gryt-radius-md) px-3 py-2 text-sm text-gryt-text",
+        "outline-none select-none data-highlighted:bg-gryt-surface-raised",
+        "data-disabled:cursor-not-allowed data-disabled:opacity-50"
+      )}
+    >
+      <BaseSelect.ItemText>{option.label}</BaseSelect.ItemText>
+      <BaseSelect.ItemIndicator className="text-gryt-accent-11">
+        <Check size={14} weight="bold" />
+      </BaseSelect.ItemIndicator>
+    </BaseSelect.Item>
+  );
+}
+
 export function Select({
   className,
   label,
@@ -54,9 +94,12 @@ export function Select({
   ...props
 }: SelectProps) {
   const portalContainer = usePortalContainer();
+  // Base UI reads `items` to turn the value back into a label for the trigger,
+  // so it wants every option, not the groups they sit in.
+  const flat = options.flatMap((entry) => (isGroup(entry) ? entry.options : entry));
 
   return (
-    <BaseSelect.Root items={options} {...props}>
+    <BaseSelect.Root items={flat} {...props}>
       <div className={cn("gryt-select flex w-full flex-col gap-1.5", className)}>
         {label ? (
           <BaseSelect.Label className="text-xs font-medium text-gryt-muted">
@@ -90,24 +133,18 @@ export function Select({
             className={cn("min-w-(--anchor-width) p-1", popupSurface, popupMotion)}
           >
             <BaseSelect.List>
-              {options.map((option) => (
-                <BaseSelect.Item
-                  key={String(option.value)}
-                  value={option.value}
-                  disabled={option.disabled}
-                  className={cn(
-                    "flex cursor-pointer items-center justify-between gap-2",
-                    "rounded-(--gryt-radius-md) px-3 py-2 text-sm text-gryt-text",
-                    "outline-none select-none data-highlighted:bg-gryt-surface-raised",
-                    "data-disabled:cursor-not-allowed data-disabled:opacity-50"
-                  )}
-                >
-                  <BaseSelect.ItemText>{option.label}</BaseSelect.ItemText>
-                  <BaseSelect.ItemIndicator className="text-gryt-accent-11">
-                    <Check size={14} weight="bold" />
-                  </BaseSelect.ItemIndicator>
-                </BaseSelect.Item>
-              ))}
+              {options.map((entry, index) =>
+                isGroup(entry) ? (
+                  <BaseSelect.Group key={index}>
+                    <BaseSelect.GroupLabel className="px-3 pt-2 pb-1 text-xs font-medium text-gryt-muted">
+                      {entry.label}
+                    </BaseSelect.GroupLabel>
+                    {entry.options.map(renderItem)}
+                  </BaseSelect.Group>
+                ) : (
+                  renderItem(entry)
+                )
+              )}
             </BaseSelect.List>
           </BaseSelect.Popup>
         </BaseSelect.Positioner>
