@@ -27,7 +27,7 @@ export const focusRingWithin =
  * the field is invalid, and baking one in here would mean fighting it back off.
  */
 export const fieldControl = [
-  "w-full rounded-(--gryt-radius-xl) border bg-gryt-surface-raised",
+  "w-full rounded-(--gryt-radius-field) border bg-gryt-surface-raised",
   "text-gryt-text outline-none placeholder:text-gryt-muted",
   "transition-colors duration-150 motion-reduce:transition-none",
   "hover:border-gryt-accent-light focus:border-gryt-accent",

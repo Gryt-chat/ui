@@ -59,7 +59,7 @@ export const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
         className={cn(
           "gryt-toggle",
           "inline-flex shrink-0 items-center justify-center gap-2 border-0 bg-transparent",
-          "rounded-(--gryt-radius-full) font-medium select-none",
+          "rounded-(--gryt-radius-control) font-medium select-none",
           // scale rather than transform — see the note in Button.
           "transition-[scale,background-color,color] duration-(--gryt-dur-spring) ease-spring",
           "motion-safe:hover:not-data-disabled:scale-[1.06]",
@@ -90,7 +90,7 @@ export const ToggleGroup = forwardRef<HTMLDivElement, ToggleGroupProps>(
         ref={ref}
         className={cn(
           "gryt-toggle-group inline-flex items-center gap-1",
-          "rounded-(--gryt-radius-full) border border-gryt-border bg-gryt-surface p-1",
+          "rounded-(--gryt-radius-control) border border-gryt-border bg-gryt-surface p-1",
           className
         )}
         {...props}

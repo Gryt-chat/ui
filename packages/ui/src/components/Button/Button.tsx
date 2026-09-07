@@ -69,7 +69,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           "gryt-button",
           "inline-flex cursor-pointer items-center justify-center gap-2 border-0 shadow-none",
-          "rounded-(--gryt-radius-full) font-semibold whitespace-nowrap select-none",
+          "rounded-(--gryt-radius-control) font-semibold whitespace-nowrap select-none",
           // scale, not transform: Tailwind v4's scale-* utilities set the
           // standalone `scale` property, so transitioning `transform` alone
           // leaves the hover grow snapping instantly.

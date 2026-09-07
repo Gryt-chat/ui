@@ -47,7 +47,7 @@ export const Chip = forwardRef<HTMLSpanElement, ChipProps>(function Chip(
     <span
       ref={ref}
       className={cn(
-        "gryt-chip inline-flex items-center gap-1.5 rounded-(--gryt-radius-full) border px-3 py-1 text-xs font-medium",
+        "gryt-chip inline-flex items-center gap-1.5 rounded-(--gryt-radius-control) border px-3 py-1 text-xs font-medium",
         toneStyles[tone],
         className
       )}
@@ -61,7 +61,7 @@ export const Chip = forwardRef<HTMLSpanElement, ChipProps>(function Chip(
           aria-label="Remove"
           onClick={onDelete}
           className={cn(
-            "-mr-1 inline-flex h-4 w-4 cursor-pointer items-center justify-center rounded-(--gryt-radius-full)",
+            "-mr-1 inline-flex h-4 w-4 cursor-pointer items-center justify-center rounded-(--gryt-radius-control)",
             "opacity-70 transition-opacity hover:opacity-100",
             focusRing
           )}
