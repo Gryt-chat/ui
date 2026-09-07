@@ -25,8 +25,10 @@ import {
 } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
+  useAnimatedReaction,
   useAnimatedStyle,
-  useSharedValue
+  useSharedValue,
+  type SharedValue
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -34,6 +36,7 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { grytDrawerBleed } from "@gryt/theme";
 import { durations, travel as travelTo } from "../../motion";
 import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
+import { reachOf, seedFor } from "./drawerPull";
 import { useTheme } from "../../theme";
 
 export type DrawerSide = "left" | "right" | "bottom";
@@ -41,6 +44,8 @@ export type DrawerSide = "left" | "right" | "bottom";
 interface DrawerContextValue {
   open: boolean;
   setOpen: (open: boolean) => void;
+  /** The caller's own reach into the panel, 0 to 1. See `DrawerRootProps`. */
+  pull?: SharedValue<number>;
 }
 
 const DrawerContext = createContext<DrawerContextValue | null>(null);
@@ -73,12 +78,34 @@ function useDrawer(part: string) {
 
 export interface DrawerRootProps extends OpenStateProps {
   children?: ReactNode;
+  /**
+   * How far the caller has pulled the panel out, 0 shut to 1 open.
+   *
+   * For dragging a drawer *open* from somewhere else on screen — a swipe at the
+   * edge of a pager, say. `open` cannot express that: it is a boolean, so the
+   * panel springs the whole way and the finger is left behind.
+   *
+   * **It composes rather than overriding.** The panel sits at whichever of
+   * `pull` and the open spring reaches further, so nothing has to be told which
+   * one is in charge: while a drag is happening `open` is false and `pull`
+   * leads; on release the caller sets `open` and lets `pull` fall back to 0,
+   * and the spring is already at least that far along, so the hand-off is not
+   * visible. Abandoning the drag is the same move without setting `open`.
+   *
+   * Writing it mounts the panel and returning it to 0 unmounts it, so a caller
+   * that never sets `open` still gets a drawer that comes and goes.
+   */
+  pull?: SharedValue<number>;
 }
 
-function Root({ children, ...openProps }: DrawerRootProps) {
+function Root({ children, pull, ...openProps }: DrawerRootProps) {
   const state = useOpenState(openProps);
+  const value = useMemo(
+    () => ({ ...state, pull }),
+    [state, pull]
+  );
   return (
-    <DrawerContext.Provider value={state}>{children}</DrawerContext.Provider>
+    <DrawerContext.Provider value={value}>{children}</DrawerContext.Provider>
   );
 }
 
@@ -135,7 +162,7 @@ function Popup({
   dismissible = true,
   style
 }: DrawerPopupProps) {
-  const { open, setOpen } = useDrawer("Popup");
+  const { open, setOpen, pull } = useDrawer("Popup");
   const theme = useTheme();
   /**
    * A side panel is full height, so its first row sits under the Dynamic Island
@@ -150,6 +177,15 @@ function Popup({
   const extent = vertical ? screen.height * size : screen.width * size;
 
   const progress = useSharedValue(0);
+
+  /**
+   * A local stand-in so the worklets below can read one value either way. A
+   * caller that passes nothing leaves it at 0, and `reach` is then `progress`
+   * exactly as before.
+   */
+  const ownPull = useSharedValue(0);
+  const pulled = pull ?? ownPull;
+
 
   /**
    * The panel is built `grytDrawerBleed` larger than it needs and hangs that
@@ -208,6 +244,14 @@ function Popup({
       return;
     }
 
+    /* Opening starts from wherever a drag had got to, not from nothing. The
+       panel is already that far out; springing from 0 would take it back to the
+       edge and bring it in again, and the larger-of-the-two rule cannot save it
+       because the caller's pull is falling at the same time. */
+    if (open) {
+      progress.value = seedFor(progress.value, pulled.value);
+    }
+
     // eslint-disable-next-line react-hooks/immutability
     progress.value = travelTo(
       open ? 1 : 0,
@@ -221,7 +265,7 @@ function Popup({
         if (finished && !open) runOnJS(setMounted)(false);
       }
     );
-  }, [open, mounted, progress, reducedMotion]);
+  }, [open, mounted, progress, pulled, reducedMotion]);
 
   /**
    * How far the finger has dragged the panel away from open, in points. Kept
@@ -230,8 +274,35 @@ function Popup({
    */
   const drag = useSharedValue(0);
 
+  /**
+   * How far out the panel is, from whichever is reaching further.
+   *
+   * `Math.max` rather than a flag saying who is driving. During a drag the
+   * spring is at 0 and the finger leads; on release the spring runs to 1 while
+   * the caller drops its pull, and the panel cannot go backwards between the
+   * two because it is always the larger of them.
+   */
+  const reach = () => {
+    "worklet";
+    return reachOf(progress.value, pulled.value);
+  };
+
+  /* A pull off zero has to mount the panel, and a pull back to zero has to take
+     it away again — otherwise a drag that is abandoned leaves a Modal up with
+     nothing in view. Only when `open` is false: once it is true the effect
+     above owns mounting, and unmounting here would fight it. */
+  useAnimatedReaction(
+    () => pulled.value > 0,
+    (reaching, was) => {
+      if (reaching === was) return;
+      if (reaching) runOnJS(setMounted)(true);
+      else if (!open) runOnJS(setMounted)(false);
+    },
+    [open]
+  );
+
   const panelStyle = useAnimatedStyle(() => {
-    const travel = hidden + (0 - hidden) * progress.value + drag.value;
+    const travel = hidden + (0 - hidden) * reach() + drag.value;
     return {
       // Transform only. The panel slides; it does not fade. This used to carry
       // `opacity: progress.value`, which the web's Popup does not — it declares
@@ -253,7 +324,7 @@ function Popup({
    */
   const scrimStyle = useAnimatedStyle(() => {
     const dragged = extent > 0 ? Math.min(1, Math.abs(drag.value) / extent) : 0;
-    return { opacity: progress.value * (1 - dragged) };
+    return { opacity: reach() * (1 - dragged) };
   });
 
   /**
