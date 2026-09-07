@@ -1,4 +1,4 @@
-import { Select, Toggle, ToggleGroup, grytPresets } from "@gryt/ui";
+import { Select, Toggle, ToggleGroup, grytPresetsByCollection } from "@gryt/ui";
 import { Moon, Sun } from "@phosphor-icons/react";
 import {
   setSiteAppearance,
@@ -9,9 +9,10 @@ import {
 /**
  * What the site is wearing, in the header.
  *
- * The presets the library ships, plus Custom when the generator has something
- * in it. Custom is only offered once it exists: an option that silently does
- * nothing is worse than one that is not there.
+ * The presets the library ships, in collection order and labelled with it,
+ * plus Custom when the generator has something in it. Custom is only offered
+ * once it exists: an option that silently does nothing is worse than one that
+ * is not there.
  *
  * There is a way to lock yourself out of this — build a theme with no contrast
  * and the control that fixes it is hard to see. The generator measures contrast
@@ -21,8 +22,17 @@ import {
 export function ThemeSwitcher() {
   const site = useSiteTheme();
 
+  // Forty-seven presets in one flat list is a scroll with no landmarks. The
+  // Select takes a flat array, so the collection goes in the label and the
+  // grouped order does the rest — the real fix is groups in the component
+  // itself (GRYT-995).
   const options = [
-    ...grytPresets.map((preset) => ({ label: preset.name, value: preset.id })),
+    ...grytPresetsByCollection.flatMap((group) =>
+      group.presets.map((preset) => ({
+        label: `${group.collection} · ${preset.name}`,
+        value: preset.id
+      }))
+    ),
     ...(site.custom === null
       ? []
       : [{ label: site.custom.name ?? "Custom", value: "custom" }])

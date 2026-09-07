@@ -71,8 +71,14 @@ export {
   normalizeHexColor,
   normalizeThemeName
 } from "@gryt/theme";
-export { grytPresets, grytPresetsById } from "@gryt/theme";
-export type { GrytThemePreset } from "@gryt/theme";
+export {
+  GRYT_THEME_COLLECTIONS,
+  grytCollectionNotes,
+  grytPresets,
+  grytPresetsByCollection,
+  grytPresetsById
+} from "@gryt/theme";
+export type { GrytThemeCollection, GrytThemePreset } from "@gryt/theme";
 export type {
   DecodedGrytTheme,
   GrytAppearance,
