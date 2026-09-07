@@ -54,7 +54,7 @@ import {
 } from "@gryt/ui";
 import { avatarSeed } from "@gryt/owl";
 import { Bell, DotsThree, PaperPlaneTilt } from "@phosphor-icons/react";
-import type { DrawerSide, Tone, ToastSeverity } from "@gryt/ui";
+import type { BadgePlacement, DrawerSide, Tone, ToastSeverity } from "@gryt/ui";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
@@ -385,6 +385,48 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
               <Avatar size="large">G</Avatar>
             </Badge>
           </ExampleSection>
+          <ExampleSection title="Corner">
+            {(
+              [
+                "top-right",
+                "top-left",
+                "bottom-right",
+                "bottom-left"
+              ] as BadgePlacement[]
+            ).map((placement) => (
+              <Badge key={placement} badgeContent={7} placement={placement}>
+                <Avatar src={OWL} alt="Gryt" fallback="G" />
+              </Badge>
+            ))}
+          </ExampleSection>
+          {/* No children, so the pill is the whole thing and sits in normal
+              flow. A channel row ends in one of these, where an absolutely
+              positioned badge would hang off the row's corner instead of
+              lining up with the name. */}
+          <ExampleSection title="On its own">
+            <div className="grid w-full max-w-xs gap-1">
+              {[
+                ["general", 4],
+                ["announcements", 128],
+                ["off-topic", 0]
+              ].map(([name, count]) => (
+                <div
+                  key={name}
+                  className="flex items-center gap-2 rounded-(--gryt-radius-md) px-3 py-2 text-sm"
+                >
+                  <span className="flex-1 truncate text-gryt-muted">
+                    # {name}
+                  </span>
+                  {/* Neutral for messages that are merely unread, primary for
+                      the one that named you. */}
+                  <Badge
+                    badgeContent={count as number}
+                    tone={name === "announcements" ? "primary" : "neutral"}
+                  />
+                </div>
+              ))}
+            </div>
+          </ExampleSection>
         </div>
       );
     case "chip":
@@ -663,31 +705,7 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
     case "meter":
       return <MeterExample />;
     case "context-menu":
-      return (
-        <ContextMenu.Root>
-          <ContextMenu.Trigger
-            render={
-              <Surface
-                className="grid h-28 w-full max-w-sm place-items-center text-sm text-gryt-muted select-none"
-                elevated
-              />
-            }
-          >
-            Right-click anywhere in here
-          </ContextMenu.Trigger>
-          <ContextMenu.Portal>
-            <ContextMenu.Positioner>
-              <ContextMenu.Popup>
-                <ContextMenu.Item>Reply</ContextMenu.Item>
-                <ContextMenu.Item>Copy text</ContextMenu.Item>
-                <ContextMenu.Item>Pin to channel</ContextMenu.Item>
-                <ContextMenu.Separator />
-                <ContextMenu.Item>Delete</ContextMenu.Item>
-              </ContextMenu.Popup>
-            </ContextMenu.Positioner>
-          </ContextMenu.Portal>
-        </ContextMenu.Root>
-      );
+      return <ContextMenuExample />;
     case "popover":
       return (
         <div className="grid w-full gap-6">
@@ -1015,6 +1033,67 @@ const SCROLL_ROWS = [
 // The mic level a client would feed from an analyser node. Driven here on an
 // interval so the meter is doing the thing it exists for rather than sitting
 // at a fixed number.
+function ContextMenuExample() {
+  const [notifications, setNotifications] = useState("mentions");
+
+  return (
+    <ContextMenu.Root>
+      <ContextMenu.Trigger
+        render={
+          <Surface
+            className="grid h-28 w-full max-w-sm place-items-center text-sm text-gryt-muted select-none"
+            elevated
+          />
+        }
+      >
+        Right-click anywhere in here
+      </ContextMenu.Trigger>
+      <ContextMenu.Portal>
+        <ContextMenu.Positioner>
+          <ContextMenu.Popup>
+            <ContextMenu.Group>
+              <ContextMenu.GroupLabel>#general</ContextMenu.GroupLabel>
+              <ContextMenu.Item>Reply</ContextMenu.Item>
+              <ContextMenu.Item>Copy text</ContextMenu.Item>
+              <ContextMenu.Item>Pin to channel</ContextMenu.Item>
+            </ContextMenu.Group>
+            <ContextMenu.Separator />
+            <ContextMenu.SubmenuRoot>
+              <ContextMenu.SubmenuTrigger>
+                Notifications
+              </ContextMenu.SubmenuTrigger>
+              <ContextMenu.Portal>
+                <ContextMenu.Positioner>
+                  <ContextMenu.Popup>
+                    <ContextMenu.RadioGroup
+                      value={notifications}
+                      onValueChange={(value) =>
+                        setNotifications(String(value))
+                      }
+                    >
+                      <ContextMenu.RadioItem value="all">
+                        Everything
+                      </ContextMenu.RadioItem>
+                      <ContextMenu.RadioItem value="mentions">
+                        Only mentions
+                      </ContextMenu.RadioItem>
+                      <ContextMenu.RadioItem value="none">
+                        Nothing
+                      </ContextMenu.RadioItem>
+                    </ContextMenu.RadioGroup>
+                  </ContextMenu.Popup>
+                </ContextMenu.Positioner>
+              </ContextMenu.Portal>
+            </ContextMenu.SubmenuRoot>
+            <ContextMenu.Separator />
+            <ContextMenu.Item>Delete</ContextMenu.Item>
+          </ContextMenu.Popup>
+        </ContextMenu.Positioner>
+      </ContextMenu.Portal>
+    </ContextMenu.Root>
+  );
+}
+
 function MeterExample() {
   const [level, setLevel] = useState(42);
 

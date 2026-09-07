@@ -15,6 +15,14 @@ export type ContextMenuPositionerProps = ComponentPropsWithoutRef<
  * are literally Menu's components — so this reuses the styled ones rather than
  * restyling them. A context menu that drifted from the dropdown menu would be
  * a bug nobody notices until both are on screen at once.
+ *
+ * Which is what happened. Only the three parts named above were taken from
+ * Menu; Group, GroupLabel and SubmenuTrigger were handed straight through from
+ * Base UI with no class on them at all. In the client's server menu that put
+ * the group heading and the whole Notifications submenu twelve pixels left of
+ * every other row, with no highlight and no caret, and the menu read as half
+ * finished. Menu now styles all of them, so this list can be the passthrough it
+ * always claimed to be.
  */
 const Positioner = forwardRef<HTMLDivElement, ContextMenuPositionerProps>(
   function ContextMenuPositioner({ className, sideOffset = 2, ...props }, ref) {
@@ -39,8 +47,11 @@ export const ContextMenu = {
   Popup: Menu.Popup,
   Item: Menu.Item,
   Separator: Menu.Separator,
-  Group: BaseContextMenu.Group,
-  GroupLabel: BaseContextMenu.GroupLabel,
+  Group: Menu.Group,
+  GroupLabel: Menu.GroupLabel,
+  CheckboxItem: Menu.CheckboxItem,
+  RadioGroup: Menu.RadioGroup,
+  RadioItem: Menu.RadioItem,
   SubmenuRoot: BaseContextMenu.SubmenuRoot,
-  SubmenuTrigger: BaseContextMenu.SubmenuTrigger
+  SubmenuTrigger: Menu.SubmenuTrigger
 };
