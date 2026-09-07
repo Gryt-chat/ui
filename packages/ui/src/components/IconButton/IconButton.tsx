@@ -45,7 +45,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         className={cn(
           "gryt-icon-button",
           "inline-flex shrink-0 items-center justify-center border-0 bg-transparent p-0",
-          "rounded-(--gryt-radius-full) select-none",
+          "rounded-(--gryt-radius-control) select-none",
           // scale rather than transform — see the note in Button.
           "transition-[scale,background-color,color] duration-(--gryt-dur-spring) ease-spring",
           // A button that opens something does not grow under the cursor.

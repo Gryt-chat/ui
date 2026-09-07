@@ -51,6 +51,45 @@ export const grytTokens = {
   }
 } as const;
 
+/**
+ * What the role helpers below read: the five steps, plus the optional roles.
+ *
+ * A role is derived rather than required, so every theme written before these
+ * existed gets a sensible one and nothing has to be restated eleven times.
+ */
+export type RadiusTokens = Record<"sm" | "md" | "lg" | "xl" | "full", number> & {
+  field?: number;
+  control?: number;
+};
+
+/**
+ * The corner on anything somebody types into.
+ *
+ * Its own token because the step scale cannot express it. A text field asked
+ * for xl, and a browser clamps a radius to half the shorter side — so 28px
+ * came out as a pill on a 36px input, a near-pill on a 44px one, and a soft
+ * 28px rectangle on a textarea. One declared value, three different corners,
+ * and the tall one is the only place you ever saw the number you asked for.
+ *
+ * Derived from `md` rather than fixed, so a theme that squares everything off
+ * squares its inputs too. SQUARE gets 4, PUFFY gets 16, and neither had to say
+ * so. A theme that wants something else sets `radius.field` outright.
+ */
+export function fieldRadius(radius: RadiusTokens): number {
+  return radius.field ?? radius.md;
+}
+
+/**
+ * The corner on anything somebody presses: Button, IconButton, Toggle, Chip.
+ *
+ * All four are pills today and this only gives that a name, so nothing moves.
+ * The name is the point — a theme that wants square buttons and rounded inputs
+ * had to override `full`, which is also what a Drawer handle and an avatar use.
+ */
+export function controlRadius(radius: RadiusTokens): number {
+  return radius.control ?? radius.full;
+}
+
 export type GrytTokens = typeof grytTokens;
 
 // Widened off the `as const` token types on purpose. Partial<GrytTokens> would
@@ -319,6 +358,8 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
     "--gryt-radius-md": `${radius.md}px`,
     "--gryt-radius-lg": `${radius.lg}px`,
     "--gryt-radius-xl": `${radius.xl}px`,
-    "--gryt-radius-full": `${radius.full}px`
+    "--gryt-radius-full": `${radius.full}px`,
+    "--gryt-radius-field": `${fieldRadius(radius)}px`,
+    "--gryt-radius-control": `${controlRadius(radius)}px`
   } as CSSProperties;
 }

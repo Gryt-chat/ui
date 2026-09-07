@@ -390,6 +390,11 @@
     --gryt-radius-md: 12px;
     --gryt-radius-lg: 20px;
     --gryt-radius-xl: 28px;
+    /* Two roles rather than steps: what you type into, and what you press.
+       Derived from the scale in @gryt/theme, so a theme gets both for free
+       and can override either. */
+    --gryt-radius-field: 12px;
+    --gryt-radius-control: 999px;
     --gryt-radius-full: 999px;
 
     /* The tiers, in proportion to each other: a drawer takes longer than a
