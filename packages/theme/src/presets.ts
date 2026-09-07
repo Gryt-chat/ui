@@ -468,17 +468,23 @@ export const grytPresets: GrytThemePreset[] = [
     id: "winter-arc",
     name: "Winter Arc",
     note: "Cold monochrome. A near-white accent in the dark, snow-light greys.",
+    /* The secondary and the danger, in both halves, were moved in GRYT-994.
+       Text on a filled colour is held to 7:1 here rather than 4.5, and these
+       measured 6.07, 4.96, 4.68 and 5.27. Nothing else about the palette changed: the
+       moves are lightness only, hue and chroma untouched, and each is the
+       smallest step that clears the bar. The -Light partners moved with their
+       base to keep the gap between them. */
     collection: "Winter",
     theme: {
       name: "Winter Arc",
       hue: {
         accent: "#dce6ec",
         accentLight: "#f0f6f9",
-        secondary: "#7d95a3",
-        secondaryLight: "#9db1bc",
+        secondary: "#88a1af",
+        secondaryLight: "#a9bdc8",
         success: "#7fa88d",
-        danger: "#c2686b",
-        dangerLight: "#d68b8d",
+        danger: "#e08386",
+        dangerLight: "#f4a7a9",
         warning: "#b9a068",
         onAccent: "#0b0d0f",
         onSecondary: "#0b1114",
@@ -487,11 +493,11 @@ export const grytPresets: GrytThemePreset[] = [
       lightHue: {
         accent: "#2b3a44",
         accentLight: "#43596a",
-        secondary: "#55707f",
-        secondaryLight: "#6f8b9a",
+        secondary: "#3b5564",
+        secondaryLight: "#546f7d",
         success: "#4a7059",
-        danger: "#a4494c",
-        dangerLight: "#b96b6e",
+        danger: "#8e353a",
+        dangerLight: "#a3575b",
         warning: "#856c33",
         onAccent: "#eef3f6",
         onSecondary: "#eef3f6",
