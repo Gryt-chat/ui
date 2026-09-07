@@ -1,5 +1,101 @@
 # @gryt/ui
 
+## 0.29.0
+
+### Minor Changes
+
+- 8607df4: Give a text field its own corner, and name the one a button uses.
+
+  `fieldControl` asked for `--gryt-radius-xl`, which is 28px. A browser clamps a
+  border radius to half the shorter side, so one declared value produced three
+  different corners: a pill on a 36px input, a near-pill at 22px on a 44px one,
+  and a soft 28px rectangle on a textarea — the only place the number you asked
+  for actually rendered.
+
+  There is a `--gryt-radius-field` now, derived from `md` rather than fixed, so a
+  theme that squares everything off squares its inputs too. SQUARE gets 4, PUFFY
+  16, CRISP 6, and none of the eleven presets had to say so. A theme that wants
+  something else sets `radius.field`.
+
+  `--gryt-radius-control` is the same idea for the things you press — Button,
+  IconButton, Toggle and Chip. All four are pills today and this only gives that
+  a name, so nothing moves; the point is that a theme wanting square buttons and
+  rounded inputs had to override `full`, which is also what a drawer handle uses.
+
+  `fieldRadius()` and `controlRadius()` are exported for anything computing
+  tokens itself.
+
+- 07f5dcc: Finish the radius roles: `--gryt-radius-surface` and `--gryt-radius-popup`.
+
+  A panel you read and a panel that floats now each have a name, both derived
+  from `lg` and both overridable. That settles two splits nothing was deciding:
+  Card and Accordion sat on xl next to a Dialog on lg, so a card and the dialog
+  opening over it had different corners; and Menu had to leave the shared popup
+  surface behind to stay concentric with its own rows, which is the right
+  relationship for every popup with rows in it rather than Menu's exception.
+
+  The Select trigger, the Composer and the theme editor's URL input move to
+  `--gryt-radius-field`. All three are things you type into or pick from, and all
+  three were on xl — the Select trigger sat next to text fields at a different
+  corner from them.
+
+  Two things keep xl and are documented as deliberate. A message bubble is a
+  speech shape rather than a panel, and the softness is the look of a chat log. A
+  conversation row is about 46px tall, so xl clamps to 23 and it renders as a
+  pill — the one place the clamping works in the design's favour.
+
+  A Tooltip stays on `md`: it is a label rather than a panel, and at roughly 28px
+  tall a 20px radius would clamp to 14.
+
+- 1626f94: `Select` takes groups.
+
+  `options` now accepts `{ label, options }` entries mixed in with plain ones, so
+  a caller that never needed groups doesn't change and nothing existing breaks.
+  Groups render through Base UI's `Select.Group` and `Select.GroupLabel`.
+
+  The theme library is what asked for it. The presets went to forty-seven across
+  ten collections in 0.28.0, and the docs switcher was putting the collection into
+  every label to make one flat list scannable. That reads well enough, and it says
+  "Winter" forty-seven times to a screen reader instead of naming the group once.
+  The switcher passes real groups now.
+
+  One thing worth knowing if you write another grouped select: Base UI reads
+  `items` to turn a value back into a label for the trigger, so it needs the
+  options rather than the groups they sit in. Hand it the array you were given and
+  everything looks right until something is selected and the trigger shows the raw
+  value. `Select.test.tsx` holds that case.
+
+### Patch Changes
+
+- 2c539d7: Winter Arc's ink now clears the bar it was being held to.
+
+  Text sitting on a filled colour is held to 7:1 here rather than 4.5, because it
+  is the only text in the library that always has a saturated background under it.
+  Winter Arc missed on four of its six pairs: 6.07 and 4.96 in the dark half, 4.68
+  and 5.27 in the light one. It was excluded from the check by id when the
+  collections landed, on the grounds that changing a shipped theme's colour is a
+  separate decision.
+
+  The secondary and the danger moved in both halves. Lightness only — hue and
+  chroma are untouched — and each is the smallest step that clears 7:1, which is
+  between 0.04 and 0.09 in OKLCH. The `-Light` partners moved with their bases so
+  the gap between them is what it was.
+
+  **This changes what Winter Arc looks like** for anyone wearing it. The dark
+  danger is the one you would notice: it had to come up from 0.62 to 0.71
+  lightness, because nothing below about 0.70 can carry dark ink at 7:1.
+
+  A theme with a split `lightHue` was carrying a second set of fills that nothing
+  ever checked, which is why the light half of this went unnoticed. The test now
+  holds that set to the same bar, for the generated collections. Ported palettes
+  stay out of it: every one with a `lightHue` misses this bar, Nord's light accent
+  measures 3.50 against its own ink, and those are published values.
+
+- Updated dependencies [8607df4]
+- Updated dependencies [07f5dcc]
+- Updated dependencies [2c539d7]
+  - @gryt/theme@0.11.0
+
 ## 0.28.0
 
 ### Minor Changes
