@@ -60,6 +60,8 @@ export const grytTokens = {
 export type RadiusTokens = Record<"sm" | "md" | "lg" | "xl" | "full", number> & {
   field?: number;
   control?: number;
+  surface?: number;
+  popup?: number;
 };
 
 /**
@@ -88,6 +90,34 @@ export function fieldRadius(radius: RadiusTokens): number {
  */
 export function controlRadius(radius: RadiusTokens): number {
   return radius.control ?? radius.full;
+}
+
+/**
+ * A panel you read: Card, Surface, Alert, Dialog, Accordion.
+ *
+ * They were split between lg and xl with nothing deciding which. Card and
+ * Accordion were the two on xl, next to a Dialog on lg — a card and the dialog
+ * that opens over it had different corners for no reason either could name.
+ */
+export function surfaceRadius(radius: RadiusTokens): number {
+  return radius.surface ?? radius.lg;
+}
+
+/**
+ * Something that floats above the page and holds rows: Menu, the Select and
+ * Combobox lists, Popover, PreviewCard, Toast.
+ *
+ * Menu already had to leave the shared surface behind, because its corner has
+ * to be concentric with the rows inside it — lg less its 8px inset is exactly
+ * the row's md. That relationship is the right one for every popup with rows
+ * in it, so it stops being Menu's exception and becomes the rule.
+ *
+ * A Tooltip is deliberately not one of these. It is a label rather than a
+ * panel, roughly 28px tall, and a 20px radius on that clamps to 14 — the same
+ * accident this whole set of tokens exists to stop.
+ */
+export function popupRadius(radius: RadiusTokens): number {
+  return radius.popup ?? radius.lg;
 }
 
 export type GrytTokens = typeof grytTokens;
@@ -360,6 +390,8 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
     "--gryt-radius-xl": `${radius.xl}px`,
     "--gryt-radius-full": `${radius.full}px`,
     "--gryt-radius-field": `${fieldRadius(radius)}px`,
-    "--gryt-radius-control": `${controlRadius(radius)}px`
+    "--gryt-radius-control": `${controlRadius(radius)}px`,
+    "--gryt-radius-surface": `${surfaceRadius(radius)}px`,
+    "--gryt-radius-popup": `${popupRadius(radius)}px`
   } as CSSProperties;
 }

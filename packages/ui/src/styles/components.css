@@ -87,19 +87,27 @@
         }
     }
 
+    /* Left on xl on purpose, and not given a role. A bubble is a speech shape
+       rather than a panel, and the softness is the whole look of a chat log —
+       moving it to the panel corner makes the log read as a stack of cards. */
     .gryt-message-bubble {
         max-width: min(42rem, 85%);
         @apply rounded-(--gryt-radius-xl) px-4 py-3 text-sm leading-6;
     }
 
+    /* The box you type into, so it takes the field corner rather than the
+       panel one — it sits under a message list, not beside a card. */
     .gryt-composer {
-        @apply flex items-end gap-3 rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface p-3;
+        @apply flex items-end gap-3 rounded-(--gryt-radius-field) border border-gryt-border bg-gryt-surface p-3;
     }
 
     .gryt-composer-textarea {
         @apply min-h-10 flex-1 resize-none bg-transparent px-2 py-2 text-sm leading-6 text-gryt-text outline-none placeholder:text-gryt-muted;
     }
 
+    /* Also left alone. The row is about 46px tall, so xl clamps to 23 and it
+       renders as a pill — which is what a conversation row is meant to be, and
+       is the one place the clamping works in the design's favour. */
     .gryt-conversation-item {
         @apply flex w-full items-center gap-3 rounded-(--gryt-radius-xl) px-3 py-2.5 text-left transition-colors;
     }

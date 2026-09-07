@@ -66,7 +66,7 @@ export function Select({
         <BaseSelect.Trigger
           className={cn(
             "flex w-full cursor-pointer items-center justify-between gap-2",
-            "rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface-raised",
+            "rounded-(--gryt-radius-field) border border-gryt-border bg-gryt-surface-raised",
             "text-gryt-text select-none",
             "transition-colors duration-150 hover:border-gryt-accent-light",
             "data-disabled:cursor-not-allowed data-disabled:opacity-60",

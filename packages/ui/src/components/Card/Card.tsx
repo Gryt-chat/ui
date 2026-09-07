@@ -12,7 +12,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     <div
       ref={ref}
       className={cn(
-        "gryt-card rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface text-gryt-text",
+        "gryt-card rounded-(--gryt-radius-surface) border border-gryt-border bg-gryt-surface text-gryt-text",
         className
       )}
       {...props}

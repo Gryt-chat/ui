@@ -53,7 +53,7 @@ export type FieldSize = keyof typeof fieldSizes;
 export const popupSurfaceColors =
   "border border-gryt-border bg-gryt-surface text-gryt-text";
 
-export const popupSurface = `rounded-(--gryt-radius-xl) ${popupSurfaceColors}`;
+export const popupSurface = `rounded-(--gryt-radius-popup) ${popupSurfaceColors}`;
 
 // Base UI sets data-starting-style and data-ending-style for one frame either
 // side of open and close. The element carries the transition itself.

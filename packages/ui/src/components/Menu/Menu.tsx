@@ -67,12 +67,11 @@ const Popup = forwardRef<HTMLDivElement, MenuPopupProps>(function MenuPopup(
       className={cn(
         "gryt-menu min-w-44 outline-none",
         popupSurfaceColors,
-        // Concentric with the rows inside it. The shared surface is xl (28px),
-        // which is right for a dialog and wrong here: an item is md (12px) and
-        // sat 4px in, so the popup's corner curved away from the highlighted
-        // row and left a crescent of surface showing on the first and last
-        // item. lg (20px) less the 8px inset is exactly the item's 12px.
-        "rounded-(--gryt-radius-lg) p-2",
+        // Concentric with the rows inside it: the popup radius less this 8px
+        // inset is exactly the item's. That relationship used to be Menu's own
+        // exception, written out as lg against a shared surface of xl; it is
+        // what --gryt-radius-popup means now, so this only states the inset.
+        "rounded-(--gryt-radius-popup) p-2",
         popupMotion,
         className
       )}

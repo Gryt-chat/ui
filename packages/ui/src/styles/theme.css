@@ -395,6 +395,8 @@
        and can override either. */
     --gryt-radius-field: 12px;
     --gryt-radius-control: 999px;
+    --gryt-radius-surface: 20px;
+    --gryt-radius-popup: 20px;
     --gryt-radius-full: 999px;
 
     /* The tiers, in proportion to each other: a drawer takes longer than a

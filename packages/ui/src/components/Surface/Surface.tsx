@@ -12,7 +12,7 @@ export const Surface = forwardRef<HTMLDivElement, SurfaceProps>(
       <div
         ref={ref}
         className={cn(
-          "gryt-surface rounded-(--gryt-radius-lg) border border-gryt-border p-4 text-gryt-text",
+          "gryt-surface rounded-(--gryt-radius-surface) border border-gryt-border p-4 text-gryt-text",
           elevated ? "bg-gryt-surface-raised" : "bg-gryt-surface",
           className
         )}

@@ -545,7 +545,7 @@ export function ThemeEditor({
           <div className="flex flex-col gap-2 sm:flex-row">
             <textarea
               aria-label="Theme JSON or a shared link"
-              className="min-h-11 flex-1 rounded-(--gryt-radius-xl) border border-gryt-border bg-gryt-surface-raised px-4 py-2.5 font-mono text-sm text-gryt-text outline-none placeholder:text-gryt-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light"
+              className="min-h-11 flex-1 rounded-(--gryt-radius-field) border border-gryt-border bg-gryt-surface-raised px-4 py-2.5 font-mono text-sm text-gryt-text outline-none placeholder:text-gryt-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light"
               onChange={(event) => setImportText(event.target.value)}
               placeholder="{ …"
               rows={2}
