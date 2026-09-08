@@ -168,10 +168,8 @@ export function alphaScale(scale: string[], background: string): string[] {
 }
 
 /* ── light ──────────────────────────────────────────────────────────────
-   Not a mirror of the dark ramps: step 1 is a light grey page and step 2 is white, so
-   the ramp is deliberately not monotonic across those two. That is the elevation.
-
-   The text steps were measured: dark enough on white is tighter than light on black. */
+   Not a mirror of the dark ramps: step 1 is a light grey page and step 2 is white, so the
+   ramp is deliberately not monotonic. The text steps were measured on white. */
 
 const LIGHT_NEUTRAL_L = [
   0.962, 1.0, 0.978, 0.952, 0.928, 0.898, 0.855, 0.79, 0.66, 0.61, 0.48, 0.25

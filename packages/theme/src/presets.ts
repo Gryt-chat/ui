@@ -429,9 +429,7 @@ export const grytPresets: GrytThemePreset[] = [
   },
   {
     /* Four photographs: snow-loaded spruces, white strips in a dark room, a white can on
-       black rubber, grey sweatpants. Cold rather than neutral, which separates it from Paper.
-
-       The accent is the white can, so this is the only Gryt preset with a split `lightHue`. */
+       black rubber, grey sweatpants. The can is the accent, hence the split `lightHue`. */
     id: "winter-arc",
     name: "Winter Arc",
     note: "Cold monochrome. A near-white accent in the dark, snow-light greys.",
@@ -1708,10 +1706,8 @@ export const grytPresets: GrytThemePreset[] = [
     }
   },
   {
-    /* Dracula's eleven, and Alucard's eleven for the light half, from the
-       palette tables in dracula/dracula-theme. Background, Current Line,
-       Foreground and Comment are exact; the two steps between Background and
-       Current Line are derived, because Dracula does not name them. */
+    /* Dracula's eleven and Alucard's eleven, from the palette tables in
+       dracula/dracula-theme. The steps between Background and Current Line are derived. */
     id: "dracula",
     name: "Dracula",
     note: "The purple-and-pink dark theme, with Alucard as its light half.",
@@ -1767,9 +1763,8 @@ export const grytPresets: GrytThemePreset[] = [
     }
   },
   {
-    /* nord0-nord15, exactly as nordtheme.com publishes them. Polar Night is
-       the dark neutrals, Snow Storm the light ones, Frost the accents and
-       Aurora the status colours. Nothing here is derived. */
+    /* nord0-nord15, exactly as nordtheme.com publishes them: Polar Night dark, Snow
+       Storm light, Frost the accents, Aurora the status colours. Nothing is derived. */
     id: "nord",
     name: "Nord",
     note: "Polar Night and Snow Storm, with Frost on top.",
@@ -1825,10 +1820,8 @@ export const grytPresets: GrytThemePreset[] = [
     }
   },
   {
-    /* Mocha and Latte from catppuccin/palette's palette.json. base, mantle,
-       surface0/1/2, text and subtext0 are exact; the border step is derived
-       from surface1 and surface2, which is where a border sits in their own
-       ports. */
+    /* Mocha and Latte from catppuccin/palette's palette.json. The border step is derived
+       from surface1 and surface2, which is where a border sits in their own ports. */
     id: "catppuccin",
     name: "Catppuccin",
     note: "Mocha for dark, Latte for light. Mauve does the accent work.",
@@ -1884,11 +1877,8 @@ export const grytPresets: GrytThemePreset[] = [
     }
   },
   {
-    /* Primer's functional tokens, from @primer/primitives' compiled themes:
-       bgColor-default, bgColor-muted, borderColor-default, fgColor-default,
-       fgColor-muted, and the -emphasis fills for accent, danger, success,
-       attention and done. The raised and hover steps are derived — Primer
-       expresses those as translucent overlays rather than as solid colours. */
+    /* Primer's functional tokens, from @primer/primitives' compiled themes. The raised
+       and hover steps are derived: Primer expresses those as translucent overlays. */
     id: "github",
     name: "GitHub",
     note: "Primer's own tokens, six-pixel corners included.",
@@ -1944,11 +1934,8 @@ export const grytPresets: GrytThemePreset[] = [
     }
   },
   {
-    /* Read off anthropic.com's own stylesheet: the clay #d97757, the cream
-       #f0eee6 and #faf9f5, the ink #141413, and the neutrals #3d3d3a,
-       #87867f, #b0aea5, #c6c4ba, #e8e6dc. Anthropic publishes no token file,
-       so the status hues have no published counterpart and are Gryt's own —
-       this is the one preset that is a likeness rather than a port. */
+    /* Read off anthropic.com's own stylesheet. Anthropic publishes no token file, so the
+       status hues are Gryt's own — this preset is a likeness rather than a port. */
     id: "claude",
     name: "Claude",
     note: "Anthropic's clay orange on cream and near-black.",
@@ -1992,12 +1979,8 @@ export const grytPresets: GrytThemePreset[] = [
     }
   },
   {
-    /* The zinc theme from shadcn-ui/ui's registry, converted from its OKLCH
-       values. One deliberate departure: shadcn's primary is monochrome —
-       near-white in dark, near-black in light — which cannot be a Gryt accent,
-       because the accent is also the colour every link and focus ring is drawn
-       from. Its destructive red is the accent here, and the neutrals are the
-       theme's own. */
+    /* The zinc theme from shadcn-ui/ui's registry. One departure: shadcn's primary is
+       monochrome, which cannot be a Gryt accent, so its destructive red is used. */
     id: "shadcn",
     name: "shadcn/ui",
     note: "Zinc neutrals and a ten-pixel radius. No pills anywhere.",
@@ -2053,10 +2036,8 @@ export const grytPresets: GrytThemePreset[] = [
     }
   },
   {
-    /* Ethan Schoonover's sixteen, exactly. base03 and base02 are the dark
-       page and surface, base2 and base3 the light ones, and the accent hues
-       are shared between the two halves — which is the whole point of
-       Solarized. The steps between base03 and base02 are derived. */
+    /* Ethan Schoonover's sixteen, exactly. The accent hues are shared between the two
+       halves, which is the point of Solarized; base03 to base02 is derived. */
     id: "solarized",
     name: "Solarized",
     note: "Both halves on one set of accents, as designed.",
@@ -2106,11 +2087,8 @@ export const grytPresetsById = new Map(
 );
 
 /**
- * The presets grouped, in collection order.
- *
- * Here rather than in each app because the client, the docs switcher and the
- * generator all show the same list, and a collection added above should reach
- * all three without three copies of the same filter.
+ * The presets grouped, in collection order. Here rather than in each app: the client, the
+ * docs switcher and the generator all show the same list.
  */
 export const grytPresetsByCollection: {
   collection: GrytThemeCollection;

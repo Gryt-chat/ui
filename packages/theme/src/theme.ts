@@ -1,13 +1,5 @@
-/* A whole theme, as a thing you can hand to somebody. Dark and light do not
- * derive from each other, so a theme that travels has to carry both.
- *
- * Two sets of neutrals and one set of hues, because step 9 is the same colour
- * in both appearances by design. `lightHue` is the exception, for palettes
- * where it is not — Catppuccin's mauve is #cba6f7 in Mocha and #8839ef in Latte.
- *
- * Encoded as a query string so a theme fits in a link. Only what differs from
- * Gryt's own values is carried.
- */
+/* A whole theme, as a thing you can hand to somebody. Dark and light do not derive from
+ * each other, so a theme that travels carries both, and only the differences travel. */
 
 import { grytLightSurfaceHover, grytLightTokens, grytTokens } from "./createGrytTheme";
 import type { GrytThemeOptions } from "./createGrytTheme";
@@ -41,26 +33,14 @@ export const GRYT_NEUTRAL_KEYS = [
 export const GRYT_RADIUS_KEYS = ["sm", "md", "lg", "xl", "full"] as const;
 
 /**
- * The three jobs a typeface does here.
- *
- * Three because that is what the interface actually distinguishes: the text
- * you read, the headings above it, and the places where characters have to
- * line up — code, hex values, timestamps, a fingerprint read aloud. Finer than
- * that is a knob nobody turns, and coarser loses the one distinction that
- * matters, which is that a proportional face cannot do the third job.
+ * The three jobs a typeface does here: the text you read, the headings above it, and the
+ * places characters have to line up. A proportional face cannot do the third.
  */
 export const GRYT_FONT_KEYS = ["body", "display", "mono"] as const;
 
 /**
- * How a theme may change the way Gryt moves: how fast, one number over every
- * tier, and what shape, one curve.
- *
- * **Not per-tier durations.** The tiers are already in proportion — a drawer
- * takes longer than a button because it travels further — and setting them
- * independently re-decides that five sliders at a time.
- *
- * `scale` at 0 means nothing animates, which is a real setting rather than a
- * degenerate one.
+ * How a theme may change the way Gryt moves: how fast, one number over every tier, and
+ * what shape, one curve. Not per-tier durations — the tiers are already in proportion.
  */
 export const GRYT_MOTION_CURVES = ["spring", "smooth", "linear"] as const;
 
@@ -77,24 +57,14 @@ export type GrytHues = Record<GrytHueKey, string>;
 export type GrytNeutrals = Record<GrytNeutralKey, string>;
 
 /**
- * A whole CSS font stack per role, not a family name.
- *
- * The fallbacks are the point. A theme names a face the machine reading it may
- * not have — that is the ordinary case for anything a shared link asks for —
- * and what it falls back to decides whether the note reads as a different
- * choice or as a broken one. Carrying the stack means the theme's author picks
- * that, rather than every consumer inventing its own tail.
+ * A whole CSS font stack per role, not a family name. The fallbacks are the point: the
+ * theme's author picks the tail rather than every consumer inventing one.
  */
 export type GrytFonts = Record<GrytFontKey, string>;
 
 /**
- * What the library is set in.
- *
- * Atkinson Hyperlegible, which is a legibility face rather than a taste one:
- * its letterforms are drawn to be told apart at a glance, and Gryt is read in
- * a sidebar at twelve pixels. `display` is the body face here — the default
- * theme does not set headings in anything else, and a default that quietly
- * differed from what ships would be a second thing to keep in step.
+ * What the library is set in: Atkinson Hyperlegible, a legibility face rather than a
+ * taste one. `display` is the body face, because the default sets headings in it.
  */
 export const grytFonts: GrytFonts = {
   body: '"Atkinson Hyperlegible Next", ui-sans-serif, system-ui, sans-serif',
@@ -103,21 +73,13 @@ export const grytFonts: GrytFonts = {
 };
 
 /**
- * The motion half of a theme. `curve` names a shipped shape or carries a cubic
- * bezier. **A bezier collapses the library's two curves into one** —
- * `--ease-spring` overshoots for things that scale in place, `--ease-spring-tight`
- * does not, for things that travel inside their bounds.
+ * The motion half of a theme. `curve` names a shipped shape or carries a cubic bezier —
+ * a bezier collapses the library's two curves, which differ on overshoot, into one.
  */
 export interface GrytMotion {
   /**
-   * Multiplier on every duration. 0 is no animation at all.
-   *
-   * One number rather than five, so the tiers keep the proportions they were
-   * given. The curves are duration-invariant — measured, not assumed: the same
-   * `linear()` sampled at 200ms and at 2000ms puts the element in the same
-   * place at every fraction of the animation, and peaks at the same 10.6% past
-   * its target — so scaling time changes how long it takes and nothing else
-   * about how it looks.
+   * Multiplier on every duration; 0 is no animation. One number rather than five, and the
+   * curves are duration-invariant, so scaling time changes nothing else about the look.
    */
   scale: number;
   curve: GrytMotionCurve;
@@ -133,12 +95,8 @@ export function isBezier(curve: GrytMotionCurve): curve is GrytBezier {
 }
 
 /**
- * A bezier CSS will accept.
- *
- * The x values are the time axis and have to stay inside it; a control point
- * outside 0..1 horizontally is not a slower curve, it is an invalid one and
- * the whole declaration is dropped. The y values may go outside, which is how
- * a bezier overshoots, and that is allowed on purpose.
+ * A bezier CSS will accept. The x values are time and have to stay inside 0..1, or the
+ * whole declaration is dropped. The y values may go outside; that is the overshoot.
  */
 export function isValidBezier(value: unknown): value is GrytBezier {
   if (!Array.isArray(value) || value.length !== 4) return false;
@@ -154,13 +112,8 @@ export function isValidBezier(value: unknown): value is GrytBezier {
 export const GRYT_FONT_STACK_MAX = 200;
 
 /**
- * A font stack that is safe to put in a stylesheet.
- *
- * This arrives from a link somebody was sent, so it is a string from a
- * stranger heading for a CSS declaration. Anything that could close the
- * declaration and start another one is refused outright rather than escaped —
- * a font stack has no legitimate use for a brace, a semicolon or a comment
- * marker, so there is nothing to lose by requiring it to look like one.
+ * A font stack that is safe to put in a stylesheet. This arrives from a link, so anything
+ * that could close the declaration is refused outright rather than escaped.
  */
 export function isFontStack(value: string): boolean {
   const text = value.trim();
@@ -170,12 +123,8 @@ export function isFontStack(value: string): boolean {
 
 export interface GrytTheme {
   /**
-   * What its author called it, if they called it anything.
-   *
-   * Metadata rather than a colour: nothing about how a theme looks depends on
-   * it, and grytThemeToOptions drops it. It exists because a link full of hex
-   * values says nothing about what it is, and the person who made it already
-   * knew — so the receiving end should not have to ask.
+   * What its author called it, if they called it anything. Metadata rather than a colour:
+   * grytThemeToOptions drops it, and a link full of hex says nothing about what it is.
    */
   name?: string;
   hue: GrytHues;
@@ -185,9 +134,8 @@ export interface GrytTheme {
   light: GrytNeutrals;
   radius: Record<GrytRadiusKey, number>;
   /**
-   * Null when the theme does not care, which is every theme written before
-   * this existed and every link already shared. Absent means the library's
-   * own, so nothing that predates fonts renders differently for having them.
+   * Null when the theme does not care, which is every theme written before this existed.
+   * Absent means the library's own, so nothing that predates fonts renders differently.
    */
   fonts?: GrytFonts | null;
   /** Null for the library's own motion, same reasoning as `fonts`. */
@@ -271,10 +219,8 @@ export function grytThemeHues(
 }
 
 /**
- * One appearance of a theme, in the shape createGrytTheme takes.
- *
- * The name does not come along: createGrytTheme returns CSS variables, and a
- * name is not one.
+ * One appearance of a theme, in the shape createGrytTheme takes. The name does not come
+ * along: createGrytTheme returns CSS variables, and a name is not one.
  */
 export function grytThemeToOptions(
   theme: GrytTheme,
@@ -332,11 +278,8 @@ export function normalizeHexColor(value: string): string {
 }
 
 /**
- * The theme as query parameters, carrying only what differs from Gryt's own.
- *
- * `appearance` is which half the sender was looking at, and it rides along
- * because a shared link that opens on the other one is showing something the
- * sender never saw.
+ * The theme as query parameters, carrying only what differs from Gryt's own. `appearance`
+ * rides along because a link that opens on the other half shows what nobody saw.
  */
 export function encodeGrytTheme(
   theme: GrytTheme,
@@ -353,9 +296,8 @@ export function encodeGrytTheme(
       params.set(HUE_PARAM[key], bare(theme.hue[key]));
     }
   }
-  // A split light set is carried whole rather than diffed. It is only there
-  // when somebody meant it, and diffing it against the dark hues would drop
-  // exactly the values that make it a split.
+  // A split light set is carried whole rather than diffed. It is only there when somebody
+  // meant it, and diffing against the dark hues would drop what makes it a split.
   if (theme.lightHue !== null) {
     for (const key of GRYT_HUE_KEYS) {
       params.set(`lh-${HUE_PARAM[key]}`, bare(theme.lightHue[key]));
@@ -408,12 +350,8 @@ export interface DecodedGrytTheme {
 }
 
 /**
- * Whatever somebody pasted.
- *
- * A whole URL, a bare query string, or the JSON form — one function, because
- * from the outside they are the same act. Null when there is no theme in it at
- * all; a value it cannot parse is left at Gryt's, so one mistyped colour does
- * not throw the rest away.
+ * Whatever somebody pasted: a whole URL, a bare query string, or the JSON form. A value
+ * it cannot parse is left at Gryt's, so one mistyped colour does not throw the rest away.
  */
 export function decodeGrytTheme(input: string): DecodedGrytTheme | null {
   const text = input.trim();
@@ -499,9 +437,8 @@ function decodeParams(params: URLSearchParams): DecodedGrytTheme | null {
     }
   }
 
-  /* A stack that does not look like a font stack is dropped rather than
-     escaped, and the role falls back to the library's. One suspicious value in
-     a link should cost that value, not the theme it arrived with. */
+  /* A stack that does not look like a font stack is dropped rather than escaped, and the
+     role falls back to the library's. One suspicious value costs that value. */
   for (const key of GRYT_FONT_KEYS) {
     const raw = params.get(`f-${key}`);
     if (raw === null) continue;
@@ -558,17 +495,8 @@ function decodeJson(text: string): DecodedGrytTheme | null {
     theme.lightHue = light;
   }
 
-  /* Motion, on the JSON path as well as the query-string one.
-     
-     It was only on the query string, which meant a theme round-tripped
-     through a link and lost its motion through JSON — and the client stores
-     saved themes as JSON and re-reads them with this function, so every saved
-     theme dropped its motion on load. Nothing failed; the app just moved at
-     the default speed and the setting looked like it had never been made.
-
-     Caught by watching a 2.5x theme animate at 1x in the running client, with
-     the whole test suite green: the link path was tested and this one was
-     not. */
+  /* Motion, on the JSON path as well as the query-string one. It was only on the query
+     string, so a theme saved as JSON and re-read dropped its motion on load. */
   if (typeof source.motion === "object" && source.motion !== null) {
     const raw = source.motion as Record<string, unknown>;
     const scale = Number(raw.scale);
