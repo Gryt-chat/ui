@@ -12,13 +12,8 @@ export type PreviewCardPositionerProps = ComponentPropsWithoutRef<
 >;
 
 /**
- * What appears when you hover a username.
- *
- * Not a Tooltip and not a Popover. A tooltip labels a control and opens
- * instantly; this holds real content, so it waits before opening and stays put
- * long enough to move the pointer into it. Popover is the click-to-open
- * equivalent — reach for that when the panel has controls, since content that
- * only appears on hover is unreachable from a keyboard or a touchscreen.
+ * What appears when you hover a username. Not a Tooltip: it holds real content, so it
+ * waits before opening. Popover is the click-to-open equivalent, and reachable.
  */
 const Positioner = forwardRef<HTMLDivElement, PreviewCardPositionerProps>(
   function PreviewCardPositioner({ className, sideOffset = 8, ...props }, ref) {

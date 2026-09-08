@@ -1,17 +1,6 @@
 /**
- * Which cosmetics somebody has already had a look at.
- *
- * Cosmetics get added and nothing says so, so the editor puts a dot on the ones
- * that are new — on the drawing itself, and on its slot in the rail.
- *
- * The whole feature turns on the first-run case. A fresh install has no record,
- * and treating "not in the record" as "new" would light up all thirty-seven on
- * the first open: a badge on everything is a badge on nothing. So the first
- * read writes the whole registry into the record and reports nothing as new,
- * and the badge means exactly one thing — added since you last looked.
- *
- * localStorage, beside the wardrobe. Losing it costs a dot rather than an
- * avatar, and IndexedDB would be a lot of machinery for that consequence.
+ * Which cosmetics somebody has already had a look at. The first read writes the whole
+ * registry and reports nothing new, or a fresh install badges all thirty-seven.
  */
 
 const STORAGE_KEY = "gryt.owlSeen";
@@ -38,13 +27,8 @@ function write(names: Set<string>): void {
 }
 
 /**
- * The cosmetics that have appeared since this person last opened the editor.
- *
- * `all` is every accessory name the running build knows. Pass the registry —
- * this deliberately does not import it, so the caller decides what "everything"
- * means and this stays a store rather than a second source of truth.
- *
- * Empty on a first run, by design. See the note at the top.
+ * The cosmetics that have appeared since this person last opened the editor. Pass the
+ * registry rather than importing it, so this stays a store. Empty on a first run.
  */
 export function readNewCosmetics(all: readonly string[]): Set<string> {
   const seen = read();
@@ -59,10 +43,8 @@ export function readNewCosmetics(all: readonly string[]): Set<string> {
 }
 
 /**
- * Record that somebody has tried one on, and return what is still new.
- *
- * Tried on, not hovered or scrolled past. Wearing a thing is the moment you
- * have actually seen it, and it is also the moment the dot has done its job.
+ * Record that somebody has tried one on, and return what is still new. Tried on, not
+ * hovered: wearing a thing is the moment the dot has done its job.
  */
 export function markCosmeticSeen(name: string, all: readonly string[]): Set<string> {
   const seen = read() ?? new Set<string>(all);

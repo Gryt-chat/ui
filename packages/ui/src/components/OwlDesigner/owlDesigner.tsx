@@ -283,13 +283,8 @@ function SaveAs({
         const blob = await renderOwl(seed, look, format);
         saveBlob(blob, exportFilename(nickname, format));
       } catch (err) {
-        // A browser that cannot encode the format hands back null rather than
-        // throwing, and renderOwl turns that into an error worth showing —
-        // saving nothing silently is the outcome to avoid.
-        // The client shows this as a toast. The site has no toast host, so it
-        // says so in place instead — the point is that it is said at all, since
-        // a browser that cannot encode the format returns null rather than
-        // throwing and saving nothing silently is the outcome to avoid.
+        // The client shows this as a toast; the site has no toast host, so it says so in
+        // place. A browser that cannot encode the format returns null rather than throwing.
         setFailed(err instanceof Error ? err.message : "Could not save the owl");
       } finally {
         setBusy(null);
@@ -415,9 +410,8 @@ export function AvatarChoiceDialog({
 /* --- the editor ---------------------------------------------------------- */
 
 /**
- * The designer itself, with no dialog around it, so it can sit in a page as well
- * as a modal. `onCancel` is optional: inline there is nothing to cancel back to,
- * so the button is absent rather than present and inert.
+ * The designer itself, with no dialog around it, so it can sit in a page as well as a
+ * modal. `onCancel` is optional: inline there is nothing to cancel back to.
  */
 export function OwlDesigner({
   nickname,
@@ -434,11 +428,8 @@ export function OwlDesigner({
   /** Reset when this goes true. The dialog uses it for "was just opened". */
   active?: boolean;
   /**
-   * Open on the owl the nickname already draws, and keep following it while
-   * the nickname changes, until somebody changes something here.
-   *
-   * gryt.chat sets this. The client does not: there you open the designer to
-   * design, and your last look is the right place to start.
+   * Open on the owl the nickname already draws, and keep following it until somebody
+   * changes something here. gryt.chat sets this; the client opens on your last look.
    */
   followSeed?: boolean;
 }) {
@@ -447,11 +438,8 @@ export function OwlDesigner({
     startingLook(followSeed ? (avatarSeed(nickname) ?? "") : undefined),
   );
   /**
-   * Whether anything in here has been touched.
-   *
-   * Only `setLook` sets it, which is why the two effects below reset through
-   * `setLookState` instead — a reset is not a choice somebody made, and
-   * treating it as one would freeze the preview on the first render.
+   * Whether anything in here has been touched. Only `setLook` sets it, so the effects
+   * below reset through `setLookState` — a reset is not a choice somebody made.
    */
   const [customised, setCustomised] = useState(false);
   const setLook = useCallback<typeof setLookState>((next) => {
@@ -466,10 +454,8 @@ export function OwlDesigner({
   // Every cosmetic this build knows, which is what "new" is measured against.
   const allNames = useMemo(() => ACCESSORIES.map((a) => a.name), []);
 
-  /* Resetting the dialog when it opens is the "synchronise with something
-     outside React" case, and so is following the nickname: both read something
-     the component does not own — the wardrobe in storage, and the name coming
-     down as a prop. */
+  /* Resetting the dialog when it opens is the "synchronise with something outside React"
+     case, and so is following the nickname: both read what the component does not own. */
   useEffect(() => {
     if (!active) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- the reset above
@@ -480,9 +466,9 @@ export function OwlDesigner({
     // Read on open rather than on mount: the dialog outlives a session, and
     // cosmetics can arrive in an update between two openings of it.
     setFresh(readNewCosmetics(allNames));
-    // `seed` deliberately absent: this is the on-open reset, and re-running it
-    // per keystroke would also reset the pane and re-read the wardrobe. The
-    // effect below is the one that follows the name.
+    // `seed` deliberately absent: this is the on-open reset, and re-running it per
+    // keystroke would also reset the pane. The effect below follows the name.
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active, allNames, followSeed]);
 
@@ -500,12 +486,8 @@ export function OwlDesigner({
   );
 
   /*
-   * A thumbnail is your owl with the one thing swapped in, rather than a bare
-   * bird wearing it alone. Seeing a hat on the face you already chose is the
-   * thing being decided.
-   *
-   * The cost is that a hat sits in every expression thumbnail — which is fine:
-   * if it hides the eyes, that is better known before choosing than after.
+   * A thumbnail is your owl with the one thing swapped in, rather than a bare bird wearing
+   * it alone. The cost is a hat in every expression thumbnail, which is worth knowing.
    */
   const thumb = useCallback(
     (over: Partial<WornLook>) =>
@@ -536,15 +518,13 @@ export function OwlDesigner({
   const paneLabel = SLOTS.find((s) => s.slot === pane)?.label ?? "Colour";
 
   /*
-   * `@container` rather than `md:`: what decides whether three columns fit is
-   * how wide *this* is, and a viewport breakpoint had a 1024px dialog stacking
-   * itself in a window just under 768px. 48rem is the same number `md` was.
+   * `@container` rather than `md:`: what decides whether three columns fit is how wide this
+   * is, and a viewport breakpoint stacked a 1024px dialog in a 768px window.
    */
   return (
     /*
-     * **The container is this wrapper and the layout switch is on the child.**
-     * `@3xl:` asks the nearest *ancestor* container, so an element carrying
-     * both never answers its own question and stays a column at every width.
+     * The container is this wrapper and the layout switch is on the child: `@3xl:` asks
+     * the nearest ancestor container, so an element carrying both never answers itself.
      */
     <div className="@container flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto @3xl:flex-row">
@@ -628,10 +608,8 @@ export function OwlDesigner({
           <div
             ref={gridRef}
             /*
-              The height follows the window instead of being 22rem always.
-              A tall screen shows more rows; a short one shows fewer rather
-              than pushing the dialog past the bottom of the viewport, which
-              the fixed value did below about 700px.
+              The height follows the window instead of being 22rem always, so a short
+              screen shows fewer rows rather than pushing the dialog past the bottom.
             */
             className="-mx-1.5 grid max-h-[min(30rem,calc(100dvh-18rem))] grid-cols-[repeat(auto-fill,minmax(4.25rem,1fr))] gap-2 overflow-y-auto p-1.5"
           >
@@ -850,12 +828,8 @@ export function OwlDesigner({
 }
 
 /**
- * The designer in a modal, which is how the client opens it from settings.
- *
- * Kept as a wrapper rather than as the only shape, because gryt.chat renders
- * `OwlDesigner` straight into the page. The title is here rather than inside
- * the designer: a dialog needs an accessible name, a section on a page already
- * has a heading above it.
+ * The designer in a modal, which is how the client opens it from settings. A wrapper
+ * rather than the only shape, and the title is here because a dialog needs a name.
  */
 export function OwlDesignerDialog({
   open,
