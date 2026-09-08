@@ -1,5 +1,10 @@
 import { useState, type ReactNode } from "react";
 import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
+// Deep imports, one file per icon, rather than the barrel. Metro does not
+// tree-shake, so the barrel pulls the whole set in. The `*Icon` suffix is the
+// spelling @phosphor-icons/react uses; the bare names are deprecated.
+import { MinusIcon } from "phosphor-react-native/src/icons/Minus";
+import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { TextInput } from "../../internal/TextInput";
 import { Text } from "../../internal/Text";
 
@@ -14,12 +19,12 @@ import { useTheme } from "../../theme";
  * bites later.
  */
 function StepButton({
-  glyph,
+  icon,
   label,
   disabled,
   onPress,
 }: {
-  glyph: string;
+  icon: ReactNode;
   label: string;
   disabled?: boolean;
   onPress: () => void;
@@ -33,9 +38,7 @@ function StepButton({
       onPress={onPress}
       style={{ paddingHorizontal: theme.space(3), paddingVertical: theme.space(2) }}
     >
-      <Text style={{ color: theme.color.muted, fontSize: 16, fontWeight: "600" }}>
-        {glyph}
-      </Text>
+      {icon}
     </Pressable>
   );
 }
@@ -103,7 +106,7 @@ export function NumberField({
         }}
       >
         <StepButton
-          glyph="−"
+          icon={<MinusIcon size={16} color={theme.color.muted} weight="bold" />}
           label="Decrease"
           disabled={disabled || value <= min}
           onPress={() => commit(value - step)}
@@ -126,7 +129,7 @@ export function NumberField({
           }}
         />
         <StepButton
-          glyph="+"
+          icon={<PlusIcon size={16} color={theme.color.muted} weight="bold" />}
           label="Increase"
           disabled={disabled || value >= max}
           onPress={() => commit(value + step)}
