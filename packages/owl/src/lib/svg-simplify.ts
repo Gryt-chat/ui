@@ -1,16 +1,6 @@
 /**
- * Shrinking a path without changing what it draws.
- *
- * There is a standard tool for this — SVGO, whose `convertPathData` does the
- * same job and more. It is not a dependency because this is the only thing in
- * the repository that would want it, it runs at build time on fourteen files,
- * and the part that matters is fifty lines. If the artwork grows past what this
- * handles, reach for SVGO rather than growing this.
- *
- * A traced bitmap arrives with far more precision and far more points than a
- * 1024-unit box can show. The winter jacket is the extreme case at 3850
- * numbers, most of them to three decimals — a ten thousandth of a pixel at the
- * size an avatar renders, shipped to every client that sees it.
+ * Shrinking a path without changing what it draws. SVGO does this and more; it is not a
+ * dependency because this runs on fourteen files and the part that matters is fifty lines.
  */
 
 /**
@@ -29,11 +19,8 @@ export interface Segment {
 }
 
 /**
- * A path as a list of absolute segments, commands kept.
- *
- * Deliberately narrow. It handles what a drawing tool emits for this artwork and
- * refuses everything else, rather than silently mangling a construct it does not
- * understand.
+ * A path as a list of absolute segments, commands kept. Deliberately narrow: it handles
+ * what a drawing tool emits here and refuses the rest rather than mangling it.
  */
 export function parsePath(d: string): Segment[] {
   const tokens = d.match(/[MmLlHhVvCcSsQqTtAaZz]|-?\d*\.?\d+(?:e-?\d+)?/gi) || [];
@@ -192,18 +179,8 @@ function outline(segments: Segment[]): Outline {
 }
 
 /**
- * Four passes, in order:
- *
- *   - round every coordinate to `places`,
- *   - drop segments that go nowhere, which is what rounding leaves behind and
- *     what a vectoriser emits anyway,
- *   - turn a curve whose control points sit on its own chord into the line it
- *     already was,
- *   - merge runs of collinear lines into one.
- *
- * `tolerance` is in artwork units, so 0.4 means "a curve that never leaves four
- * tenths of a unit of its chord is a straight line". On a 1024 box drawn at 32
- * pixels that is a hundredth of a pixel; at 512 it is still under a fifth.
+ * Round, drop segments that go nowhere, straighten curves that sit on their chord, merge
+ * collinear runs. `tolerance` is in artwork units: 0.4 is a hundredth of a pixel at 32.
  */
 export function simplifyPath(d: string, places = 1, tolerance = 0.4): string {
   const round = (n: number) => Number(n.toFixed(places));
@@ -275,10 +252,8 @@ export function simplifyPath(d: string, places = 1, tolerance = 0.4): string {
       previous = "";
       continue;
     }
-    // A repeated command letter is implied and can be left out — except after
-    // M, where an implied repeat means L, not another M. Leaving it out there
-    // welds every subpath of a path into one, which is invisible in the numbers
-    // and unmistakable on screen.
+    // A repeated command letter is implied, except after M, where an implied repeat means
+    // L. Leaving it out there welds every subpath into one, invisibly in the numbers.
     const letter = seg.type !== "M" && seg.type === previous ? "" : seg.type;
     previous = seg.type;
     let body = "";
@@ -286,19 +261,15 @@ export function simplifyPath(d: string, places = 1, tolerance = 0.4): string {
       const t = short(n);
       body += body === "" || t.startsWith("-") || t.startsWith(".") ? t : " " + t;
     }
-    // Without a letter to separate them, the first number of this segment runs
-    // into the last number of the one before it. A leading minus or point is
-    // its own separator; anything else needs a space.
+    // Without a letter to separate them, this segment's first number runs into the last of
+    // the one before. A leading minus or point separates itself; anything else needs a space.
     const glue = letter === "" && !/^[-.]/.test(body) ? " " : "";
     text += letter + glue + body;
   }
 
   /*
-   * Check the result draws the same shape, and give up on this path if it does
-   * not. Two bugs got through here before this existed — a dropped M that welded
-   * every subpath into one, and numbers running together where a command letter
-   * had been left out — and neither was visible in the output, only on screen.
-   * Every path that survives this is one that has been compared against itself.
+   * Check the result draws the same shape, and give up on this path if not. Two bugs got
+   * through before this existed, and neither was visible in the output, only on screen.
    */
   const was = outline(segments);
   const now = outline(parsePath(text));

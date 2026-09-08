@@ -1,24 +1,6 @@
 /**
- * `npx @gryt/owl check my-hat.svg` — does this drawing work as a cosmetic?
- *
- * The check itself is not new. `bun scripts/owl-accessory.ts <file>` has always
- * done it, and does more: it writes the registry. What it needs is the
- * repository, so anybody who wants to draw an owl a hat has to clone a monorepo
- * before finding out whether their export is usable.
- *
- * So this reports and writes nothing. It answers the questions somebody has
- * standing in front of a drawing tool with a file they just exported:
- *
- *   - does the filename say where this goes, and does it say what I meant
- *   - is it on the frame the generator draws on
- *   - are the transforms flattened
- *   - did it find the bird, all of it
- *   - what is left once the bird is taken back out
- *   - are any of these colours ones nothing knows the meaning of
- *
- * Exit code is 0 when the drawing would build and 1 when it would not, so this
- * is usable in a hook. Warnings do not fail it: a colour with no role is a
- * question for whoever keeps the ink table, not a broken export.
+ * `npx @gryt/owl check my-hat.svg` — does this drawing work as a cosmetic? It reports and
+ * writes nothing, so nobody has to clone the monorepo. Exit 1 when it would not build.
  */
 
 import { existsSync, readFileSync } from "node:fs";
@@ -29,18 +11,8 @@ import { extract } from "../lib/extract";
 import { isIgnored, placementFor, RARITY_SHARE } from "../lib/filename";
 
 /**
- * The ink table, found by walking up from the drawing.
- *
- * `artwork/inks.ts` is project data rather than package data — it is the roles
- * *these* drawings use, and somebody drawing at their kitchen table has no
- * reason to have a copy. So it is looked for and done without: every colour
- * reports as needing a role, which is the honest answer when there is no table
- * to check against, and is also exactly the line somebody would have to add.
- *
- * Parsed with a regular expression rather than imported. It is a TypeScript
- * module, this is a compiled CLI, and standing up a TS loader to read a lookup
- * table of hex strings is a great deal of machinery for a file that has one
- * shape and has always had it.
+ * The ink table, found by walking up from the drawing. `artwork/inks.ts` is project data,
+ * so it is looked for and done without, and parsed by regex rather than imported.
  */
 function findInks(from: string): { path: string; inks: Map<string, PaletteSlot> } | null {
   let dir = resolve(dirname(from));
@@ -64,13 +36,8 @@ function findInks(from: string): { path: string; inks: Map<string, PaletteSlot> 
 const BULLET = "  ";
 
 /**
- * What checking one file came to.
- *
- * `skipped` exists because a file the registry walks past cannot be usable or
- * unusable — there is nothing to check. It used to fall through to the
- * filename parser, which threw on `_palette.svg` ("palette is not a type"),
- * and a run over `artwork/*.svg` therefore always failed on the one file that
- * is in the folder on purpose and not in the registry.
+ * What checking one file came to. `skipped` exists because a file the registry walks past
+ * has nothing to check: `_palette.svg` used to throw and fail every run.
  */
 type Verdict = "ok" | "skipped" | "bad";
 
@@ -89,11 +56,8 @@ function report(file: string): Verdict {
   console.log(name);
 
   if (isIgnored(name)) {
-    // Said rather than checked anyway. A leading underscore is how a drawing
-    // is kept beside the ones in use without being one, so somebody who has
-    // just added it and is wondering why nothing changed is asking this exact
-    // question — and everything below it would be answering about a file
-    // nothing reads.
+    // Said rather than checked anyway. A leading underscore keeps a drawing beside the
+    // ones in use without being one, which is exactly what somebody here is asking.
     console.log(`${BULLET}starts with "_" or ".", so the registry walks past it — not checked`);
     return "skipped";
   }
@@ -122,9 +86,8 @@ function report(file: string): Verdict {
   try {
     result = extract(readFileSync(file, "utf8"), name, {
       name: placement.name,
-      // Neither is written anywhere, because nothing is written. A real key
-      // comes from the ledger, which lives in the repository this exists to
-      // avoid needing.
+      // Neither is written anywhere, because nothing is written. A real key comes from the
+      // ledger, which lives in the repository this exists to avoid needing.
       key: "??",
       slot: placement.slot,
       layer: placement.layer,
@@ -155,9 +118,8 @@ function report(file: string): Verdict {
 
   for (const note of result.notes) console.log(`${BULLET}warning   ${note}`);
 
-  // The one that decides it. A drawing that finds none of the bird extracts
-  // perfectly happily and hands back an accessory shaped like a whole owl, so
-  // "it produced something" is not the test.
+  // The one that decides it. A drawing that finds none of the bird extracts happily and
+  // hands back an accessory shaped like a whole owl, so "it produced something" is not it.
   if (result.missed > 0) {
     console.error(
       `${BULLET}\n${BULLET}${result.missed} of the bird's paths were not found. A layer was moved, rescaled or\n` +
