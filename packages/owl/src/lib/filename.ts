@@ -120,12 +120,8 @@ export interface Placement {
   /** The first field, and what KEYWORDS reads to find the slot. */
   type: string;
   /**
-   * The thing itself, with its variants — round glasses, whatever colour.
-   *
-   * Families compete for the slot, and variants split whatever their family
-   * gets. Without that, six colourways of one pair of glasses take six shares
-   * of eyewear and end up 5.9x as likely as a pair drawn once, which is the
-   * slot-presence problem again one level down.
+   * The thing itself, with its variants. Families compete for the slot and variants split
+   * what their family gets, or six colourways take six shares of eyewear.
    */
   family: string;
   /** Empty when the family has only the one drawing. */
@@ -138,10 +134,8 @@ export interface Placement {
 
 /** A file the scan should walk past rather than read. */
 export function isIgnored(filename: string): boolean {
-  // A leading underscore, so a drawing can be kept next to the ones in use
-  // without being in use. Winter_Hat_Small.svg is the reason this exists: it
-  // was exported over the top of Winter_Hat.svg, is byte-identical to it, and
-  // is kept for whenever it becomes a different hat.
+  // A leading underscore, so a drawing can be kept next to the ones in use without being
+  // in use. Winter_Hat_Small.svg is byte-identical to Winter_Hat.svg and kept anyway.
   return filename.startsWith("_") || filename.startsWith(".");
 }
 
@@ -152,11 +146,8 @@ function fail(file: string, message: string): never {
 }
 
 /**
- * Reads a drawing's filename.
- *
- * Throws rather than returning a default, and the message says what to rename
- * the file to. Every failure here is one somebody can fix without reading this
- * file.
+ * Reads a drawing's filename. Throws rather than returning a default, and the message
+ * says what to rename the file to.
  */
 export function placementFor(filename: string, slots: readonly AccessorySlot[]): Placement {
   const base = filename.replace(/\.svg$/i, "");
@@ -221,17 +212,15 @@ export function placementFor(filename: string, slots: readonly AccessorySlot[]):
   }
 
   if (!slot) {
-    // The type field only, not any word in the name. A family called "bow"
-    // under type "glasses" is a shape of frame, not a thing worn on the head,
-    // and reading every field would have made that a conflict to resolve.
+    // The type field only, not any word in the name. A family called "bow" under type
+    // "glasses" is a shape of frame, and reading every field would make it a conflict.
     const found = new Map<AccessorySlot, string>();
     const match = KEYWORDS[type];
     if (match) found.set(match, type);
 
     if (found.size === 0) {
-      // Grouped by slot rather than listed flat. Fifty words on one line is a
-      // wall to read past; grouped, it shows the convention as well as the
-      // vocabulary, so the next drawing gets named right without asking.
+      // Grouped by slot rather than listed flat. Fifty words on one line is a wall;
+      // grouped, it shows the convention as well as the vocabulary.
       const bySlot = new Map<AccessorySlot, string[]>();
       for (const [word, slot] of Object.entries(KEYWORDS)) {
         if (!bySlot.has(slot)) bySlot.set(slot, []);
@@ -268,9 +257,8 @@ export function placementFor(filename: string, slots: readonly AccessorySlot[]):
 }
 
 /**
- * The weight each accessory gets, so its slot fills at the rate SLOT_PRESENCE
- * asks for however many drawings are in it — a new drawing changes which
- * glasses you see rather than whether you see any.
+ * The weight each accessory gets, so its slot fills at SLOT_PRESENCE's rate however many
+ * drawings are in it: a new drawing changes which glasses you see, not whether you do.
  */
 export function weightsFor<
   T extends { name: string; slot: AccessorySlot; family: string; rarity: Rarity },
@@ -286,14 +274,8 @@ export function weightsFor<
     const inSlot = items.filter((i) => i.slot === slot);
 
     /*
-     * Families compete for the slot; variants split what their family wins.
-     *
-     * The alternative is letting every drawing compete directly, and six
-     * colourways of round glasses then take six shares of eyewear — 5.9x as
-     * likely to turn up as a pair drawn once, for no reason anybody chose.
-     * That is the same thing SLOT_PRESENCE fixes between slots, and it needs
-     * fixing between families too or drawing variants quietly buries whatever
-     * only exists in one.
+     * Families compete for the slot; variants split what their family wins. Otherwise six
+     * colourways of round glasses are 5.9x as likely to turn up as a pair drawn once.
      */
     const families = [...new Set(inSlot.map((i) => i.family))].sort();
     const shares = families.map((family) => {
@@ -308,16 +290,12 @@ export function weightsFor<
     const slotTotal = Math.round((emptyWeight * p) / (1 - p));
 
     /*
-     * Rounded by largest remainder rather than one at a time, so the weights
-     * add up to slotTotal exactly and the slot fills at the rate asked for.
-     *
-     * Rounding each independently does not: thirty hats sharing a total of 43
-     * are 1.43 each, every one of them rounds down to 1, and the slot quietly
-     * drops from 30% of owls to 23%. That error grows with the number of
-     * drawings, which is the direction this repository goes in.
+     * Rounded by largest remainder, so the weights add up to slotTotal exactly. Rounding
+     * each independently drops thirty hats from 30% of owls to 23%.
      */
-    // A family's whole share first, then split between its variants, so the
-    // rounding is done once at each level rather than compounding.
+
+    // A family's whole share first, then split between its variants, so the rounding is
+    // done once at each level rather than compounding.
     const exact = shares.map((share, i) => {
       const variants = inSlot.filter((item) => item.family === families[i]).length;
       return (slotTotal * share) / shareTotal / variants;
@@ -327,11 +305,8 @@ export function weightsFor<
 
     let left = slotTotal - floors.reduce((sum, n, i) => sum + n * counts[i], 0);
 
-    // Hand the leftover units to whoever was rounded down hardest. If there is
-    // nothing left over — more drawings in the slot than it has weight to give
-    // — every one of them is on the floor of 1 and the slot ends up commoner
-    // than asked. Better than an accessory that has been drawn and can never
-    // be worn.
+    // Hand the leftover units to whoever was rounded down hardest. With nothing left over
+    // every drawing sits on the floor of 1 and the slot ends up commoner than asked.
     const order = exact
       .map((n, i) => [i, n - Math.floor(n)] as const)
       .sort((a, b) => b[1] - a[1]);
