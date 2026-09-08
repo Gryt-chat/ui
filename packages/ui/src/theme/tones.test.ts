@@ -24,10 +24,8 @@ function sources(dir: string): Array<[string, string]> {
 const HUES = ["accent", "secondary", "success", "danger", "warning"] as const;
 
 /**
- * The flat hue names are step 9 — the solid fill, the same colour in both
- * appearances, and **wrong for text**: it reads on a dark page and not on a
- * white panel. The contrast tests below measure step 11, which nothing used, so
- * a success Chip in light mode was bright green on pale green and passed.
+ * The flat hue names are step 9 — the solid fill, and wrong for text. The tests below
+ * measure step 11, which nothing used, so a success Chip was green on green and passed.
  */
 describe("tone colours", () => {
   it("never draws text in a hue's flat name", () => {

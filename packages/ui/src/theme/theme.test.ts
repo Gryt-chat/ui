@@ -23,11 +23,8 @@ function cssValue(name: string): string | undefined {
 }
 
 /**
- * theme.css holds literals because a CSS custom property cannot be computed,
- * and dist/styles.css is what a consumer imports. Literals drift, so they are
- * emitted by scripts/generate-theme.ts and checked here — if someone edits a
- * step by hand, or changes a token without regenerating, this fails rather than
- * the two quietly disagreeing.
+ * theme.css holds literals because a custom property cannot be computed. They are emitted
+ * by scripts/generate-theme.ts and checked here, so a hand edit fails rather than drifts.
  */
 describe("theme.css", () => {
   it("matches the generator, step for step", () => {
@@ -85,9 +82,8 @@ describe("contrast", () => {
 });
 
 describe("labels on filled controls", () => {
-  // Nothing measured these before. The contrast block above checks text steps
-  // against backgrounds, which is every piece of text in the library except the
-  // one that always sits on a saturated colour.
+  // Nothing measured these before. The contrast block above checks text steps against
+  // backgrounds, which is every piece of text except the one on a saturated colour.
   const pairs = [
     ["on-accent", grytTokens.color.onAccent, grytScales.accent[8]],
     ["on-secondary", grytTokens.color.onSecondary, grytScales.secondary[8]],
@@ -156,10 +152,8 @@ describe("the light set", () => {
   });
 
   it("aliases both prefixes, not just the raw names", () => {
-    // The utilities compile against --color-gryt-*. A light block that aliased
-    // only --gryt-* left bg-gryt-surface pointing at the dark literal in
-    // @theme, so a dialog came out dark on a light page while every scale
-    // value around it had switched correctly.
+    // The utilities compile against --color-gryt-*. A light block aliasing only --gryt-*
+    // left bg-gryt-surface on the dark literal, so a dialog came out dark on a light page.
     const block = css.slice(css.indexOf(".light {"));
     for (const token of ["bg", "surface", "surface-raised", "border", "muted", "text", "accent"]) {
       expect(block).toContain(`--gryt-${token}: var(--gryt-`);
@@ -174,9 +168,8 @@ describe("the light set", () => {
   });
 
   it("gives surface-hover a light value rather than the dark slate", () => {
-    // It had no light value at all, so a neutral Button hovered to #334155 on
-    // a white panel. Step 4 is the step that means "component background,
-    // hovered", in both appearances.
+    // It had no light value at all, so a neutral Button hovered to #334155 on a white
+    // panel. Step 4 means "component background, hovered", in both appearances.
     const block = css.slice(css.indexOf(".light {"));
     expect(block).toContain("--gryt-surface-hover: var(--gryt-neutral-4);");
     expect(block).toContain("--color-gryt-surface-hover: var(--gryt-neutral-4);");

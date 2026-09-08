@@ -45,9 +45,8 @@ export function generateDraft(): ThemeDraft {
     text: grey(rand(0.9, 0.925), 0.008)
   };
 
-  // Light is not the dark set inverted. The page is the grey one and the
-  // surface above it is white, which is the arrangement the library's light
-  // ramp is built around.
+  // Light is not the dark set inverted. The page is the grey one and the surface above it
+  // is white, which is the arrangement the library's light ramp is built around.
   const lightBgL = rand(0.95, 0.968);
   const light = {
     bg: grey(lightBgL, 0.006),
@@ -103,19 +102,8 @@ function lighten(hex: string, by: number): string {
 }
 
 /**
- * A label colour for a filled control.
- *
- * Ink or paper, whichever reads better on the fill, tinted toward the fill's
- * own hue so it looks chosen rather than dropped in — black-or-white passes the
- * same checks and looks like a placeholder.
- *
- * Then pushed until it clears 7:1 rather than the 4.5 the checks require. The
- * label on a filled button is the one piece of text in an app that always sits
- * on a saturated colour, it is usually a verb somebody is about to press, and
- * the whole cost of AAA here is a shade of a colour that was already nearly
- * black. Where the fill cannot carry 7 with any label at all — a mid-lightness
- * blue tops out around 6 — this returns the best there is and the report says
- * what it came to.
+ * A label colour for a filled control: ink or paper, tinted toward the fill's hue, pushed
+ * until it clears 7:1. Where the fill cannot carry 7 this returns the best there is.
  */
 export function readableOn(fill: string): string {
   const { c, h } = hexToOklch(fill);
@@ -146,11 +134,8 @@ export function labelsAreAuto(hues: HueSet): boolean {
 }
 
 /**
- * Push a colour away from its background until it carries text.
- *
- * Lightness only. Moving the hue would change which colour it is, and moving
- * chroma barely moves contrast at all — lightness is the axis that decides
- * whether something is readable.
+ * Push a colour away from its background until it carries text. Lightness only: hue would
+ * change which colour it is, and chroma barely moves contrast.
  */
 export function ensureContrast(
   foreground: string,
@@ -174,13 +159,8 @@ export function ensureContrast(
 }
 
 /**
- * Fix what the contrast report is complaining about, without redesigning the
- * theme.
- *
- * Only the colours whose job is to be read get moved — text, muted text, and
- * the labels on filled controls. The anchors somebody actually chose, the
- * background and the accent, are left exactly where they are: a repair that
- * changed the accent would be answering a question nobody asked.
+ * Fix what the contrast report is complaining about, without redesigning the theme. Only
+ * the colours whose job is to be read move; the anchors somebody chose stay.
  */
 export function repairDraft(draft: ThemeDraft): ThemeDraft {
   const next = cloneDraft(draft);
@@ -216,9 +196,8 @@ export function repairDraft(draft: ThemeDraft): ThemeDraft {
       ["onDanger", "danger"]
     ] as const) {
       const fill = hues[family];
-      // 7 rather than 4.5, to match what the automatic pick aims for. A repair
-      // that left the label at "just about legible" would have to be run again
-      // the moment somebody turned the automatic pick on.
+      // 7 rather than 4.5, to match what the automatic pick aims for. A repair leaving the
+      // label at "just about legible" would need running again the moment it is turned on.
       if (ratio(hues[on], fill) < 7) hues[on] = readableOn(fill);
     }
   }

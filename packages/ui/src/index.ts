@@ -12,15 +12,11 @@ export {
   grytTokens
 } from "@gryt/theme";
 export type { GrytThemeOptions, GrytTokens } from "@gryt/theme";
-// The colour maths the scales are built from. Exported because anything that
-// builds a theme rather than consuming one needs it: the docs site's generator
-// measures contrast as you pick a colour, and the library's own tests are the
-// only other caller. Keeping it internal would mean a second copy of the OKLab
-// matrices somewhere, which is exactly what one generator was meant to avoid.
+// The colour maths the scales are built from. Exported because anything that builds a
+// theme needs it, and keeping it internal means a second copy of the OKLab matrices.
 export { contrast, hexToOklch, oklchToHex } from "@gryt/theme";
-/* The typeface half of a theme. `isFontStack` is exported because a host that
-   accepts a font name from a person has to check it before it reaches a
-   stylesheet, and the check belongs with the format rather than in each app. */
+/* The typeface half of a theme. `isFontStack` is exported because a host taking a font
+   name from a person has to check it, and the check belongs with the format. */
 export {
   GRYT_FONT_KEYS,
   GRYT_FONT_STACK_MAX,
@@ -53,9 +49,8 @@ export {
   rgbToHex
 } from "@gryt/theme";
 export type { Oklch } from "@gryt/theme";
-// A whole theme as a document, and the link it travels in. Two apps read this
-// now — the generator on the docs site writes them, the client imports them —
-// so the format lives with createGrytTheme rather than in either of them.
+// A whole theme as a document, and the link it travels in. Two apps read this, so the
+// format lives with createGrytTheme rather than in either of them.
 export {
   GRYT_HUE_KEYS,
   GRYT_NEUTRAL_KEYS,
@@ -106,10 +101,8 @@ export { ConversationItem } from "./components/ConversationItem/ConversationItem
 export type { ConversationItemProps } from "./components/ConversationItem/ConversationItem";
 export { Avatar } from "./components/Avatar/Avatar";
 export type { AvatarProps } from "./components/Avatar/Avatar";
-// The seed rule, re-exported rather than left to be looked up. Avatar's `seed`
-// prop wants a normalised nickname, and a caller who reaches for the raw one
-// gets an owl drawn from a seed nothing else uses. Everything else about the
-// generator stays in @gryt/owl, which a consumer can depend on directly.
+// The seed rule, re-exported rather than left to be looked up: Avatar's `seed` wants a
+// normalised nickname, and the raw one draws an owl from a seed nothing else uses.
 export { avatarSeed } from "@gryt/owl";
 export { Badge } from "./components/Badge/Badge";
 export type { BadgePlacement, BadgeProps } from "./components/Badge/Badge";
@@ -216,14 +209,8 @@ export {
 export type { ThemeDraft } from "./components/ThemeEditor/draft";
 export { encodeDraft, importTheme, themeCode, themeJson } from "./components/ThemeEditor/share";
 
-/* The owl designer, which lived in two places until GRYT-641 — the client, and a
-   copy the site took for its front page. `packages/client` is not published, so
-   the site could not import it, and CLAUDE.md rules out a path dependency across
-   repositories. Here it is one component both of them install.
-
-   `OwlDesigner` is the editor on its own, for a host that wants it inline;
-   `OwlDesignerDialog` is that in a dialog, which is what the client uses. The
-   split came from the site's copy and the client never had it. */
+/* The owl designer, which lived in two places until GRYT-641. `OwlDesigner` is the editor
+   on its own; `OwlDesignerDialog` is that in a dialog, which is what the client uses. */
 export { AvatarChoiceDialog, OwlDesigner, OwlDesignerDialog } from "./components/OwlDesigner/owlDesigner";
 export { EXPORT_FORMATS, EXPORT_SIZE, exportFilename, renderOwl } from "./components/OwlDesigner/owlExport";
 export type { ExportFormat } from "./components/OwlDesigner/owlExport";

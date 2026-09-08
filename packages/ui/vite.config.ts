@@ -6,10 +6,8 @@ import dts from "vite-plugin-dts";
 
 import pkg from "./package.json" with { type: "json" };
 
-// Derived rather than hand-listed. The hand-written list still named MUI and
-// Emotion after they were removed, and had never been given @base-ui/react or
-// @phosphor-icons/react — so both were being inlined, which took the bundle
-// from 200 kB to 505 kB. Reading package.json means the two cannot drift.
+// Derived rather than hand-listed. The hand-written list still named MUI after it was
+// removed and had never been given Base UI, which took the bundle from 200 kB to 505 kB.
 const bundledExternally = [
   "react",
   "react-dom",

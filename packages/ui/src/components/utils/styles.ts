@@ -1,30 +1,17 @@
-// Shared class fragments. These exist so that "flat, Gryt palette" is decided
-// once rather than 24 times, and so a change to the focus ring or the popup
-// surface lands everywhere at once.
+// Shared class fragments, so "flat, Gryt palette" is decided once rather than 24 times and
+// a change to the focus ring or the popup surface lands everywhere.
 
 export const focusRing =
   "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light";
 
-// The same ring, for a control whose focusable element is a child rather than
-// itself. Base UI's Slider is the case: the thumb you can see is a div, and
-// the thing that takes focus is a visually hidden input inside it, so
-// focus-visible on the thumb never matches and the ring never appears.
+// The same ring, for a control whose focusable element is a child. Base UI's Slider is the
+// case: focus lands on a hidden input inside the thumb, so focus-visible never matches.
 export const focusRingWithin =
   "has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-gryt-accent-light";
 
 /**
- * What a text input looks like: TextField, and the typeahead inputs on
- * Combobox and Autocomplete.
- *
- * Shared because they had already drifted. The listbox inputs asked for
- * `rounded-(--gryt-radius-input)`, a token that does not exist — the library
- * ships sm, md, lg, xl and full — so the declaration was invalid and both
- * rendered with square corners in a library where every other control is
- * rounded. That is the kind of thing a shared constant makes impossible rather
- * than merely unlikely.
- *
- * The border *colour* is left to the caller: TextField swaps it for danger when
- * the field is invalid, and baking one in here would mean fighting it back off.
+ * What a text input looks like: TextField, and the typeahead inputs. Shared because they
+ * had drifted. The border colour is left to the caller, which swaps it for danger.
  */
 export const fieldControl = [
   "w-full rounded-(--gryt-radius-field) border bg-gryt-surface-raised",
@@ -42,14 +29,8 @@ export const fieldSizes = {
 
 export type FieldSize = keyof typeof fieldSizes;
 
-// Every floating surface: menu, select list, tooltip, dialog, drawer. Flat —
-// a border rather than a shadow.
-//
-// Split from its radius because Menu needs a different one. Its rows are
-// rounded-md and sit inside the popup's own padding, so a 28px outer corner
-// curves away from the row and shows a crescent of surface behind the
-// highlight. Anything that wants a corner of its own takes these colours and
-// states its radius; everything else takes popupSurface and gets xl.
+// Every floating surface: menu, select list, tooltip, dialog, drawer. Flat, a border
+// rather than a shadow. Split from its radius because Menu's rows need a smaller corner.
 export const popupSurfaceColors =
   "border border-gryt-border bg-gryt-surface text-gryt-text";
 
@@ -58,9 +39,8 @@ export const popupSurface = `rounded-(--gryt-radius-popup) ${popupSurfaceColors}
 // Base UI sets data-starting-style and data-ending-style for one frame either
 // side of open and close. The element carries the transition itself.
 export const popupMotion = [
-  // scale and translate are named explicitly because Tailwind v4 sets them as
-  // standalone CSS properties rather than folding them into `transform`, so
-  // transitioning `transform` would leave the popup snapping into place.
+  // scale and translate are named explicitly because Tailwind v4 sets them as standalone
+  // properties rather than folding them into `transform`, which would snap the popup.
   "transition-[opacity,scale,translate] duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none",
   "data-starting-style:scale-[0.98] data-starting-style:opacity-0",
   "data-ending-style:scale-[0.98] data-ending-style:opacity-0"
@@ -69,9 +49,8 @@ export const popupMotion = [
 export const disabledState =
   "cursor-pointer data-disabled:cursor-not-allowed data-disabled:opacity-50";
 
-// The tones shared by Checkbox, Radio, Switch and Slider. One union so a
-// component cannot invent its own sixth colour. Button and IconButton keep
-// their own lists, because "ghost" only makes sense on a button.
+// The tones shared by Checkbox, Radio, Switch and Slider. One union so a component cannot
+// invent a sixth colour; Button keeps its own, because "ghost" only makes sense there.
 export type Tone =
   | "primary"
   | "secondary"
@@ -80,9 +59,8 @@ export type Tone =
   | "success"
   | "warning";
 
-// Step 11, the text step, not the flat name. The flat name is step 9 — the
-// solid fill, the same colour in both appearances — which reads on a dark page
-// and disappears on a white one.
+// Step 11, the text step, not the flat name. The flat name is step 9 — the solid fill —
+// which reads on a dark page and disappears on a white one.
 export const toneAccent: Record<Tone, string> = {
   primary: "text-gryt-accent-11",
   secondary: "text-gryt-secondary-11",
@@ -111,9 +89,8 @@ export const toneBorder: Record<Tone, string> = {
   warning: "border-gryt-warning"
 };
 
-// Written out in full rather than composed from toneFill at runtime. Tailwind
-// scans source text for class names, so a class built by interpolation exists
-// on the element and nowhere in the stylesheet.
+// Written out in full rather than composed from toneFill at runtime. Tailwind scans source
+// text for class names, so an interpolated class exists on the element and nowhere else.
 export const toneCheckedFill: Record<Tone, string> = {
   primary: "data-checked:bg-gryt-accent data-checked:text-gryt-on-accent",
   secondary:

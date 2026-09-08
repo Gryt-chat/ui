@@ -23,12 +23,8 @@ function linearSamples(name: string): number[] {
 }
 
 /**
- * The curves exist twice — as `linear()` here, and as sample arrays in
- * @gryt/theme for React Native to interpolate. They are the same spring, so
- * they have to be the same numbers.
- *
- * Two hand-copied lists of 27 floats is exactly the kind of thing that drifts
- * silently: nothing breaks, the two platforms just stop feeling the same.
+ * The curves exist twice — as `linear()` here and as sample arrays in @gryt/theme. Two
+ * hand-copied lists of 27 floats drift silently: the two platforms stop feeling the same.
  */
 describe("motion tokens match the stylesheet", () => {
   it("--ease-spring equals springSamples", () => {
@@ -53,10 +49,8 @@ describe("motion tokens match the stylesheet", () => {
 });
 
 /**
- * Every duration in @gryt/theme has a variable, whatever it is called. Derived
- * rather than listed: a hand-written list is how `--gryt-dur-fast` was used by
- * two components while declared nowhere, with both transitions instant and
- * nothing failing (GRYT-381).
+ * Every duration in @gryt/theme has a variable, whatever it is called. Derived rather than
+ * listed: `--gryt-dur-fast` was used by two components while declared nowhere (GRYT-381).
  */
 describe("every duration in the theme is declared in the stylesheet", () => {
   /** `springSoft` -> `--gryt-dur-spring-soft`. */

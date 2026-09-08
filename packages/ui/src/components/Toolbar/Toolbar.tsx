@@ -8,11 +8,8 @@ export type ToolbarRootProps = ComponentPropsWithoutRef<
 >;
 
 /**
- * A strip of controls that share one tab stop.
- *
- * The point is the keyboard model: Tab enters the toolbar once and the arrow
- * keys move between its buttons, so a call bar with eight controls costs one
- * stop on the way to the message box instead of eight.
+ * A strip of controls that share one tab stop. The keyboard model is the point: a call bar
+ * with eight controls costs one stop on the way to the message box instead of eight.
  */
 const Root = forwardRef<HTMLDivElement, ToolbarRootProps>(function Toolbar(
   { className, ...props },

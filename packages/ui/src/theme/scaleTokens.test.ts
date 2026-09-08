@@ -1,6 +1,5 @@
-// Read off disk, for the same reason motionTokens.test.ts does: this is a check
-// on what the components' class strings say, and Vite's plugins are not
-// involved in that.
+// Read off disk, for the same reason motionTokens.test.ts does: this checks what the
+// components' class strings say, and Vite's plugins are not involved in that.
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -18,12 +17,8 @@ function source(component: string): string {
 }
 
 /**
- * The scale a Tailwind arbitrary value asks for, e.g. `active:scale-[0.96]`.
- *
- * Matched loosely on the variant prefix because the components qualify these
- * differently — `not-data-disabled:`, `not-[[aria-haspopup]]:`, `group-` on the
- * slider thumb — and the qualifiers are about *when* it applies, which is not
- * what this test is checking.
+ * The scale a Tailwind arbitrary value asks for, e.g. `active:scale-[0.96]`. Matched
+ * loosely on the variant prefix: the qualifiers are about when it applies.
  */
 function scaleFor(css: string, state: "hover" | "active"): number {
   const match = new RegExp(`${state}:(?:[a-z-]+:)*scale-\\[([0-9.]+)\\]`).exec(css);
@@ -32,13 +27,8 @@ function scaleFor(css: string, state: "hover" | "active"): number {
 }
 
 /**
- * The press and hover scales exist twice — in these class strings and as
- * `grytScaleSteps` in @gryt/theme, which React Native reads. Same interaction,
- * so the same numbers: the next version of GRYT-390 is native pressing 0.96
- * everywhere because nobody noticed a checkbox presses further than a button.
- *
- * `hover` is asserted although React Native never uses it, so the pair stays
- * together and nobody ports it.
+ * The press and hover scales exist twice — here and as `grytScaleSteps` in @gryt/theme.
+ * `hover` is asserted although React Native never uses it, so the pair stays together.
  */
 describe("press and hover scales match @gryt/theme", () => {
   const cases: [keyof typeof grytScaleSteps, string][] = [

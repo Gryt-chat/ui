@@ -12,10 +12,8 @@ const css = readFileSync(
 );
 
 /**
- * The drawer bleed exists twice — `--gryt-drawer-bleed` here and
- * `grytDrawerBleed` in @gryt/theme, which React Native reads. If one widened
- * and the other did not, the seam of backdrop would come back on one platform
- * only and be reported as "the drawer flickers on my phone".
+ * The drawer bleed exists twice — here and as `grytDrawerBleed` in @gryt/theme. If one
+ * widened, the seam of backdrop would come back on one platform only.
  */
 describe("the drawer bleed matches theme.css", () => {
   it("is 4rem in the stylesheet", () => {

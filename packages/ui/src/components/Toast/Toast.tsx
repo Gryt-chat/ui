@@ -12,13 +12,8 @@ export type ToastSeverity =
   | "danger";
 
 /**
- * Severity is a tinted edge and a wash, not a filled card.
- *
- * Alert tints its whole surface, and that is right for something sitting in
- * the page where it has to compete with the content around it. A toast is
- * already floating over everything with nothing to compete with, so the same
- * treatment reads as shouting. The border carries the colour and the fill stays
- * near the surface underneath.
+ * Severity is a tinted edge and a wash, not a filled card. A toast floats over everything
+ * with nothing to compete with, so Alert's whole-surface tint reads as shouting.
  */
 const severityStyles: Record<ToastSeverity, string> = {
   neutral: "border-white/8 bg-gryt-surface",
@@ -38,11 +33,8 @@ export type ToastViewportProps = ComponentPropsWithoutRef<
 >;
 
 /**
- * Transient notice: connection lost, invite copied, message failed to send.
- *
- * design.md's stance is silent success — most things that worked should say
- * nothing. This is for the cases where the user is not looking at the thing
- * that changed, which in a voice client is most of them.
+ * Transient notice: connection lost, invite copied, message failed to send. design.md's
+ * stance is silent success; this is for when the user is not looking at what changed.
  */
 const Viewport = forwardRef<HTMLDivElement, ToastViewportProps>(
   function ToastViewport({ className, ...props }, ref) {
@@ -69,13 +61,8 @@ const Root = forwardRef<HTMLDivElement, ToastRootProps>(function ToastRoot(
       ref={ref}
       className={cn(
         "gryt-toast relative flex flex-col p-3 pr-9",
-        // Not popupSurface. That border is --gryt-border, a solid slate line
-        // that is right for a menu anchored to the thing that opened it and too
-        // heavy for a card floating in the corner with nothing behind it. A
-        // white hairline separates it from the page without drawing a box
-        // around it.
-        // The corner still follows the popup role — the note above is about the
-        // border colour, not the shape.
+        // Not popupSurface: --gryt-border is a solid slate line, right for a menu anchored
+        // to its trigger and too heavy for a card floating in the corner.
         "rounded-(--gryt-radius-popup) border text-gryt-text",
         severityStyles[severity],
         // Swiping is a pointer gesture, so the toast follows the finger
@@ -177,10 +164,7 @@ export const Toast = {
 };
 
 /**
- * Raise a toast without importing Base UI directly.
- *
- * Taken off the namespace rather than re-exported from "@base-ui/react/toast":
- * at that path the hook is a type-only declaration, and re-exporting it as a
- * value fails under isolatedModules. The value lives on the parts namespace.
+ * Raise a toast without importing Base UI directly. Taken off the namespace: at that path
+ * the hook is a type-only declaration and re-exporting it fails under isolatedModules.
  */
 export const useToastManager = BaseToast.useToastManager;

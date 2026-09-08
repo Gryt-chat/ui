@@ -8,9 +8,8 @@ import { disabledState, focusRing } from "../utils/styles";
 type ToggleTone = "primary" | "secondary" | "neutral" | "danger";
 type ToggleSize = "xsmall" | "small" | "medium" | "large";
 
-// Unpressed reads like IconButton's tinted target; pressed fills. A mute button
-// has to be legible as on or off from across the room, so the two states differ
-// in fill rather than only in colour.
+// Unpressed reads like IconButton's tinted target; pressed fills. A mute button has to be
+// legible as on or off from across the room, so the states differ in fill.
 const toneStyles: Record<ToggleTone, string> = {
   primary: [
     "text-gryt-muted hover:not-data-disabled:bg-white/8",
