@@ -44,9 +44,8 @@ export function TextField({
   const metrics = SIZES[size];
   const disabled = editable === false;
 
-  // The web shows focus with an outline, which sits outside the box and does not
-  // move anything. React Native has no outline, so the border changes colour
-  // instead of a second ring appearing, which would shift the layout.
+  // The web shows focus with an outline, which sits outside the box. React Native has no
+  // outline, so the border changes colour rather than a second ring shifting the layout.
   const borderColor = error
     ? theme.color.danger
     : focused

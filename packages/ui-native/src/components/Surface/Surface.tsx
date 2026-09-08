@@ -3,10 +3,8 @@ import { View, type StyleProp, type ViewProps, type ViewStyle } from "react-nati
 import { useTheme } from "../../theme";
 
 /**
- * A panel. The thing almost everything else sits on.
- *
- * `@gryt/ui`'s Surface is a div with Tailwind classes picking `--gryt-neutral-*`
- * steps. The steps are the same here; only the delivery differs.
+ * A panel. The thing almost everything else sits on. The neutral steps are the same as
+ * `@gryt/ui`'s Surface; only the delivery differs.
  */
 export type SurfaceLevel = "bg" | "surface" | "raised";
 

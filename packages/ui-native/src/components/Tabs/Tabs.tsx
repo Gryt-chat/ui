@@ -55,10 +55,8 @@ export interface TabsProps {
   defaultValue?: TabValue;
   onValueChange?: (value: TabValue) => void;
   /**
-   * A rail rather than a row. Same visual language turned ninety degrees, and
-   * the same caveat the web carries: past about a dozen destinations a filled
-   * pill becomes a block of accent parked in the corner, and something quieter
-   * is the better call.
+   * A rail rather than a row: the same visual language turned ninety degrees, with the
+   * web's caveat that past a dozen destinations a filled pill is the wrong marker.
    */
   orientation?: TabsOrientation;
   children?: ReactNode;
@@ -79,9 +77,8 @@ function Root({
   const [boxes, setBoxes] = useState<Record<string, TabBox>>({});
   const value = controlled ?? uncontrolled;
 
-  // Keyed by String(value) because a Record cannot key on `string | number`
-  // and 1 and "1" would collide. They are already distinct TabValues, so
-  // collapsing them here would make two tabs share one measurement.
+  // Keyed by String(value) because a Record cannot key on `string | number`. They are
+  // already distinct TabValues, so collapsing them would make two tabs share a box.
   const report = useCallback((tab: TabValue, box: TabBox) => {
     setBoxes((prev) => {
       const key = `${typeof tab}:${tab}`;
@@ -139,23 +136,16 @@ const BoxesContext = createContext<Record<string, TabBox>>({});
 export interface TabsListProps {
   children?: ReactNode;
   /**
-   * Tabs that do not fit scroll sideways rather than overflowing.
-   *
-   * Off by default, which is the web's behaviour and the reason this defaults
-   * the way it does — the web has no scroller here at all. It is kept because
-   * a phone is narrow and a five-tab rail genuinely does not fit, and clipping
-   * silently is worse than scrolling. Horizontal only; a vertical rail is a
-   * column in a screen that already scrolls.
+   * Tabs that do not fit scroll sideways rather than overflowing. Off by default, which is
+   * the web's behaviour. Horizontal only; a vertical rail sits in a screen that scrolls.
    */
   scrollable?: boolean;
   style?: StyleProp<ViewStyle>;
 }
 
 /**
- * The pill rail, and the indicator that slides across it. The indicator is here
- * rather than in `Tabs.Indicator` because it needs every tab's measured box and
- * the list is the only part that sees them all — `Tabs.Indicator` still exports
- * and renders nothing, so a call site copied from the web keeps working.
+ * The pill rail, and the indicator that slides across it. The indicator is here because it
+ * needs every tab's measured box; `Tabs.Indicator` still exports and renders nothing.
  */
 function List({ children, scrollable = false, style }: TabsListProps) {
   const theme = useTheme();
@@ -166,10 +156,8 @@ function List({ children, scrollable = false, style }: TabsListProps) {
 
   const active = tabs.value === null ? undefined : boxes[`${typeof tabs.value}:${tabs.value}`];
 
-  // Starts at 0 and is only ever animated to a measured box, so the pill grows
-  // out of the left edge on first paint. The web has the same first-frame
-  // problem and solves it with `renderBeforeHydration`; here the first layout
-  // arrives in the same frame as the first paint, so there is nothing to see.
+  // Starts at 0 and is only ever animated to a measured box. The first layout arrives in
+  // the same frame as the first paint, so there is nothing to see.
   const x = useSharedValue(0);
   const y = useSharedValue(0);
   const w = useSharedValue(0);
@@ -180,9 +168,9 @@ function List({ children, scrollable = false, style }: TabsListProps) {
       ? { x: active.x, y: active.y, w: active.width, h: active.height }
       : null;
     /* eslint-disable react-hooks/immutability */
-    // Assigned during render on purpose: a shared value is not React state and
-    // does not schedule one, and doing it in an effect would land the animation
-    // a frame after the tab's colour has already changed.
+
+    // Assigned during render on purpose: a shared value is not React state, and an effect
+    // would land the animation a frame after the tab's colour changed.
     x.value = to ? to.x : springy(active.x);
     y.value = to ? to.y : springy(active.y);
     w.value = to ? to.w : springy(active.width);
@@ -292,9 +280,8 @@ function Tab({ value, children, disabled, style }: TabProps) {
         <Text
           numberOfLines={1}
           style={{
-            // The tab only changes its text colour; the fill belongs to the
-            // indicator so it can travel. `onAccent` rather than `text`,
-            // because the pill underneath is the accent.
+            // The tab only changes its text colour; the fill belongs to the indicator so
+            // it can travel. `onAccent` rather than `text`, since the pill is the accent.
             color: active ? theme.color.onAccent : theme.color.muted,
             fontSize: 14,
             lineHeight: 20,
@@ -323,9 +310,8 @@ function Panel({ value, children, style }: TabsPanelProps) {
 
   const vertical = tabs.orientation === "vertical";
 
-  // React Native has "tab" and "tablist" but no "tabpanel" role, so there is
-  // nothing to put here. The panel is still reachable, it just does not
-  // announce itself as the tab's panel. In the exceptions table.
+  // React Native has "tab" and "tablist" but no "tabpanel" role, so there is nothing to
+  // put here. The panel is reachable; it does not announce itself. In the exceptions table.
   return (
     <View
       style={[
@@ -341,11 +327,8 @@ function Panel({ value, children, style }: TabsPanelProps) {
 }
 
 /**
- * Kept so a call site copied from the web keeps working.
- *
- * The indicator is drawn by `List`, which is the only part that has measured
- * every tab. Rendering it here would mean measuring the list from inside one of
- * its children.
+ * Kept so a call site copied from the web keeps working. The indicator is drawn by `List`,
+ * the only part that has measured every tab.
  */
 function Indicator(): null {
   return null;

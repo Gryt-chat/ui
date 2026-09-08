@@ -9,10 +9,8 @@ import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
 import { useTheme } from "../../theme";
 
 /**
- * A tooltip on a device with no pointer: opens on a long press, closes when the
- * press ends. **A different interaction wearing the same name**, and the
- * component where 1:1 is least achievable — an interface that depends on
- * tooltips to be usable will not survive the port. In the exceptions table.
+ * A tooltip on a device with no pointer: opens on a long press, closes when it ends. A
+ * different interaction wearing the same name, and in the exceptions table.
  */
 
 interface TooltipContextValue {

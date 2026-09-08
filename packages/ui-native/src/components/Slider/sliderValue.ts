@@ -1,11 +1,5 @@
-/* Track position to value, as a pure function.
- *
- * Split out of Slider.tsx for the same reason placePopup.ts is split out of the
- * overlay: it is arithmetic, it is where the bugs are, and a closure over a ref
- * cannot be tested. GRYT-378 was a one-line error in this maths that shipped,
- * passed every check, and was only caught by a person dragging a real thumb on
- * a real phone.
- */
+/* Track position to value, as a pure function. Split out because it is arithmetic and it
+ * is where the bugs are: GRYT-378 shipped, passed every check, and was caught by hand. */
 
 export interface SliderScale {
   /** Track width in pixels. Zero or less means the layout has not happened. */
@@ -16,10 +10,8 @@ export interface SliderScale {
 }
 
 /**
- * The value at `x` pixels along the track.
- *
- * Clamped at both ends, snapped to `step`, and safe to call before layout —
- * a zero width returns `min`, since there is no position to read yet.
+ * The value at `x` pixels along the track. Clamped at both ends, snapped to `step`, and
+ * safe to call before layout — a zero width returns `min`.
  */
 export function valueAt(x: number, scale: SliderScale): number {
   const { width, min, max, step } = scale;

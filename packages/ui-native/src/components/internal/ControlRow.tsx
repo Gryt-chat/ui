@@ -7,30 +7,13 @@ import { usePressScale } from "../../motion";
 import { useTheme } from "../../theme";
 
 /**
- * A control and its label, where tapping either one works.
- *
- * The web gets this for free: a `<label>` wrapping the control, and the browser
- * forwards the click. React Native has no `<label>` and no `htmlFor`, so the
- * association has to be structural — the label and the control are inside one
- * Pressable, and that Pressable is the target.
- *
- * A parity *match* reached through a different API, which is why the exceptions
- * table lists it as an API difference rather than a behaviour one.
- *
- * Without a label it renders the control alone, so the bare form still works.
+ * A control and its label, where tapping either one works. React Native has no `<label>`,
+ * so the association is structural: both sit inside one Pressable, which is the target.
  */
 
 /**
- * How far past its own edge a control still counts as pressed.
- *
- * There is no web equivalent and nothing to be 1:1 with — a pointer is exact
- * and a fingertip is about 9mm across. 20×20 is well under the 44pt minimum
- * both Apple and WCAG ask for, and radios are usually stacked, so a near miss
- * lands on the neighbour rather than on nothing.
- *
- * 12 on each side takes a 20pt box to 44pt without moving a single pixel of
- * what is drawn. It is deliberately not padding: padding would change the
- * layout and the spacing between a control and its label.
+ * How far past its own edge a control still counts as pressed. 12 on each side takes a
+ * 20pt box to the 44pt minimum without moving a pixel of what is drawn, unlike padding.
  */
 export const CONTROL_HIT_SLOP = { top: 12, bottom: 12, left: 12, right: 12 };
 
@@ -62,15 +45,12 @@ export function ControlRow({
   const theme = useTheme();
   const press = usePressScale(pressScale, disabled);
 
-  // Only the control scales, not the label. The web scales the control element
-  // and the text beside it is a sibling, so a whole row springing would be a
-  // difference rather than a match — and a line of text jumping under a
-  // fingertip reads as a glitch rather than as feedback.
+  // Only the control scales, not the label. The web scales the control element and the text
+  // beside it is a sibling; a line of text jumping under a fingertip reads as a glitch.
   const control = <Animated.View style={press.style}>{children}</Animated.View>;
 
-  // A label needs a string for screen readers, and `label` may be a node.
-  // Falling back to it only when it is a string is better than stringifying an
-  // element into "[object Object]".
+  // A label needs a string for screen readers, and `label` may be a node. Falling back to
+  // it only when it is a string beats stringifying an element into "[object Object]".
   const spokenLabel =
     accessibilityLabel ?? (typeof label === "string" ? label : undefined);
 

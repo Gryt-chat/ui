@@ -10,15 +10,8 @@ export interface ToolbarProps {
 }
 
 /**
- * A row of controls that reads as one thing.
- *
- * The web's Toolbar manages roving focus, so arrow keys move between the
- * buttons and the group takes one tab stop. There is no roving focus to manage
- * here, so what is left is the grouping: the accessibility role, and the
- * spacing.
- *
- * Kept rather than dropped because the role is what tells a screen reader these
- * controls belong together, which is most of what the web version was for.
+ * A row of controls that reads as one thing. There is no roving focus to manage here, so
+ * what is left is the grouping: the accessibility role, and the spacing.
  */
 export function Toolbar({ children, orientation = "horizontal", style }: ToolbarProps) {
   const theme = useTheme();

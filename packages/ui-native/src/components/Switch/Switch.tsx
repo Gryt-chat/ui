@@ -29,16 +29,8 @@ const THUMB = 16;
 const TRAVEL = 16;
 
 /**
- * Not React Native's own Switch.
- *
- * `<Switch>` from React Native draws the platform control, which is green on
- * iOS and follows the Material palette on Android. Neither is the Gryt accent,
- * and `thumbColor`/`trackColor` do not reach the whole shape. A design system
- * that cannot colour its own switch is not much of a design system, so this is
- * drawn from the tokens like everything else.
- *
- * The cost is that it does not pick up future platform restyling for free, which
- * is the trade the whole library is already making.
+ * Not React Native's own Switch, which draws the platform control in green or Material and
+ * whose colour props do not reach the whole shape. Drawn from the tokens instead.
  */
 export function Switch({
   checked: controlled,
@@ -57,10 +49,8 @@ export function Switch({
 
   const offset = useSharedValue(checked ? TRAVEL : 0);
 
-  // The web is `translate-x-4` on `ease-spring` — the overshooting curve, even
-  // though the thumb travels, because the travel is 16px inside a 40px track
-  // rather than the width of a container. Following the web rather than
-  // second-guessing it: 1:1 means the same curve, not a better-argued one.
+  // The web is `translate-x-4` on `ease-spring` — the overshooting curve, because the
+  // travel is 16px inside a 40px track. Following the web rather than second-guessing it.
   useEffect(() => {
     const to = checked ? TRAVEL : 0;
     // eslint-disable-next-line react-hooks/immutability
@@ -95,10 +85,8 @@ export function Switch({
           borderRadius: TRACK_HEIGHT / 2,
           padding: (TRACK_HEIGHT - THUMB) / 2,
           justifyContent: "center",
-          // The web outlines the track and fills it with surfaceRaised when
-          // off, then paints the tone over it and drops the border to
-          // transparent. This was neutral[5] with no border, which is close
-          // enough to look right on its own and wrong beside a checkbox.
+          // The web outlines the track and fills it with surfaceRaised when off, then
+          // paints the tone over it. neutral[5] with no border was wrong beside a checkbox.
           borderWidth: 1,
           borderColor: checked ? "transparent" : theme.color.border,
           backgroundColor: checked ? ramp[8] : theme.color.surfaceRaised,

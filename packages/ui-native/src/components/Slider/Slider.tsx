@@ -98,36 +98,20 @@ export function Slider({
   };
 
   /**
-   * Tap to seek, drag to scrub, and nothing at all if the finger goes down the
-   * page.
-   *
-   * Two gestures rather than one because they want opposite thresholds. A tap
-   * has to work with no movement; a drag must not claim anything until it is
-   * clearly sideways, or every attempt to scroll past a slider moves it. `Race`
-   * lets whichever qualifies win, and only one ever does.
+   * Tap to seek, drag to scrub, and nothing if the finger goes down the page. Two gestures,
+   * because a tap works with no movement and a drag must not claim anything until sideways.
    */
-  /* Everything below runs when a finger moves, not while this memo builds the
-   * recognisers. react-hooks/refs and react-hooks/immutability cannot see
-   * through the closures: they read `state.current` and `emit.current` being
-   * touched during render, and `thumbScale.value` — a Reanimated shared value —
-   * being assigned there. Both actually happen inside gesture callbacks.
-   *
-   * The refs are deliberate and explained where they are declared: they are
-   * what lets the gesture read the live value without rebuilding itself on
-   * every render, which is the same reason the dependency list below is
-   * short. */
+
+  /* Everything below runs when a finger moves, not while this memo builds the recognisers.
+   * react-hooks cannot see through the closures into the gesture callbacks. */
+
   /* eslint-disable react-hooks/refs, react-hooks/immutability */
   const gesture = useMemo(() => {
     const seek = (x: number) => {
       const s = state.current;
       if (s.disabled) return;
-      // Absolute position in the track, not accumulated translation.
-      //
-      // The old version anchored on where the gesture started and added
-      // `gesture.dx`, which is the distance from the *start* rather than from
-      // the last event — so offsetting the live value by it added the whole
-      // travel again every move and the thumb accelerated away from the
-      // finger. Reading the position directly cannot express that bug.
+      // Absolute position in the track, not accumulated translation. `gesture.dx` is the
+      // distance from the start, so offsetting the live value by it doubles the travel.
       apply(valueFromX(x));
     };
 
@@ -159,9 +143,9 @@ export function Slider({
       });
 
     return Gesture.Race(pan, tap);
-    // `apply` and `valueFromX` read refs that are written in effects, so they
-    // do not need to be dependencies — and listing them would rebuild the
-    // gesture on every render.
+    // `apply` and `valueFromX` read refs written in effects, so they are not dependencies;
+    // listing them would rebuild the gesture on every render.
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [disabled, thumbScale]);
   /* eslint-enable react-hooks/refs, react-hooks/immutability */
