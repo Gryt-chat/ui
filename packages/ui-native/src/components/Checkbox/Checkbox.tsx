@@ -1,7 +1,11 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { type StyleProp, type ViewStyle } from "react-native";
-import { Text } from "../../internal/Text";
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+// Deep imports, one file per icon, rather than the barrel. Metro does not
+// tree-shake, so the barrel pulls the whole set in. The `*Icon` suffix is the
+// spelling @phosphor-icons/react uses; the bare names are deprecated.
+import { CheckIcon } from "phosphor-react-native/src/icons/Check";
+import { MinusIcon } from "phosphor-react-native/src/icons/Minus";
 
 import { grytScaleSteps } from "@gryt/theme";
 import { springy } from "../../motion";
@@ -31,13 +35,15 @@ export interface CheckboxProps {
 const SIZE = 20;
 
 /**
- * The tick is a text glyph rather than an icon.
+ * The tick is a Phosphor `Check`, the same icon `@gryt/ui` draws on the web.
  *
- * `@gryt/ui` renders a Phosphor `Check`. Pulling an icon library in here would
- * be the first runtime dependency this package has, for one glyph, and
- * `@phosphor-icons/react` renders SVG that React Native cannot mount without
- * react-native-svg on top. Both are decisions for whoever needs a full icon set,
- * not for a checkbox.
+ * This used to be a text glyph, on the reasoning that an icon library would be
+ * this package's first runtime dependency for one glyph, and that
+ * `@phosphor-icons/react` needs react-native-svg under it. Neither holds now.
+ * It was never one glyph -- Select, Accordion and NumberField were all drawing
+ * their own -- react-native-svg is already a peer, and phosphor-react-native is
+ * a peer too rather than a runtime dependency, so it costs nothing to an app
+ * that has it. Gryt's does.
  */
 export function Checkbox({
   checked: controlled,
@@ -116,16 +122,11 @@ export function Checkbox({
         }}
       >
         <Animated.View style={tickStyle}>
-          <Text
-            style={{
-              color: theme.color.onAccent,
-              fontSize: 13,
-              fontWeight: "900",
-              lineHeight: 15,
-            }}
-          >
-            {indeterminate ? "–" : "✓"}
-          </Text>
+          {indeterminate ? (
+            <MinusIcon size={14} color={theme.color.onAccent} weight="bold" />
+          ) : (
+            <CheckIcon size={14} color={theme.color.onAccent} weight="bold" />
+          )}
         </Animated.View>
       </Animated.View>
     </ControlRow>

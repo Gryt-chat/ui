@@ -1,5 +1,10 @@
 import { useCallback, useRef, useState, type ReactNode } from "react";
 import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
+// Deep imports, one file per icon, rather than the barrel. Metro does not
+// tree-shake, so the barrel pulls the whole set in. The `*Icon` suffix is the
+// spelling @phosphor-icons/react uses; the bare names are deprecated.
+import { CaretDownIcon } from "phosphor-react-native/src/icons/CaretDown";
+import { CheckIcon } from "phosphor-react-native/src/icons/Check";
 import { Text } from "../../internal/Text";
 
 import { AnchoredPopup } from "../../overlay/AnchoredPopup";
@@ -112,7 +117,7 @@ export function Select({
         ) : (
           <View style={{ flex: 1 }}>{selected.label}</View>
         )}
-        <Text style={{ color: theme.color.muted, fontSize: 11 }}>▾</Text>
+        <CaretDownIcon size={12} color={theme.color.muted} weight="bold" />
       </Pressable>
 
       <AnchoredPopup
@@ -155,9 +160,7 @@ export function Select({
                   option.label
                 )}
                 {isSelected ? (
-                  <Text style={{ color: theme.color.accent, fontSize: 13, fontWeight: "900" }}>
-                    ✓
-                  </Text>
+                  <CheckIcon size={14} color={theme.color.accent} weight="bold" />
                 ) : null}
               </Pressable>
             );

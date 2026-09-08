@@ -17,7 +17,29 @@
     // runs the libraries in sequence rather than letting bun schedule them — so
     // resolving through the exports map to dist is both correct and available.
     "baseUrl": ".",
-    "paths": {}
+    // Emptied of the source mappings above, but the phosphor one has to stay:
+    // it is not about resolving a sibling, it is what stops tsc compiling the
+    // icon library's own untypecheckable source.
+    "paths": {
+    // Phosphor icons come one file at a time from the package's `./src/icons/*`
+    // subpath, because Metro does not tree-shake and the barrel pulls the whole
+    // set into every app that installs this. That subpath serves untranspiled
+    // `.tsx`, which TypeScript then compiles — and the library's own icon-base
+    // passes a `className` to react-native-svg, which does not declare one.
+    // `skipLibCheck` does not help: it skips `.d.ts`, and this is source.
+    //
+    // So TypeScript reads the package's generated declarations while Metro goes
+    // on bundling the real `.tsx`. Both come from the same file. Copied from
+    // packages/mobile, which hit this first.
+    // Two entries because the install layout is not fixed: bun puts the package
+    // under packages/ui-native/node_modules here and hoists it to the root in
+    // CI, and a mapping that misses falls back to the .tsx and fails. Checked
+    // both ways round.
+    "phosphor-react-native/src/icons/*": [
+      "./node_modules/phosphor-react-native/lib/typescript/icons/*",
+      "../../node_modules/phosphor-react-native/lib/typescript/icons/*"
+    ]
+    }
   },
   "exclude": ["src/**/*.test.ts", "src/**/*.test.tsx"]
 }
