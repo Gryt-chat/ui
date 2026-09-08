@@ -1,16 +1,6 @@
 /**
- * What this protects is not that an owl looks good — that is what the eye is
- * for — but that the same name keeps drawing the same owl.
- *
- * An avatar is how a person is recognised. Every consumer of this package draws
- * from a nickname and stores nothing, so there is no server-side record to fall
- * back on: if the output moves, everybody's face moves with it, everywhere, at
- * once. The pinned hashes below fail on any change to the geometry, the layer
- * order, the rounding or the weights.
- *
- * When one fails, the question is never "update the hash". It is whether the
- * change was meant, and whether it is worth every existing user looking
- * different.
+ * What this protects is that the same name keeps drawing the same owl. Nothing is stored,
+ * so if the output moves, everybody's face moves with it at once.
  */
 
 import { describe, expect, it } from "vitest";
@@ -61,27 +51,8 @@ describe("the same name draws the same owl", () => {
   });
 
   /*
-   * The pins. Generated once and left alone — see the note at the top of the
-   * file before touching them.
-   *
-   * Regenerated once, on 2026-08-25, and it is the only time. GRYT-589 moved
-   * accessory weights off a hand-written manifest and onto the filenames, and
-   * changed the draw so a candidate's chance stops depending on what else is in
-   * its slot. Both change where a seed lands, so all three moved.
-   *
-   * That was the point. Before, adding one drawing changed 28.6% of owls while
-   * 8.7% wore the new thing. It is 4.4% now, and the remainder is the slot
-   * holding its overall rate steady.
-   *
-   * `sivert` moved again on 2026-08-26, adding thirteen drawings (GRYT-615).
-   * He was bare and now wears hat-tophat, which is the intended case. `ingy`
-   * and `gryt` did not move, which is the evidence the draw did not reshuffle
-   * underneath them.
-   *
-   * Measured over 20,000 seeds rather than these three: 32.2% moved, 62% of
-   * them because they gained one of the thirteen. The other 2,462 lost an
-   * accessory they had. **The 4.4% above is per-drawing and optimistic, not a
-   * ceiling** — one drawing on its own moves 7.05%.
+   * The pins. Generated once, and regenerated once on 2026-08-25 when GRYT-589 moved
+   * weights onto the filenames. Ask whether the change was meant, not whether to update.
    */
   it.each([
     ["sivert", "8e6200915eb65797"],
@@ -111,10 +82,8 @@ describe("the seed", () => {
 
 describe("the colour a tile is tinted from", () => {
   /**
-   * A voice tile takes the avatar's colour and snaps it to the nearest entry in
-   * TILE_HUES. The palettes are built from that list precisely so the snap is
-   * exact — one that drifted off it would still look fine and would quietly be
-   * somebody else's colour.
+   * A voice tile snaps the avatar's colour to the nearest TILE_HUES entry. The palettes
+   * are built from that list so the snap is exact rather than somebody else's colour.
    */
   function hueOf(hex: string): number | null {
     const int = parseInt(hex.slice(1), 16);
@@ -164,11 +133,8 @@ describe("the parts draw", () => {
   it("names every one of the bird's own paths", () => {
     const parts = owlPartPaths();
     expect(parts.length).toBeGreaterThan(0);
-    // Colour cannot tell an eye from the beak — both are accent — so the
-    // extractor leans on this, and it is worth knowing when it stops working.
-    //
-    // Named a side at a time, because a wink covers one eye and a coat covers
-    // one arm. Naming the pair meant a wink hid both and came out blank-faced.
+    // Colour cannot tell an eye from the beak, so the extractor leans on this. Named a
+    // side at a time: naming the pair meant a wink hid both and came out blank-faced.
     expect(parts.filter((p) => p.part === "eyeLeft")).toHaveLength(1);
     expect(parts.filter((p) => p.part === "eyeRight")).toHaveLength(1);
     expect(parts.filter((p) => p.part === "wingLeft")).toHaveLength(1);
@@ -179,18 +145,13 @@ describe("the parts draw", () => {
 });
 
 /*
- * The bird handed out to draw on carries a named layer per path, and the
- * extractor reads those names back to work out what a drawing replaces. Two
- * files have to agree for that to hold, and nothing else would notice them
- * drifting: a part added to the generator without an entry in owl-group.ts
- * gets written into the group unlabelled or, worse, wearing the next part's
- * name.
+ * The bird handed out to draw on carries a named layer per path, and the extractor reads
+ * those back. Two files have to agree, and nothing else would notice them drifting.
  */
+
 /*
- * A palette name nothing knows used to make a hue of `undefined`, which `hsl`
- * turned into `#d062NaN` — not a colour, ignored by every renderer, invisible
- * to the type checker because the parameter is typed. The docs site asked for
- * "plum" and one preview painted an owl in nothing.
+ * A palette name nothing knows used to make a hue of `undefined`, which `hsl` turned into
+ * `#d062NaN` — not a colour, ignored by every renderer, invisible to the type checker.
  */
 describe("a palette name nothing knows", () => {
   it("is refused by owlPalette, which names the ones there are", () => {
@@ -230,9 +191,8 @@ describe("the bird's layer names", () => {
 });
 
 /*
- * A wink is one closed eye and one open one. It came out with a blank face,
- * because `hides` could only name the pair and the drawing only supplied the
- * closed one.
+ * A wink is one closed eye and one open one. It came out blank-faced, because `hides`
+ * could only name the pair and the drawing supplied only the closed one.
  */
 describe("a drawing that replaces one of a pair", () => {
   const parts = owlPartPaths(OWL_BASE);
@@ -257,14 +217,8 @@ describe("a drawing that replaces one of a pair", () => {
   });
 
   /*
-   * A coat keeps the arms and covers them, so what has to hold is the order.
-   *
-   * It used to hide them, inferred from a background-coloured shape painted
-   * over each one, and this asserted the arm's path was gone from the markup.
-   * The drawings say what they hide now, and the coats say nothing: their
-   * sleeves cover both arms completely — measured at 1024px, zero uncovered
-   * pixels — so there is nothing to declare. What would break that is the coat
-   * moving off `overAll` and drawing before the arms instead of after them.
+   * A coat keeps the arms and covers them, so what has to hold is the order. The sleeves
+   * cover both completely; what breaks it is the coat drawing before the arms.
    */
   it("draws a coat after the arms it covers", () => {
     const coat = wearing({ body: "shirt-jacket-winter" });
@@ -387,10 +341,8 @@ describe("painting one slot a different colour", () => {
   });
 
   it("repaints the hat and nothing else", () => {
-    // "Colour my hat" must not quietly become "recolour me". Comparing the
-    // fills in order says exactly which paths moved: the bird's are drawn
-    // first, so the untinted ones at the front are the bird and the tail is the
-    // hat.
+    // "Colour my hat" must not quietly become "recolour me". Comparing fills in order says
+    // which paths moved: the bird's are drawn first, so the tail is the hat.
     const fills = (svg: string) =>
       [...svg.matchAll(/fill="(#[0-9a-f]{6})"/g)].map((m) => m[1]);
 

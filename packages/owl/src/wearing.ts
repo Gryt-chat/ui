@@ -1,22 +1,6 @@
 /**
- * What somebody is wearing, as a short string travelling beside the nickname.
- *
- * Thirteen fields, two characters each, always in this order:
- *
- *     ai ac ah -- -- ad ab ab -- ae -- -- --
- *     ^expression         ^scheme  ^eyewear tint
- *        ^eyewear            ^ears    ^head tint
- *           ^head                        ^neck tint
- *              ^neck        ^expression tint  ^body tint
- *                 ^body
- *                    ^palette
- *
- * **New fields are appended, never inserted** — see decodeWorn. Fixed width
- * rather than delimited, so a missing field cannot shift the ones after it.
- * `--` means "deliberately nothing", which is not the same as an absence.
- *
- * **The keys never move**, and PALETTE_NAMES is frozen for the same reason:
- * reordering an array would re-colour everybody. See scripts/lib/keys.ts.
+ * What somebody is wearing, as a fixed-width string beside the nickname: two characters
+ * per field, appended never inserted, and `--` means deliberately nothing.
  */
 
 import { ACCESSORY_SLOTS, accessoryByName, accessoriesIn } from "./accessories";
@@ -29,11 +13,8 @@ export const EMPTY_FIELD = "--";
 const FIELD = 2;
 
 /**
- * Frozen, and not derived from PALETTE_NAMES on purpose.
- *
- * Deriving them from the array's order would mean that inserting a palette in
- * the middle silently recolours everyone whose key sits after it. These are
- * append-only: a new palette takes the next free key and nothing else moves.
+ * Frozen, and not derived from PALETTE_NAMES: deriving from the array's order would mean
+ * inserting a palette recolours everyone after it. Append-only.
  */
 const PALETTE_KEYS: Record<PaletteName, string> = {
   violet: "aa",
@@ -74,9 +55,8 @@ export interface WornLook {
   ears?: EarStyle;
   wearing: Partial<Record<AccessorySlot, string | null>>;
   /**
-   * A palette per slot, for anybody who wants their hat a different colour from
-   * their owl. A slot left out follows the owl, which is what every look
-   * written before this field existed does.
+   * A palette per slot, for anybody who wants their hat a different colour from their
+   * owl. A slot left out follows the owl, which is what every older look does.
    */
   tint?: Partial<Record<AccessorySlot, PaletteName>>;
 }
@@ -87,17 +67,13 @@ function accessoryKey(name: string | null | undefined): string {
 }
 
 /**
- * The string for a look.
- *
- * An accessory the registry does not have encodes as empty rather than
- * throwing: the caller is usually rendering somebody else's avatar, and one
- * unknown hat should cost that hat, not the whole owl.
+ * The string for a look. An accessory the registry does not have encodes as empty rather
+ * than throwing: one unknown hat should cost that hat, not the whole owl.
  */
 export function encodeWorn(look: WornLook): string {
   const slots = ACCESSORY_SLOTS.map((slot) => accessoryKey(look.wearing[slot]));
-  // Appended after the three settings, never inserted among them. The decoder
-  // reads positionally, so an older client reads the first eight fields exactly
-  // as it always did and simply does not see these.
+  // Appended after the three settings, never inserted among them. The decoder reads
+  // positionally, so an older client reads the first eight fields as it always did.
   const tints = ACCESSORY_SLOTS.map((slot) => {
     const name = look.tint?.[slot];
     return name ? PALETTE_KEYS[name] : EMPTY_FIELD;
@@ -112,28 +88,14 @@ export function encodeWorn(look: WornLook): string {
 }
 
 /**
- * How long a string this build writes is.
- *
- * Two fields per slot now — what is worn, and what colour it is painted — plus
- * the three settings between them. It was `(slots + 3)` until tints were added,
- * and the fact that this number can change without emptying anybody's wardrobe
- * is the whole reason `decodeWorn` reads positionally instead of checking it.
+ * How long a string this build writes is. It can change without emptying anybody's
+ * wardrobe, which is why `decodeWorn` reads positionally instead of checking it.
  */
 export const WORN_LENGTH = (ACCESSORY_SLOTS.length * 2 + 3) * FIELD;
 
 /**
- * The look a string describes, or null. **Forgiving about content and length,
- * strict about shape.**
- *
- * Refusing anything not exactly WORN_LENGTH reads as careful and is a trap: the
- * day a sixth slot is added, every saved string decodes to null and every
- * wardrobe empties at once. So fields are read positionally for as many as are
- * present — unknown trailing ones ignored, missing ones left undefined — and
- * **new fields are appended, never inserted**.
- *
- * A key that no longer resolves reads as empty, so one retired hat costs that
- * hat rather than the whole avatar. Still refused: anything that is not whole
- * two-character fields, and anything too short to carry the slots.
+ * The look a string describes, or null. Forgiving about content and length, strict about
+ * shape: fields are read positionally, so adding a slot cannot empty every wardrobe.
  */
 export function decodeWorn(value: string | null | undefined): WornLook | null {
   if (!value) return null;
@@ -168,9 +130,8 @@ export function decodeWorn(value: string | null | undefined): WornLook | null {
   if (scheme) look.scheme = scheme as PaletteScheme;
   if (ears) look.ears = ears as EarStyle;
 
-  // A string written before tints existed simply stops here, and `at` hands
-  // back EMPTY_FIELD for every one of them. Nothing is set, and the accessories
-  // follow the owl exactly as they did.
+  // A string written before tints existed stops here, and `at` hands back EMPTY_FIELD for
+  // every one. Nothing is set, and the accessories follow the owl as they did.
   const tint: Partial<Record<AccessorySlot, PaletteName>> = {};
   ACCESSORY_SLOTS.forEach((slot, i) => {
     const name = PALETTE_BY_KEY[at(3 + i)];

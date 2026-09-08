@@ -1,16 +1,6 @@
 /**
- * Gryt's owls: a deterministic avatar generator. **The same seed always draws
- * the same owl, on every client, forever** — a person is recognised by their
- * avatar. Two consequences that look like fussiness and are not:
- *
- *   - Every random draw is keyed on a channel name (see rng.ts), so adding a
- *     part does not reshuffle the parts that were already there.
- *   - No Math.random, no Date, no locale, no Intl. The web client and the
- *     mobile app run this file and have to agree byte for byte.
- *
- * The bird never varies in shape or size. The seed picks the palette, the
- * expression, the ear tufts and what it is wearing. See metrics.ts for why the
- * geometry is nailed down and accessories.ts for what wearing involves.
+ * Gryt's owls: a deterministic avatar generator. The same seed always draws the same owl,
+ * everywhere, forever — so no Math.random, no Date, no locale, and every draw is keyed.
  */
 
 import { escapeXml, fmt, VIEWBOX } from "./geometry";
@@ -19,9 +9,8 @@ import { owlPalette, PALETTE_NAMES, PALETTE_SCHEMES } from "./palette";
 import { renderBody, renderEars, renderWing } from "./parts/body";
 import { renderEye } from "./parts/eyes";
 import { renderBeak, renderFace } from "./parts/face";
-// pickWeighted still, for ears: EAR_WEIGHTS is a fixed pair that cannot grow,
-// so there is nothing for the by-name draw to protect, and switching it would
-// move every owl's ears for no reason.
+// pickWeighted still, for ears: EAR_WEIGHTS is a fixed pair that cannot grow, so the
+// by-name draw has nothing to protect and switching would move every owl's ears.
 import { hash32, pick, pickWeighted, pickWeightedByName } from "./rng";
 import {
   ACCESSORY_SLOTS,
@@ -44,9 +33,8 @@ import type {
 } from "./types";
 
 export * from "./types";
-// The normalisation rule ships with the generator rather than beside it. Every
-// consumer draws from a nickname, and two of them disagreeing about whether
-// "Sivert" and "sivert" are one person is two people with two faces.
+// The normalisation rule ships with the generator. Every consumer draws from a nickname,
+// and two disagreeing about "Sivert" and "sivert" is two people with two faces.
 export { avatarSeed } from "./avatarSeed";
 export {
   encodeWorn,
@@ -58,13 +46,8 @@ export {
 } from "./wearing";
 export { owlPalette, allOwlPalettes, hsl, PALETTE_NAMES, PALETTE_SCHEMES, TILE_HUES } from "./palette";
 export { OWL, type OwlMetrics } from "./metrics";
-// Servers, not people. The eggs are a second generator on the same seeds and the
-// same hues — see eggs/index.ts for why a server should not be drawn as an owl.
-//
-// Spelled out to the file rather than to the folder. vite-plugin-dts copies the
-// specifier through and scripts/fix-declarations.ts appends `.js` to it, so
-// `./eggs` comes out as `./eggs.js`, which is not a file that exists — and
-// arethetypeswrong catches it, several steps after the build has said fine.
+// Servers, not people — see eggs/index.ts. Spelled out to the file rather than the
+// folder: fix-declarations.ts appends `.js`, and `./eggs.js` is not a file.
 export {
   eggAvatarSvg,
   eggAvatarDataUri,
@@ -105,12 +88,8 @@ const EAR_WEIGHTS: readonly (readonly [EarStyle, number])[] = [
 ];
 
 /**
- * What this seed wears.
- *
- * Slots are drawn in a fixed order and a slot whose accessory conflicts with
- * something already chosen comes up empty. Fixed order rather than by weight,
- * because it has to be the same order on every client and forever: change it
- * and everyone who owns a scarf and a jacket swaps one for the other.
+ * What this seed wears. Slots are drawn in a fixed order, and a conflicting slot comes up
+ * empty. Fixed rather than by weight: change it and everyone's scarf becomes a jacket.
  */
 function chooseAccessories(
   seed: string,
@@ -137,10 +116,8 @@ function chooseAccessories(
     );
     if (available.length === 0) continue;
 
-    // "nothing" is a candidate like any other, and its id is fixed so that
-    // adding a drawing cannot move the draw that decides whether this slot is
-    // filled at all. An empty slot is the most common outcome in every one of
-    // them, so that is the draw it matters most to hold still.
+    // "nothing" is a candidate like any other and its id is fixed, so adding a drawing
+    // cannot move the draw deciding whether the slot is filled at all.
     const entries: [Accessory | null, string, number][] = [
       [null, "", EMPTY_WEIGHT[slot]],
     ];
@@ -161,10 +138,8 @@ export function resolveOwl(seed: Seed, options: OwlOptions = {}): ResolvedOwl {
   const s = String(seed);
 
   /*
-   * A name nothing knows falls back to the seed's own, the same rule `tint`
-   * below applies: one unknown thing costs that thing, not the whole avatar.
-   * Drawing an owl is not a place to throw — the name may have come from a
-   * preference saved by a build that had a palette this one does not.
+   * A name nothing knows falls back to the seed's own: one unknown thing costs that
+   * thing, not the whole avatar. Drawing an owl is not a place to throw.
    */
   const asked = options.palette;
   const paletteName =
@@ -192,10 +167,8 @@ export function resolveOwl(seed: Seed, options: OwlOptions = {}): ResolvedOwl {
     palette,
     ears: options.ears ?? pickWeighted(s, "ears", EAR_WEIGHTS),
     wearing: chooseAccessories(s, options.wearing),
-    // Filtered rather than trusted. A palette name from a newer build reads as
-    // "no tint" and the accessory follows the owl, which is the same rule
-    // decodeWorn applies to an accessory key it does not recognise: one unknown
-    // thing costs that thing, not the whole avatar.
+    // Filtered rather than trusted. A palette name from a newer build reads as "no tint"
+    // and the accessory follows the owl — the same rule decodeWorn applies.
     tint: cleanTint(options.tint),
     background,
     cornerRadius: Math.min(1, Math.max(0, options.cornerRadius ?? 0)),
@@ -238,9 +211,8 @@ function renderAccessories(
     if (accessory.layer !== layer) continue;
     const palette = paletteFor(slot);
     for (const p of accessory.paths) {
-      // `fill="none"` is spelled out rather than left off. An SVG dropped into
-      // an <img> has no page around it to inherit from, and the default is
-      // black — so an unfilled line comes out as a solid blob.
+      // `fill="none"` is spelled out. An SVG dropped into an <img> has no page to inherit
+      // from and the default is black, so an unfilled line comes out as a blob.
       out +=
         `<path d="${p.d}"` +
         (p.evenodd ? ' fill-rule="evenodd" clip-rule="evenodd"' : "") +
@@ -257,13 +229,8 @@ function renderAccessories(
 }
 
 /**
- * `seed`'s owl, as SVG markup.
- *
- * Back to front: field, anything worn behind the bird, ear tufts, body, wings,
- * chest-level accessories, face plate, glasses that want to be under the eyes,
- * eyes, beak, glasses that want to be over them, then hats. The tufts go behind
- * the body rather than on it so the seam where they meet never shows, and a hat
- * goes last so it covers those tufts rather than growing out of them.
+ * `seed`'s owl, as SVG markup, back to front. The tufts go behind the body so the seam
+ * never shows, and a hat goes last so it covers them rather than growing out of them.
  */
 export function owlAvatarSvg(seed: Seed, options: OwlOptions = {}): string {
   const c = resolveOwl(seed, options);
@@ -275,14 +242,8 @@ export function owlAvatarSvg(seed: Seed, options: OwlOptions = {}): string {
   const p = repaint(c.palette, worn.map((w) => w.accessory));
 
   /*
-   * The palette a slot's accessory is painted from.
-   *
-   * The owl's own unless that slot was tinted, and the tint takes the owl's
-   * scheme rather than bringing one — a day owl in a night hat reads as a hole
-   * in the picture rather than as a colour.
-   *
-   * Built once per slot and cached, because a drawing has up to a few hundred
-   * paths and owlPalette is not free.
+   * The palette a slot's accessory is painted from: the owl's own unless tinted, and a
+   * tint takes the owl's scheme. Cached per slot, because owlPalette is not free.
    */
   const tinted = new Map<AccessorySlot, OwlPalette>();
   const paletteFor = (slot: AccessorySlot): OwlPalette => {
@@ -290,25 +251,21 @@ export function owlAvatarSvg(seed: Seed, options: OwlOptions = {}): string {
     if (!name) return p;
     let found = tinted.get(slot);
     if (!found) {
-      // From the repainted palette, not the raw one: a coat that paints the
-      // wings out still has to paint them out in the colour the bird is on,
-      // whatever the coat itself is tinted.
+      // From the repainted palette, not the raw one: a coat that paints the wings out
+      // still paints them out in the colour the bird is on.
       found = { ...p, ...owlPalette(name, c.scheme) };
       tinted.set(slot, found);
     }
     return found;
   };
 
-  // A drawing that brings its own version of a part says so, and the bird's own
-  // is then not drawn at all. Painting it out instead would be wrong twice: the
-  // eyes and the beak share a colour, and a plate-coloured shape is only
-  // invisible where the plate is what happens to be behind it.
+  // A drawing that brings its own version of a part says so, and the bird's own is not
+  // drawn. Painting it out is wrong twice: eyes and beak share a colour.
   const hidden = new Set<OwlPart>();
   for (const { accessory } of worn) for (const part of accessory.hides ?? []) hidden.add(part);
 
-  // A drawing may name one of a pair or the pair itself, so a side is hidden by
-  // either. A wink hides one eye and leaves the other; an expression that
-  // brings both says "eyes" once.
+  // A drawing may name one of a pair or the pair itself, so a side is hidden by either.
+  // A wink hides one eye; an expression that brings both says "eyes" once.
   const gone = (part: OwlPart, pair?: OwlPart) =>
     hidden.has(part) || (pair !== undefined && hidden.has(pair));
   const draw = (part: OwlPart, markup: string, pair?: OwlPart) =>
@@ -334,9 +291,8 @@ export function owlAvatarSvg(seed: Seed, options: OwlOptions = {}): string {
     ? ` role="img" aria-label="${escapeXml(c.title)}"`
     : ` role="img" aria-hidden="true"`;
 
-  // The clip only earns its keep when there is a corner radius to clip to, and
-  // it costs an id that has to stay unique on a page with fifty avatars on it.
-  // Without one, the parts that run past the frame are left to the viewBox.
+  // The clip only earns its keep when there is a corner radius, and it costs an id that
+  // has to stay unique on a page with fifty avatars. Without one, the viewBox does it.
   const radius = c.cornerRadius * (VIEWBOX / 2);
   const field = c.background
     ? `<rect width="${VIEWBOX}" height="${VIEWBOX}"${radius > 0 ? ` rx="${fmt(radius)}"` : ""} fill="${c.background}"/>`
@@ -356,12 +312,8 @@ export function owlAvatarSvg(seed: Seed, options: OwlOptions = {}): string {
 }
 
 /**
- * The bird's own paths, each tagged with the part that drew it.
- *
- * For tooling rather than for drawing. The accessory extractor has to know that
- * a repainted path is an eye and not the beak, and it cannot tell from the
- * colour — both are `accent`. Rendering each part separately is the only answer
- * that stays true when the parts are reordered or repainted.
+ * The bird's own paths, each tagged with the part that drew it. For tooling: the
+ * extractor has to know a repainted path is an eye, and colour cannot tell it.
  */
 export function owlPartPaths(options: OwlOptions = {}): { part: OwlPart; d: string }[] {
   const c = resolveOwl("parts", options);
@@ -389,12 +341,8 @@ export function owlAvatarDataUri(seed: Seed, options: OwlOptions = {}): string {
 }
 
 /**
- * The colour this owl's field is painted in, as `#rrggbb`.
- *
- * Voice tiles are tinted from it. The background rather than the body, because
- * the background is what the eye reads as "that person's colour" at avatar size
- * — and because it is built from a TILE_HUES entry, so the tint's snap back to
- * the palette is exact rather than nearest-ish.
+ * The colour this owl's field is painted in, as `#rrggbb`. Voice tiles are tinted from
+ * it — the background, because that is what reads as "that person's colour".
  */
 export function owlAvatarColour(seed: Seed, options: OwlOptions = {}): string {
   return resolveOwl(seed, options).palette.background;

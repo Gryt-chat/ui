@@ -1,32 +1,13 @@
 /**
- * Where an accessory goes, read off the name of the file it was drawn in.
- * Adding a cosmetic is dropping an SVG into artwork/ and running the script.
- *
- * The grammar is `type_family[_variant][.tag].svg`. Underscores separate the
- * three fields; a hyphen joins words inside one of them.
- *
- *   scarf.svg                       a type on its own is its own family
- *   glasses_round.svg               round glasses
- *   glasses_round_gold.svg          the gold pair of them
- *   hat_winter-beanie_red.svg       family of two words, variant of one
- *   glasses_heart.rare.svg          seen less often than the other eyewear
- *   hoodie_plain.covers-head.svg    a garment with a hood, so no hat over it
- *   sporran_dress.neck.svg          a type word the table below has not met
- *   _hat_winter_old.svg             ignored entirely
- *
- * The type is the first field and KEYWORDS turns it into a slot.
- *
- * **Nothing here guesses.** A word that is not in the table is an error naming
- * the file, not a default — a silent wrong slot looks like a scarf worn as a hat.
+ * Where an accessory goes, read off its filename: `type_family[_variant][.tag].svg`.
+ * Nothing guesses — a word not in KEYWORDS is an error naming the file, not a default.
  */
 
 import type { AccessorySlot } from "../types";
 
 /**
- * How likely an accessory is against the others in its slot — **not against the
- * owl as a whole**, which is SLOT_PRESENCE's job. Marking something rare makes
- * it lose to its neighbours rather than making the slot emptier. Untagged is
- * `common`.
+ * How likely an accessory is against the others in its slot, not against the owl as a
+ * whole — that is SLOT_PRESENCE. Rare loses to its neighbours; untagged is `common`.
  */
 export const RARITY_SHARE = {
   common: 1,
@@ -38,11 +19,8 @@ export const RARITY_SHARE = {
 export type Rarity = keyof typeof RARITY_SHARE;
 
 /**
- * The word in a filename that says which slot a drawing belongs in.
- *
- * Deliberately a list of the things people actually draw rather than a clever
- * rule. It is meant to be added to: a new noun is one line here, and until it
- * is, the script refuses the file by name instead of putting it somewhere.
+ * The word in a filename that says which slot a drawing belongs in. A list of what people
+ * draw rather than a rule: a new noun is one line, and until then the file is refused.
  */
 export const KEYWORDS: Record<string, AccessorySlot> = {
   // expression — the face itself, not something worn on it
@@ -107,12 +85,8 @@ export const KEYWORDS: Record<string, AccessorySlot> = {
 };
 
 /**
- * What a slot takes off the bird by default.
- *
- * A garment has a collar, so it and a neck accessory cannot both be worn. Both
- * of the drawn garments say so, which makes it the slot's behaviour rather than
- * each drawing's. A hood on top of that is `covers-head`, because a jacket has
- * no opinion about hats and a hoodie does.
+ * What a slot takes off the bird by default. A garment has a collar, so it and a neck
+ * accessory cannot both be worn; a hood on top of that is `covers-head`.
  */
 export const SLOT_EXCLUDES: Partial<Record<AccessorySlot, AccessorySlot[]>> = {
   body: ["neck"],
@@ -120,9 +94,8 @@ export const SLOT_EXCLUDES: Partial<Record<AccessorySlot, AccessorySlot[]>> = {
 
 /** Where each slot lands unless a tag says otherwise. */
 export const DEFAULT_LAYER: Record<AccessorySlot, string> = {
-  // Spectacles go over the eyes, because that is what a drawing of spectacles
-  // does — the lens is painted and it covers the eye behind it. `over-face` is
-  // for a pair drawn as holes only, where the expression should show through.
+  // Spectacles go over the eyes: the lens is painted and covers the eye behind it.
+  // `over-face` is for a pair drawn as holes only, where the expression shows through.
   expression: "overFace",
   eyewear: "overEyes",
   head: "overAll",
@@ -133,9 +106,8 @@ export const DEFAULT_LAYER: Record<AccessorySlot, string> = {
 };
 
 const LAYERS: Record<string, string> = {
-  // Where the drawing sits relative to `<g id="owl">` already says this, so a
-  // tag is only for overriding that — a drawing exported with the bird in
-  // front of it that is meant to be worn on top, or the other way round.
+  // Where the drawing sits relative to `<g id="owl">` already says this, so a tag is only
+  // for overriding it — a drawing exported with the bird in front and meant to be on top.
   behind: "behind",
   "over-face": "overFace",
   "over-eyes": "overEyes",

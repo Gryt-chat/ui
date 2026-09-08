@@ -70,9 +70,8 @@ describe("a string from another build", () => {
   });
 
   /*
-   * The trap this replaced. Refusing anything that was not exactly
-   * WORN_LENGTH meant that adding a sixth slot would empty every wardrobe at
-   * once, silently, from a change nobody would connect to it.
+   * The trap this replaced: refusing anything not exactly WORN_LENGTH meant a sixth slot
+   * would empty every wardrobe at once, silently.
    */
   it("reads a longer string from a newer build and ignores the extra", () => {
     const back = decodeWorn(encodeWorn(look) + "zzzz");
@@ -91,9 +90,8 @@ describe("a string from another build", () => {
   });
 
   /*
-   * Somebody on a newer client wearing a hat this build has never heard of. The
-   * hat should not draw; the rest of them should. The alternative — refusing
-   * the whole string — is an avatar vanishing because one accessory is new.
+   * Somebody on a newer client wearing a hat this build has never heard of. The hat should
+   * not draw; the rest should. Refusing the whole string loses the avatar.
    */
   it("drops an accessory it does not know and keeps the rest", () => {
     const encoded = encodeWorn(look);
@@ -135,9 +133,8 @@ describe("the keys themselves", () => {
   });
 
   /*
-   * Not per slot. A key has to be unique across the registry so that a string
-   * can be read without knowing which slot each field belongs to — which is
-   * what makes a field order change survivable rather than silent.
+   * Not per slot. A key has to be unique across the registry so a string can be read
+   * without knowing which slot each field belongs to.
    */
   it("is unique across slots, not only within one", () => {
     const perSlot = ACCESSORY_SLOTS.map((s) => accessoriesIn(s).map((a) => a.key));
@@ -164,16 +161,14 @@ describe("a colour per slot", () => {
   });
 
   it("says nothing at all when no slot is tinted", () => {
-    // Not an empty object. `tint` absent and `tint: {}` would draw the same
-    // owl, but a caller checking whether somebody has chosen colours should get
-    // a straight answer.
+    // Not an empty object. `tint` absent and `tint: {}` draw the same owl, but a caller
+    // asking whether somebody has chosen colours should get a straight answer.
     expect(decodeWorn(encodeWorn(look))?.tint).toBeUndefined();
   });
 
   it("reads a string written before tints existed", () => {
-    // The one that matters. Every look saved before this field was added is
-    // this shape, and if it stopped decoding — or decoded to something else —
-    // every wardrobe would empty or every owl would change at once.
+    // The one that matters. Every look saved before this field was added is this shape;
+    // if it stopped decoding, every wardrobe would empty at once.
     const old = encodeWorn(look).slice(0, (ACCESSORY_SLOTS.length + 3) * 2);
     expect(old).toHaveLength(16);
 
