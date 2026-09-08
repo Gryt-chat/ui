@@ -22,19 +22,16 @@ export default defineConfig({
     tailwindcss(),
     dts({
       insertTypesEntry: true,
-      // tsconfig.build.json, not tsconfig.json. The typecheck config maps
-      // @gryt/theme to its source so CI can run without building; declaration
-      // emit has to resolve it through the exports map instead, or the emitted
-      // .d.ts would point at ../theme/src, which no consumer has.
+      // tsconfig.build.json, not tsconfig.json: the typecheck config maps @gryt/theme to
+      // its source, and the emitted .d.ts would then point at ../theme/src.
       tsconfigPath: resolve(__dirname, "tsconfig.build.json"),
       exclude: ["src/**/*.test.ts", "src/**/*.test.tsx", "src/test/**"]
     })
   ],
   build: {
     lib: {
-      // Two entries, not one. The theme has to be importable without dragging
-      // the components in — React Native can take the tokens and none of the
-      // rest. See GRYT-351.
+      // Two entries, not one. The theme has to be importable without dragging the
+      // components in — React Native can take the tokens and none of the rest (GRYT-351).
       entry: {
         index: resolve(__dirname, "src/index.ts"),
         theme: resolve(__dirname, "src/theme/index.ts")
@@ -59,10 +56,8 @@ export default defineConfig({
     environment: "happy-dom",
     setupFiles: ["./src/test/setup.ts"],
     globals: true,
-    // Under `test`, deliberately, not `resolve`. A top-level alias would make
-    // Rollup inline @gryt/theme into the library bundle rather than leaving it
-    // external, which is the opposite of what splitting it out was for. Tests
-    // still need it resolvable before dist exists, and this is only the tests.
+    // Under `test`, deliberately, not `resolve`. A top-level alias would make Rollup
+    // inline @gryt/theme into the bundle rather than leaving it external.
     alias: {
       "@gryt/theme": resolve(__dirname, "../theme/src/index.ts"),
       "@gryt/owl": resolve(__dirname, "../owl/src/index.ts")
