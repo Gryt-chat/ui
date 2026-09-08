@@ -1,6 +1,5 @@
-// vite-plugin-dts emits .d.ts only, and the require condition in package.json
-// points at a .d.cts. Same fix @gryt/ui carries, minus the extra entry points
-// and the stylesheet copy — this package has one entry and ships no CSS.
+// vite-plugin-dts emits .d.ts only, and the require condition points at a .d.cts. Same
+// fix @gryt/ui carries, minus the extra entry points and the stylesheet copy.
 import { copyFile, readdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 

@@ -1,19 +1,6 @@
 /**
- * A short, permanent name for every cosmetic.
- *
- * What a person is wearing travels beside their nickname as a fixed-width
- * string, two letters per field, so it has to survive the drawings changing
- * underneath it. The obvious encoding — "third hat in the slot" — does not:
- * dropping hat_apple.svg into artwork/ re-sorts the folder and every hat after
- * it shifts by one, quietly re-dressing everybody who saved a look.
- *
- * So a key is assigned once and never moves. artwork/keys.json is the ledger:
- * every accessory that has ever existed, with the key it was given. A deleted
- * drawing keeps its entry, marked retired, so its key is never handed to
- * something else and an old string decodes to "that is gone" rather than to a
- * hat somebody never chose.
- *
- * 26 x 26 is 676. There are 37 drawings.
+ * A short, permanent name for every cosmetic. A key is assigned once and never moves, and
+ * a deleted drawing keeps its entry, marked retired, so its key is never reused.
  */
 
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -47,12 +34,8 @@ export function readLedger(path: string): KeyLedger {
 }
 
 /**
- * The ledger brought up to date with what is in artwork/ now.
- *
- * Only ever grows. Names that have gone are moved to `retired` rather than
- * dropped, and a name that comes back gets the key it had before — which is the
- * behaviour somebody renaming a file back would expect, and the reason the
- * ledger is keyed by name rather than by file.
+ * The ledger brought up to date with what is in artwork/ now. Only ever grows: names that
+ * have gone are retired, and a name that comes back gets the key it had.
  */
 export function updateLedger(ledger: KeyLedger, names: readonly string[]): KeyLedger {
   const keys = { ...ledger.keys };

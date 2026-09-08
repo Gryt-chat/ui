@@ -1,11 +1,6 @@
 /**
- * The drawing primitives every part is built out of.
- *
- * Owls are symmetric, so parts are authored as a right half in normalised
- * units and mirrored here. That is not just less typing: it is the only way
- * the two halves cannot drift, which they did in the hand-traced first pass —
- * a beak two units off centre reads as a broken face long before anyone can
- * say why.
+ * The drawing primitives every part is built out of. Parts are authored as a right half
+ * and mirrored here, which is the only way the two halves cannot drift.
  */
 
 export const VIEWBOX = 1024;
@@ -46,18 +41,14 @@ export function escapeXml(value: string): string {
 export type Point = readonly [number, number];
 
 /**
- * A shape's right half: a start point, then cubic triples (c1, c2, end).
- *
- * x is a fraction of the shape's half-width and y a fraction of its height,
- * both measured from the top of the shape on its axis of symmetry. So (1, 0.5)
- * is the rightmost point at half height, and (0, 1) is the bottom of the axis.
+ * A shape's right half: a start point, then cubic triples. x is a fraction of the half-
+ * width and y of the height, both from the top of the shape on its axis of symmetry.
  */
 export interface Half {
   readonly points: readonly Point[];
   /**
-   * How far past the last point the shape rounds before crossing the axis, in
-   * height fractions. 0 closes with a straight line, which is what a shape
-   * that already ends on the axis wants.
+   * How far past the last point the shape rounds before crossing the axis, in height
+   * fractions. 0 closes with a straight line, which a shape ending on the axis wants.
    */
   readonly cap?: number;
 }
