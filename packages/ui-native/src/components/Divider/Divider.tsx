@@ -10,11 +10,8 @@ export interface DividerProps {
 }
 
 /**
- * A hairline.
- *
- * The web uses 1px. Here it is `1` in device-independent points, which lands on
- * one physical pixel on a 1x screen and stays a hairline on 2x and 3x — the same
- * thing the web gets from a 1px border on a retina display.
+ * A hairline. The web uses 1px; here it is `1` in device-independent points, which stays
+ * a hairline on 2x and 3x — the same thing a 1px border gives on a retina display.
  */
 export function Divider({
   orientation = "horizontal",

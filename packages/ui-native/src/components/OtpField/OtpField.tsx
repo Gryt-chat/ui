@@ -19,16 +19,8 @@ export interface OtpFieldProps {
 }
 
 /**
- * One hidden input behind a row of boxes.
- *
- * The obvious build is one TextInput per digit, and it is a trap: backspace
- * across an empty box, paste, and autofill all have to be threaded between
- * inputs by hand, and every platform disagrees about the events. A single
- * invisible input holding the whole code gets all three for free, and the boxes
- * become presentation.
- *
- * `textContentType="oneTimeCode"` is what makes iOS offer the code from
- * Messages. Android reads `autoComplete="sms-otp"`.
+ * One hidden input behind a row of boxes: one TextInput per digit means threading
+ * backspace, paste and autofill by hand. `textContentType="oneTimeCode"` is what iOS reads.
  */
 export function OtpField({
   length = 6,

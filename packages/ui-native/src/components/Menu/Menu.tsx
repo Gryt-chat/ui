@@ -56,11 +56,8 @@ function Portal({ children }: { children?: ReactNode }) {
 }
 
 /**
- * Kept as a passthrough for shape.
- *
- * Base UI splits Positioner from Popup so the positioned box and the styled box
- * are separate elements. Here AnchoredPopup is both, because there is no
- * stacking context to escape and nothing gained by the extra view.
+ * Kept as a passthrough for shape. Base UI splits Positioner from Popup; here AnchoredPopup
+ * is both, since there is no stacking context to escape.
  */
 function Positioner({ children }: { children?: ReactNode }) {
   return <>{children}</>;

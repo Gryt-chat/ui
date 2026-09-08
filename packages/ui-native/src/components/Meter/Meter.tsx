@@ -16,11 +16,8 @@ export interface MeterProps {
 }
 
 /**
- * A reading, not a progress bar.
- *
- * Progress goes one way and finishes. A meter is a level that moves in both
- * directions: microphone input, disk use, how full a channel is. `@gryt/ui`
- * keeps them separate for that reason and so does this.
+ * A reading, not a progress bar. Progress goes one way and finishes; a meter is a level
+ * that moves both ways — microphone input, disk use, how full a channel is.
  */
 export function Meter({
   value,
