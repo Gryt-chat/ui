@@ -32,6 +32,9 @@ jobs:
       # The warning ceiling is a ratchet, not a target: `--max-warnings 114` fails only
       # when the backlog grows. Lower it as they go; the honest end state is 0.
       - run: bun run lint
+      # No comment runs past two lines. The script carries the list of paths still
+      # to be swept, and that list only ever shrinks.
+      - run: bun run test:comment-length
       - run: bun run test
       # Only artwork/ itself: a subfolder holds another generator's drawings, which this
       # reports as slotless. A drawing not drawn on the base extracts as a whole owl.
