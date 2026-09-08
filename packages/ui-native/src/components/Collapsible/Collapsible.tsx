@@ -48,16 +48,8 @@ function Trigger({ children, style }: { children?: ReactNode; style?: StyleProp<
 }
 
 /**
- * Animates its height, the same curve and duration as the web.
- *
- * The content has to be measured before its height can be animated to, which is
- * why this was unmounted-when-closed to begin with. It is measured off an
- * absolutely positioned copy that never affects layout, so nothing is drawn at
- * the wrong size on the way in.
- *
- * Children stay mounted while closed, at height zero with `overflow: hidden`,
- * matching the web. That is a behaviour change as well as a visual one: state
- * inside a closed panel now survives, where before it was destroyed.
+ * Animates its height, the same curve and duration as the web. The content is measured off
+ * an absolutely positioned copy, and children stay mounted while closed, so state survives.
  */
 function Panel({ children, style }: { children?: ReactNode; style?: StyleProp<ViewStyle> }) {
   const { open } = useCollapsible("Panel");

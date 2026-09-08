@@ -1,9 +1,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { type StyleProp, type ViewStyle } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanimated";
-// Deep imports, one file per icon, rather than the barrel. Metro does not
-// tree-shake, so the barrel pulls the whole set in. The `*Icon` suffix is the
-// spelling @phosphor-icons/react uses; the bare names are deprecated.
+// Deep imports, one file per icon, rather than the barrel: Metro does not tree-shake. The
+// `*Icon` suffix is the spelling @phosphor-icons/react uses.
 import { CheckIcon } from "phosphor-react-native/src/icons/Check";
 import { MinusIcon } from "phosphor-react-native/src/icons/Minus";
 
@@ -35,15 +34,8 @@ export interface CheckboxProps {
 const SIZE = 20;
 
 /**
- * The tick is a Phosphor `Check`, the same icon `@gryt/ui` draws on the web.
- *
- * This used to be a text glyph, on the reasoning that an icon library would be
- * this package's first runtime dependency for one glyph, and that
- * `@phosphor-icons/react` needs react-native-svg under it. Neither holds now.
- * It was never one glyph -- Select, Accordion and NumberField were all drawing
- * their own -- react-native-svg is already a peer, and phosphor-react-native is
- * a peer too rather than a runtime dependency, so it costs nothing to an app
- * that has it. Gryt's does.
+ * The tick is a Phosphor `Check`, the same icon `@gryt/ui` draws on the web. It was a text
+ * glyph until phosphor-react-native became a peer, so it costs an app that has it nothing.
  */
 export function Checkbox({
   checked: controlled,
@@ -64,13 +56,8 @@ export function Checkbox({
   const filled = checked || indeterminate;
 
   /**
-   * The tick scales from 0, not from something near 1.
-   *
-   * Straight from the web's comment, and it is not a detail: the spring's
-   * overshoot is a percentage of the travel, so 0 → 1 overshoots to 1.12 and
-   * visibly springs, while 0.95 → 1 overshoots by 0.006 and does nothing at
-   * all. It used to appear instantly here, which is the same bug with the
-   * travel set to zero.
+   * The tick scales from 0, not from something near 1: the spring's overshoot is a
+   * percentage of travel, so 0.95 → 1 overshoots by 0.006 and does nothing.
    */
   const tick = useSharedValue(filled ? 1 : 0);
 
@@ -110,9 +97,8 @@ export function Checkbox({
           borderRadius: theme.radius.sm,
           alignItems: "center",
           justifyContent: "center",
-          // The web keeps the border at 1 always and makes it transparent when
-          // checked, rather than dropping to 0 — a border that disappears
-          // changes the box's size mid-transition.
+          // The web keeps the border at 1 always and makes it transparent when checked,
+          // rather than dropping to 0 — a border that disappears changes the box's size.
           borderWidth: 1,
           borderColor: filled ? "transparent" : theme.color.border,
           // Was `transparent`, which is not what the web does: an unchecked box

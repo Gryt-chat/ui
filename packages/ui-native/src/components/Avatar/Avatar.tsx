@@ -20,10 +20,8 @@ export interface AvatarProps {
   name?: string;
   source?: string;
   /**
-   * Draws this person's owl, from @gryt/owl. The same seed draws the same owl
-   * here as it does on the web, which is the point of the package.
-   *
-   * Pass `avatarSeed(nickname)` rather than the nickname itself.
+   * Draws this person's owl, from @gryt/owl — the same seed draws the same owl as on the
+   * web. Pass `avatarSeed(nickname)` rather than the nickname itself.
    */
   seed?: string;
   size?: AvatarSize;
@@ -31,13 +29,8 @@ export interface AvatarProps {
 }
 
 /**
- * Picks a ramp from the name, so the same person is the same colour everywhere.
- *
- * Deliberately the same arithmetic as the web: sum the code units and take the
- * remainder. Anything cleverer would give a different colour on each platform
- * for the same person, which is the one outcome to avoid.
- *
- * Only reached with no `source` and no `seed`. An owl brings its own colour.
+ * Picks a ramp from the name, so the same person is the same colour everywhere. The same
+ * arithmetic as the web, deliberately. Only reached with no `source` and no `seed`.
  */
 function toneFor(name: string): "accent" | "secondary" | "success" | "danger" | "warning" {
   const tones = ["accent", "secondary", "success", "danger", "warning"] as const;
@@ -72,9 +65,8 @@ export function Avatar({ name = "", seed, source, size = "md", style }: AvatarPr
     overflow: "hidden",
   };
 
-  // A broken image URL falls back to the owl, or to initials without a seed,
-  // rather than to a blank circle. The web gets this from <img onerror>; here
-  // it is onError plus state.
+  // A broken image URL falls back to the owl, or to initials without a seed, rather than
+  // to a blank circle. The web gets this from <img onerror>; here it is onError and state.
   if (source && !failed) {
     return (
       <View style={[frame, { backgroundColor: theme.color.surfaceRaised }, style]}>
@@ -88,9 +80,8 @@ export function Avatar({ name = "", seed, source, size = "md", style }: AvatarPr
     );
   }
 
-  // SvgXml with the raw markup, not an Image with a data URI: React Native's
-  // Image cannot decode SVG, which is the one place the two renderers genuinely
-  // differ. The web hands the same generator's output to an <img> and it works.
+  // SvgXml with the raw markup, not an Image with a data URI: React Native's Image cannot
+  // decode SVG, which is the one place the two renderers genuinely differ.
   if (owl) {
     return (
       <View
