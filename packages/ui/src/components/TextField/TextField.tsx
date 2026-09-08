@@ -41,9 +41,8 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     const control = (
       <Field.Control
         ref={ref}
-        // Field.Control renders an input by default; render swaps the element
-        // while keeping the field wiring, which is how label association and
-        // aria-describedby survive the switch to a textarea.
+        // Field.Control renders an input by default; render swaps the element while keeping
+        // the field wiring, so label association survives the switch to a textarea.
         render={multiline ? <textarea rows={minRows} /> : undefined}
         className={cn(
           "gryt-text-field-control",

@@ -14,13 +14,8 @@ export interface ColorFieldProps {
 }
 
 /**
- * One anchor: the swatch, and the hex beside it.
- *
- * Two controls for one value, because they are good at different things. The
- * native picker is how you find a colour you cannot name; the text box is how
- * you paste the one your brand already has. The text box only commits when what
- * is in it parses, so typing "#1a" halfway through does not repaint the page
- * with black.
+ * One anchor: the swatch, and the hex beside it. The picker finds a colour you cannot
+ * name, the box pastes one you have. The box only commits when what is in it parses.
  */
 export function ColorField({
   label,
@@ -33,10 +28,8 @@ export function ColorField({
   const [text, setText] = useState(value);
   const [seen, setSeen] = useState(value);
 
-  // A preset, a generated theme or a shared link all change the value from
-  // outside, and the box has to follow. Adjusted during render rather than in
-  // an effect: React re-runs this component before anything paints, so the
-  // stale text is never on screen.
+  // A preset, a generated theme or a shared link changes the value from outside, and the
+  // box has to follow. Adjusted during render, so the stale text is never on screen.
   if (value !== seen) {
     setSeen(value);
     setText(value);

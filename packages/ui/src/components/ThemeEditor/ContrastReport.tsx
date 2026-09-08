@@ -21,12 +21,8 @@ const TONES = {
 };
 
 /**
- * What the library's own tests would say about this theme.
- *
- * Ratios rather than a verdict, because "3.9 against 4.5" tells somebody how
- * far off they are and "fails" does not. The repair only moves the colours
- * whose job is to be read — it will not quietly redesign an accent somebody
- * chose on purpose.
+ * What the library's own tests would say about this theme. Ratios rather than a verdict:
+ * the repair only moves the colours whose job is to be read.
  */
 export function ContrastReport({ checks, onRepair }: ContrastReportProps) {
   const failures = checks.filter(

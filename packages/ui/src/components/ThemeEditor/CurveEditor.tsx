@@ -1,21 +1,8 @@
 import type { GrytBezier } from "@gryt/theme";
 import { useCallback, useRef, useState } from "react";
 
-/* A cubic bezier you drag.
- *
- * Drawn at 1×1 in user units with the y axis flipped, so the curve reads the
- * way everybody draws one: time left to right, progress bottom to top.
- *
- * The box has room above and below the unit square, because a curve worth
- * drawing usually leaves it — a control point above y=1 overshoots and comes
- * back, and a graph that clipped it would make the interesting curves look like
- * they flatten out.
- *
- * x is clamped to 0..1 and y is not. A cubic bezier timing function with a
- * control point outside the time axis is invalid CSS and the browser drops the
- * whole declaration, so a handle that could be dragged there would be a handle
- * that silently breaks the theme.
- */
+/* A cubic bezier you drag, at 1×1 with the y axis flipped. x is clamped to 0..1 and y is
+ * not: a control point outside the time axis is invalid CSS and the browser drops it. */
 
 const PAD = 0.45;
 const VIEW = { min: -PAD, size: 1 + PAD * 2 };
@@ -26,13 +13,8 @@ interface CurveEditorProps {
   /** Drawn faintly behind, to compare against. */
   reference?: readonly number[];
   /**
-   * A sampled curve to draw instead of the bezier, with no handles.
-   *
-   * For the named curves. A spring is not a cubic bezier and cannot be shown
-   * as one, so while a named curve is selected the graph draws the samples the
-   * theme will actually run and offers nothing to drag — the alternative was
-   * a prominent line that was not the curve in effect, which is worse than no
-   * line at all.
+   * A sampled curve to draw instead of the bezier, with no handles. A spring is not a
+   * cubic bezier, so a named curve draws its samples and offers nothing to drag.
    */
   samples?: readonly number[];
 }
@@ -50,10 +32,8 @@ export function CurveEditor({
   const [dragging, setDragging] = useState<Handle | null>(null);
   const [x1, y1, x2, y2] = value;
 
-  /* Client pixels to curve units. getBoundingClientRect rather than the SVG's
-     own matrix, because the panel this sits in can be zoomed — the client
-     applies a zoom to the root element — and the rect already accounts for it
-     while a hand-rolled ratio would not. */
+  /* Client pixels to curve units. getBoundingClientRect rather than the SVG's own matrix,
+     because the panel can be zoomed and the rect already accounts for it. */
   const toUnits = useCallback((clientX: number, clientY: number) => {
     const box = svg.current?.getBoundingClientRect();
     if (box === undefined || box.width === 0) return null;

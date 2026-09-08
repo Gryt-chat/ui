@@ -1,18 +1,5 @@
-/* Generate a whole theme from nothing, and repair one that has drifted.
- *
- * The useful thing about a random theme is not the randomness. It is that a
- * palette of eighteen colours is a lot to pick by hand before you know whether
- * you like where it is going, and one button that produces a coherent starting
- * point is worth more than an empty set of pickers.
- *
- * Coherent is the whole trick. Random hex values produce noise, so almost
- * nothing here is free: the lightness of every step is fixed at roughly what
- * Gryt's own palette uses, the neutrals are tinted toward the accent's hue
- * rather than picked separately, and the status hues stay in the arcs people
- * read as go, careful and stop. What actually varies is the hue, how far the
- * neutrals lean into it, and the corner radius. That is enough to make two
- * rolls look unrelated while both of them still work.
- */
+/* Generate a whole theme from nothing, and repair one that has drifted. Almost nothing is
+ * free: lightnesses are fixed, neutrals lean into the accent, and status hues stay put. */
 
 import { contrast as ratio, hexToOklch, oklchToHex } from "@gryt/theme";
 import { contrastChecks } from "./contrast";
@@ -37,9 +24,8 @@ const RADIUS_FAMILIES: Array<Record<RadiusKey, number>> = [
 
 export function generateDraft(): ThemeDraft {
   const hue = rand(0, 360);
-  // How far the greys lean into the accent's hue. At 0.4 they read as grey
-  // with a cast; at 2 the whole page is obviously tinted, which is what makes
-  // a warm theme feel warm rather than "grey with an orange button".
+  // How far the greys lean into the accent's hue. At 0.4 they read as grey with a cast;
+  // at 2 the page is obviously tinted, which is what makes a warm theme feel warm.
   const tint = pick([0.4, 0.8, 1.4, 2.2]);
   // Far enough round the wheel to read as a second colour rather than a shade
   // of the first, and either side so it is not always the same direction.

@@ -1,16 +1,5 @@
-/* What a theme is, on this page.
- *
- * The document itself — two sets of neutrals, one or two sets of hues, five
- * radii — belongs to the library now, next to createGrytTheme, because the
- * client reads the same format when somebody pastes a link into it. What is
- * left here is what only an editor needs: the labels beside each field, what
- * each radius step is actually on, and the small helpers this page reaches for.
- *
- * Why the document has that shape is in packages/ui/src/theme/theme.ts. The
- * short version: dark and light neutrals do not derive from each other, and the
- * hues are shared because step 9 is the same colour in both appearances by
- * design.
- */
+/* What a theme is, on this page. The document belongs to the library, next to
+ * createGrytTheme; what is left here is the labels and the helpers an editor needs. */
 
 import {
   GRYT_HUE_KEYS,
