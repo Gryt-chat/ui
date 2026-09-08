@@ -1,27 +1,6 @@
 /**
- * The colours an egg icon comes in.
- *
- * The field is the owl's own background, the same string `owlPalette` returns,
- * not a colour picked to go with it. A list of these and a member list sit next
- * to each other on screen, and "the same family" is a thing that drifts on the
- * next edit where "the same value" is not.
- *
- * An icon needs a ladder: three shells that separate from each other and from
- * the field, each with the ink its pattern is drawn in. The numbers below are
- * lightnesses on that ladder and the gaps between them are the design, so
- * `palette.test.ts` asserts every one — at all ten hues, because a tweak that
- * reads fine in violet is the kind that loses the middle egg in gold.
- *
- * Two of those bounds are defences against the icon reading as Easter:
- *
- *   - The shells are never pastel on pastel. Either the field is deep and the
- *     eggs are pale, or the field is bright and the eggs are deep.
- *   - The inks sit about 22 to 26 points off their shell, not 50. The test has
- *     an upper bound as well as a lower one, so "make it pop" fails.
- *
- * `day` and `dusk` are close to each other. There are only two families once a
- * shell has to clear the field by a visible margin, and inventing a third would
- * mean one of them not clearing it.
+ * The colours an egg icon comes in. The field is the owl's own background, the same string
+ * `owlPalette` returns; the gaps between the shell lightnesses are asserted in the test.
  */
 
 import { hsl, HUE_BY_NAME, PALETTE_NAMES } from "../palette";
@@ -34,9 +13,8 @@ export function eggPalette(
 ): EggPalette {
   const h = HUE_BY_NAME[name];
 
-  // The same throw the owl palette makes, for the same reason: by the time a
-  // name reaches here it has been chosen, and `hsl` on an undefined hue returns
-  // "#d062NaN" — a string no renderer draws and no type checker catches.
+  // The same throw the owl palette makes: `hsl` on an undefined hue returns "#d062NaN",
+  // a string no renderer draws and no type checker catches.
   if (h === undefined) {
     throw new Error(
       `"${name}" is not one of the egg palettes. One of: ${PALETTE_NAMES.join(", ")}.`

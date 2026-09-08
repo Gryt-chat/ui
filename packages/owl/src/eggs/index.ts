@@ -1,16 +1,6 @@
 /**
- * Gryt's eggs: a deterministic generated image for something that is not a
- * person. **Nothing here may touch Math.random, Date or Intl** — the same seed
- * has to draw the same icon on every client, forever. See rng.ts.
- *
- * Not an owl, and that is the job. An owl is one character wearing things; this
- * is a shape with a surface, so a member list and a list of these read as
- * different kinds of thing.
- *
- * Back to front: the field, its texture, then the eggs, each clipped to its
- * shell with a tile of pattern inside. Drawn deep at the back and light at the
- * front, and the palette hands out shell tones in that order, so three eggs
- * read as three objects rather than one blob.
+ * Gryt's eggs: a deterministic icon for something that is not a person. No Math.random,
+ * Date or Intl. Not an owl, so a member list and a server list read as different things.
  */
 
 import { escapeXml, fmt, VIEWBOX } from "../geometry";
@@ -37,12 +27,8 @@ export { EGG_BASES } from "./bases.generated";
 export const EGG_COUNTS: readonly EggCount[] = [1, 2, 3];
 
 /**
- * How often each arrangement turns up.
- *
- * Two is the most common because it is the one that shows the shell ramp off
- * without crowding — a single egg has no ramp to show and three of them are
- * busy at 32 px. This is a fixed list of three that cannot grow, so a shared
- * weighted roll is safe here in a way it is not for the patterns.
+ * How often each arrangement turns up. Two is commonest: one egg has no ramp to show and
+ * three are busy at 32 px. A fixed list of three, so a shared weighted roll is safe.
  */
 const COUNT_WEIGHTS: readonly (readonly [EggCount, number])[] = [
   [1, 30],
@@ -62,10 +48,8 @@ export function eggPatternByName(
 const TILE_WEIGHT = 10;
 
 /**
- * How often an egg comes up bare. "Nothing" is a candidate with an empty id, so
- * adding a tile moves only which tile an egg gets, never whether it is
- * patterned. **The share drifts down as tiles are added and has to** — deriving
- * it from the tile count would re-roll every seed's answer.
+ * How often an egg comes up bare. "Nothing" is a candidate with an empty id, so adding a
+ * tile moves only which tile. The share drifts down as tiles are added, and has to.
  */
 const BARE_WEIGHT = 60;
 
@@ -76,12 +60,8 @@ const BARE_WEIGHT = 60;
 const FIELD_BARE_WEIGHT = 560;
 
 /**
- * A pattern for one channel, or null.
- *
- * Drawn by name rather than off one shared range, which is the rule the whole
- * generator is built on: adding a tile to the list can only take icons from the
- * other tiles, never trade two untouched ones against each other. See
- * pickWeightedByName in rng.ts for the measurement that bought that rule.
+ * A pattern for one channel, or null. Drawn by name rather than off one shared range, so
+ * adding a tile can only take icons from the other tiles. See pickWeightedByName.
  */
 function choosePattern(
   seed: string,
@@ -94,10 +74,8 @@ function choosePattern(
 }
 
 /**
- * How often an egg borrows another hue: about one in five, **never the one at
- * the back**, which is the egg the icon is read as. A borrowed rung is the same
- * rung, since the scheme decides lightness and only the hue moves — so what
- * palette.test.ts asserts about separation holds across a mixed icon.
+ * How often an egg borrows another hue: about one in five, never the one at the back. A
+ * borrowed rung is the same rung, so palette.test.ts's separation still holds.
  */
 const HUE_WEIGHTS: readonly (readonly [boolean, number])[] = [
   [false, 78],
@@ -132,33 +110,22 @@ function chooseHue(
 }
 
 /**
- * How much of the arrangement the tile shows. At 1 the eggs are whole and clear
- * of the edge, which reads as Easter; around 1.5 they crop, which reads as an
- * icon. Four steps, because the point is a composition that differs between
- * seeds rather than a zoom slider.
- *
- * **It scales the eggs and not the field**, which is the tile — a field that
- * grew would put the gradient's ends off-screen.
+ * How much of the arrangement the tile shows: at 1 the eggs are whole and read as Easter,
+ * around 1.5 they crop. It scales the eggs and not the field, which is the tile.
  */
 const ZOOMS = [1.05, 1.2, 1.35, 1.5];
 
 /**
- * How far the tile is turned, in degrees.
- *
- * Twelve steps of 15°, so the same tile on two eggs of one icon reads as two
- * surfaces rather than as a mistake, and a stripe is never a hair off vertical
- * — an angle of 2° looks like a bug in a way that 15° does not.
+ * How far the tile is turned, in degrees. Twelve steps of 15°, so a stripe is never a
+ * hair off vertical — 2° looks like a bug in a way 15° does not.
  */
 function chooseAngle(seed: string, channel: string): number {
   return Math.floor(unit(seed, channel) * 12) * 15;
 }
 
 /**
- * How wide one repeat is drawn, in artboard units.
- *
- * The tile's own figure, nudged by a fifth either way. Every tile carries a
- * size that reads at 32 px (see artwork/eggs/patterns.json), and this only moves
- * it enough that two eggs wearing the same tile are not the same surface.
+ * How wide one repeat is drawn, in artboard units: the tile's own figure nudged by a
+ * fifth, enough that two eggs wearing the same tile are not the same surface.
  */
 function chooseTile(
   seed: string,
@@ -176,10 +143,8 @@ export function resolveEggs(
 ): ResolvedEggs {
   const s = String(seed);
 
-  // A name nothing knows falls back to the seed's own choice, the same rule the
-  // owls apply: one unknown thing costs that thing, not the whole icon. The
-  // name may have come from a preference saved by a build with a palette this
-  // one does not have.
+  // A name nothing knows falls back to the seed's own choice, the same rule the owls
+  // apply: one unknown thing costs that thing, not the whole icon.
   const asked = options.palette;
   const paletteName =
     typeof asked === "string" && (PALETTE_NAMES as string[]).includes(asked)
@@ -216,9 +181,8 @@ export function resolveEggs(
 
   const shapes = EGG_BASES[count - 1]!;
   const eggs: ResolvedEgg[] = shapes.map((d, i) => {
-    // Keyed on the egg's place in the stack rather than on the arrangement, so
-    // the back egg of a pair and the back egg of a trio are the same draw. An
-    // icon that re-rolls every surface when it gains an egg is not one icon.
+    // Keyed on the egg's place in the stack rather than on the arrangement, so the back
+    // egg of a pair and of a trio are the same draw.
     const asked = options.patterns?.[i];
     const pattern =
       asked === null
@@ -268,9 +232,8 @@ export function resolveEggs(
     field: {
       pattern: fieldPattern,
       angle: fieldPattern ? chooseAngle(s, "egg:field:angle") : 0,
-      // Half again as wide as the tile would be on an egg. The field is behind
-      // three objects and is meant to be felt rather than read, and a texture
-      // at egg scale behind an egg is two patterns fighting.
+      // Half again as wide as the tile would be on an egg. The field is meant to be felt
+      // rather than read, and a texture at egg scale behind an egg is two patterns.
       tile: fieldPattern
         ? Math.round(chooseTile(s, "egg:field:tile", fieldPattern) * 1.5)
         : 0
@@ -288,11 +251,8 @@ export function resolveEggs(
 }
 
 /**
- * One `<pattern>` tile.
- *
- * `patternTransform` turns before it scales, which is upstream's order and the
- * one that keeps `tile` meaning what it says: a repeat is `tile` units wide
- * whatever angle it is at.
+ * One `<pattern>` tile. `patternTransform` turns before it scales, which is upstream's
+ * order and the one that keeps a repeat `tile` units wide at any angle.
  */
 function renderTile(
   id: string,
@@ -327,11 +287,8 @@ function renderTile(
 }
 
 /**
- * `seed`'s eggs, as SVG markup.
- *
- * Every id in here is suffixed with a hash of the seed, because a list can
- * draw twenty of these inline on one page and two `<pattern id="a">` in one
- * document is one pattern. The owls learned this the same way.
+ * `seed`'s eggs, as SVG markup. Every id is suffixed with a hash of the seed: a list
+ * draws twenty of these inline, and two `<pattern id="a">` in one document is one.
  */
 export function eggAvatarSvg(seed: Seed, options: EggOptions = {}): string {
   const c = resolveEggs(seed, options);
@@ -341,11 +298,8 @@ export function eggAvatarSvg(seed: Seed, options: EggOptions = {}): string {
   let art = "";
 
   if (c.background) {
-    // A gradient rather than a flat fill, running a few points of lightness top
-    // to bottom, in that direction because that is where the light is. It is
-    // nearly invisible at 32 px and that is the intent — it stops a rail of
-    // forty icons reading as forty flat swatches without any one of them
-    // announcing a gradient.
+    // A gradient rather than a flat fill, a few points of lightness top to bottom. Nearly
+    // invisible at 32 px, which is the intent: a rail of forty is not forty swatches.
     defs +=
       `<linearGradient id="f${key}" x1="0" y1="0" x2="0" y2="1">` +
       `<stop offset="0" stop-color="${c.background}"/>` +
@@ -367,9 +321,8 @@ export function eggAvatarSvg(seed: Seed, options: EggOptions = {}): string {
   }
 
   /*
-   * One gradient for the whole icon rather than one per egg, so the light comes
-   * from one direction. Black at a low alpha rather than a darker shell tone: a
-   * shell already carries a pattern in two inks.
+   * One gradient for the whole icon rather than one per egg, so the light comes from one
+   * direction. Black at a low alpha: a shell already carries a pattern in two inks.
    */
   const shade = `s${key}`;
   if (c.eggs.length > 0) {
@@ -392,10 +345,8 @@ export function eggAvatarSvg(seed: Seed, options: EggOptions = {}): string {
     const id = `e${key}${i}`;
     defs += `<clipPath id="c${id}"><path d="${egg.d}"/></clipPath>`;
 
-    // The shell is the tile's own ground rather than a path under it, so the
-    // egg is one shape however the tile is turned. A shell drawn separately and
-    // a tile drawn over it disagree by a hairline at the edge, and at 32 px
-    // that hairline is the whole outline.
+    // The shell is the tile's own ground rather than a path under it, so the egg is one
+    // shape at any angle. Drawn separately they disagree by a hairline, which is the edge.
     let ground = `<path d="${egg.d}" fill="${egg.shell}"/>`;
     if (egg.pattern) {
       defs += renderTile(
@@ -442,11 +393,8 @@ export function eggAvatarDataUri(seed: Seed, options: EggOptions = {}): string {
 }
 
 /**
- * The colour this icon's field is painted in, as `#rrggbb`.
- *
- * The top of the gradient rather than an average of it, so the answer is a
- * colour that is actually on the icon. Same contract as `owlAvatarColour`: it
- * is what a tile tinted from this seed should be tinted with.
+ * The colour this icon's field is painted in, as `#rrggbb`. The top of the gradient, so
+ * the answer is a colour actually on the icon. Same contract as `owlAvatarColour`.
  */
 export function eggAvatarColour(seed: Seed, options: EggOptions = {}): string {
   return resolveEggs(seed, options).palette.field;

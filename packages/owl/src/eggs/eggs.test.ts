@@ -1,14 +1,6 @@
 /**
- * What this protects is that a server keeps the icon it had.
- *
- * The same reasoning as the owls, one step weaker. An avatar is drawn from a
- * nickname and stored nowhere, so moving the output moves every face at once.
- * A server icon is drawn from the server's name and also stored nowhere — but a
- * server that has set its own icon never reaches this code, so the blast radius
- * is the servers that have not. Still every one of them, still all at once.
- *
- * When a pin fails the question is whether the change was meant, not whether to
- * update the number.
+ * What this protects is that a server keeps the icon it had. Nothing is stored, so moving
+ * the output moves every un-iconed server at once. Ask whether the change was meant.
  */
 
 import { describe, expect, it } from "vitest";
@@ -68,13 +60,8 @@ describe("the same name draws the same icon", () => {
   });
 
   /*
-   * The pins. Generated once, on 2026-08-29, when the generator landed.
-   *
-   * Read the note at the top of this file before changing one. Adding a tile to
-   * artwork/egg_patterns.json should not move any of these — the draw is keyed
-   * on the tile's own name, so a new tile can only take icons from the other
-   * tiles. If a pin moves when all you did was add one, that property has
-   * broken and the fix is the draw, not the number.
+   * The pins, generated once on 2026-08-29. Adding a tile should not move one: the draw is
+   * keyed on the tile's name, so if a pin moves the fix is the draw, not the number.
    */
   it.each([
     ["gryta krutt", "6c6c8797e3c2d819"],
@@ -166,9 +153,8 @@ describe("what a seed chooses", () => {
   });
 
   /*
-   * A borrowed rung is the same rung, so it carries the lightness the scheme
-   * gave it and every gap palette.test.ts asserts still holds. This is that
-   * claim, checked rather than trusted.
+   * A borrowed rung is the same rung, so it carries the lightness the scheme gave it and
+   * every gap palette.test.ts asserts still holds. Checked rather than trusted.
    */
   it("borrows a rung at the lightness it already had", () => {
     for (let i = 0; i < 300; i += 1) {
@@ -221,9 +207,8 @@ describe("what a caller can ask for", () => {
   });
 
   /*
-   * One unknown thing costs that thing, not the whole icon. A name can arrive
-   * from a preference saved by a build that had a tile this one does not, and
-   * an icon is not a place to throw.
+   * One unknown thing costs that thing, not the whole icon. A name can arrive from a
+   * preference saved by a build that had a tile this one does not.
    */
   it("draws a bare egg for a tile it does not know", () => {
     const c = resolveEggs("x", { count: 1, patterns: ["no-such-tile"] });
@@ -264,9 +249,8 @@ describe("what a caller can ask for", () => {
   });
 
   /*
-   * The dial for the one real problem with drawing servers as eggs: whole eggs
-   * sitting apart in a cluster read as a nest, and a nest reads as Easter. Past
-   * about 1.5 they run off the edge and the icon reads as a mark instead.
+   * The dial for the one real problem with drawing servers as eggs: whole eggs apart in a
+   * cluster read as a nest. Past about 1.5 they run off the edge and read as a mark.
    */
   it("takes a zoom, and clamps it", () => {
     expect(resolveEggs("x", { zoom: 1.6 }).zoom).toBe(1.6);
@@ -305,9 +289,8 @@ describe("the markup", () => {
   });
 
   /*
-   * Twenty of these go into one server rail inline, and two `<pattern id="a">`
-   * in one document is one pattern — the second definition wins and every icon
-   * on the page wears it. Every id carries a hash of the seed for that reason.
+   * Twenty of these go into one server rail inline, and two `<pattern id="a">` in one
+   * document is one pattern. Every id carries a hash of the seed for that reason.
    */
   it("gives two icons on one page no ids in common", () => {
     const ids = (svg: string) =>

@@ -12,6 +12,9 @@ const NOT_YET = [];
 
 const ROOTS = ["packages", "scripts", ".github/workflows"];
 const SKIP = new Set(["node_modules", "dist", "build", "out", "coverage", ".git", "artwork"]);
+// A generated file's header is written by its script, and one of them carries a
+// third-party MIT licence that has to stay verbatim. Trim the generator instead.
+const GENERATED = /\.generated\.\w+$/;
 const CODE = /\.(ts|tsx|js|mjs|cjs|jsx)$/;
 const HASH = /\.(ya?ml|sh)$/;
 
@@ -77,6 +80,7 @@ for (const root of ROOTS) {
     continue;
   }
   for (const file of entries) {
+    if (GENERATED.test(file)) continue;
     if (NOT_YET.some((prefix) => file.startsWith(prefix))) continue;
     const text = readFileSync(file, "utf8");
     for (const run of runs(text, HASH.test(file))) {
