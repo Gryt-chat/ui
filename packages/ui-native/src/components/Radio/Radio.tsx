@@ -28,11 +28,8 @@ export interface RadioGroupProps {
 }
 
 /**
- * The group holds the value, which is the part a radio cannot do alone.
- *
- * The web gets this from Base UI's RadioGroup, and a lone Radio outside one is
- * a mistake there too. Here it throws, because a radio that silently never
- * checks is worse than one that says why.
+ * The group holds the value, which is the part a radio cannot do alone. Here it throws:
+ * a radio that silently never checks is worse than one that says why.
  */
 export function RadioGroup({
   value: controlled,
@@ -70,11 +67,8 @@ export interface RadioProps {
   disabled?: boolean;
   tone?: RadioTone;
   /**
-   * Tapping this selects the radio, which is what a `<label>` does on the web.
-   *
-   * Radios need it more than anything else here: they come in stacks, so a
-   * 20pt target missed by a few points does not do nothing — it selects the
-   * neighbour, which is worse than no response at all.
+   * Tapping this selects the radio, which is what a `<label>` does on the web. Radios come
+   * in stacks, so a missed 20pt target selects the neighbour rather than doing nothing.
    */
   label?: ReactNode;
   style?: StyleProp<ViewStyle>;
@@ -100,9 +94,8 @@ export function Radio({
   const isDisabled = disabled || group.disabled;
   const ramp = toneRamp(theme, tone);
 
-  // Scales from 0 for the same reason the checkbox tick does — see the comment
-  // there. The dot used to be mounted and unmounted, which is that transition
-  // with the duration set to nothing.
+  // Scales from 0 for the same reason the checkbox tick does. The dot used to be mounted
+  // and unmounted, which is that transition with the duration set to nothing.
   const dot = useSharedValue(selected ? 1 : 0);
 
   useEffect(() => {

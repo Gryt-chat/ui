@@ -28,12 +28,8 @@ export interface ProgressProps {
 const SWEEP_FRACTION = 0.4;
 
 /**
- * Determinate travel is 300ms on ease-out rather than the spring: a 12%
- * overshoot on a jump to 100% runs past the end of the track and comes back,
- * which reads as the job finishing, unfinishing, then finishing.
- *
- * Indeterminate is a partial bar sweeping the track at `grytDurations.sweep`.
- * Both platforms were missing it until GRYT-382.
+ * Determinate travel is 300ms on ease-out rather than the spring: a 12% overshoot on a jump
+ * to 100% reads as the job finishing, unfinishing, then finishing. Indeterminate sweeps.
  */
 export function Progress({ value, tone = "accent", style }: ProgressProps) {
   const theme = useTheme();
@@ -41,10 +37,8 @@ export function Progress({ value, tone = "accent", style }: ProgressProps) {
   const indeterminate = value === undefined;
   const clamped = indeterminate ? 0 : Math.max(0, Math.min(100, value));
 
-  // Measured rather than expressed as a percentage. The web animates
-  // `translateX` in percentages of the bar's own width, which React Native does
-  // not accept in a transform, so the same travel is computed in points from
-  // the track's own layout.
+  // Measured rather than expressed as a percentage. The web animates `translateX` in
+  // percentages, which React Native does not accept in a transform.
   const [trackWidth, setTrackWidth] = useState(0);
   const offset = useSharedValue(0);
 
@@ -53,9 +47,9 @@ export function Progress({ value, tone = "accent", style }: ProgressProps) {
   useEffect(() => {
     if (!indeterminate || reducedMotion || trackWidth === 0) return;
 
-    // Starts fully off the left edge and ends fully off the right. Leaving the
-    // track completely at both ends is what makes the loop seam invisible — a
-    // bar that restarts while still on screen flicks backwards once per pass.
+    // Starts fully off the left edge and ends fully off the right: leaving the track at
+    // both ends is what makes the loop seam invisible.
+
     // eslint-disable-next-line react-hooks/immutability
     offset.value = -barWidth;
     // eslint-disable-next-line react-hooks/immutability
@@ -101,9 +95,8 @@ export function Progress({ value, tone = "accent", style }: ProgressProps) {
         <Animated.View
           style={[
             {
-              // Full width and dimmed under reduce-motion rather than a frozen
-              // partial bar, which reads as a job that stalled 40% in. Matches
-              // what the web's `prefers-reduced-motion` rule does.
+              // Full width and dimmed under reduce-motion rather than a frozen partial
+              // bar, which reads as a job that stalled 40% in. Matches the web.
               width: reducedMotion ? "100%" : barWidth,
               opacity: reducedMotion ? 0.4 : 1,
               height: "100%",

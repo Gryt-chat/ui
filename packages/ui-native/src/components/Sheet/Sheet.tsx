@@ -30,19 +30,8 @@ import { useTheme } from "../../theme";
 import { nextPresentation } from "./presentation";
 
 /**
- * A bottom sheet, which is the phone's modal. `@gryt/ui` has no counterpart on
- * purpose: a sheet is dragged, settles at heights the user chooses, and is
- * dismissed with a flick, so it is an addition rather than a port.
- *
- * On `@gorhom/bottom-sheet` rather than by hand, unlike Slider and Tabs —
- * velocity dismiss, snap points, keyboard avoidance and the drag-to-scroll
- * handoff are months of edge cases. The library supplies behaviour only; every
- * colour and dimension comes from the theme.
- *
- * **`SheetProvider` has to be mounted above anything that renders a Sheet.**
- * This is `BottomSheetModal`, which portals to the provider at the app root —
- * a plain `BottomSheet` anchors to its slot in the layout, so written inline it
- * appears partway down the page and reads as entering from the top.
+ * A bottom sheet, which is the phone's modal, on `@gorhom/bottom-sheet`. `SheetProvider`
+ * has to be mounted above anything that renders one: this portals to the app root.
  */
 
 export interface SheetProviderProps {
@@ -69,19 +58,16 @@ function useSheet(part: string) {
 
 export interface SheetProps extends OpenStateProps {
   /**
-   * Heights the sheet settles at, as percentages or points.
-   *
-   * The web has no equivalent concept — a dialog is one size — which is part of
-   * why this is its own component rather than a Drawer with a prop.
+   * Heights the sheet settles at, as percentages or points. The web has no equivalent,
+   * which is part of why this is its own component rather than a Drawer with a prop.
    */
   snapPoints?: (string | number)[];
   children?: ReactNode;
 }
 
 /**
- * `open` with `onOpenChange` drives it from outside; `defaultOpen` alone lets it
- * manage itself. Without the controlled form a sheet opened by anything that is
- * not a Pressable had to be remounted to open at all, throwing the body away.
+ * `open` with `onOpenChange` drives it from outside; `defaultOpen` alone lets it manage
+ * itself. Without the controlled form a sheet had to be remounted to open at all.
  */
 function Root({
   snapPoints = ["50%"],
@@ -92,10 +78,8 @@ function Root({
   const state = useOpenState(openProps);
   const { open: isOpen, setOpen } = state;
 
-  // Asking for the state rather than reaching for the ref, so a controlled
-  // Sheet's parent gets the final say — `setOpen` on a controlled overlay
-  // reports and does not decide. The effect in `Content` is what actually
-  // presents, once the modal it presents exists.
+  // Asking for the state rather than reaching for the ref, so a controlled Sheet's parent
+  // gets the final say. The effect in `Content` is what actually presents.
   const open = useCallback(() => setOpen(true), [setOpen]);
   const close = useCallback(() => setOpen(false), [setOpen]);
 
@@ -125,10 +109,8 @@ export interface SheetTriggerProps {
 }
 
 /**
- * A Pressable, like every other trigger in this package — which means its
- * children have to be plain visual content. Nesting a Button inside one gives
- * the inner pressable the touch and the sheet never opens, silently. Same
- * footgun the overlay triggers already carry.
+ * A Pressable, like every other trigger here, so its children have to be plain visual
+ * content: nesting a Button gives the inner pressable the touch and nothing opens.
  */
 function Trigger({ children, style }: SheetTriggerProps) {
   const sheet = useSheet("Trigger");
@@ -140,18 +122,14 @@ function Trigger({ children, style }: SheetTriggerProps) {
 }
 
 /**
- * Everything about presenting the modal, shared by `Content` and `ScrollView`.
- *
- * The two are alternatives rather than one inside the other, so both need the
- * whole `BottomSheetModal` — the effect that presents it, the backdrop, the
- * background and the animation curve. This is that, once.
+ * Everything about presenting the modal, shared by `Content` and `ScrollView`. The two are
+ * alternatives rather than nested, so both need the whole `BottomSheetModal`.
  */
 function useSheetModal() {
   const theme = useTheme();
   /**
-   * Both ends. At the tall snap point the content runs under the Dynamic Island
-   * without `topInset`; at the other the home indicator clips a control row
-   * ending flush with the sheet.
+   * Both ends. At the tall snap point the content runs under the Dynamic Island without
+   * `topInset`; at the other the home indicator clips a control row.
    */
   const insets = useSafeAreaInsets();
   const state = useContext(SheetRefContext);
@@ -165,18 +143,8 @@ function useSheetModal() {
   const { ref, isOpen, setOpen, snapPoints } = state;
 
   /**
-   * `present` and `dismiss` rather than mounting by hand: the modal is always
-   * rendered and the provider decides whether it is on screen. Here rather than
-   * in `Root`, which runs before there is a `ref`.
-   *
-   * **`presented` is not droppable bookkeeping.** Dismissing a modal that has
-   * never been presented takes it *out* of the provider's registry, after which
-   * `present()` is a no-op and the sheet never opens again — which reads as the
-   * open prop being ignored.
-   *
-   * **It has to be cleared by `onDismiss` too.** A flick down dismisses the
-   * modal and then tells React, so the following effect finds `presented` still
-   * true and calls `dismiss()` on a modal that is already gone.
+   * `present` and `dismiss` rather than mounting by hand. `presented` is load-bearing:
+   * dismissing a never-presented modal unregisters it and `present()` is then a no-op.
    */
   const presented = useRef(false);
 
@@ -188,18 +156,12 @@ function useSheetModal() {
     else if (next.action === "dismiss") ref.current?.dismiss();
   }, [isOpen, ref]);
 
-  // The modal renders nothing until it is presented, so there is no invisible
-  // backdrop sitting over the screen eating taps while it is closed. That was
-  // a real hazard with the inline version and had to be handled by unmounting.
+  // The modal renders nothing until it is presented, so no invisible backdrop sits over
+  // the screen eating taps while it is closed.
+
   /**
-   * The sheet's own background, which `backgroundStyle` cannot draw: it paints
-   * a view sized exactly to the sheet, and the container `style` sits outside
-   * the rounded corners, so a border there draws a straight line above the
-   * rounded top.
-   *
-   * It also hangs `grytDrawerBleed` below the bottom edge, because the spring
-   * overshoots and a sheet sized exactly to its snap point leaves a band of
-   * backdrop for a frame or two. Same trick and distance as the web Drawer.
+   * The sheet's own background, which `backgroundStyle` cannot draw: the container `style`
+   * sits outside the rounded corners. It also hangs `grytDrawerBleed` below the edge.
    */
   const renderBackground = useCallback(
     ({ style: bgStyle }: BottomSheetBackgroundProps) => (
@@ -225,18 +187,8 @@ function useSheetModal() {
   );
 
   /**
-   * Gryt's spring, not gorhom's default. `withTiming` over the sampled curve,
-   * since @gryt/theme's is a damped spring solved analytically and a physics
-   * engine would approximate the thing it was chosen over.
-   *
-   * `springSlow` rather than a Drawer's 700, because a sheet travels further —
-   * the same duration over a longer distance reads as a snap rather than a
-   * slide.
-   *
-   * **`easeSpringTight`, not `easeSpring`.** `easing.ts` labels the loose one
-   * as "for things that scale in place" and the tight one "for things that
-   * travel inside bounds". On a sheet the overshooting edge is the top, so it
-   * reads as failing to land rather than as bounce.
+   * Gryt's spring, not gorhom's default, over the sampled curve. `springSlow` because a
+   * sheet travels further, and `easeSpringTight` because its overshooting edge is the top.
    */
   const animationConfigs = useBottomSheetTimingConfigs({
     duration: durations.springSlow,
@@ -270,23 +222,12 @@ function useSheetModal() {
       // So a sheet at 100% stops below the Dynamic Island rather than running
       // its content under it.
       topInset: insets.top,
-      // Off, because `snapPoints` is the whole point of this component.
-      //
-      // gorhom v5 defaults dynamic sizing on, which measures the content and
-      // sizes the sheet to it — overriding the snap points entirely. A sheet
-      // asked for 70% whose content had no intrinsic height collapsed to the
-      // height of its own footer, which looks like the snap points being
-      // ignored because they were.
+      // Off, because `snapPoints` is the whole point of this component. gorhom v5 defaults
+      // dynamic sizing on, which measures the content and overrides the snap points.
       enableDynamicSizing: false,
       enablePanDownToClose: true,
-      // A flick down or a tap on the backdrop closes it without anything in
-      // React asking, so the state has to be told. Uncontrolled, this is what
-      // makes the next `present` work; controlled, it is how the parent finds
-      // out its sheet is gone.
-      //
-      // `presented` first, and not as a tidy-up: the modal has already
-      // dismissed itself by the time this runs, and leaving the ref true lets
-      // the effect below dismiss it a second time. See the note on the ref.
+      // A flick down or a tap on the backdrop closes it without React asking, so the state
+      // has to be told. `presented` first, or the effect below dismisses it a second time.
       onDismiss: () => {
         presented.current = false;
         setOpen(false);
@@ -309,13 +250,8 @@ export interface SheetContentProps {
 }
 
 /**
- * The sheet's body, for content that fits. Use `Sheet.ScrollView` when it might
- * not — `BottomSheetView` sizes itself to its children, so a scrollable inside
- * has no bounded height and grows until the sheet clips it.
- *
- * **`height: "100%"`, because `flex: 1` is not enough**: with no bounded height
- * to be all of, anything wanting to be the whole sheet collapses to its own
- * content. It sits before `style`, so a caller can still override it (GRYT-516).
+ * The sheet's body, for content that fits; use `Sheet.ScrollView` when it might not.
+ * `height: "100%"`, because `flex: 1` has no bounded height to be all of (GRYT-516).
  */
 function Content({ children, style }: SheetContentProps) {
   const { theme, insets, sheet, modalProps } = useSheetModal();
@@ -328,9 +264,8 @@ function Content({ children, style }: SheetContentProps) {
             flex: 1,
             height: "100%",
             padding: theme.space(4),
-            // The home indicator's strip, on top of whatever padding the caller
-            // asked for. Without it the last row of content is clipped by it —
-            // reported as the voice controls being cut off at the bottom.
+            // The home indicator's strip, on top of whatever padding the caller asked for.
+            // Without it the last row of content is clipped by it.
             paddingBottom: theme.space(4) + insets.bottom,
           },
           style,
@@ -361,19 +296,8 @@ function Content({ children, style }: SheetContentProps) {
 export type SheetScrollViewProps = ComponentProps<typeof BottomSheetScrollView>;
 
 /**
- * The sheet's body, for content that might not fit.
- *
- * **In place of `Sheet.Content`, not inside it.** RN's own `ScrollView` does not
- * scroll in a sheet: gesture-handler settles the pan and the native scroll
- * recogniser by reference, so they have to know about each other.
- *
- * It bundles the four things three callers had to get right together — bounded
- * height, no padding on the container, the keyboard inset, and
- * `keyboardShouldPersistTaps`, without which the first tap only dismisses the
- * keyboard (GRYT-492).
- *
- * **It does not decide the snap point.** A sheet taking a keyboard wants a tall
- * one; at 46% the field and its button are both behind the keyboard.
+ * The sheet's body, for content that might not fit — in place of `Sheet.Content`, not
+ * inside it. It bundles the four things three callers had to get right together.
  */
 function ScrollView({
   children,

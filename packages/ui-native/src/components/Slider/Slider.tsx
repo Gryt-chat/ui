@@ -41,22 +41,8 @@ const TRACK_HEIGHT = 4;
 const THUMB = 20;
 
 /**
- * Dragging, on a surface where a drag might belong to something else.
- *
- * The web gets pointer capture: once the thumb is grabbed, every move belongs
- * to the slider until release. React Native has no equivalent, and volume
- * sliders live in settings lists, so a horizontal drag has to be told apart
- * from the scroll it is sitting in.
- *
- * `activeOffsetX` is that distinction, declared rather than fought over. The
- * pan claims the gesture once the finger has clearly gone sideways, and a
- * vertical drag never activates it. That replaces
- * `onPanResponderTerminationRequest: () => false` plus the `DragLock` that had
- * to switch the scroll view off, because refusing to hand back a JS responder
- * says nothing to the native recogniser that does the scrolling on iOS.
- *
- * Both gestures run on the JS thread. Every callback here has to reach React
- * state and the consumer's `onValueChange`, so the hop happens either way.
+ * Dragging, on a surface where a drag might belong to something else. `activeOffsetX` is
+ * the distinction: the pan claims the gesture once the finger has clearly gone sideways.
  */
 export function Slider({
   value: controlled,
@@ -77,11 +63,8 @@ export function Slider({
   const [width, setWidth] = useState(0);
   const ramp = toneRamp(theme, tone);
 
-  // The responder callbacks are created once and would otherwise close over the
-  // first render's values forever, so the current ones live in refs. Written in
-  // an effect rather than during render: mutating a ref while rendering is the
-  // kind of thing that breaks under concurrent rendering, and the callbacks only
-  // fire from touch events, which is always after an effect has run.
+  // The responder callbacks are created once and would close over the first render's
+  // values, so the current ones live in refs, written in an effect rather than in render.
   const state = useRef({ width, value, min, max, step, disabled });
   const emit = useRef({ onValueChange, onValueCommit, controlled });
   /**
