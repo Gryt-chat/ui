@@ -120,9 +120,8 @@ describe("motion as variables", () => {
   });
 });
 
-/* The path the client actually uses: a saved theme is JSON in localStorage, not
- * a query string. Motion was on the link path and not this one, so everything
- * was green while a saved theme lost its motion on every launch.
+/* The path the client actually uses: a saved theme is JSON in localStorage, not a query
+ * string. Motion was tested on the link path only, so a saved theme lost it.
  */
 describe("through JSON, which is how a saved theme comes back", () => {
   const roundTrip = (theme: object) =>

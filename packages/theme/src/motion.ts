@@ -1,20 +1,9 @@
-/* The motion system, as numbers, so the React Native port does not hand-copy
- * 54 of them out of `theme.css` and hope.
- *
- * The curves are a damped spring solved analytically and sampled, not a physics
- * engine's approximation. **Anything reproducing this on another platform
- * should interpolate these samples**, not reach for a spring simulator and tune
- * constants. `theme.css` emits them into `linear()`; React Native interpolates
- * them as a timing easing. Same curve, same duration, same motion.
- */
+/* The motion system as numbers, so the React Native port does not hand-copy 54 of them
+ * out of `theme.css`. The curves are a solved damped spring: interpolate the samples. */
 
 /**
- * A damped spring at ζ = 0.5591 — peaks 12% past the target and settles without
- * a second visible swing. Duration-invariant, so one curve serves every tier.
- *
- * **For things that scale.** Overshoot is a percentage of the *travel*, so on
- * something crossing its container it throws the element outside its own
- * bounds — use {@link springTight} there.
+ * A damped spring at ζ = 0.5591 — 12% past the target, settling without a second swing.
+ * Overshoot is a percentage of travel, so for things that scale use {@link springTight}.
  */
 export const springSamples: readonly number[] = [
   0, 0.1217, 0.3812, 0.6579, 0.883, 1.0304, 1.1034, 1.12, 1.1025, 1.0705,
@@ -23,12 +12,8 @@ export const springSamples: readonly number[] = [
 ];
 
 /**
- * The same spring critically damped at ζ = 1 — settles at the target without
- * ever passing it.
- *
- * **For things that travel inside bounds.** Measured on a slider: a full-track
- * jump on {@link springSamples} put the thumb 110% along a 919px track, 96px
- * outside the control it belongs to, before coming back.
+ * The same spring critically damped at ζ = 1, settling without passing the target. For
+ * things that travel inside bounds: a slider thumb went 96px outside its own track.
  */
 export const springTightSamples: readonly number[] = [
   0, 0.0496, 0.1585, 0.2869, 0.4135, 0.5279, 0.6263, 0.7079, 0.7741, 0.8268,
@@ -37,10 +22,8 @@ export const springTightSamples: readonly number[] = [
 ];
 
 /**
- * Durations, in milliseconds.
- *
- * Each spring curve is shaped for one length. Changing a duration without
- * changing the curve moves where the overshoot lands.
+ * Durations, in milliseconds. Each spring curve is shaped for one length, so changing a
+ * duration without the curve moves where the overshoot lands.
  */
 export const grytDurations = {
   /** Most interactions. */
@@ -48,30 +31,22 @@ export const grytDurations = {
   /** Drawer, where the travel is the width of a panel. */
   springSoft: 700,
   /**
-   * For something that travels further than its own width.
-   *
-   * A bottom sheet comes up from off the screen and covers most of it, which is
-   * a longer journey than a drawer's. Reusing `springSoft` there meant the same
-   * time over more distance, and it read as a snap.
+   * For something that travels further than its own width. A bottom sheet is a longer
+   * journey than a drawer's; `springSoft` there was the same time over more distance.
    */
   springSlow: 900,
   /** Colour changes, which should not feel sprung. */
   fast: 150,
   /**
-   * One pass of an indeterminate Progress bar across its track.
-   *
-   * Long enough to read as "working" rather than "flickering", short enough
-   * that a second pass starts before you wonder whether it has stopped.
+   * One pass of an indeterminate Progress bar across its track. Long enough to read as
+   * "working", short enough that a second pass starts before you wonder.
    */
   sweep: 1400
 } as const;
 
 /**
- * How far interactive controls scale.
- *
- * `hover` has no equivalent on a touch screen and is here for the web only;
- * a native port should implement `press` and leave `hover` alone rather than
- * inventing a substitute.
+ * How far interactive controls scale. `hover` has no equivalent on a touch screen and is
+ * here for the web only; a native port implements `press` and leaves it alone.
  */
 export const grytScaleSteps = {
   button: { hover: 1.03, press: 0.96 },
@@ -85,20 +60,14 @@ export const grytScaleSteps = {
 } as const;
 
 /**
- * How far a Drawer or Sheet hangs past the edge it comes from, in points. The
- * spring settles onto its target from both directions, so a panel sized exactly
- * to its resting place shows a seam of backdrop on the undershoot.
- *
- * 64 is 4rem, which is what `theme.css` has said since the web
- * Drawer was written; `bleedTokens.test.ts` in @gryt/ui keeps the two equal.
+ * How far a Drawer or Sheet hangs past the edge it comes from, in points. The spring
+ * settles from both directions, so a panel sized exactly to rest shows a seam.
  */
 export const grytDrawerBleed = 64;
 
 /**
- * Sample a curve at `t` in 0..1, interpolating linearly between points.
- *
- * This is what `linear()` does in CSS, written out so other renderers can do
- * the same thing rather than approximating the curve some other way.
+ * Sample a curve at `t` in 0..1, interpolating linearly. This is what `linear()` does in
+ * CSS, written out so other renderers do the same rather than approximating.
  */
 export function sampleCurve(samples: readonly number[], t: number): number {
   if (samples.length === 0) return t;

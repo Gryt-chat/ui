@@ -1,23 +1,8 @@
-/* Themes to start from, in the collections the picker groups them by.
- *
- * **Every ported value is the published one**, taken from the source named
- * above each preset rather than from memory. Where a palette defines both a
- * dark and a light variant both are here, which is why `lightHue` exists.
- *
- * Gryt names seven neutral anchors and most palettes name fewer, so steps in
- * between are `derived` — never invented, they sit between two published
- * values. Mapping a palette's names onto page, surface, border, muted and text
- * is a judgement. Radius is part of a preset: GitHub's buttons are not pills.
- *
- * The Gryt-authored collections, Midnight through Pastel, were generated in
- * OKLCH rather than picked by eye, then checked two ways: every theme clears
- * fourteen contrast rules across both halves, and every theme sits far enough
- * from every other in OKLab that no two read as the same palette. The contrast
- * half is re-checked on every run by presets.test.ts.
- *
- * Names belong to their projects. Dracula, Nord, Catppuccin, Solarized and
- * shadcn/ui are MIT-licensed; the rest are referenced by name only.
- */
+/* Themes to start from, in the collections the picker groups them by. Every ported value
+ * is the published one, and the Gryt-authored collections were generated in OKLCH. */
+
+/* Names belong to their projects. Dracula, Nord, Catppuccin, Solarized and shadcn/ui are
+ * MIT-licensed; the rest are referenced by name only. */
 
 import type { GrytRadiusKey, GrytTheme } from "./theme";
 import { cloneGrytTheme, grytTheme } from "./theme";
@@ -86,11 +71,8 @@ export const grytPresets: GrytThemePreset[] = [
     theme: grytTheme
   },
   {
-    /* Credits to Carlo, who made this in the generator and sent the link.
-       Same colours as above — the only change is the radius, and the one that
-       matters is `full`: it drops 999 to 8, so the controls that were pills
-       (buttons, the search field, badges) become rectangles with the same
-       corner as everything else. */
+    /* Credits to Carlo, who made this in the generator and sent the link. Same colours;
+       the change is `full` dropping 999 to 8, so the pills become rectangles. */
     id: "gryt-rounded",
     name: "Gryt Rounded",
     note: "The shipped palette, every corner at eight pixels. Made by Carlo.",
@@ -184,18 +166,8 @@ export const grytPresets: GrytThemePreset[] = [
   },
 
   /*
-   * The owl palettes, as themes. Derived from the drawings rather than lifted:
-   * a drawing names four or five colours and a theme needs eleven hues and
-   * seven neutrals in each appearance.
-   *
-   * **Derived in OKLCH**, because a ramp built by darkening sRGB drifts grey
-   * and the surfaces stop belonging to the theme three steps down.
-   *
-   * Secondaries are analogous rather than complementary — a true complement put
-   * Indigo's on orange and Ice's on tan.
-   *
-   * `onAccent` is chosen per theme: whichever ink has more contrast on that
-   * accent ships. Every one is checked in both appearances.
+   * The owl palettes as themes, derived in OKLCH rather than lifted — a ramp built by
+   * darkening sRGB drifts grey. `onAccent` is whichever ink has more contrast.
    */
   {
     id: "owl-rose",
@@ -456,24 +428,15 @@ export const grytPresets: GrytThemePreset[] = [
     }
   },
   {
-    /* Four photographs: snow-loaded spruces through a gym window, a dark room
-       lit by white strips, a white can on black rubber, grey sweatpants.
+    /* Four photographs: snow-loaded spruces, white strips in a dark room, a white can on
+       black rubber, grey sweatpants. Cold rather than neutral, which separates it from Paper.
 
-       Cold rather than neutral, which is what separates it from Paper: every
-       grey carries the blue of overcast snow light.
-
-       The accent is the white can, which is why this is the only Gryt preset
-       with a split `lightHue` — a near-white accent is invisible in the light
-       half, so that gets the colour of a wet window frame. */
+       The accent is the white can, so this is the only Gryt preset with a split `lightHue`. */
     id: "winter-arc",
     name: "Winter Arc",
     note: "Cold monochrome. A near-white accent in the dark, snow-light greys.",
-    /* The secondary and the danger, in both halves, were moved in GRYT-994.
-       Text on a filled colour is held to 7:1 here rather than 4.5, and these
-       measured 6.07, 4.96, 4.68 and 5.27. Nothing else about the palette changed: the
-       moves are lightness only, hue and chroma untouched, and each is the
-       smallest step that clears the bar. The -Light partners moved with their
-       base to keep the gap between them. */
+    /* The secondary and the danger, in both halves, were moved in GRYT-994: text on a
+       filled colour is held to 7:1 here and these measured 6.07, 4.96, 4.68 and 5.27. */
     collection: "Winter",
     theme: {
       name: "Winter Arc",

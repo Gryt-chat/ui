@@ -10,10 +10,8 @@ import {
   isFontStack
 } from "./theme";
 
-/* A font stack arrives from a link somebody was sent, and ends up in a CSS
-   declaration. That is the whole reason these tests exist: the colours are hex
-   and cannot be anything else, and this is the first field in a theme that is
-   free text. */
+/* A font stack arrives from a link somebody was sent and ends up in a CSS declaration.
+   It is the first field in a theme that is free text; the colours are hex. */
 
 describe("isFontStack", () => {
   it("takes an ordinary stack", () => {

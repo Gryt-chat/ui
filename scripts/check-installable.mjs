@@ -1,19 +1,5 @@
-// Packs a workspace package and installs the tarball into an empty directory.
-//
-// This is the only check that looks at the manifest the way a consumer resolves
-// it. publint and attw both run against the workspace, where `workspace:*` is a
-// legitimate dependency spec, so both passed on @gryt/ui-native 0.1.0 while npm
-// refused to install it at all:
-//
-//   npm error code EUNSUPPORTEDPROTOCOL
-//   npm error Unsupported URL Type "workspace:": workspace:*
-//
-// That release is on npm and cannot be replaced, which is the cost of not
-// having had this (GRYT-370).
-//
-// --legacy-peer-deps because npm 7 and up install peer dependencies
-// automatically, and react-native is a large download that proves nothing here.
-// The failure this catches happens during resolution, before peers matter.
+// Packs a workspace package and installs the tarball into an empty directory — the only
+// check that resolves the manifest as a consumer does. `--legacy-peer-deps` skips peers.
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -40,30 +26,15 @@ function packInto(packageDir) {
   return join(packageDir, produced);
 }
 
-// Workspace siblings are resolved from local tarballs, not from the registry.
-//
-// A package that depends on a sibling names a real semver range, because that
-// is what consumers install. On the registry that range resolves; on a pull
-// request adding a brand new sibling it cannot, because nothing is published
-// yet — @gryt/ui and @gryt/ui-native both went un-installable the moment they
-// started depending on @gryt/theme, and the check was right to say so and
-// useless to act on.
-//
-// Overriding to the local tarball keeps the thing this check exists for: it
-// still resolves the manifest the way a consumer does, and still catches a
-// `workspace:*` that escaped into a published range (GRYT-370). Each sibling's
-// own installability is covered by its own run.
+// Workspace siblings resolve from local tarballs, not the registry: a brand new sibling
+// is not published yet, and its own run covers its installability.
 const workspaceRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const manifest = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
 const overrides = {};
 const siblingTarballs = [];
 
-// The spec is checked before anything is overridden. An override resolves a
-// dependency whatever its spec says, which would hide the exact bug this file
-// was written for: with `workspace:*` put back on a sibling, the install
-// succeeded and the check went green. So a sibling that names something npm
-// cannot install from a registry fails here, loudly, before the override can
-// paper over it.
+// The spec is checked before anything is overridden: an override resolves whatever the
+// spec says, which is how a `workspace:*` put back on a sibling went green.
 const UNPUBLISHABLE = /^(workspace|link|file|portal):/;
 
 for (const [name, spec] of Object.entries(manifest.dependencies ?? {})) {

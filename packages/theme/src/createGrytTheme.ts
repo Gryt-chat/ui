@@ -1,14 +1,9 @@
 import type { CSSProperties } from "react";
-/* Type-only, so the cycle with theme.ts is erased at compile time. The font
-   stacks are part of the theme document, which is that file's subject; this
-   one only needs to know their shape. */
+/* Type-only, so the cycle with theme.ts is erased at compile time. This file needs the
+   font stacks' shape, not their values. */
 import type { GrytFonts, GrytMotion } from "./theme";
-/* Types only from ./theme, deliberately. theme.ts imports grytTokens from this
-   file at module scope, so a value imported back the other way is a cycle the
-   loader resolves as undefined — `grytTheme` builds itself from
-   `grytTokens.color` while that is still uninitialised, and every test in the
-   package fails on "Cannot read properties of undefined". Types are erased and
-   cost nothing; `isBezier` is one Array.isArray and is not worth the cycle. */
+/* Types only from ./theme. It imports grytTokens from here at module scope, so a value
+   imported back is a cycle the loader resolves as undefined, and every test fails. */
 import { grytDurations, springSamples, springTightSamples } from "./motion";
 import {
   alphaScale,
@@ -35,9 +30,8 @@ export const grytTokens = {
     danger: "#f87171",
     dangerLight: "#fca5a5",
     warning: "#fbbf24",
-    // The fill's own hue, dark enough to clear 7:1 against it. See the note in
-    // theme.css: these are the only text in the library that always sits on a
-    // saturated colour, so they are held to AAA rather than AA.
+    // The fill's own hue, dark enough to clear 7:1 against it. These are the only text
+    // that always sits on a saturated colour, so they are held to AAA rather than AA.
     onAccent: "#0c0a20",
     onSecondary: "#02121a",
     onDanger: "#1f0405"
@@ -52,10 +46,8 @@ export const grytTokens = {
 } as const;
 
 /**
- * What the role helpers below read: the five steps, plus the optional roles.
- *
- * A role is derived rather than required, so every theme written before these
- * existed gets a sensible one and nothing has to be restated eleven times.
+ * What the role helpers below read: the five steps, plus the optional roles. A role is
+ * derived rather than required, so a theme written before these existed still works.
  */
 export type RadiusTokens = Record<"sm" | "md" | "lg" | "xl" | "full", number> & {
   field?: number;
@@ -65,56 +57,32 @@ export type RadiusTokens = Record<"sm" | "md" | "lg" | "xl" | "full", number> & 
 };
 
 /**
- * The corner on anything somebody types into.
- *
- * Its own token because the step scale cannot express it. A text field asked
- * for xl, and a browser clamps a radius to half the shorter side — so 28px
- * came out as a pill on a 36px input, a near-pill on a 44px one, and a soft
- * 28px rectangle on a textarea. One declared value, three different corners,
- * and the tall one is the only place you ever saw the number you asked for.
- *
- * Derived from `md` rather than fixed, so a theme that squares everything off
- * squares its inputs too. SQUARE gets 4, PUFFY gets 16, and neither had to say
- * so. A theme that wants something else sets `radius.field` outright.
+ * The corner on anything somebody types into. Its own token: a browser clamps a radius
+ * to half the shorter side, so one xl gave a pill, a near-pill and a rectangle.
  */
 export function fieldRadius(radius: RadiusTokens): number {
   return radius.field ?? radius.md;
 }
 
 /**
- * The corner on anything somebody presses: Button, IconButton, Toggle, Chip.
- *
- * All four are pills today and this only gives that a name, so nothing moves.
- * The name is the point — a theme that wants square buttons and rounded inputs
- * had to override `full`, which is also what a Drawer handle and an avatar use.
+ * The corner on anything somebody presses: Button, IconButton, Toggle, Chip. All pills
+ * today; the name is the point, since overriding `full` also moves handles and avatars.
  */
 export function controlRadius(radius: RadiusTokens): number {
   return radius.control ?? radius.full;
 }
 
 /**
- * A panel you read: Card, Surface, Alert, Dialog, Accordion.
- *
- * They were split between lg and xl with nothing deciding which. Card and
- * Accordion were the two on xl, next to a Dialog on lg — a card and the dialog
- * that opens over it had different corners for no reason either could name.
+ * A panel you read: Card, Surface, Alert, Dialog, Accordion. They were split between lg
+ * and xl with nothing deciding which, so a card and its dialog had different corners.
  */
 export function surfaceRadius(radius: RadiusTokens): number {
   return radius.surface ?? radius.lg;
 }
 
 /**
- * Something that floats above the page and holds rows: Menu, the Select and
- * Combobox lists, Popover, PreviewCard, Toast.
- *
- * Menu already had to leave the shared surface behind, because its corner has
- * to be concentric with the rows inside it — lg less its 8px inset is exactly
- * the row's md. That relationship is the right one for every popup with rows
- * in it, so it stops being Menu's exception and becomes the rule.
- *
- * A Tooltip is deliberately not one of these. It is a label rather than a
- * panel, roughly 28px tall, and a 20px radius on that clamps to 14 — the same
- * accident this whole set of tokens exists to stop.
+ * Something floating above the page that holds rows: Menu, Select and Combobox lists,
+ * Popover, PreviewCard, Toast. lg less the 8px inset is the row's md. A Tooltip is not.
  */
 export function popupRadius(radius: RadiusTokens): number {
   return radius.popup ?? radius.lg;
@@ -122,53 +90,36 @@ export function popupRadius(radius: RadiusTokens): number {
 
 export type GrytTokens = typeof grytTokens;
 
-// Widened off the `as const` token types on purpose. Partial<GrytTokens> would
-// inherit the literal types, so an override could only ever be re-assigned its
-// own current value.
+// Widened off the `as const` token types on purpose: Partial<GrytTokens> would inherit
+// the literal types, so an override could only be re-assigned its own current value.
 export interface GrytThemeOptions {
   color?: Partial<Record<keyof GrytTokens["color"], string>>;
   radius?: Partial<Record<keyof GrytTokens["radius"], number>>;
   /**
-   * Which set of ramps to build. Dark is the default because it is what the
-   * library ships on :root; an app toggling appearance calls this twice and
-   * puts each result behind its own selector.
+   * Which set of ramps to build. Dark is the default because it is what the library
+   * ships on :root; an app toggling appearance calls this twice.
    */
   appearance?: "dark" | "light";
   /**
-   * The typeface per role, as whole CSS stacks.
-   *
-   * Emitted as variables the stylesheet's own font tokens fall back through,
-   * so a theme that names none leaves the library's in place rather than
-   * blanking them.
+   * The typeface per role, as whole CSS stacks. Emitted as variables the stylesheet's
+   * own font tokens fall back through, so naming none leaves the library's in place.
    */
   fonts?: Partial<GrytFonts>;
   /**
-   * How fast and in what shape.
-   *
-   * Emitted as the same duration and easing variables the stylesheet already
-   * declares, so nothing downstream has to know a theme can carry motion.
+   * How fast and in what shape. Emitted as the same duration and easing variables the
+   * stylesheet already declares, so nothing downstream needs to know.
    */
   motion?: GrytMotion;
 }
 
-// This used to return a MUI theme object. There is no theme object now — the
-// components read CSS custom properties, so a theme is the set of variables to
-// put on an element. Returning CSSProperties means it drops straight into a
-// style prop, and overriding one token does not require reproducing the rest.
 /**
- * The scales, computed rather than written down.
- *
- * There is one generator, and this is it — theme.css is emitted from these same
- * functions by scripts/generate-theme.ts, and a test asserts the stylesheet
- * still matches. Two hand-maintained copies of a twelve-step ramp would drift
- * the first time somebody nudged a colour.
+ * The scales, computed rather than written down. theme.css is emitted from these same
+ * functions by scripts/generate-theme.ts, and a test asserts the stylesheet matches.
  */
+
 /**
- * The light anchors.
- *
- * Picked for this palette rather than computed from the dark ones. The page is
- * a light grey and panels are white, which is the arrangement the client
- * already used and the one people expect of a light UI.
+ * The light anchors, picked for this palette rather than computed from the dark ones:
+ * a light grey page with white panels, which is what the client already used.
  */
 export const grytLightTokens = {
   bg: "#f1f2f7",
@@ -209,14 +160,8 @@ export const grytScalesLight = {
 } as const;
 
 /**
- * The light hover fill.
- *
- * Not one of the six anchors, because it is not a colour anybody picks: it is
- * step 4, the step that means "component background, hovered", and writing it
- * down as a literal would be a second definition of a value the ramp already
- * has. It exists at all because `.light` never set surface-hover, so a neutral
- * Button in a light app hovered to the dark slate the @theme block declares —
- * a slate block on a white panel.
+ * The light hover fill — step 4, "component background, hovered", rather than a seventh
+ * anchor. `.light` never set surface-hover, so a neutral Button hovered to dark slate.
  */
 export const grytLightSurfaceHover = grytScalesLight.neutral[3];
 
@@ -243,14 +188,8 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
   const radius = { ...grytTokens.radius, ...options.radius };
 
   /**
-   * Overriding a colour regenerates its scale.
-   *
-   * The components read the scale, not the flat name — bg-gryt-neutral-4 for a
-   * hover, text-gryt-accent-11 for a link — so a theme that set --gryt-accent
-   * and stopped there would change almost nothing on screen. The same
-   * generator that produced the defaults runs here on whatever anchors the
-   * caller passed, which is what makes one line of override recolour the app
-   * coherently rather than in patches.
+   * Overriding a colour regenerates its scale. The components read the scale rather than
+   * the flat name, so setting --gryt-accent and stopping would change almost nothing.
    */
   const anchors = {
     bg: color.bg,
@@ -292,9 +231,8 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
     });
   }
 
-  /* The samples, as a linear() an easing property will take. The library's own
-     two are the shipped springs; anything else a theme asks for replaces both,
-     which is the one thing to understand about a custom curve — see GrytMotion. */
+  /* The samples, as a linear() an easing property will take. A custom curve replaces
+     both shipped springs rather than one of them — see GrytMotion. */
   const linearFn = (samples: readonly number[]) =>
     `linear(${samples.map((n) => Number(n.toFixed(4))).join(", ")})`;
 
@@ -302,9 +240,8 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
   if (options.motion !== undefined) {
     const { scale, curve } = options.motion;
 
-    /* Scaled rather than replaced, so the tiers keep the proportions they were
-       given. Rounded to whole milliseconds because a duration is read by a
-       person in the editor and 449.99999ms is not a number anybody chose. */
+    /* Scaled rather than replaced, so the tiers keep their proportions. Rounded to whole
+       milliseconds: 449.99999ms is not a number anybody chose. */
     if (scale !== 1) {
       for (const [name, ms] of Object.entries(grytDurations)) {
         const token = name.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
@@ -362,9 +299,8 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
     "--gryt-on-secondary": color.onSecondary,
     "--gryt-on-danger": color.onDanger,
 
-    // Tailwind's @theme emits --color-* names, and the utilities compile
-    // against those. Both sets have to move together or an override would
-    // change the raw var but not bg-gryt-accent.
+    // Tailwind's @theme emits --color-* names and the utilities compile against those.
+    // Both sets have to move together or an override changes the var and not the class.
     "--color-gryt-bg": color.bg,
     "--color-gryt-surface": color.surface,
     "--color-gryt-surface-raised": color.surfaceRaised,

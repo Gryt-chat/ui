@@ -7,10 +7,8 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  # Required for npm trusted publishing. Without it the OIDC token is never
-  # minted and npm falls back to looking for a credential, so a publish that
-  # is meant to be tokenless fails as though the token were missing — which is
-  # a confusing way to find out.
+  # Required for npm trusted publishing. Without it no OIDC token is minted and npm
+  # falls back to looking for a credential, so a tokenless publish fails as unauthorised.
   id-token: write
 
 jobs:
@@ -27,24 +25,12 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run typecheck
       - run: bun run test
-      # Only the package being published.
-      #
-      # This was `bun run build`, which is `bun --filter '*' build`, so it also
-      # built @gryt/docs. On 2026-08-17 that blocked a release: @gryt/ui built
-      # and exited 0, then the docs app died inside wawoff2, an emscripten
-      # WOFF2 decompressor, on a refcount that read as undefined. A font
-      # decompressor in a site nobody installs from npm stopped a library
-      # release. GRYT-301.
-      #
-      # The docs build is not lost: ci.yml still runs `bun run build` across
-      # every workspace on pull requests, so a genuine breakage there still
-      # fails, just not on the publish path.
+      # Only the package being published. `bun run build` also built @gryt/docs, and on
+      # 2026-08-17 a font decompressor dying there blocked a library release (GRYT-301).
       - run: bun run build:lib
 
-      # Before the publish rather than after it, because a version cannot be
-      # replaced once it is on npm. @gryt/ui-native 0.1.0 went out with a
-      # `workspace:*` dependency that npm refuses to resolve, and the only way
-      # to fix it was to burn the version (GRYT-370).
+      # Before the publish, because a version cannot be replaced once it is on npm.
+      # @gryt/ui-native 0.1.0 went out unresolvable and the version had to be burned.
       - run: node scripts/check-installable.mjs packages/theme
       - run: node scripts/check-installable.mjs packages/owl
       - run: node scripts/check-installable.mjs packages/ui

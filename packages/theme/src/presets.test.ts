@@ -8,9 +8,8 @@ import {
 } from "./presets";
 
 /**
- * A preset is data, and data rots quietly: a typo in `collection` drops a theme
- * out of the picker without failing anything, and a hand-edited hex value can
- * put grey text on a grey page. Both are checked here.
+ * A preset is data, and data rots quietly: a typo in `collection` drops a theme out of
+ * the picker, and a hand-edited hex can put grey text on a grey page.
  */
 describe("the presets", () => {
   it("gives every preset a unique id and name", () => {
@@ -26,9 +25,8 @@ describe("the presets", () => {
     }
   });
 
-  // The grouped view is what the picker renders, so a preset missing from it is
-  // a preset nobody can select. Counting both ways catches a collection name
-  // that is spelled right in the array and wrong on a preset.
+  // The grouped view is what the picker renders, so a preset missing from it is one
+  // nobody can select. Counting both ways catches a misspelled collection name.
   it("shows every preset in the grouped view", () => {
     const grouped = grytPresetsByCollection.flatMap((g) => g.presets);
     expect(grouped).toHaveLength(grytPresets.length);
@@ -44,13 +42,8 @@ describe("the presets", () => {
   });
 });
 
-/* Two bars, because the two halves of the library are not the same promise.
- *
- * A ported palette is what its author published. Solarized is low contrast on
- * purpose and Catppuccin Latte measures 6.57 on its own page; holding either to
- * Gryt's bar would mean changing the thing being ported. So every preset is
- * held to AA, which catches a typo without arguing with a published palette,
- * and the generated ones are held to the bar they were generated against. */
+/* Two bars, because the halves are not the same promise. A ported palette is what its
+ * author published, so it is held to AA; the generated ones to the bar they were made to. */
 const PORTED_FLOOR: [string, (p: GrytThemePreset["theme"]) => number, number][] = [
   ["dark text on page", (t) => contrast(t.dark.text, t.dark.bg), 4.5],
   ["dark text on surface", (t) => contrast(t.dark.text, t.dark.surface), 4.5],
@@ -107,14 +100,8 @@ describe("the generated collections hold Gryt's own bar", () => {
 });
 
 /*
- * A theme with `lightHue` carries a second set of fills and a second set of ink
- * to sit on them, and until GRYT-994 nothing looked at it. Winter Arc passed on
- * its dark half and measured 4.68 on the light one.
- *
- * Only the generated collections are held here. Every ported palette with a
- * lightHue misses this bar — Nord's light accent is 3.50 against its own ink —
- * and those are published values, so holding them to it would mean changing the
- * thing being ported.
+ * A theme with `lightHue` carries a second set of fills and ink, and until GRYT-994
+ * nothing looked at it. Only generated collections are held here; ported ones miss it.
  */
 describe("a split light hue set is held to the same bar", () => {
   const split = grytPresets.filter(
