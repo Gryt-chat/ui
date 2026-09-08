@@ -6,16 +6,8 @@ import { screenSize } from "./useAnchoredPosition";
 import { useTheme } from "../theme";
 
 /**
- * The shared body of every popup that hangs off a trigger.
- *
- * Menu, Popover, Tooltip and Select all need the same three things: render above
- * everything, close on an outside press, and sit next to a measured anchor
- * without falling off the screen. Base UI's Positioner does this for all of them
- * on the web, so there is one of them here too.
- *
- * It renders once invisibly to find out how big it is, then again in place. That
- * is the cost of having no layout engine to ask: the popup's size depends on its
- * content, and the position depends on the size.
+ * The shared body of every popup that hangs off a trigger. It renders once invisibly to
+ * find out how big it is, then again in place: the position depends on the size.
  */
 export interface AnchoredPopupProps extends AnchorOptions {
   open: boolean;

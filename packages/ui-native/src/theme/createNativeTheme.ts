@@ -11,14 +11,8 @@ import {
 } from "@gryt/theme";
 
 /**
- * The same theme, without CSS. React Native has no custom properties and no
- * cascade, so it cannot consume `createGrytTheme`'s output — but it can consume
- * the maths underneath, and `neutralScale`, `hueScale` and `alphaScale` are
- * exported for exactly this. **A copy here would drift the moment somebody
- * tunes a curve on the web.**
- *
- * Same inputs as `createGrytTheme`, so a theme built in the web client produces
- * the same colours here.
+ * The same theme, without CSS. React Native cannot consume `createGrytTheme`'s output but
+ * can consume the maths underneath; a copy here would drift on the next web tune.
  */
 
 export type GrytAppearance = "dark" | "light";
@@ -31,17 +25,8 @@ export interface NativeThemeOptions {
 }
 
 /**
- * The faces an app has registered, by the names React Native knows them as.
- *
- * **The library ships no font files and is not going to.** An app loads its own
- * and passes the resulting family names in here.
- *
- * **One family per weight rather than one family with weights inside it.**
- * Grouping under a single name and letting `fontWeight` select works on iOS,
- * where the OS reads the name table; Android wants an XML definition per weight
- * and ignores a `fontWeight` it cannot satisfy rather than synthesising it.
- *
- * Every field is optional. A gap falls back to the nearest lighter face given.
+ * The faces an app has registered. One family per weight rather than one with weights
+ * inside: Android wants an XML definition per weight and ignores a `fontWeight` it cannot.
  */
 export interface FontFaces {
   /** 400. The one everything else falls back to. */
@@ -61,15 +46,8 @@ export interface FontFaces {
 }
 
 /**
- * What a component spreads into a `Text` style to get the right face.
- *
- * Both halves, and never both at once. With faces configured it is a
- * `fontFamily` and no weight; with none it is a `fontWeight` and no family.
- *
- * The weight is dropped deliberately once a face is chosen. The file already
- * carries the weight, and leaving the number on asks the platform to
- * synthesise a bolder version of an already-bold face — on Android that is a
- * visibly smeared double-bold, and on iOS it is a subtler one.
+ * What a component spreads into a `Text` style to get the right face — a family with no
+ * weight, or a weight with no family. The file carries the weight, so keeping it smears.
  */
 export interface FontStyle {
   fontFamily?: string;
@@ -112,11 +90,8 @@ export interface NativeTheme {
     warning: Ramp;
   };
   /**
-   * Translucent neutral and accent, already composited over the background.
-   *
-   * The web gets these as real alpha. React Native's shadow and overlay
-   * handling is inconsistent enough across platforms that a pre-composited
-   * opaque colour is the predictable choice, which is what `alphaScale` returns.
+   * Translucent neutral and accent, already composited over the background. React Native's
+   * overlay handling varies enough that a pre-composited opaque colour is predictable.
    */
   alpha: {
     neutral: Ramp;
@@ -126,15 +101,8 @@ export interface NativeTheme {
   /** Multiples of 4, matching the Tailwind spacing the web components use. */
   space: (steps: number) => number;
   /**
-   * The face for a weight, as a style fragment to spread.
-   *
-   * ```tsx
-   * <Text style={{ fontSize: 16, ...theme.font("600") }}>
-   * ```
-   *
-   * Returns a `fontWeight` and nothing else when the theme has no faces, which
-   * is what makes this safe to adopt everywhere at once: a consumer who sets no
-   * fonts sees no change.
+   * The face for a weight, as a style fragment to spread. Returns a `fontWeight` and
+   * nothing else when the theme has no faces, so a consumer who sets none sees no change.
    */
   font: (weight?: TextStyle["fontWeight"], options?: { mono?: boolean }) => FontStyle;
   /** The faces this theme was built with, for anything that needs the raw name. */
@@ -196,10 +164,8 @@ export function createNativeTheme(options: NativeThemeOptions = {}): NativeTheme
     appearance: light ? "light" : "dark",
     color: {
       ...color,
-      // `.light` never set a hover fill on the web either, and a neutral
-      // component hovering to the dark slate on a white panel was the bug that
-      // came from it. Step 4 is "component background, hovered", so take it
-      // from the ramp rather than writing a second literal.
+      // `.light` never set a hover fill on the web either, and a neutral component hovering
+      // to dark slate came from it. Step 4 means "component background, hovered".
       surfaceHover: light ? scales.neutral[3] : color.surfaceHover,
     },
     scales,
@@ -215,10 +181,8 @@ export function createNativeTheme(options: NativeThemeOptions = {}): NativeTheme
 }
 
 /**
- * A weight as a number.
- *
- * `"bold"` is 700 and `"normal"` is 400, per the CSS values React Native takes.
- * `undefined` is 400 as well — an unstyled `Text` is regular.
+ * A weight as a number. `"bold"` is 700 and `"normal"` is 400, per the CSS values React
+ * Native takes; `undefined` is 400 as well, since an unstyled `Text` is regular.
  */
 function weightNumber(weight: TextStyle["fontWeight"]): number {
   if (weight === undefined || weight === null || weight === "normal") return 400;
@@ -228,18 +192,8 @@ function weightNumber(weight: TextStyle["fontWeight"]): number {
 }
 
 /**
- * The face for a weight, or the weight itself when there is no face.
- *
- * Falls **down** through the configured faces rather than up: an app that gives
- * only `regular` and `bold` should draw 600 in bold rather than in regular,
- * because a semibold rendered at regular reads as a missing emphasis while one
- * rendered bold reads as slightly too much. So each rung tries itself and then
- * everything lighter, and the first rung that exists wins going down from the
- * asked weight.
- *
- * Returning the bare `fontWeight` when nothing matches is the whole
- * compatibility story: a theme built without `fonts` yields exactly the styles
- * this library used before it had any of this.
+ * The face for a weight, or the weight itself when there is no face. Falls down rather than
+ * up: an app giving only regular and bold should draw 600 in bold.
  */
 function faceFor(
   fonts: FontFaces,
@@ -266,9 +220,8 @@ function faceFor(
     if (n >= step && face) return { fontFamily: face };
   }
 
-  /* Below every configured rung — a 200 on a theme that only set `bold`.
-   * `regular` is the right answer if it exists, and the platform default is the
-   * right answer if it does not. */
+  /* Below every configured rung — a 200 on a theme that only set `bold`. `regular` is the
+   * right answer if it exists, and the platform default if it does not. */
   return fonts.regular ? { fontFamily: fonts.regular } : { fontWeight: weight };
 }
 

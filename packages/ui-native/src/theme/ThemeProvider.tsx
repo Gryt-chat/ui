@@ -14,18 +14,13 @@ export interface GrytThemeProviderProps {
   color?: NativeThemeOptions["color"];
   radius?: NativeThemeOptions["radius"];
   /**
-   * The faces this app has registered, by the names React Native knows them as.
-   *
-   * The library ships no font files. Load your own and pass the names here, and
-   * every `Text` the library renders takes the right one. Leave it out and
-   * everything falls back to the platform default, exactly as before.
+   * The faces this app has registered, by the names React Native knows them as. The library
+   * ships no font files; leave it out and everything falls back to the platform default.
    */
   fonts?: FontFaces;
   /**
-   * Follow the OS setting when `appearance` is not given.
-   *
-   * The web equivalent is a `prefers-color-scheme` media query, which the
-   * client already honours.
+   * Follow the OS setting when `appearance` is not given. The web equivalent is a
+   * `prefers-color-scheme` media query, which the client already honours.
    */
   followSystemAppearance?: boolean;
   children?: ReactNode;
@@ -41,9 +36,8 @@ export function GrytThemeProvider({
 }: GrytThemeProviderProps) {
   const systemScheme = useColorScheme();
 
-  // Named props rather than a spread options object, so the dependencies are
-  // the actual inputs. Spreading meant either a stale theme or rebuilding every
-  // ramp on every render, and building a theme is real colour maths.
+  // Named props rather than a spread options object, so the dependencies are the actual
+  // inputs. Spreading meant a stale theme or rebuilding every ramp on every render.
   const theme = useMemo(() => {
     const resolved =
       appearance ??

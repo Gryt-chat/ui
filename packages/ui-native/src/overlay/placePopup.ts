@@ -1,19 +1,6 @@
 /**
- * Where to put a popup relative to the thing that opened it.
- *
- * Deliberately free of React and React Native, so it can be tested as
- * arithmetic. React Native's own source is Flow-typed and cannot be parsed by
- * the test runner, so anything importing it is untestable here.
- *
- * This is also the piece with no React Native equivalent. On the web, Base UI
- * hands positioning to Floating UI: it watches the reference element, flips the
- * popup when it would overflow, shifts it to stay on screen, and keeps doing
- * that while the page scrolls. None of that exists here, so this places the
- * popup once against a measurement taken when it opened.
- *
- * It flips and clamps. It does not follow: if the trigger moves while the popup
- * is open, the popup stays where it was. Both are in the parity exceptions
- * table.
+ * Where to put a popup relative to the thing that opened it, free of React so it can be
+ * tested. It flips and clamps once; it does not follow a trigger that moves.
  */
 
 export type Side = "top" | "bottom" | "left" | "right";

@@ -1,17 +1,10 @@
-/* The web components' motion, on React Native. **Deliberately not
- * `withSpring`**: the curve in @gryt/theme is a damped spring solved
- * analytically, and a physics engine would approximate the thing that curve was
- * chosen over. `withTiming` over the same samples is identical.
- */
+/* The web components' motion, on React Native. Deliberately not `withSpring`: the curve in
+ * @gryt/theme is solved analytically, and `withTiming` over the samples is identical. */
 import { Easing, withTiming, type WithTimingConfig } from "react-native-reanimated";
 
 /**
- * Run when the animation settles, with whether it reached the end.
- *
- * A worklet, like everything Reanimated calls back into — hop with `runOnJS`
- * to touch React state. Forwarded by every helper below because the alternative
- * is a caller reaching past them to `withTiming`, which is how the sampled
- * curve stops being the thing that runs.
+ * Run when the animation settles, with whether it reached the end. A worklet — hop with
+ * `runOnJS` to touch React state. Forwarded by every helper, or callers reach past them.
  */
 type Settled = (finished?: boolean) => void;
 import { grytDurations } from "@gryt/theme";

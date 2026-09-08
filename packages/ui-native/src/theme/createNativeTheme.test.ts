@@ -5,10 +5,8 @@ import { grytScales, grytTokens } from "@gryt/theme";
 import { createNativeTheme } from "./createNativeTheme";
 
 /**
- * The point of these is not that the numbers are right — @gryt/theme already tests
- * the colour maths. It is that the numbers are *the same ones*, reached through
- * an import rather than a copy. A drift here means the two renderers have
- * quietly become two design systems.
+ * The point is not that the numbers are right — @gryt/theme tests the maths. It is that
+ * they are the same ones, reached through an import rather than a copy.
  */
 describe("createNativeTheme", () => {
   it("takes its ramps from @gryt/theme rather than recomputing them", () => {
