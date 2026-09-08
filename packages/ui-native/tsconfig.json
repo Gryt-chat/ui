@@ -29,8 +29,13 @@
     // So TypeScript reads the package's generated declarations while Metro goes
     // on bundling the real `.tsx`. Both come from the same file. Copied from
     // packages/mobile, which hit this first.
+    // Two entries because the install layout is not fixed: bun puts the package
+    // under packages/ui-native/node_modules here and hoists it to the root in
+    // CI, and a mapping that misses falls back to the .tsx and fails. Checked
+    // both ways round.
     "phosphor-react-native/src/icons/*": [
-      "./node_modules/phosphor-react-native/lib/typescript/icons/*"
+      "./node_modules/phosphor-react-native/lib/typescript/icons/*",
+      "../../node_modules/phosphor-react-native/lib/typescript/icons/*"
     ]
     },
     "noEmit": true
