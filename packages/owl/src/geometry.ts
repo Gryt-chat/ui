@@ -54,10 +54,8 @@ export interface Half {
 }
 
 /**
- * `half` as closed path data, drawn around an axis at `ax`.
- *
- * The left side is the right side walked backwards with x negated, so the two
- * are the same arithmetic and cannot disagree.
+ * `half` as closed path data, drawn around an axis at `ax`. The left side is the right
+ * walked backwards with x negated, so the two cannot disagree.
  */
 export function symmetric(half: Half, ax: number, top: number, hw: number, h: number): string {
   const { points, cap = 0 } = half;
@@ -105,10 +103,8 @@ export function symmetricPath(
 }
 
 /**
- * A closed path through absolute points, in the same start-then-triples form.
- *
- * For the parts that are not symmetric in themselves and are drawn twice, one
- * per side — a wing, an ear, half a pair of glasses.
+ * A closed path through absolute points, in the same start-then-triples form. For the
+ * parts that are not symmetric and are drawn twice — a wing, an ear, half a pair.
  */
 export function closedPath(points: readonly Point[]): string {
   const first = points[0]!;

@@ -1,13 +1,6 @@
 /**
- * The bird itself: silhouette, ear tufts, wings.
- *
- * All three are the painted reference traced once and normalised, not an
- * approximation of it, and none of them has a style to pick. A generated owl
- * that is nearly the drawn owl is worse than either, because the drawn one is
- * what everything else was designed against — the face plate sits where it sits
- * because the head is that shape.
- *
- * The one choice here is whether the ear tufts are there at all.
+ * The bird itself: silhouette, ear tufts, wings. All three are the painted reference
+ * traced once, with no style to pick; the one choice is whether the tufts are there.
  */
 
 import { closedPath, symmetricPath, type Half, type Point } from "../geometry";
@@ -15,15 +8,8 @@ import type { OwlMetrics } from "../metrics";
 import type { EarStyle } from "../types";
 
 /**
- * The head and skirt, as a right half in head-height units.
- *
- * Two cubics up the head because one cannot hug an arc that long: a single
- * segment from crown to shoulder cut the cheek in by forty units, which read
- * as a bird holding its breath.
- *
- * The skirt runs to 2.05 head-heights, well past the bottom of the frame. That
- * is the artboard too — the reference has feet down there that no square crop
- * has ever shown.
+ * The head and skirt, as a right half in head-height units. Two cubics up the head because
+ * one cut the cheek in by forty units; the skirt runs past the bottom of the frame.
  */
 const SILHOUETTE: Half = {
   points: [
@@ -39,15 +25,8 @@ export function renderBody(m: OwlMetrics, fill: string): string {
 }
 
 /**
- * Ear tufts, drawn behind the body in the body's own colour.
- *
- * Behind rather than on top, so the seam where a tuft meets the head never
- * shows however the two curves disagree. They are the same fill, so there is
- * nothing to see either way — which is the point.
- *
- * The reference tuft is a thin sickle that flicks up and out from two points on
- * the head arc, and it only clears the silhouette by about a sixth of the body's
- * half-width. It is meant to be small.
+ * Ear tufts, drawn behind the body in the body's own colour, so the seam where a tuft
+ * meets the head never shows. The reference tuft is a thin sickle, meant to be small.
  */
 export function renderEars(m: OwlMetrics, style: EarStyle, fill: string): string {
   if (style === "none") return "";
@@ -69,16 +48,10 @@ export function renderEars(m: OwlMetrics, style: EarStyle, fill: string): string
 }
 
 /**
- * The darker crescent down each side.
- *
- * It shares the body's outer edge exactly — the same three control points — so
- * the two never show a hairline between them at any size. Only the inner edge
- * is the wing's own.
- *
- * Measured from the shoulder rather than the crown, unlike the silhouette.
- * Getting that wrong is silent: the wing still draws, still fills the same
- * corner, and is simply the wrong shape.
+ * The darker crescent down each side. It shares the body's outer edge exactly, so the two
+ * never show a hairline; only the inner edge is the wing's own.
  */
+
 /** One wing. `-1` sits on the left of the frame, `1` on the right. */
 export function renderWing(m: OwlMetrics, fill: string, side: 1 | -1): string {
   const at = (side: 1 | -1, fx: number, fy: number): Point => [

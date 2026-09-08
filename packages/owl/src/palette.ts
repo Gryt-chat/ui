@@ -1,19 +1,13 @@
 /**
- * The colours an owl comes in. **Derived from TILE_HUES rather than
- * hand-picked**: a voice tile snaps its tint to the nearest entry in that list,
- * so a palette built on anything else is rounded to a hue it was never designed
- * around. The hand-written set this replaced put four of eight in the same
- * orange band, which was six identical tiles in a nine-person grid.
+ * The colours an owl comes in, derived from TILE_HUES rather than hand-picked: a voice
+ * tile snaps to the nearest entry, so anything else is rounded to a hue nobody designed.
  */
 
 import type { OwlPalette, PaletteName, PaletteScheme } from "./types";
 
 /**
- * The hues a voice tile is drawn in.
- *
- * A curated set rather than the full wheel: free hue lands in the yellow-green
- * band often enough to matter, and those come out muddy at the lightness a
- * tile needs. Meet's own tiles are drawn from a fixed palette too.
+ * The hues a voice tile is drawn in. A curated set rather than the full wheel: free hue
+ * lands in the yellow-green band often enough to matter, and those come out muddy.
  */
 export const TILE_HUES = [280, 24, 170, 330, 210, 140, 350, 45, 260, 195];
 
@@ -78,43 +72,22 @@ function apart(a: number, b: number): number {
 }
 
 /**
- * The hue the scarf and the pilot frames are drawn in.
- *
- * Two poles — amber and a cold blue — and each palette takes whichever is
- * further from its own hue. One line, and it cannot fail the way a fixed warm
- * accent does: a gold owl never ends up in a gold scarf, and a teal one gets
- * the amber the drawings use.
+ * The hue the scarf and the pilot frames are drawn in. Two poles, amber and a cold blue,
+ * and each palette takes whichever is further from its own — no gold owl in a gold scarf.
  */
 function farHue(h: number): number {
   return apart(h, 34) >= apart(h, 202) ? 34 : 202;
 }
 
 /**
- * The three ways an owl sits against its background, all off the painted
- * references. `dusk` needs a darker wing than the other two or the bird
- * flattens into the field.
- *
- * The face runs warm in every scheme, which is why a teal owl has a cream face
- * and ten palettes do not read as one palette at ten temperatures. The plate is
- * lighter against the body than on the artboard: at member-list size the
- * reference's four points of lightness disappear and the owl loses its face.
- *
- * `trim` stays inside the palette's own hue, at a lightness that depends on the
- * scheme — backwards, a bow tie is a smudge under the chin.
+ * The three ways an owl sits against its background, all off the painted references. The
+ * face runs warm in every scheme, and `trim` stays inside the palette's own hue.
  */
 export function owlPalette(name: PaletteName, scheme: PaletteScheme): OwlPalette {
   const h = HUE_BY_NAME[name];
   /*
-   * A name nothing knows is a hue of `undefined`, and `hsl` then returns
-   * `#d062NaN` — a string that is not a colour, that every renderer ignores,
-   * and that no type checker sees because the parameter is typed. The docs
-   * site asked for "plum" for months and the third preview on the drawing
-   * guide painted an owl in nothing at all.
-   *
-   * Throwing here rather than falling back, because this is the low-level
-   * function and by the time it is reached the name has been chosen. The path
-   * that takes a name from a caller — `resolveOwl` — filters first, so an
-   * avatar never fails on one.
+   * A name nothing knows is a hue of `undefined`, and `hsl` then returns `#d062NaN` — no
+   * renderer draws it and no type checker sees it. Throwing, because `resolveOwl` filters.
    */
   if (h === undefined) {
     throw new Error(
