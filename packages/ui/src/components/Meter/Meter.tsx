@@ -25,13 +25,8 @@ export interface MeterProps
 }
 
 /**
- * A measurement inside a known range — mic level, disk used, how full a server
- * is. Deliberately not Progress: a reading at 100% is often the bad case rather
- * than the finished one, and the two announce differently to a screen reader.
- *
- * 120ms and ease-out, no spring. Shorter than the gap between polls at 4Hz, so
- * a fast feed still lands on every value it is handed, while a slow one does
- * not teleport.
+ * A measurement inside a known range — mic level, disk used. Not Progress: 100% is often
+ * the bad case, and the two announce differently. 120ms and ease-out, no spring.
  */
 export function Meter({
   className,

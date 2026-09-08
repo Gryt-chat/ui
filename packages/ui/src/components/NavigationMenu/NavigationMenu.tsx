@@ -6,11 +6,8 @@ import { cn } from "../utils/cn";
 import { focusRing, popupMotion, popupSurface } from "../utils/styles";
 
 /**
- * A bar of menus that behave as one — File, Edit, View.
- *
- * Once any menu is open, moving along the bar opens the next without a second
- * click, which is the behaviour that separates a menubar from several
- * independent Menus sitting next to each other.
+ * A bar of menus that behave as one. Once any is open, moving along the bar opens the
+ * next without a second click, which is what separates a menubar from several Menus.
  */
 export type MenubarProps = ComponentPropsWithoutRef<typeof BaseMenubar>;
 
@@ -31,12 +28,8 @@ export const Menubar = forwardRef<HTMLDivElement, MenubarProps>(
 );
 
 /**
- * Site-level navigation whose items open panels.
- *
- * Distinct from Menubar: the items are links first and the panels can hold
- * layout — a column of sections, a promo — rather than a list of commands. The
- * viewport animates between panels so moving along the bar resizes rather than
- * closing and reopening.
+ * Site-level navigation whose items open panels. Distinct from Menubar: the items are
+ * links first and the panels can hold layout rather than a list of commands.
  */
 const Trigger = forwardRef<
   HTMLButtonElement,
@@ -76,9 +69,8 @@ const Popup = forwardRef<
   );
 });
 
-// Wrapped rather than re-exported raw, so it carries a class the app can hang a
-// z-index on. Every other popup in here already has one; this was the last
-// positioner without, and a consumer cannot style what it cannot select.
+// Wrapped rather than re-exported raw, so it carries a class the app can hang a z-index
+// on. A consumer cannot style what it cannot select.
 const Positioner = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<typeof BaseNavigationMenu.Positioner>

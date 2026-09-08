@@ -47,10 +47,8 @@ describe("Avatar", () => {
   });
 
   /*
-   * The corner belongs to the caller, not to the drawing. A caller asks for
-   * `rounded-(--gryt-radius-md)` and the root clips to it, so the radius is the
-   * theme's in pixels — an SVG that baked its own would be a fraction of the
-   * box and would not match the theme at any size.
+   * The corner belongs to the caller, not the drawing. The root clips to the theme's
+   * radius in pixels; an SVG baking its own would be a fraction of the box.
    */
   it("draws the eggs square and lets the root round them", () => {
     render(

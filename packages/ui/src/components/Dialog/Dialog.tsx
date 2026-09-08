@@ -4,8 +4,7 @@ import type { ComponentPropsWithoutRef, HTMLAttributes } from "react";
 import { cn } from "../utils/cn";
 
 // Base UI drives enter and exit animation through data-starting-style and
-// data-ending-style, which it sets for one frame either side of the transition.
-// The element has to carry the transition itself; there is no JS timing.
+// data-ending-style, so the element has to carry the transition; there is no JS timing.
 const motion =
   "transition-[opacity,scale,translate] duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none";
 
@@ -35,12 +34,8 @@ export type DialogPopupProps = ComponentPropsWithoutRef<
   typeof BaseDialog.Popup
 >;
 
-// 32rem, not the 24rem this used to be. Radix Themes, which the client is
-// migrating off, gives Dialog.Content 600px, so a dialog ported across to this
-// one shrank by a third for no reason anybody chose — and the client had grown
-// a w-[27rem]..w-[30rem] override on every dialog to claw some of it back.
-// tailwind-merge means those overrides still win, so this only moves the ones
-// that never said anything. AlertDialog carries the same width deliberately.
+// 32rem, not the 24rem this used to be: Radix gives Dialog.Content 600px, so a ported
+// dialog shrank by a third. AlertDialog carries the same width deliberately.
 const Popup = forwardRef<HTMLDivElement, DialogPopupProps>(
   function DialogPopup({ className, ...props }, ref) {
     return (

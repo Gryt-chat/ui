@@ -13,11 +13,8 @@ export interface NumberFieldProps
   label?: ReactNode;
   className?: string;
   /**
-   * Drag the label sideways to change the value.
-   *
-   * Base UI calls this a scrub area, and it is the reason to use this over a
-   * plain input for things like volume or bitrate — coarse adjustment by drag,
-   * exact entry by typing, without two controls.
+   * Drag the label sideways to change the value. Base UI calls it a scrub area, and it is
+   * why this beats a plain input for volume or bitrate: coarse by drag, exact by typing.
    */
   scrubbable?: boolean;
 }

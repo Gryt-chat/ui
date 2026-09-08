@@ -35,9 +35,8 @@ export const ConversationItem = forwardRef<
           size="small"
           className={cn(
             active
-              // Step 9 by number rather than by its flat name: this is the
-              // filled-button pair inverted — the accent as ink on the ink
-              // colour it normally carries — and naming the step says so.
+              // Step 9 by number rather than by its flat name: this is the filled-button
+              // pair inverted, and naming the step says so.
               ? "bg-gryt-on-accent text-gryt-accent-9 ring-transparent"
               : "bg-gryt-surface-raised text-gryt-text"
           )}

@@ -17,10 +17,8 @@ function popupWidth(file: string): string {
 }
 
 /**
- * AlertDialog's own comment says it is styled identically to Dialog on purpose —
- * the difference is behaviour, not looks. Nothing enforced that, so raising one
- * default and forgetting the other was a one-line mistake nobody would see until
- * two dialogs sat side by side at different widths.
+ * AlertDialog is styled identically to Dialog on purpose — the difference is behaviour.
+ * Nothing enforced that, so raising one default and forgetting the other was invisible.
  */
 describe("dialog width", () => {
   it("is the same for Dialog and AlertDialog", () => {

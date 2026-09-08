@@ -1,12 +1,6 @@
 /**
- * Choosing what your owl looks like, instead of only what your name hashes to.
- *
- * Three columns: slots on a rail, every option for the chosen slot as a grid of
- * owls, and the owl pinned on the right where it does not scroll away —
- * comparing two hats should be looking rather than remembering.
- *
- * **Options are drawn, never named.** `eyes-eyelashes-surprised` in a dropdown
- * tells nobody anything.
+ * Choosing what your owl looks like, instead of only what your name hashes to. Options are
+ * drawn, never named: `eyes-eyelashes-surprised` in a dropdown tells nobody anything.
  */
 
 import {
@@ -56,9 +50,8 @@ import { markCosmeticSeen, readNewCosmetics } from "./owlSeen";
 import { forgetLook, readWardrobe, rememberLook, type WardrobeEntry } from "./owlWardrobe";
 
 /**
- * Phosphor has a clothing set, so five of the six slots have a glyph. It has no
- * scarf, tie or necklace in 1,505 icons, so the neck one is drawn — filled, on
- * the same 256 grid, so it sits in the rail without announcing itself.
+ * Phosphor has a clothing set, so five of six slots have a glyph. It has no scarf or tie
+ * in 1,505 icons, so the neck one is drawn on the same 256 grid.
  */
 function BowtieIcon({ size = 18 }: { size?: number }) {
   return (
@@ -97,11 +90,8 @@ const BARE: WornLook["wearing"] = {
 };
 
 /**
- * The owl a seed already draws, as a look the designer can edit.
- *
- * `resolveOwl` is what every avatar in the app goes through, so this is the
- * bird somebody already has rather than an approximation of it. `wearing` comes
- * back with only the filled slots in it, hence the spread over BARE.
+ * The owl a seed already draws, as a look the designer can edit. `resolveOwl` is what
+ * every avatar goes through; `wearing` comes back with only the filled slots.
  */
 function lookFromSeed(seed: string): WornLook {
   const owl = resolveOwl(seed);
@@ -114,13 +104,8 @@ function lookFromSeed(seed: string): WornLook {
 }
 
 /**
- * Where the designer opens.
- *
- * `fromSeed` is for gryt.chat, where the section's whole claim is that your owl
- * is drawn from your name — opening on a saved look or on the default gold bird
- * showed every visitor the same owl whatever they typed, which is the opposite
- * of the point. The client leaves it off: there you are opening the designer to
- * design, and your last look is the right place to start.
+ * Where the designer opens. `fromSeed` is for gryt.chat, whose whole claim is that your
+ * owl comes from your name; the client leaves it off and opens on your last look.
  */
 function startingLook(fromSeed?: string): WornLook {
   if (fromSeed) return lookFromSeed(fromSeed);
@@ -152,10 +137,8 @@ function randomLook(): WornLook {
 }
 
 /**
- * The chosen owl as a PNG, at the size an avatar is displayed.
- *
- * Rendered through an <img> and a canvas so the browser rasterises the same SVG
- * it would have drawn on screen.
+ * The chosen owl as a PNG, at the size an avatar is displayed. Rendered through an <img>
+ * and a canvas, so the browser rasterises the same SVG it would have drawn.
  */
 async function renderToPng(seed: string, look: WornLook, size = 512): Promise<Blob> {
   const svg = owlAvatarDataUri(seed, { ...wornToOptions(look), size });
@@ -183,12 +166,8 @@ async function renderToPng(seed: string, look: WornLook, size = 512): Promise<Bl
 }
 
 /**
- * The preview owl, cross-faded rather than swapped — changing an `<img>`'s src
- * leaves a frame of nothing while the new one decodes, so every equip flashed.
- *
- * Two rules keep it from ever going blank: a layer does not start fading until
- * its own image has decoded, and the layers below are dropped only once the top
- * one is fully opaque. Several can be in flight; whichever finishes last wins.
+ * The preview owl, cross-faded rather than swapped: a new `src` leaves a frame of nothing.
+ * A layer waits for its own decode, and the ones below drop only once it is opaque.
  */
 function CrossfadeOwl({ src, className }: { src?: string; className?: string }) {
   // Newest last. Each entry is one rendered look.
@@ -231,11 +210,8 @@ function CrossfadeOwl({ src, className }: { src?: string; className?: string }) 
 }
 
 /**
- * Button's interaction, borrowed for the rail's tabs.
- *
- * @gryt/ui's Tab animates its colour and nothing else. Until it grows a press
- * of its own this keeps the rail feeling like the rest of the dialog — the same
- * numbers Button and the option tiles use, so the three do not disagree.
+ * Button's interaction, borrowed for the rail's tabs. @gryt/ui's Tab animates colour only,
+ * so this keeps the rail on the same numbers Button and the option tiles use.
  */
 const TAB_PRESS =
   "transition-[scale,color,background-color] duration-(--gryt-dur-spring) ease-spring "
@@ -256,9 +232,8 @@ function OwlLayer({
 
   const reveal = useCallback(() => {
     if (immediate) return;
-    // Two frames, not one. A single rAF can land in the same style flush as the
-    // mount, and the browser then has no starting value to animate from — the
-    // layer snaps in and the flash is back.
+    // Two frames, not one. A single rAF can land in the same style flush as the mount, and
+    // the browser then has no starting value to animate from.
     requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)));
   }, [immediate]);
 
@@ -284,12 +259,8 @@ function OwlLayer({
 }
 
 /**
- * Writing the owl out as a file.
- *
- * A menu rather than four buttons, because three of the four are the same
- * picture flattened and only one of them is a decision most people need to
- * think about. SVG is first: it is what the generator produces, it is a few
- * kilobytes, and it has no resolution to be wrong about.
+ * Writing the owl out as a file. A menu rather than four buttons, since three of the four
+ * are the same picture flattened. SVG is first: it has no resolution to be wrong about.
  */
 function SaveAs({
   seed,

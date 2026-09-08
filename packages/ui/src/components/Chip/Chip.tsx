@@ -13,13 +13,8 @@ export type ChipTone =
   | "danger";
 
 /**
- * Three steps of one scale, rather than three alphas of the fill.
- *
- * The flat name is step 9, the solid step, and it is the same colour in both
- * appearances on purpose. That makes it right for a filled button and wrong for
- * text: on a white panel a success chip came out bright green on pale green.
- * Step 3 is the component background, 6 the hairline and 11 the text, each
- * defined per appearance and each measured.
+ * Three steps of one scale rather than three alphas of the fill. Step 9 is the same colour
+ * in both appearances, which is right for a filled button and wrong for text.
  */
 const toneStyles: Record<ChipTone, string> = {
   neutral: "border-gryt-border bg-gryt-surface-raised text-gryt-text",

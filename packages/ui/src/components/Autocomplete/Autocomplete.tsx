@@ -6,12 +6,8 @@ import { listboxInputClass, listboxItemClass } from "../Combobox/Combobox";
 import { popupMotion, popupSurface } from "../utils/styles";
 
 /**
- * A text input that suggests as you type.
- *
- * The difference from Combobox is what the value is allowed to be: here the
- * typed text is the answer and the list is a suggestion, so a search box or a
- * tag input belongs here. Combobox is for when the value must come from the
- * list. They share item and input styling deliberately.
+ * A text input that suggests as you type. The typed text is the answer and the list is a
+ * suggestion; Combobox is for when the value must come from the list.
  */
 
 const Input = forwardRef<

@@ -7,16 +7,8 @@ import { useMediaQuery } from "../utils/useMediaQuery";
 export type DrawerSide = "left" | "right" | "top" | "bottom";
 
 /**
- * A panel pinned to an edge of the screen, and a sheet on small screens.
- *
- * Built on Base UI's `drawer` rather than on `dialog`, which is what this used
- * to be. The primitive brings swipe-to-dismiss, snap points and nested
- * stacking, and it drives the drag through CSS variables so the panel tracks
- * the pointer without a re-render per frame.
- *
- * `side` lives on Root, not on Popup as it used to. It has to: the swipe
- * direction is Root's business, and Viewport and Popup both need to agree with
- * it. Callers passing `side` to Popup will need to move it up one level.
+ * A panel pinned to an edge of the screen, and a sheet on small screens. `side` lives on
+ * Root, not on Popup: the swipe direction is Root's business.
  */
 
 /** Which way you drag to dismiss, per edge. */
@@ -38,11 +30,8 @@ const viewportBySide: Record<DrawerSide, string> = {
 };
 
 /**
- * Corners are rounded on the edges away from the origin only.
- *
- * A sheet coming up from the bottom is still attached to the bottom of the
- * screen, so rounding its bottom corners would float it off an edge it has not
- * left. Rounding the leading edge alone is what makes it read as attached.
+ * Corners are rounded on the edges away from the origin only. A sheet from the bottom is
+ * still attached to it, and rounding the leading edge alone is what reads as attached.
  */
 const radiusBySide: Record<DrawerSide, string> = {
   left: "rounded-r-(--gryt-radius-xl)",
@@ -52,12 +41,8 @@ const radiusBySide: Record<DrawerSide, string> = {
 };
 
 /**
- * Size, the overhang, and the off-screen resting transform.
- *
- * The panel runs --gryt-drawer-bleed past its edge and hangs that much
- * off-screen, with matching padding so content sits where it would have. The
- * spring settles onto its target from both directions, and without the overhang
- * a fractional undershoot shows a seam of backdrop down the edge.
+ * Size, the overhang, and the off-screen resting transform. The spring settles from both
+ * directions, and without the overhang an undershoot shows a seam of backdrop.
  */
 const popupBySide: Record<DrawerSide, string> = {
   left: [
@@ -98,11 +83,8 @@ export interface DrawerRootProps
   /** Edge the panel is pinned to. Ignored on small screens unless sheetOnMobile is false. */
   side?: DrawerSide;
   /**
-   * Become a bottom sheet under 768px.
-   *
-   * A side panel is a desktop shape. On a phone it eats the width the content
-   * needs and puts the drag gesture on the axis the browser uses for back
-   * navigation. Set false to keep `side` at every width.
+   * Become a bottom sheet under 768px. A side panel eats the width and puts the drag on
+   * the axis the browser uses for back. Set false to keep `side` at every width.
    */
   sheetOnMobile?: boolean;
   children?: ReactNode;
@@ -137,9 +119,8 @@ const Viewport = forwardRef<HTMLDivElement, DrawerViewportProps>(
       <BaseDrawer.Viewport
         ref={ref}
         className={cn(
-          // z-50 matters: the popup is no longer positioned itself, so the
-          // viewport is what has to sit above the page. Without it a sticky
-          // site header renders over the panel.
+          // z-50 matters: the popup is no longer positioned itself, so the viewport has to
+          // sit above the page or a sticky site header renders over the panel.
           "gryt-drawer-viewport fixed inset-0 z-50 flex",
           viewportBySide[side],
           className
@@ -208,12 +189,8 @@ export interface DrawerGrabberProps {
 }
 
 /**
- * The bar people expect to drag on a sheet.
- *
- * Rendered only for the top and bottom edges: on a left or right panel it would
- * be pointing the wrong way, and a horizontal drawer is a desktop shape where
- * nobody reaches for a grab bar anyway. Decorative — the whole popup is
- * draggable, so this is a hint, not the control.
+ * The bar people expect to drag on a sheet, rendered only for the top and bottom edges.
+ * Decorative — the whole popup is draggable, so this is a hint, not the control.
  */
 function Grabber({ className }: DrawerGrabberProps) {
   const side = useContext(SideContext);

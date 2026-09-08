@@ -48,10 +48,8 @@ export const Checkbox = forwardRef<HTMLButtonElement, CheckboxProps>(
           className={cn(
             "flex origin-center",
             "transition-[scale,opacity] duration-(--gryt-dur-spring) ease-spring",
-            // Scaling from 0 rather than from something near 1 is deliberate.
-            // The spring's overshoot is a percentage of the travel, so a tick
-            // going 0 -> 1 overshoots to 1.12 and visibly springs, while one
-            // going 0.95 -> 1 overshoots by 0.006 and does nothing at all.
+            // Scaling from 0 rather than from near 1 is deliberate: the spring's overshoot
+            // is a percentage of travel, so 0.95 -> 1 overshoots by 0.006 and does nothing.
             "data-unchecked:scale-0 data-unchecked:opacity-0",
             "motion-reduce:transition-none"
           )}

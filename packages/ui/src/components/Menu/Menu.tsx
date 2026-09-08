@@ -28,12 +28,8 @@ export type MenuRadioItemProps = ComponentPropsWithoutRef<
 >;
 
 /**
- * One row, whichever kind of row it is.
- *
- * Item, SubmenuTrigger, CheckboxItem and RadioItem all sit in the same column
- * and have to line up. They did not: only Item was styled, so a submenu trigger
- * rendered as bare text with no padding, sitting twelve pixels to the left of
- * every row above and below it.
+ * One row, whichever kind of row it is. Item, SubmenuTrigger, CheckboxItem and RadioItem
+ * have to line up; only Item was styled, so a submenu trigger sat twelve pixels left.
  */
 const menuItem = [
   "flex cursor-pointer items-center gap-2 rounded-(--gryt-radius-md)",
@@ -67,10 +63,8 @@ const Popup = forwardRef<HTMLDivElement, MenuPopupProps>(function MenuPopup(
       className={cn(
         "gryt-menu min-w-44 outline-none",
         popupSurfaceColors,
-        // Concentric with the rows inside it: the popup radius less this 8px
-        // inset is exactly the item's. That relationship used to be Menu's own
-        // exception, written out as lg against a shared surface of xl; it is
-        // what --gryt-radius-popup means now, so this only states the inset.
+        // Concentric with the rows inside it: the popup radius less this 8px inset is
+        // exactly the item's, which is what --gryt-radius-popup means.
         "rounded-(--gryt-radius-popup) p-2",
         popupMotion,
         className
@@ -138,9 +132,8 @@ const SubmenuTrigger = forwardRef<HTMLDivElement, MenuSubmenuTriggerProps>(
         className={cn(
           "gryt-menu-submenu-trigger justify-between",
           menuItem,
-          // Held open while the submenu is showing. Without it the row you came
-          // through goes flat the moment the pointer leaves it, and the open
-          // submenu appears to belong to nothing.
+          // Held open while the submenu is showing, or the row you came through goes flat
+          // and the open submenu appears to belong to nothing.
           "data-popup-open:bg-gryt-surface-raised",
           className
         )}

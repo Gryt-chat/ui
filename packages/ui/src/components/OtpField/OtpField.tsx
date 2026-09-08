@@ -15,11 +15,8 @@ export interface OtpFieldProps
 }
 
 /**
- * A one-time code, one box per character.
- *
- * Base UI handles the parts that are tedious and easy to get wrong: paste a
- * whole code into any box and it distributes across all of them, backspace
- * steps back a box, and the arrow keys move between them.
+ * A one-time code, one box per character. Base UI handles the tedious parts: paste a whole
+ * code into any box and it distributes, backspace steps back, arrows move between.
  */
 export const OtpField = forwardRef<HTMLDivElement, OtpFieldProps>(
   function OtpField({ className, length = 6, ...props }, ref) {

@@ -11,9 +11,8 @@ import {
 } from "../utils/styles";
 
 /**
- * Shared with Autocomplete, which is the same list wearing different
- * semantics. Exported so the two cannot drift, the way ContextMenu shares
- * Menu's item.
+ * Shared with Autocomplete, which is the same list wearing different semantics. Exported
+ * so the two cannot drift, the way ContextMenu shares Menu's item.
  */
 export const listboxItemClass = [
   "flex cursor-default items-center gap-2 rounded-(--gryt-radius-md)",
@@ -26,13 +25,8 @@ export const listboxItemClass = [
 ].join(" ");
 
 /**
- * The typeahead input on both Combobox and Autocomplete.
- *
- * This is TextField's control, through the same shared constant, so the three
- * places you can type in this library are the same shape. It used to be its own
- * class list asking for `rounded-(--gryt-radius-input)` — a token that has never
- * existed — so it rendered with square corners next to a fully rounded
- * TextField.
+ * The typeahead input on both Combobox and Autocomplete. TextField's control, through the
+ * same shared constant, so the three places you can type are the same shape.
  */
 export const listboxInputClass = [
   fieldControl,
@@ -119,11 +113,8 @@ const Empty = forwardRef<
 });
 
 /**
- * Pick from a list, narrowed by typing. Select with a filter, in effect.
- *
- * Supports multiple selection with chips, which is what a member picker or a
- * role assignment wants. Use Autocomplete instead when the value is free text
- * and the list is only a suggestion.
+ * Pick from a list, narrowed by typing. Supports multiple selection with chips; use
+ * Autocomplete instead when the value is free text and the list is only a suggestion.
  */
 export const Combobox = {
   Root: BaseCombobox.Root,

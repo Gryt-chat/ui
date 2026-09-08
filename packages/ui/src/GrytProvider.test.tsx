@@ -8,11 +8,8 @@ import { createGrytTheme } from "@gryt/theme";
 describe("GrytProvider", () => {
   it("paints nothing when it is given no theme", () => {
     /**
-     * The stylesheet already declares the defaults on :root. A provider that
-     * re-stated them on its own div sat below the root in the cascade, so an
-     * app theming itself the documented way — variables on the root element,
-     * where overlays portalled to document.body can still read them — found
-     * every one of them overridden by a wrapper repeating what it already had.
+     * The stylesheet already declares the defaults on :root. A provider re-stating them on
+     * its own div sits below the root, so an app theming the documented way is overridden.
      */
     const { container } = render(
       <GrytProvider>
@@ -54,9 +51,8 @@ describe("GrytProvider containOverlays", () => {
   const options = [{ label: "One", value: "one" }];
 
   /**
-   * The point of the flag is where the popup ends up, so the assertion is
-   * exactly that and nothing about how it looks: a themed subtree is only a
-   * themed subtree for an overlay that is actually inside it.
+   * The point of the flag is where the popup ends up, so the assertion is exactly that: a
+   * themed subtree is only a themed subtree for an overlay actually inside it.
    */
   it("leaves overlays in the body by default", async () => {
     const { container } = render(
