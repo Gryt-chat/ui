@@ -48,9 +48,8 @@ describe("theme.font with faces configured", () => {
     expect(theme.font()).toEqual({ fontFamily: "Atkinson-Regular" });
   });
 
-  /* The weight is deliberately absent. The file carries it, and leaving the
-   * number on asks the platform to synthesise a bolder version of an
-   * already-bold face — on Android a visibly smeared double-bold. */
+  /* The weight is deliberately absent: the file carries it, and leaving the number on asks
+   * the platform to synthesise a bolder version of an already-bold face. */
   it("never returns a weight alongside a family", () => {
     expect(theme.font("700").fontWeight).toBeUndefined();
   });
@@ -66,9 +65,8 @@ describe("theme.font with faces configured", () => {
 });
 
 describe("theme.font with gaps in the faces", () => {
-  /* Falls *down* rather than up: an app that ships only regular and bold should
-   * draw 600 in bold, because a semibold rendered regular reads as missing
-   * emphasis while one rendered bold reads as slightly too much. */
+  /* Falls down rather than up: an app shipping only regular and bold should draw 600 in
+   * bold, because a semibold rendered regular reads as missing emphasis. */
   it("falls to the nearest lighter face that exists", () => {
     const theme = createNativeTheme({
       fonts: { regular: "R", bold: "B" },
@@ -86,9 +84,8 @@ describe("theme.font with gaps in the faces", () => {
     expect(theme.font("200")).toEqual({ fontFamily: "R" });
   });
 
-  /* A theme that configured only a heavy face has nothing sensible to draw 200
-   * in, so it says so by handing the weight back rather than drawing 200 in
-   * bold. */
+  /* A theme that configured only a heavy face has nothing sensible to draw 200 in, so it
+   * hands the weight back rather than drawing 200 in bold. */
   it("falls back to the platform when even regular is missing", () => {
     const theme = createNativeTheme({ fonts: { bold: "B" } });
 

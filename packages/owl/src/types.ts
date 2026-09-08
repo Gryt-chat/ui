@@ -1,9 +1,6 @@
 /**
- * The vocabulary of an owl. **The body, wings, face plate and beak have no
- * styles and no varying proportions** — every owl is the drawn owl at the drawn
- * size, because an avatar set whose silhouette varies is a face generator and
- * this is one character. What varies is colour, expression, ear tufts and what
- * it is wearing.
+ * The vocabulary of an owl. The body, wings, face plate and beak have no styles and no
+ * varying proportions: this is one character, not a face generator.
  */
 
 export type Seed = string | number;
@@ -12,16 +9,13 @@ export type Seed = string | number;
 export type EarStyle = "none" | "tufts";
 
 /**
- * A part of the bird itself, as opposed to something it is wearing.
- *
- * Named so that a drawing can say which of them it replaces. An expression
- * brings its own eyes, so it hides the drawn ones rather than being painted
- * over them — see `hides` on Accessory.
+ * A part of the bird itself, as opposed to something it is wearing. Named so a drawing
+ * can say which of them it replaces — see `hides` on Accessory.
  */
+
 /**
  * A piece of the bird a drawing can replace. The paired ones are individually
- * addressable, because a wink brings its own closed eye and leaves the open one
- * — hiding "eyes" took both. `eyes` and `wings` still mean the pair.
+ * addressable: a wink brings a closed eye and leaves the open one.
  */
 export type OwlPart =
   | "earTufts"
@@ -36,34 +30,20 @@ export type OwlPart =
   | "beak";
 
 /**
- * Where an accessory is worn. One per slot, drawn independently, so a hat, some
- * glasses and a scarf are three rolls that can all turn up at once.
- *
- * `expression` is a slot like the others: a drawing, chosen by weight, and an
- * owl without one gets the eyes the bird is drawn with rather than no eyes.
+ * Where an accessory is worn. One per slot, drawn independently, so a hat, glasses and a
+ * scarf are three rolls. `expression` is a slot like the others.
  */
 export type AccessorySlot = "expression" | "eyewear" | "head" | "neck" | "body";
 
 /**
- * Where an accessory sits in the stack. The owl is drawn field, ear tufts,
- * body, wings, face plate, eyes, beak; these name the gaps.
- *
- * `overEyes` is for spectacles with a painted lens, which hides the eye behind
- * it. `overFace` is for a frame drawn as holes only, where the owl's own eyes
- * land on top and the expression shows through.
- *
- * `overAll` is the top and where most things belong. `underFace` and `behind`
- * are the escape hatches. Within a layer, accessories draw in slot order.
+ * Where an accessory sits in the stack: `overEyes` for a painted lens, `overFace` for a
+ * frame of holes, `overAll` for most things. Within a layer, they draw in slot order.
  */
 export type AccessoryLayer = "behind" | "underFace" | "overFace" | "overEyes" | "overAll";
 
 /**
- * The five colours an owl is drawn from, plus six for whatever it is wearing.
- *
- * `accent` is the dark one: eyes and beak. The `trim` three stay inside the
- * palette's own hue, which is what the drawn accessories do — a bow tie is the
- * bird's colour at another lightness, not a contrasting one. `gold` is the
- * exception, and it is what the scarf and the pilot frames were drawn in.
+ * The five colours an owl is drawn from, plus six for what it wears. `accent` is the dark
+ * one; the `trim` three stay inside the palette's hue, and `gold` is the exception.
  */
 export interface OwlPalette {
   background: string;
@@ -99,20 +79,14 @@ export interface OwlOptions {
   ears?: EarStyle;
 
   /**
-   * What it is wearing, by accessory name, per slot.
-   *
-   * `null` empties a slot the seed would have filled. Omit a slot to let the
-   * seed decide.
+   * What it is wearing, by accessory name, per slot. `null` empties a slot the seed would
+   * have filled; omit a slot to let the seed decide.
    */
   wearing?: Partial<Record<AccessorySlot, string | null>>;
 
   /**
-   * A palette to paint one slot's accessory in. **Per slot rather than per
-   * part** — a slot picks a palette and the drawing's roles resolve from it, so
-   * every choice is a ramp somebody drew rather than a colour somebody mixed.
-   *
-   * Omitted, it follows the owl. **The scheme is not part of it**: a tint takes
-   * the owl's own, or a day owl wears a night hat and it reads as a hole.
+   * A palette to paint one slot's accessory in — per slot rather than per part, so every
+   * choice is a ramp somebody drew. The scheme is not part of it: a tint takes the owl's.
    */
   tint?: Partial<Record<AccessorySlot, PaletteName>>;
 

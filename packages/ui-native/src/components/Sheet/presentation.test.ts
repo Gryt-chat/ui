@@ -20,11 +20,8 @@ describe("nextPresentation", () => {
   });
 
   /**
-   * The flick-down case, which is the one this got wrong.
-   *
-   * The modal dismisses itself and then reports it, so by the time the effect
-   * runs the sheet is already gone — and dismissing it again is the same
-   * unregistering call as the mount case, arriving by the other door.
+   * The flick-down case, which is the one this got wrong: the modal dismisses itself and
+   * then reports it, so dismissing again is the same unregistering call.
    */
   it("does nothing after the sheet dismissed itself", () => {
     const { presented } = nextPresentation(true, false);

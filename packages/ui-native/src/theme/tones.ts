@@ -1,10 +1,8 @@
 import type { NativeTheme, Ramp } from "./createNativeTheme";
 
 /**
- * Roles to ramps. `@gryt/ui` names tones by role and the ramps are named by
- * hue; on the web that mapping is repeated in Tailwind classes one component at
- * a time. Written once here, because four copies of "primary means accent" is
- * how one of them stops meaning it.
+ * Roles to ramps. On the web that mapping is repeated in Tailwind classes one component at
+ * a time; written once here, because four copies is how one stops meaning it.
  */
 export type ComponentTone =
   | "primary"

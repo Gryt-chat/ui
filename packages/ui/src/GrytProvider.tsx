@@ -13,13 +13,8 @@ export interface GrytProviderProps {
   // Shared hover delay for every Tooltip below this provider, in milliseconds.
   tooltipDelay?: number;
   /**
-   * Render overlays inside this provider's element rather than in `document.body`.
-   *
-   * Off by default, and should stay off for an app with one theme: the body is
-   * the right place for a popup, and `:root` already carries the variables it
-   * needs. Turn it on when this provider is one theme inside a page that has
-   * another — previewing a theme in a panel — where an overlay in the body
-   * would come up in the surrounding page's colours instead (GRYT-242).
+   * Render overlays inside this provider's element rather than in `document.body`. Off by
+   * default; turn it on when this provider is one theme inside another page (GRYT-242).
    */
   containOverlays?: boolean;
 }
@@ -28,10 +23,8 @@ function isCssVariables(value: object): value is CSSProperties {
   return Object.keys(value).some((key) => key.startsWith("--"));
 }
 
-// There is no ThemeProvider and no CssBaseline any more. What a provider still
-// has to do is put the theme variables somewhere the components can read them,
-// and mount Base UI's tooltip provider so hover timing is shared between
-// triggers rather than restarting at every one.
+// What a provider has to do is put the theme variables where the components can read them,
+// and mount Base UI's tooltip provider so hover timing is shared between triggers.
 export function GrytProvider({
   children,
   className,
@@ -39,15 +32,12 @@ export function GrytProvider({
   tooltipDelay = 400,
   containOverlays = false
 }: GrytProviderProps) {
-  // A ref rather than state: Base UI's `container` accepts one, so the element
-  // does not have to exist on the first render and nothing has to re-render
-  // when it does.
+  // A ref rather than state: Base UI's `container` accepts one, so the element need not
+  // exist on the first render and nothing has to re-render when it does.
   const containerRef = useRef<HTMLDivElement | null>(null);
   /**
-   * **No theme, no variables.** Painting the defaults onto the wrapper adds
-   * nothing — the stylesheet declares them on `:root` — and sits below the root
-   * in the cascade, so an app theming itself the documented way finds every
-   * variable overridden by a provider re-stating the defaults.
+   * No theme, no variables. The stylesheet declares them on `:root`, and a wrapper
+   * re-stating the defaults sits below the root and overrides an app's own theming.
    */
   const style =
     theme === undefined

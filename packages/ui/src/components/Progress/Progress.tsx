@@ -33,11 +33,8 @@ export function Progress({ className, value = null, ...props }: ProgressProps) {
           className={cn(
             "h-full rounded-(--gryt-radius-full) bg-gryt-accent",
             "transition-[width] duration-300 ease-out motion-reduce:transition-none",
-            // Base UI marks the indicator indeterminate and leaves its width
-            // unset, and nothing styled that — so an indeterminate Progress
-            // rendered a track with an invisible indicator. An empty bar reads
-            // as "nothing has happened yet", which is why it went unnoticed
-            // rather than being reported. GRYT-382.
+            // Base UI marks the indicator indeterminate and leaves its width unset, and
+            // nothing styled that — an empty bar reads as "nothing yet" (GRYT-382).
             value === null && "gryt-progress-indeterminate"
           )}
         />
@@ -52,9 +49,8 @@ export interface SpinnerProps {
   "aria-label"?: string;
 }
 
-// Base UI has no spinner — an indeterminate circular indicator is animation
-// rather than behaviour. Phosphor's CircleNotch is the shape, and the spin is
-// a Tailwind utility.
+// Base UI has no spinner: an indeterminate circular indicator is animation rather than
+// behaviour. Phosphor's CircleNotch is the shape, and the spin is a Tailwind utility.
 export function Spinner({
   className,
   size = 24,

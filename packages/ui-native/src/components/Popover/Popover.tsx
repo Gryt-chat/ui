@@ -91,13 +91,8 @@ function Close({ children, style }: { children?: ReactNode; style?: StyleProp<Vi
 }
 
 /**
- * Not drawn.
- *
- * Base UI's Arrow is an element positioned against the popup's edge once
- * Floating UI has settled. Doing it here means a rotated square, a border that
- * only shows on two sides, and knowing which side the popup ended up on. It is
- * doable and it is not free, so it is an exception rather than a silent
- * omission. Kept as a no-op so call sites match.
+ * Not drawn. Base UI's Arrow is positioned once Floating UI has settled; here it would
+ * mean a rotated square and a two-sided border. A no-op, so call sites match.
  */
 function Arrow() {
   return null;

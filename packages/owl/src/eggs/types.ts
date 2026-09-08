@@ -1,16 +1,6 @@
 /**
- * The vocabulary of an egg.
- *
- * An owl is one drawn character and everything about it is a choice inside that
- * character. An egg is the opposite on purpose: it stands for something that is
- * not a person, and should not read as one. What it is instead is a shape and a surface
- * — one, two or three eggs, each with a pattern on it, on a field that carries
- * a pattern of its own.
- *
- * The colours are the owl's. That is the whole reason this lives in the same
- * package: a member list and a list of these sit next to each other on screen,
- * and two generators with two palettes is how you get a product that looks
- * assembled rather than drawn.
+ * The vocabulary of an egg: a shape and a surface, standing for something that is not a
+ * person. The colours are the owl's, so the two lists do not look assembled.
  */
 
 import type { PaletteName, PaletteScheme } from "../types";
@@ -22,11 +12,8 @@ export type EggCount = 1 | 2 | 3;
 export type EggPatternMode = "fill" | "stroke" | "round";
 
 /**
- * One tile from pattern.monster, with everything its UI would have decided
- * already decided.
- *
- * See scripts/egg-pattern.ts. Nothing here is computed at draw time except the
- * scale, which the seed moves.
+ * One tile from pattern.monster, with everything its UI would have decided already
+ * decided. See scripts/egg-pattern.ts; only the scale moves at draw time.
  */
 export interface EggPattern {
   /** pattern.monster's slug. It is the draw key, so it never changes. */
@@ -44,13 +31,8 @@ export interface EggPattern {
 }
 
 /**
- * The tones an egg icon is drawn from.
- *
- * Three shell rungs rather than named roles, because that is what the drawings
- * are: the two- and three-egg arrangements were painted deep, mid and light,
- * back to front, and the eggs read as separate objects because of it. Each rung
- * carries the two inks its pattern is drawn in, so contrast is decided here
- * once instead of by whichever pattern the seed happened to pick.
+ * The tones an egg icon is drawn from: three shell rungs, deep to light back to front.
+ * Each carries the two inks its pattern uses, so contrast is decided here once.
  */
 export interface EggPalette {
   /** The tile behind everything. */
@@ -79,19 +61,14 @@ export interface EggOptions {
   count?: EggCount;
 
   /**
-   * The pattern on each egg, by name, back to front.
-   *
-   * `null` in a slot leaves that egg plain. A shorter array only fixes the eggs
-   * it covers; the rest stay seeded.
+   * The pattern on each egg, by name, back to front. `null` leaves that egg plain; a
+   * shorter array only fixes the eggs it covers.
    */
   patterns?: readonly (string | null)[];
 
   /**
-   * The palette each egg's tone is taken from, back to front.
-   *
-   * `null` in a slot pins that egg to the icon's own palette. Omit a slot to
-   * let the seed decide, which is usually the icon's own and sometimes not —
-   * see chooseHue in eggs/index.ts.
+   * The palette each egg's tone is taken from, back to front. `null` pins that egg to the
+   * icon's own; omit a slot to let the seed decide — see chooseHue.
    */
   hues?: readonly (PaletteName | null)[];
 
@@ -102,11 +79,8 @@ export interface EggOptions {
   background?: boolean | string;
 
   /**
-   * How close the tile crops in on the arrangement.
-   *
-   * 1 is the drawing as painted. Past about 1.5 the eggs run off the edge and
-   * the icon reads as a mark rather than as eggs in a nest. Omit to let the
-   * seed pick a modest one — see ZOOMS in eggs/index.ts.
+   * How close the tile crops in. 1 is the drawing as painted; past about 1.5 the eggs run
+   * off the edge and read as a mark. Omit to let the seed pick — see ZOOMS.
    */
   zoom?: number;
 

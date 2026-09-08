@@ -8,12 +8,8 @@ export type CheckboxGroupProps = ComponentPropsWithoutRef<
 >;
 
 /**
- * A set of checkboxes sharing one value array.
- *
- * Worth having over a hand-rolled array of Checkboxes for the parent case: give
- * it `allValues` and a checkbox marked `parent` becomes a working
- * indeterminate tri-state, which is fiddly to get right by hand and is exactly
- * what a permissions list needs.
+ * A set of checkboxes sharing one value array. Worth having for the parent case: with
+ * `allValues`, a checkbox marked `parent` becomes a working indeterminate tri-state.
  */
 export const CheckboxGroup = forwardRef<HTMLDivElement, CheckboxGroupProps>(
   function CheckboxGroup({ className, ...props }, ref) {

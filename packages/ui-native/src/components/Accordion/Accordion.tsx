@@ -1,8 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
-// Deep imports, one file per icon, rather than the barrel. Metro does not
-// tree-shake, so the barrel pulls the whole set in. The `*Icon` suffix is the
-// spelling @phosphor-icons/react uses; the bare names are deprecated.
+// Deep imports, one file per icon, rather than the barrel: Metro does not tree-shake. The
+// `*Icon` suffix is the spelling @phosphor-icons/react uses.
 import { CaretDownIcon } from "phosphor-react-native/src/icons/CaretDown";
 import { CaretRightIcon } from "phosphor-react-native/src/icons/CaretRight";
 import { Text } from "../../internal/Text";

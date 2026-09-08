@@ -1,18 +1,6 @@
 /**
- * Turn the drawn egg bases into path data the generator can use.
- *
- *   bun scripts/egg-base.ts
- *   bun scripts/egg-base.ts --check
- *
- * `artwork/eggs/egg_base_1.svg` through `egg_base_3.svg` hold one, two and
- * three eggs, drawn on the same 1024 artboard the owl uses. Each egg is one
- * closed path tagged `id="Egg-N"`, and N is the order it is stacked in —
- * Egg-1 at the back — which is also the order the shell tones are handed out.
- *
- * The extraction is a regex rather than an XML parse: the input is three files
- * from one drawing tool, every egg is a bare `<path>`, and a parser would be a
- * dependency the package does not otherwise have. If a drawing stops matching,
- * this fails loudly rather than writing half of one.
+ * Turn the drawn egg bases into path data the generator can use. Each egg is one closed
+ * path tagged `id="Egg-N"`, N being its place in the stack, back to front.
  */
 
 import { readFileSync, writeFileSync } from "node:fs";

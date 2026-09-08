@@ -1,25 +1,14 @@
 /**
- * Reading the drawable things out of an SVG.
- *
- * A drawing tool does not only emit `<path>`. A rounded rectangle stays a
- * `<rect>`, a dot stays a `<circle>`, and a line drawn with the pen tool comes
- * out as a `<path>` with a `stroke` and no fill at all. An extractor that only
- * knows about filled paths drops the first two on the floor and turns the third
- * into a solid blob — all three silently, which is the part that matters. The
- * winter jacket arrived with two stroked seams and a `<rect>` for the zip pull,
- * and every one of those failures happened before this file existed.
- *
- * So: everything is converted to path data, stroke properties are carried
- * through, and anything not understood is reported rather than skipped.
+ * Reading the drawable things out of an SVG. A tool emits `<rect>` and `<circle>` too,
+ * and a stroked path with no fill is a line — all converted, and nothing skipped silently.
  */
 
 /** One drawable thing, as path data and the paint it was drawn with. */
 export interface Shape {
   d: string;
   /**
-   * Empty rather than the string "none", for both of these. The caller tests
-   * them for truthiness to decide whether a shape is filled, stroked or both,
-   * and "none" is truthy.
+   * Empty rather than the string "none", for both. The caller tests them for truthiness
+   * to decide whether a shape is filled or stroked, and "none" is truthy.
    */
   fill: string;
   stroke: string;
@@ -29,33 +18,18 @@ export interface Shape {
   linejoin?: string;
   evenodd: boolean;
   /**
-   * The layer name, when the drawing tool was asked to write one.
-   *
-   * Figma emits layer names as `id` only if "Include id attribute" is on, so
-   * this is absent on any older export and everything downstream has to cope
-   * without it.
+   * The layer name, when the drawing tool wrote one. Figma emits it only with "Include id
+   * attribute" on, so it is absent on older exports and everything has to cope.
    */
   id?: string;
   /**
-   * Whether this sat inside a group named `owl`.
-   *
-   * That group is the whole point: it says which shapes are the bird and which
-   * are the thing being drawn on it, so the extractor does not have to
-   * recognise the bird by its geometry and cannot be fooled when a drawing tool
-   * rewrites a curve.
+   * Whether this sat inside a group named `owl`. That group says which shapes are the
+   * bird, so the extractor does not have to recognise it by geometry.
    */
   inOwl?: boolean;
   /**
-   * Whether this was drawn before the group named `owl` opened.
-   *
-   * An SVG paints in document order, so a shape ahead of the bird is a shape
-   * behind the bird. That is how a drawing says "this goes underneath" without
-   * anybody naming a layer in the filename, and it is the only thing telling
-   * the two headsets apart: read off their geometry they are the same three
-   * paths, and one wears its band behind the ear tufts.
-   *
-   * False once the group has been seen, and false throughout a drawing that
-   * has no group at all.
+   * Whether this was drawn before the group named `owl` opened: an SVG paints in document
+   * order, so a shape ahead of the bird is behind it. That tells the two headsets apart.
    */
   beforeOwl?: boolean;
 }
@@ -84,10 +58,8 @@ function round(n: number): number {
 }
 
 /**
- * A rectangle as path data, corners included.
- *
- * Cubics rather than arcs, because the simplifier's parser refuses arcs — and
- * it refuses them on purpose, so this converts rather than making it guess.
+ * A rectangle as path data, corners included. Cubics rather than arcs, because the
+ * simplifier's parser refuses arcs on purpose rather than guessing.
  */
 export function rectPath(attrs: string): string {
   const x = num(attrs, "x");
@@ -144,22 +116,8 @@ function pointsPath(attrs: string, close: boolean): string {
 const IGNORED = new Set(["svg", "g", "defs", "clippath", "mask", "title", "desc", "style"]);
 
 /**
- * One colour, spelled the one way.
- *
- * Everything downstream compares colours as strings — the extractor decides
- * "this arm is painted the background, so the drawing means to remove it" with
- * `p.fill === realPalette.background`, and the ink table is keyed on hex.
- *
- * A wing whose colour matches nothing falls through to "could not place this",
- * which drops the path and adds a warning — so the arm is neither hidden nor
- * recoloured, the bird's own wing draws, and the run succeeds. Figma writes
- * `#6cdac8ff` and the jackets stopped dropping their arms, with a warning line
- * as the only sign.
- *
- * `#rgb`, `rgb()` and `rgba()` all fold to six-digit hex. An eight-digit hex
- * folds only when its alpha is `ff`. A real alpha is left exactly as it was:
- * `#6cdac880` genuinely is not the background, and flattening it would trade a
- * silent miss for a silent lie.
+ * One colour, spelled the one way. Everything downstream compares colours as strings, and
+ * a real alpha is left alone: `#6cdac880` is not the background, and flattening lies.
  */
 export function colour(raw: string | undefined): string {
   const value = (raw || "none").trim().toLowerCase();
@@ -198,14 +156,8 @@ export function colour(raw: string | undefined): string {
 }
 
 /**
- * Every drawable thing in an SVG, as path data with its paint.
- *
- * `<defs>` is cut out first, so a clip path's rectangle is never mistaken for a
- * rectangle somebody drew.
- *
- * A missing `fill` means none, which is what the root `<svg fill="none">` these
- * files carry already says. A path with a stroke and no fill is a line, and it
- * has to stay one.
+ * Every drawable thing in an SVG, as path data with its paint. `<defs>` is cut out first,
+ * so a clip path's rectangle is never mistaken for one somebody drew.
  */
 export function readShapes(svg: string): ReadShapesResult {
   const body = svg.replace(/<defs\b[\s\S]*?<\/defs>/gi, "");
@@ -213,10 +165,8 @@ export function readShapes(svg: string): ReadShapesResult {
   const unknown = new Set<string>();
 
   /*
-   * Containers are tracked rather than skipped, so a shape can say whether it
-   * sat inside the group named `owl`. Only the outermost such group counts —
-   * a layer inside the bird called "owl" again would otherwise close the real
-   * one early and hand half the bird to the accessory.
+   * Containers are tracked rather than skipped, so a shape can say whether it sat inside
+   * `owl`. Only the outermost counts, or a nested layer closes the real one early.
    */
   let depth = 0;
   let owlDepth: number | null = null;

@@ -9,10 +9,8 @@ import {
 } from "./theme";
 
 /**
- * The link is a format two apps read: the generator on the docs site writes
- * one, the client imports it. Round-tripping is the property that matters —
- * renaming a parameter silently breaks every link already sent, and nothing
- * else in the build would notice.
+ * The link is a format two apps read: the generator writes one, the client imports it.
+ * Round-tripping is the property — renaming a parameter breaks every link already sent.
  */
 describe("the theme document", () => {
   const custom = (() => {

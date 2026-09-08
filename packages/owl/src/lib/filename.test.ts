@@ -16,9 +16,8 @@ describe("where a drawing goes", () => {
   });
 
   /*
-   * The type field only. A family called "bow" under glasses is a shape of
-   * frame, and reading every field would have made that fight with the "bow"
-   * that means a hair bow.
+   * The type field only. A family called "bow" under glasses is a shape of frame, and
+   * reading every field would make it fight the "bow" that means a hair bow.
    */
   it("reads only the type, not any word in the name", () => {
     expect(place("glasses_bow.svg").slot).toBe("eyewear");
@@ -55,9 +54,8 @@ describe("where a drawing goes", () => {
   });
 
   /*
-   * The failure this exists to prevent. A word nobody has taught it is a file
-   * that stops the run by name, because the alternative is a scarf worn as a
-   * hat and nothing saying so.
+   * The failure this exists to prevent. A word nobody has taught it stops the run by name,
+   * because the alternative is a scarf worn as a hat and nothing saying so.
    */
   it("refuses a type it does not know rather than guessing", () => {
     expect(place("cravat_fancy.svg").slot).toBe("neck");
@@ -110,9 +108,8 @@ describe("layers", () => {
 
 describe("files that are not accessories", () => {
   /*
-   * _hat_winter_small.svg is why. It was exported over the top of hat_winter.svg
-   * and is byte-identical to it, so with the folder scanned rather than listed
-   * it would have quietly become a second, identical hat.
+   * _hat_winter_small.svg is why: exported over the top of hat_winter.svg and identical to
+   * it, so a scanned folder would have made it a second, identical hat.
    */
   it("walks past a leading underscore", () => {
     expect(isIgnored("_hat_winter_small.svg")).toBe(true);

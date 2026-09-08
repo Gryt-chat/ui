@@ -18,9 +18,8 @@ const placements: Record<BadgePlacement, string> = {
 };
 
 export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
-  // Anchored to a corner of children. A count, a dot, or anything else. With
-  // no children it is the pill on its own, in normal flow — a row that ends in
-  // a count rather than an avatar wearing one.
+  // Anchored to a corner of children. With no children it is the pill on its own, in
+  // normal flow — a row that ends in a count rather than an avatar wearing one.
   badgeContent?: ReactNode;
   // Hide when the count is zero, matching how a notification badge is normally
   // wanted. Set false to keep a literal 0 on screen.
@@ -29,15 +28,13 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   /** Which corner of `children` it sits on. Ignored when there are none. */
   placement?: BadgePlacement;
   /**
-   * How loud it is. The channel list uses two: neutral for messages that are
-   * merely unread, primary for a conversation that named you. One accent badge
-   * per row would make every busy channel look equally urgent.
+   * How loud it is. The channel list uses two: neutral for unread, primary for a
+   * conversation that named you. One accent badge per row makes every channel urgent.
    */
   tone?: Tone;
   /**
-   * A ring in the page background colour, so the pill reads as sitting on top
-   * of what it overlaps rather than cut out of it. Off when the badge stands
-   * alone, where there is nothing to lift it off.
+   * A ring in the page background colour, so the pill reads as sitting on top of what it
+   * overlaps. Off when the badge stands alone, where there is nothing to lift it off.
    */
   ring?: boolean;
 }

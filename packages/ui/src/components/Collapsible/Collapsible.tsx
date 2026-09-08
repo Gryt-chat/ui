@@ -12,10 +12,8 @@ export type CollapsiblePanelProps = ComponentPropsWithoutRef<
 >;
 
 /**
- * One region that opens and closes — a channel category, an advanced section.
- *
- * Accordion is a set of these that know about each other. Reach for this when
- * there is only one, so nothing has to pretend to be a one-item accordion.
+ * One region that opens and closes — a channel category, an advanced section. Accordion is
+ * a set of these that know about each other; use this when there is only one.
  */
 const Trigger = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(
   function CollapsibleTrigger({ className, ...props }, ref) {

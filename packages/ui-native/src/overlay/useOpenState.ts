@@ -1,11 +1,8 @@
 import { useCallback, useState } from "react";
 
 /**
- * Controlled or uncontrolled open state, matching Base UI's props.
- *
- * `open` with `onOpenChange` drives it from outside; `defaultOpen` alone lets it
- * manage itself. Base UI takes both and so does everything here, so a call site
- * moving between the two libraries does not change shape.
+ * Controlled or uncontrolled open state, matching Base UI's props. Base UI takes both and
+ * so does everything here, so a call site moving between the two does not change shape.
  */
 export interface OpenStateProps {
   open?: boolean;

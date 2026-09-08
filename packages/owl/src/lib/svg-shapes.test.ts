@@ -3,11 +3,8 @@ import { describe, expect, it } from "vitest";
 import { colour, readShapes } from "./svg-shapes";
 
 /**
- * Colours are compared as strings everywhere downstream — the extractor decides
- * an arm is meant to drop out with `p.fill === realPalette.background`, and the
- * ink table is keyed on hex. So a drawing tool that spells a colour differently
- * is a drawing that quietly does the wrong thing, and these are the spellings
- * that actually turn up.
+ * Colours are compared as strings everywhere downstream, so a drawing tool that spells one
+ * differently quietly does the wrong thing. These are the spellings that turn up.
  */
 describe("one colour, spelled the one way", () => {
   it("folds the spellings of an opaque colour", () => {
@@ -29,9 +26,8 @@ describe("one colour, spelled the one way", () => {
   });
 
   it("leaves a real alpha alone", () => {
-    // A translucent colour genuinely is not the opaque one. Flattening it would
-    // trade a silent miss for a silent lie — an arm that looks like it drops out
-    // and does not.
+    // A translucent colour genuinely is not the opaque one. Flattening it trades a silent
+    // miss for a silent lie — an arm that looks like it drops out and does not.
     expect(colour("#6cdac880")).toBe("#6cdac880");
     expect(colour("rgba(108,218,200,0.5)")).toBe("rgba(108,218,200,0.5)");
   });

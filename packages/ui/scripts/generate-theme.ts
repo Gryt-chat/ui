@@ -1,10 +1,6 @@
 /**
- * Writes the scale block in src/styles/theme.css from the OKLCH maths in
- * @gryt/theme. The stylesheet has to hold literals, and literals drift — so
- * they are emitted, and theme.test.ts fails the build if the file stops
- * matching.
- *
- *   bun scripts/generate-theme.ts
+ * Writes the scale block in src/styles/theme.css from the OKLCH maths in @gryt/theme.
+ * Literals drift, so they are emitted and theme.test.ts fails when the file stops matching.
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
@@ -62,17 +58,14 @@ function main() {
     if (from === -1 || to === -1) {
       throw new Error("generate-theme: no light block in theme.css");
     }
-    /* Both prefixes. The utilities compile against --color-gryt-*, so a light
-       block that aliased only the raw names left bg-gryt-surface on the dark
-       literal from @theme — which is how the settings dialog came out dark on
-       a light page. */
+    /* Both prefixes. The utilities compile against --color-gryt-*, so a light block that
+       aliased only the raw names left bg-gryt-surface on the dark literal from @theme. */
     const aliases: Record<string, string> = {
       bg: "neutral-1",
       surface: "neutral-2",
       "surface-raised": "neutral-3",
-      // Step 4 is "component background, hovered". Without this line the light
-      // block inherits the dark slate from @theme, and a neutral Button hovers
-      // to a dark block on a white panel.
+      // Step 4 is "component background, hovered". Without this line the light block
+      // inherits the dark slate from @theme and a neutral Button hovers to a dark block.
       "surface-hover": "neutral-4",
       border: "neutral-6",
       muted: "neutral-11",

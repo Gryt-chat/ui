@@ -16,10 +16,8 @@ describe("Slider", () => {
     );
   });
 
-  // The focus ring is has-[:focus-visible] on the thumb, which only works
-  // while the focusable element is inside the thumb. If Base UI ever moves the
-  // input out, the ring silently stops appearing and keyboard users lose the
-  // only indication of where they are.
+  // The focus ring is has-[:focus-visible] on the thumb, which only works while the
+  // focusable element is inside it. If Base UI moves the input out, the ring goes.
   it("keeps the focusable input inside the thumb", () => {
     const { container } = render(
       <GrytProvider>

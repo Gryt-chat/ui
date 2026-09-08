@@ -9,20 +9,8 @@ export type ContextMenuPositionerProps = ComponentPropsWithoutRef<
 >;
 
 /**
- * A right-click menu: a message, a member, a channel.
- *
- * Base UI builds this out of Menu's own parts — its Popup, Item and Separator
- * are literally Menu's components — so this reuses the styled ones rather than
- * restyling them. A context menu that drifted from the dropdown menu would be
- * a bug nobody notices until both are on screen at once.
- *
- * Which is what happened. Only the three parts named above were taken from
- * Menu; Group, GroupLabel and SubmenuTrigger were handed straight through from
- * Base UI with no class on them at all. In the client's server menu that put
- * the group heading and the whole Notifications submenu twelve pixels left of
- * every other row, with no highlight and no caret, and the menu read as half
- * finished. Menu now styles all of them, so this list can be the passthrough it
- * always claimed to be.
+ * A right-click menu. Base UI builds it out of Menu's own parts, so this reuses the styled
+ * ones — Menu styles all of them now, so this list can be the passthrough it claimed.
  */
 const Positioner = forwardRef<HTMLDivElement, ContextMenuPositionerProps>(
   function ContextMenuPositioner({ className, sideOffset = 2, ...props }, ref) {

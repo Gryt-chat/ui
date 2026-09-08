@@ -14,12 +14,8 @@ import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
 import { useTheme } from "../../theme";
 
 /**
- * The same shape as `@gryt/ui`'s Dialog: Root, Trigger, Portal, Backdrop, Popup,
- * Title, Description, Footer, Close. A call site should read the same on both.
- *
- * What differs is underneath. Base UI builds the trap, the dismiss behaviour and
- * the ARIA wiring itself; here React Native's `Modal` supplies most of it, and
- * the parts it does not are listed in the README.
+ * The same shape as `@gryt/ui`'s Dialog, so a call site reads the same on both. What
+ * differs is underneath: React Native's `Modal` supplies most of what Base UI builds.
  */
 
 interface DialogContextValue {
@@ -63,11 +59,8 @@ function Trigger({ children, style }: DialogTriggerProps) {
 }
 
 /**
- * A passthrough.
- *
- * On the web a portal is how the popup escapes overflow and stacking contexts.
- * React Native's `Modal` already renders above everything, so there is nothing
- * to escape. It exists so call sites keep the same shape.
+ * A passthrough. React Native's `Modal` already renders above everything, so there is
+ * nothing to escape; this exists so call sites keep the same shape.
  */
 function Portal({ children }: { children?: ReactNode }) {
   return <>{children}</>;
@@ -99,9 +92,8 @@ function Popup({
         {
           width: "100%",
           maxWidth: 480,
-          // Shrinks inside the capped wrapper below rather than carrying its
-          // own percentage, so the popup hugs short content and gives way when
-          // the content is taller than the cap.
+          // Shrinks inside the capped wrapper below rather than carrying its own
+          // percentage, so the popup hugs short content and gives way when it is taller.
           flexShrink: 1,
           backgroundColor: theme.color.surfaceRaised,
           borderRadius: theme.radius.lg,
@@ -114,15 +106,8 @@ function Popup({
       ]}
     >
       {scrollable ? (
-        // flexGrow 0 so the ScrollView takes the height of its content rather
-        // than filling the popup, and flexShrink 1 so it still gives way when
-        // maxHeight caps it and the content has to scroll.
-        //
-        // Without these it clipped every short dialog: a ScrollView has no
-        // intrinsic height, the popup sizes to its content, and neither had
-        // anything to measure against — so the footer was drawn half off the
-        // bottom. The `scrollable={false}` path was unaffected, which is what
-        // made it look like a layout choice rather than a bug (GRYT-379).
+        // flexGrow 0 so the ScrollView takes the height of its content, and flexShrink 1 so
+        // it gives way when maxHeight caps it. Without these every short dialog clipped.
         <ScrollView
           style={{ flexGrow: 0, flexShrink: 1 }}
           contentContainerStyle={{ gap: theme.space(3) }}
@@ -140,9 +125,8 @@ function Popup({
       visible={open}
       transparent
       animationType="fade"
-      // Android's hardware back button, which is the closest thing a phone has
-      // to the Escape key Base UI listens for. AlertDialog turns it off for the
-      // same reason it turns off the scrim: neither is an answer.
+      // Android's hardware back button, the closest thing a phone has to Escape.
+      // AlertDialog turns it off for the same reason it turns off the scrim.
       onRequestClose={dismissible ? () => setOpen(false) : undefined}
     >
       <Pressable
@@ -197,21 +181,16 @@ function Popup({
 }
 
 /**
- * Claim a touch that no child wanted.
- *
- * Declared once rather than as an inline arrow, so every Dialog is not handing
- * the responder system a new function identity on every render.
+ * Claim a touch that no child wanted. Declared once rather than as an inline arrow, so
+ * every Dialog is not handing the responder system a new function on every render.
  */
 function claimTouch(): boolean {
   return true;
 }
 
 /**
- * Not rendered.
- *
- * The scrim is drawn by Popup, because React Native's Modal owns that layer and
- * a separate backdrop element would have nothing to render into. Kept so call
- * sites written against `@gryt/ui` do not have to drop a line.
+ * Not rendered. The scrim is drawn by Popup, because React Native's Modal owns that layer.
+ * Kept so call sites written against `@gryt/ui` do not have to drop a line.
  */
 function Backdrop(): null {
   return null;

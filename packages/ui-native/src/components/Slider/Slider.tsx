@@ -41,22 +41,8 @@ const TRACK_HEIGHT = 4;
 const THUMB = 20;
 
 /**
- * Dragging, on a surface where a drag might belong to something else.
- *
- * The web gets pointer capture: once the thumb is grabbed, every move belongs
- * to the slider until release. React Native has no equivalent, and volume
- * sliders live in settings lists, so a horizontal drag has to be told apart
- * from the scroll it is sitting in.
- *
- * `activeOffsetX` is that distinction, declared rather than fought over. The
- * pan claims the gesture once the finger has clearly gone sideways, and a
- * vertical drag never activates it. That replaces
- * `onPanResponderTerminationRequest: () => false` plus the `DragLock` that had
- * to switch the scroll view off, because refusing to hand back a JS responder
- * says nothing to the native recogniser that does the scrolling on iOS.
- *
- * Both gestures run on the JS thread. Every callback here has to reach React
- * state and the consumer's `onValueChange`, so the hop happens either way.
+ * Dragging, on a surface where a drag might belong to something else. `activeOffsetX` is
+ * the distinction: the pan claims the gesture once the finger has clearly gone sideways.
  */
 export function Slider({
   value: controlled,
@@ -77,11 +63,8 @@ export function Slider({
   const [width, setWidth] = useState(0);
   const ramp = toneRamp(theme, tone);
 
-  // The responder callbacks are created once and would otherwise close over the
-  // first render's values forever, so the current ones live in refs. Written in
-  // an effect rather than during render: mutating a ref while rendering is the
-  // kind of thing that breaks under concurrent rendering, and the callbacks only
-  // fire from touch events, which is always after an effect has run.
+  // The responder callbacks are created once and would close over the first render's
+  // values, so the current ones live in refs, written in an effect rather than in render.
   const state = useRef({ width, value, min, max, step, disabled });
   const emit = useRef({ onValueChange, onValueCommit, controlled });
   /**
@@ -115,36 +98,20 @@ export function Slider({
   };
 
   /**
-   * Tap to seek, drag to scrub, and nothing at all if the finger goes down the
-   * page.
-   *
-   * Two gestures rather than one because they want opposite thresholds. A tap
-   * has to work with no movement; a drag must not claim anything until it is
-   * clearly sideways, or every attempt to scroll past a slider moves it. `Race`
-   * lets whichever qualifies win, and only one ever does.
+   * Tap to seek, drag to scrub, and nothing if the finger goes down the page. Two gestures,
+   * because a tap works with no movement and a drag must not claim anything until sideways.
    */
-  /* Everything below runs when a finger moves, not while this memo builds the
-   * recognisers. react-hooks/refs and react-hooks/immutability cannot see
-   * through the closures: they read `state.current` and `emit.current` being
-   * touched during render, and `thumbScale.value` — a Reanimated shared value —
-   * being assigned there. Both actually happen inside gesture callbacks.
-   *
-   * The refs are deliberate and explained where they are declared: they are
-   * what lets the gesture read the live value without rebuilding itself on
-   * every render, which is the same reason the dependency list below is
-   * short. */
+
+  /* Everything below runs when a finger moves, not while this memo builds the recognisers.
+   * react-hooks cannot see through the closures into the gesture callbacks. */
+
   /* eslint-disable react-hooks/refs, react-hooks/immutability */
   const gesture = useMemo(() => {
     const seek = (x: number) => {
       const s = state.current;
       if (s.disabled) return;
-      // Absolute position in the track, not accumulated translation.
-      //
-      // The old version anchored on where the gesture started and added
-      // `gesture.dx`, which is the distance from the *start* rather than from
-      // the last event — so offsetting the live value by it added the whole
-      // travel again every move and the thumb accelerated away from the
-      // finger. Reading the position directly cannot express that bug.
+      // Absolute position in the track, not accumulated translation. `gesture.dx` is the
+      // distance from the start, so offsetting the live value by it doubles the travel.
       apply(valueFromX(x));
     };
 
@@ -176,9 +143,9 @@ export function Slider({
       });
 
     return Gesture.Race(pan, tap);
-    // `apply` and `valueFromX` read refs that are written in effects, so they
-    // do not need to be dependencies — and listing them would rebuild the
-    // gesture on every render.
+    // `apply` and `valueFromX` read refs written in effects, so they are not dependencies;
+    // listing them would rebuild the gesture on every render.
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [disabled, thumbScale]);
   /* eslint-enable react-hooks/refs, react-hooks/immutability */

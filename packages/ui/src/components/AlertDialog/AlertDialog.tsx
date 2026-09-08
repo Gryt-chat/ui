@@ -8,12 +8,8 @@ export type AlertDialogPopupProps = ComponentPropsWithoutRef<
 >;
 
 /**
- * A dialog you cannot dismiss by accident — for "Leave this server?".
- *
- * Styled identically to Dialog on purpose; the difference is behaviour, not
- * looks. Escape and clicking the backdrop do nothing here, so answering
- * requires picking one of the buttons. Using this where Dialog belongs is worse
- * than not having it, because it takes away the escape people expect.
+ * A dialog you cannot dismiss by accident — for "Leave this server?". Escape and the
+ * backdrop do nothing, so using it where Dialog belongs takes away an expected escape.
  */
 const Popup = forwardRef<HTMLDivElement, AlertDialogPopupProps>(
   function AlertDialogPopup({ className, ...props }, ref) {

@@ -31,13 +31,10 @@ export interface ToggleProps {
 }
 
 /** A button that stays down. Mute, deafen, and the rest of the call controls. */
+
 /**
- * Animated.createAnimatedComponent rather than a wrapping Animated.View.
- *
- * A Toggle is laid out by its parent — a Toolbar puts them in a row — and an
- * extra view between the two would take the layout props and leave the button
- * sized by its content. The web scales the button element itself, so this does
- * too.
+ * Animated.createAnimatedComponent rather than a wrapping Animated.View: an extra view
+ * would take the layout props and leave the button sized by its content.
  */
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 

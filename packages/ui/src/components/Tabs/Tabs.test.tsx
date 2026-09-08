@@ -4,10 +4,8 @@ import { GrytProvider } from "../../GrytProvider";
 import { Tabs } from "./Tabs";
 
 /**
- * Every vertical rule in Tabs.tsx is a data-orientation selector, so these
- * assert the attribute is actually on the DOM. If Base UI stops putting it on
- * a part, the styling silently falls back to horizontal and nothing else here
- * would notice.
+ * Every vertical rule in Tabs.tsx is a data-orientation selector, so these assert the
+ * attribute is on the DOM. Without it the styling silently falls back to horizontal.
  */
 function renderTabs(orientation: "horizontal" | "vertical") {
   return render(

@@ -3,9 +3,8 @@ import { sampleCurve, springSamples, springTightSamples } from "@gryt/theme";
 import { easeSpring, easeSpringTight } from "./easing";
 
 /**
- * The easings inline their samples rather than calling `sampleCurve`, because a
- * worklet cannot call a JS-thread function — that is how 0.3.0 shipped with
- * unusable motion. These assert the copy cannot drift.
+ * The easings inline their samples rather than calling `sampleCurve`, because a worklet
+ * cannot call a JS-thread function. These assert the copy cannot drift.
  */
 describe("the inlined easing matches sampleCurve", () => {
   const pairs = [

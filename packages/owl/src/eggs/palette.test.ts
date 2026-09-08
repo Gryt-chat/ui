@@ -1,15 +1,6 @@
 /**
- * The egg ramp is a set of gaps, and this is where they are enforced.
- *
- * Every number in eggs/palette.ts is a lightness, and the design is the
- * distance between them: a shell has to separate from the field, from the shell
- * behind it, and from the ink drawn on it. Eyeballing that in one hue is how
- * you ship a gold icon whose middle egg has vanished — the schemes are written
- * once and used at ten hues, and hue is what shifts perceived lightness while
- * the number on the page stays put.
- *
- * The thresholds are in HSL lightness because that is what the palette is
- * written in, so a failure points at the line to change.
+ * The egg ramp is a set of gaps, and this is where they are enforced. The schemes are
+ * written once and used at ten hues, and hue shifts perceived lightness.
  */
 
 import { describe, expect, it } from "vitest";
@@ -51,14 +42,8 @@ describe("every hue and scheme", () => {
   });
 
   /*
-   * Both ends of the field, because the gradient runs between them and an egg
-   * sits over the middle of it. A shell that clears the top and not the bottom
-   * is a shell that dissolves halfway down.
-   *
-   * Eleven rather than the twelve the palette is written to, because a
-   * lightness written as a percent and read back out of `#rrggbb` lands within
-   * half a point of itself, and a threshold that has to be met exactly is a
-   * threshold somebody meets by editing the threshold.
+   * Both ends of the field, because an egg sits over the middle of the gradient. Eleven
+   * rather than twelve: a percent read back out of `#rrggbb` lands within half a point.
    */
   it("keeps every shell off the field", () => {
     for (const { name, scheme, palette } of all) {
@@ -88,12 +73,8 @@ describe("every hue and scheme", () => {
   });
 
   /*
-   * Bounded above as well as below, and that is the point of this one.
-   *
-   * A pattern here is a surface, not a decoration. White stripes on a coloured
-   * egg is what a decorated egg looks like, and a decorated egg at three to a
-   * tile is Easter. The upper bound is what stops "make it pop" from landing
-   * quietly, and the lower one is what keeps the tile visible at 32 px.
+   * Bounded above as well as below, and that is the point. White stripes on a coloured egg
+   * is a decorated egg, and three to a tile is Easter; the lower bound keeps it visible.
    */
   it("gives every shell an ink that reads on it and does not shout", () => {
     for (const { name, scheme, palette } of all) {
@@ -113,11 +94,8 @@ describe("every hue and scheme", () => {
   });
 
   /*
-   * Either a deep field with pale eggs or a bright field with deep eggs, and
-   * every shell on the same side of the field as every other. A soft egg on a
-   * soft field is the Easter signature, and this plus the twelve-point gap
-   * above is what stops any scheme producing one — a shell can only get pale by
-   * sitting on a field that is deep.
+   * Either a deep field with pale eggs or a bright field with deep eggs. A soft egg on a
+   * soft field is the Easter signature, and this is what stops any scheme producing one.
    */
   it("puts every shell on one side of the field", () => {
     for (const { name, scheme, palette } of all) {
@@ -166,9 +144,8 @@ describe("every hue and scheme", () => {
     }
   });
 
-  // The same throw the owl palette makes, and for the same reason: `hsl` on an
-  // undefined hue returns "#d062NaN", which no renderer draws and no type
-  // checker catches.
+  // The same throw the owl palette makes: `hsl` on an undefined hue returns "#d062NaN",
+  // which no renderer draws and no type checker catches.
   it("refuses a name it does not have", () => {
     expect(() => eggPalette("plum" as never, "dusk")).toThrow(
       /not one of the egg palettes/

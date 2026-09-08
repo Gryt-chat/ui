@@ -51,14 +51,13 @@ interface DrawerContextValue {
 const DrawerContext = createContext<DrawerContextValue | null>(null);
 
 /**
- * Scrollables inside the panel, so the drawer's pan can let them through.
- * gesture-handler settles two recognisers **by reference**, so the drawer has
- * to be handed the scrollable rather than pointed at one.
+ * Scrollables inside the panel, so the drawer's pan can let them through. gesture-handler
+ * settles two recognisers by reference, so the drawer has to be handed the scrollable.
  */
+
 /**
- * What `simultaneousWithExternalGesture` accepts. Its types want a ref to a
- * component *type*, which a mounted scroll view is not — reconciled with one
- * cast where a scrollable registers itself.
+ * What `simultaneousWithExternalGesture` accepts. Its types want a ref to a component
+ * type, which a mounted scroll view is not — reconciled with one cast.
  */
 type ScrollableRef = RefObject<ComponentType<object> | null | undefined>;
 
@@ -79,21 +78,8 @@ function useDrawer(part: string) {
 export interface DrawerRootProps extends OpenStateProps {
   children?: ReactNode;
   /**
-   * How far the caller has pulled the panel out, 0 shut to 1 open.
-   *
-   * For dragging a drawer *open* from somewhere else on screen — a swipe at the
-   * edge of a pager, say. `open` cannot express that: it is a boolean, so the
-   * panel springs the whole way and the finger is left behind.
-   *
-   * **It composes rather than overriding.** The panel sits at whichever of
-   * `pull` and the open spring reaches further, so nothing has to be told which
-   * one is in charge: while a drag is happening `open` is false and `pull`
-   * leads; on release the caller sets `open` and lets `pull` fall back to 0,
-   * and the spring is already at least that far along, so the hand-off is not
-   * visible. Abandoning the drag is the same move without setting `open`.
-   *
-   * Writing it mounts the panel and returning it to 0 unmounts it, so a caller
-   * that never sets `open` still gets a drawer that comes and goes.
+   * How far the caller has pulled the panel out, 0 shut to 1 open, for dragging it open
+   * from elsewhere. It composes: the panel takes whichever of pull and spring reaches further.
    */
   pull?: SharedValue<number>;
 }
@@ -142,16 +128,13 @@ export interface DrawerPopupProps {
 }
 
 /**
- * Slides in from an edge, which is the one place an animation is not decoration.
- *
- * A drawer that appears without moving reads as a screen change rather than a
- * panel, so this one animates even though Collapsible and Skeleton do not.
- * Reduce-motion still turns it off: the drawer arrives in place instead.
+ * Slides in from an edge, which is the one place an animation is not decoration. A drawer
+ * that appears without moving reads as a screen change. Reduce-motion still turns it off.
  */
+
 /**
- * The scrim takes an animated opacity, so it has to be an animated component.
- * Declared once at module scope — `createAnimatedComponent` inside a render
- * makes a new component type every time, which remounts the subtree.
+ * The scrim takes an animated opacity, so it has to be an animated component. Declared at
+ * module scope — `createAnimatedComponent` in a render remounts the subtree.
  */
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -165,10 +148,8 @@ function Popup({
   const { open, setOpen, pull } = useDrawer("Popup");
   const theme = useTheme();
   /**
-   * A side panel is full height, so its first row sits under the Dynamic Island
-   * and its last under the home indicator unless it says otherwise. Here rather
-   * than at every caller, since the one that forgets ships a heading under the
-   * clock.
+   * A side panel is full height, so its first row sits under the Dynamic Island unless it
+   * says otherwise. Here rather than at every caller, since the one that forgets ships it.
    */
   const insets = useSafeAreaInsets();
   const reducedMotion = useReducedMotion();
@@ -179,22 +160,16 @@ function Popup({
   const progress = useSharedValue(0);
 
   /**
-   * A local stand-in so the worklets below can read one value either way. A
-   * caller that passes nothing leaves it at 0, and `reach` is then `progress`
-   * exactly as before.
+   * A local stand-in so the worklets below can read one value either way. A caller that
+   * passes nothing leaves it at 0, and `reach` is then `progress`.
    */
   const ownPull = useSharedValue(0);
   const pulled = pull ?? ownPull;
 
 
   /**
-   * The panel is built `grytDrawerBleed` larger than it needs and hangs that
-   * much off-screen, with matching padding. The spring settles onto its target
-   * from both directions, so a panel sized exactly to its resting place shows a
-   * seam of backdrop on the undershoot.
-   *
-   * **The token, never a local number.** `bleedTokens.test.ts` in @gryt/ui
-   * keeps it equal to `--gryt-drawer-bleed` in theme.css.
+   * The panel is built `grytDrawerBleed` larger and hangs that much off-screen: the spring
+   * settles from both directions, and an undershoot would show a seam. Never a local number.
    */
   const bleed = grytDrawerBleed;
   const panelExtent = extent + bleed;
@@ -209,21 +184,19 @@ function Popup({
         : panelExtent;
 
   /**
-   * 700ms on the *tight* curve, and @gryt/ui's Drawer matches. A 12% overshoot
-   * is texture on a 20px switch thumb and a slam on a 320pt panel, because the
-   * overshoot is a percentage of the travel. **Change both platforms together.**
+   * 700ms on the tight curve, and @gryt/ui's Drawer matches. A 12% overshoot is texture on
+   * a 20px thumb and a slam on a 320pt panel. Change both platforms together.
    */
+
   /**
-   * Mounted for longer than it is open, so the panel can animate out — RN's
-   * `Modal` unmounts the moment `visible` goes false.
+   * Mounted for longer than it is open, so the panel can animate out — RN's `Modal`
+   * unmounts the moment `visible` goes false.
    */
   const [mounted, setMounted] = useState(open);
 
   /*
-   * react-hooks/set-state-in-effect is right that this derives from a prop and
-   * wrong that it can be derived during render: `mounted` has to *stay* true
-   * after `open` goes false, until the exit animation ends. The alternative is
-   * a previous-value ref read during render, which react-hooks/refs forbids.
+   * react-hooks/set-state-in-effect is right that this derives from a prop and wrong that
+   * it can derive during render: `mounted` has to stay true until the exit animation ends.
    */
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -236,18 +209,16 @@ function Popup({
     if (reducedMotion) {
       // eslint-disable-next-line react-hooks/immutability
       progress.value = open ? 1 : 0;
-      // Same as the mount above: there is no animation to wait for here, so
-      // the unmount happens immediately, but it is still driven by `open`
-      // having changed.
+      // Same as the mount above: there is no animation to wait for, so the unmount happens
+      // immediately, but it is still driven by `open` having changed.
+
       // eslint-disable-next-line react-hooks/set-state-in-effect
       if (!open) setMounted(false);
       return;
     }
 
-    /* Opening starts from wherever a drag had got to, not from nothing. The
-       panel is already that far out; springing from 0 would take it back to the
-       edge and bring it in again, and the larger-of-the-two rule cannot save it
-       because the caller's pull is falling at the same time. */
+    /* Opening starts from wherever a drag had got to. Springing from 0 would take the
+       panel back to the edge, and the larger-of-two rule cannot save it. */
     if (open) {
       progress.value = seedFor(progress.value, pulled.value);
     }
@@ -258,39 +229,30 @@ function Popup({
       { duration: durations.springSoft },
       (finished) => {
         "worklet";
-        // Unmount only once the panel is actually gone, and only if the
-        // animation ran to the end — an interrupted close means it was
-        // reopened, and unmounting then would take the drawer away as it
-        // arrives.
+        // Unmount only once the panel is gone and only if the animation ran to the end —
+        // an interrupted close means it was reopened.
         if (finished && !open) runOnJS(setMounted)(false);
       }
     );
   }, [open, mounted, progress, pulled, reducedMotion]);
 
   /**
-   * How far the finger has dragged the panel away from open, in points. Kept
-   * off `progress`, which runs on the spring — feeding a gesture through an
-   * overshooting curve makes the panel lead and lag the thumb.
+   * How far the finger has dragged the panel away from open, in points. Kept off
+   * `progress`: feeding a gesture through an overshooting curve lags the thumb.
    */
   const drag = useSharedValue(0);
 
   /**
-   * How far out the panel is, from whichever is reaching further.
-   *
-   * `Math.max` rather than a flag saying who is driving. During a drag the
-   * spring is at 0 and the finger leads; on release the spring runs to 1 while
-   * the caller drops its pull, and the panel cannot go backwards between the
-   * two because it is always the larger of them.
+   * How far out the panel is, from whichever is reaching further. `Math.max` rather than a
+   * flag: the panel cannot go backwards, because it is always the larger of the two.
    */
   const reach = () => {
     "worklet";
     return reachOf(progress.value, pulled.value);
   };
 
-  /* A pull off zero has to mount the panel, and a pull back to zero has to take
-     it away again — otherwise a drag that is abandoned leaves a Modal up with
-     nothing in view. Only when `open` is false: once it is true the effect
-     above owns mounting, and unmounting here would fight it. */
+  /* A pull off zero mounts the panel and a pull back to zero takes it away, or an abandoned
+     drag leaves a Modal up with nothing in view. Only while `open` is false. */
   useAnimatedReaction(
     () => pulled.value > 0,
     (reaching, was) => {
@@ -304,23 +266,15 @@ function Popup({
   const panelStyle = useAnimatedStyle(() => {
     const travel = hidden + (0 - hidden) * reach() + drag.value;
     return {
-      // Transform only. The panel slides; it does not fade. This used to carry
-      // `opacity: progress.value`, which the web's Popup does not — it declares
-      // `transition-transform` and nothing else — and a panel that fades as it
-      // arrives reads as a dialog rather than a drawer.
+      // Transform only. The panel slides; it does not fade — the web's Popup declares
+      // `transition-transform` and nothing else, and a fading panel reads as a dialog.
       transform: [vertical ? { translateY: travel } : { translateX: travel }]
     };
   });
 
   /**
-   * The scrim fades with the panel and thins further as it is dragged away —
-   * two rules, both the web's. Multiplying by `progress` is the same curve
-   * rather than a new one, since it already runs on `travel`.
-   *
-   * **The fade is the backdrop's, not the Popup's.** GRYT-408 removed it citing
-   * the Popup declaring only `transition-transform`, which is true of the panel
-   * and the opposite of what the backdrop says. Without it the scrim was at
-   * full strength before the panel appeared and blinked off with the Modal.
+   * The scrim fades with the panel and thins further as it is dragged away, both the web's
+   * rules. The fade is the backdrop's, not the Popup's — without it the scrim blinks off.
    */
   const scrimStyle = useAnimatedStyle(() => {
     const dragged = extent > 0 ? Math.min(1, Math.abs(drag.value) / extent) : 0;
@@ -328,18 +282,13 @@ function Popup({
   });
 
   /**
-   * Swipe to dismiss (GRYT-395), on gesture-handler rather than `PanResponder`.
-   * `PanResponder` cannot negotiate with a native scroll recogniser, so it kept
-   * the drag by never handing it back — which stops a `ScrollView` inside the
-   * drawer scrolling at all. Here the pan fails on a cross-axis drag.
-   *
-   * **The callbacks stay worklets**, so the panel tracks the finger on the UI
-   * thread with nothing to be blocked by a busy bridge.
+   * Swipe to dismiss (GRYT-395), on gesture-handler rather than `PanResponder`, which
+   * cannot negotiate with a native scroll recogniser. The callbacks stay worklets.
    */
+
   /**
-   * Scrollables that have announced themselves. **State rather than a ref, so
-   * the pan rebuilds** — a child's ref is still empty at the detector's first
-   * attach, and gesture-handler resolves these at attach time.
+   * Scrollables that have announced themselves. State rather than a ref, so the pan
+   * rebuilds: a child's ref is still empty at the detector's first attach.
    */
   const [scrollables, setScrollables] = useState<ScrollableRef[]>([]);
 
@@ -360,31 +309,23 @@ function Popup({
 
     const gesture = Gesture.Pan().enabled(dismissible);
 
-    /* Claim only a drag heading the way the panel closes, and only once it is
-     * clearly a drag rather than a slow press — 8pt, the same threshold the
-     * old responder used. `failOffset` on the other axis is the half that
-     * `PanResponder` had no answer for: a finger moving across the panel is
-     * somebody scrolling its contents, and this hands that over rather than
-     * swallowing it. */
+    /* Claim only a drag heading the way the panel closes, and only past 8pt. `failOffset`
+     * on the other axis hands a cross-axis drag to whatever is scrolling. */
     if (vertical) {
       gesture.activeOffsetY(8).failOffsetX([-12, 12]);
     } else {
       gesture.activeOffsetX(closingSign * 8).failOffsetY([-12, 12]);
     }
 
-    /* Let the scrollables run, or the drawer's recogniser wins and a list
-     * inside the panel cannot move (GRYT-431). "Simultaneous" overstates it —
-     * the axis rules mean this pan does not activate on a vertical drag; what
-     * goes is the blocking before either recogniser has decided. */
+    /* Let the scrollables run, or the drawer's recogniser wins and a list inside the panel
+     * cannot move (GRYT-431). What goes is the blocking before either has decided. */
     if (scrollables.length > 0) {
       gesture.simultaneousWithExternalGesture(...scrollables);
     }
 
-    /* Every `drag.value = …` below runs in a worklet on the UI thread, when the
-     * finger moves — not while this memo is building the recogniser.
-     * react-hooks/immutability cannot see through the closure and reads a
-     * Reanimated shared value being assigned during render, which is also why
-     * the two `progress.value` writes further up already carry this. */
+    /* Every `drag.value = …` below runs in a worklet on the UI thread. react-hooks cannot
+     * see through the closure and reads a shared value being assigned during render. */
+
     /* eslint-disable react-hooks/immutability */
     return gesture
       .onUpdate((event) => {
@@ -401,10 +342,8 @@ function Popup({
         );
         const speed = Math.abs(vertical ? event.velocityY : event.velocityX);
 
-        /* Half the panel, or a flick. **Velocity is points per second here**,
-         * where `PanResponder` reported points per millisecond — carrying the
-         * old 0.5 across would need a flick a thousand times faster and read as
-         * the velocity term not working. */
+        /* Half the panel, or a flick. Velocity is points per second here, where
+         * `PanResponder` reported points per millisecond. */
         if (moved > extent / 2 || speed > 500) {
           // Left where it is: the close animation runs from here, and snapping
           // it back first would show the panel returning before it left.
@@ -424,9 +363,8 @@ function Popup({
   }, [dismissible, drag, extent, scrollables, setOpen, side, vertical]);
 
   /**
-   * Leftover drag springs back on open and is cleared on `mounted`, not on
-   * `open` going false — that happens the instant a swipe dismisses, so the
-   * panel jumped back to fully open and then slid out (GRYT-429).
+   * Leftover drag springs back on open and is cleared on `mounted`, not on `open` going
+   * false — that happens the instant a swipe dismisses (GRYT-429).
    */
   useEffect(() => {
     if (open) {
@@ -459,12 +397,8 @@ function Popup({
             style={[
               {
                 position: "absolute",
-                // The overhang hangs *off* the edge the panel comes from, which
-                // is the only direction that helps. It used to be added to the
-                // width instead, so the panel grew inwards — 64pt more of the
-                // screen covered, and the seam it was meant to hide still there,
-                // because the gap opens on the entering edge and that is the edge
-                // the extra material was not on.
+                // The overhang hangs off the edge the panel comes from, which is the only
+                // direction that helps: added to the width, the panel grew inwards instead.
                 top: side === "bottom" ? undefined : 0,
                 bottom: vertical ? -bleed : 0,
                 left:
@@ -552,9 +486,8 @@ function useRegisterScrollable(ref: RefObject<unknown>) {
 export type DrawerScrollViewProps = ComponentProps<typeof GestureScrollView>;
 
 /**
- * The scroll view to use inside a drawer. React Native's own will not scroll in
- * there: gesture-handler settles the two recognisers by reference, so they have
- * to know about each other, and this is that introduction.
+ * The scroll view to use inside a drawer. React Native's own will not scroll in there:
+ * gesture-handler settles the two recognisers by reference, and this is the introduction.
  */
 function DrawerScrollView(props: DrawerScrollViewProps) {
   const ref = useRef(null);

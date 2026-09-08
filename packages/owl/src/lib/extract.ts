@@ -1,13 +1,6 @@
 /**
- * Taking a drawing of the bird wearing something and getting the something out.
- *
- * **Nothing here may touch the filesystem or process.argv** — the site's
- * drawing guide runs this in a browser, so somebody can check an export without
- * cloning the monorepo.
- *
- * The bird is matched on geometry rather than path data: a drawing tool
- * rewrites path data on export, so comparing strings finds nothing. Extent,
- * perimeter and area survive it.
+ * Taking a drawing of the bird wearing something and getting the something out. Nothing
+ * here may touch the filesystem: the site's drawing guide runs it in a browser.
  */
 
 import * as owl from "../index";
@@ -18,14 +11,8 @@ import { GROUPED_PARTS, PART_BY_LAYER } from "./owl-group";
 import { simplifyPath } from "./svg-simplify";
 import { DEFAULT_LAYER } from "./filename";
 
-// The ink table used to be re-exported from here, so a caller had one import
-// for the whole job. It cannot be now: this file moved under src/ so the CLI
-// could reach it, and artwork/ is not package code — it is this repository's
-// drawings and the roles they are painted in. Somebody drawing a hat at their
-// own kitchen table has no copy of it and should not need one.
-//
-// `scripts/authoring.ts` puts the two back together for the things that do want
-// both, which is the docs app's upload checker.
+// The ink table is not re-exported from here: artwork/ is this repository's drawings, and
+// somebody drawing a hat at their own table has no copy. `scripts/authoring.ts` joins them.
 export {
   placementFor,
   isIgnored,
@@ -45,12 +32,8 @@ const BASE = owl.OWL_BASE;
 /* --- geometry ------------------------------------------------------------ */
 
 /**
- * A path, walked and sampled into a polyline.
- *
- * Supports the commands a drawing tool actually emits for this artwork. Arcs
- * are not among them and are rejected rather than approximated — an accessory
- * that is subtly the wrong shape is harder to notice than one that refuses to
- * build.
+ * A path, walked and sampled into a polyline. Supports the commands a drawing tool emits
+ * for this artwork; arcs are rejected rather than approximated.
  */
 function flatten(d: string) {
   const tokens = d.match(/[MmLlHhVvCcSsQqTtAaZz]|-?\d*\.?\d+(?:e-?\d+)?/gi) || [];
@@ -142,15 +125,10 @@ function flatten(d: string) {
 }
 
 /**
- * What a path draws, as a string two files can be compared on: extent,
- * perimeter and area, none of which serialisation changes.
- *
- * **The tolerance is tight on purpose and widening it was tried.** A drawing
- * whose bird has been nudged stops matching, which looks like something to
- * paper over and is the tool working — the method depends on an unmodified
- * base, and a drifted one produces an accessory in the wrong place. When this
- * stops matching, the fix is in the drawing.
- */function shapeKey(d: string): string {
+ * What a path draws, as a string two files can be compared on: extent, perimeter and
+ * area. The tolerance is tight on purpose — a drifted base puts the accessory wrong.
+ */
+function shapeKey(d: string): string {
   const { points, subpaths } = flatten(d);
   let minX = Infinity;
   let minY = Infinity;
@@ -194,11 +172,8 @@ function paths(svg: string): Shape[] {
 /* --- the bird, and what each of its paths is ----------------------------- */
 
 /**
- * Which palette role each of the bird's paths is painted from.
- *
- * Found by drawing the bird once in a palette of sentinel colours and reading
- * the fills back, rather than by hard-coding "the fourth path is a wing". The
- * generator stays free to reorder its own layers.
+ * Which palette role each of the bird's paths is painted from. Found by drawing the bird
+ * in sentinel colours, so the generator stays free to reorder its own layers.
  */
 export const ROLES = [
   "background", "body", "face", "accent", "wing",
@@ -215,20 +190,16 @@ const roleOf = new Map(
 );
 
 /**
- * Which part of the bird each of its paths belongs to.
- *
- * Colour cannot answer this — the eyes and the beak are both `accent` — and it
- * is the difference between "this drawing replaces the eyes" and "this drawing
- * paints the beak away too".
+ * Which part of the bird each of its paths belongs to. Colour cannot answer it — eyes and
+ * beak are both `accent` — and it decides whether a drawing takes the beak too.
  */
 const partOf = new Map(owl.owlPartPaths(BASE).map((p) => [shapeKey(p.d), p.part]));
 export const realPalette = owl.owlPalette(BASE.palette, BASE.scheme);
 const roleByColour = new Map(
   Object.entries(realPalette).map(([role, hex]) => [hex.toLowerCase(), role]),
 );
-// The field is not part of the bird. It is a <rect> here and a <path> in a
-// drawing, so it would never match anyway — leaving it in only makes every
-// extraction report one path missing.
+// The field is not part of the bird. It is a <rect> here and a <path> in a drawing, so
+// it would never match and leaving it in reports one path missing every time.
 const baseFills = new Map(
   paths(owl.owlAvatarSvg("base", BASE))
     .filter((p) => !isBackground(p.d))
@@ -290,14 +261,8 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
   }
 
   /*
-   * When the drawing says which shapes are the bird, believe it. A Figma export
-   * with "Include id attribute" wraps the bird in `<g id="owl">`, which beats
-   * the geometry matcher below — that breaks whenever the tool rewrites a curve
-   * or moves something half a unit.
-   *
-   * Which parts are missing from the group is which parts the drawing means to
-   * replace. Drawings without the group still go the old way; fifty of them in
-   * the history have to keep extracting the same.
+   * When the drawing says which shapes are the bird, believe it: `<g id="owl">` beats the
+   * geometry matcher. Which parts are missing is which parts it means to replace.
    */
   const structural = allShapes.some((s) => s.inOwl);
   let drawn = allShapes;
@@ -328,9 +293,8 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
       const part = partOf.get(key);
 
       /*
-       * Recorded as "do not draw this one" rather than as a repaint: the eyes
-       * and the beak share a colour, so repainting the role takes the beak too.
-       * Per side, or a wink comes out with a blank face.
+       * Recorded as "do not draw this one" rather than as a repaint: eyes and beak share
+       * a colour. Per side, or a wink comes out with a blank face.
        */
       if (part === "eyeLeft" || part === "eyeRight") {
         hides.add(part);
@@ -338,13 +302,8 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
       }
 
       /*
-       * A part painted the background colour is one the drawing means to remove.
-       * **Recorded per part, not per role** — the ear tufts are drawn in the
-       * body's colour, so a hat covering them read as "repaint body" and took
-       * the chest with it.
-       *
-       * Any other colour is a genuine recolour and stays keyed by role: a coat
-       * that turns the arms brown means the role, not one arm.
+       * A part painted the background colour is one the drawing means to remove, recorded
+       * per part: the tufts are the body's colour, so a hat read as "repaint body".
        */
       if (part && p.fill === realPalette.background) {
         hides.add(part);
@@ -355,15 +314,8 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
       const to = roleByColour.get(p.fill);
       if (!role) unplaceable.add(`${p.fill} — could not tell which part that is`);
       else if (!to) {
-        // A part of the bird repainted in a colour that is not one of the
-        // bird's. The drawing asked for something and gets nothing: the path is
-        // dropped and the bird's own part draws underneath, unchanged.
-        //
-        // Worth naming the common case, because the fix is not obvious from
-        // "not one of the base owl's colours". An arm painted the background
-        // colour is how a coat drops the arms, and it used to miss whenever the
-        // drawing tool spelled that colour a different way. Colours are
-        // normalised now, so reaching here means the colour really is different.
+        // A part of the bird repainted in a colour that is not one of the bird's: the path
+        // is dropped and the bird's own draws underneath. Colours are normalised first.
         const hint =
           part === "wingLeft" || part === "wingRight"
             ? ` (to drop an arm, paint it exactly ${realPalette.background})`
@@ -375,21 +327,15 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
   });
 
   /*
-   * A part of the bird the drawing does not contain is a part it means to
-   * replace — deleting the eye you draw over already says which side.
-   *
-   * **Only the parts an accessory legitimately replaces.** A missing body or
-   * face is a drawing that was not made on this bird, and silently hiding the
-   * torso is the worst way to find that out.
+   * A part the drawing does not contain is one it means to replace. Only the parts an
+   * accessory legitimately replaces — a missing body was not drawn on this bird.
    */
   const REPLACEABLE = new Set<OwlPart>([
     "eyeLeft", "eyeRight", "beak", "earTufts", "wingLeft", "wingRight",
   ]);
   /*
-   * Only when the drawing did not say. With `<g id="owl">` the bird was lifted
-   * out above and never offered to the matcher, so every base path would look
-   * absent and the whole bird would be hidden — which is what happened the
-   * first time this ran.
+   * Only when the drawing did not say. With `<g id="owl">` the bird was lifted out above,
+   * so every base path would look absent and the whole bird would be hidden.
    */
   const absent = structural ? [] : [...baseFills.keys()].filter((k) => !seen.has(k));
   const unexplained: string[] = [];
@@ -410,9 +356,8 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
     throw new Error(`${label}: nothing left after subtracting the bird`);
   }
 
-  // Shrink after the subtraction, never before it: the bird is matched on its
-  // geometry, and rounding the drawing first would move the very numbers being
-  // matched on.
+  // Shrink after the subtraction, never before: the bird is matched on its geometry, and
+  // rounding the drawing first would move the numbers being matched on.
   const before = kept.reduce((n, p) => n + p.d.length, 0);
   for (const p of kept) p.d = simplifyPath(p.d, opts.places, opts.tolerance);
   const after = kept.reduce((n, p) => n + p.d.length, 0);
@@ -426,10 +371,8 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
   });
 
   /*
-   * A drawing ahead of the bird in the file is drawn behind it — document order
-   * is what an SVG paints in, so a headset band before `<g id="owl">` is one the
-   * ear tufts come through. Only when the filename did not say; a `.behind` or
-   * `.over-all` tag wins.
+   * A drawing ahead of the bird in the file is drawn behind it — document order is what an
+   * SVG paints in. Only when the filename did not say; a tag wins.
    */
   const named = opts.layer ?? DEFAULT_LAYER[opts.slot] ?? "overAll";
   const sitsBehind =
@@ -472,11 +415,8 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
 
   const pad = " ".repeat(20);
 
-  // Colours the ink table has never seen. The caller collects these across
-  // every drawing and stops, rather than shipping the lightness ladder's guess:
-  // the ladder ranks a drawing's own colours against each other, so it has no
-  // way to know that a mid-teal is `trim` here and `trimLight` in a lighter
-  // drawing, and it gets that wrong more often than not.
+  // Colours the ink table has never seen. The caller collects these and stops rather than
+  // shipping the lightness ladder's guess, which ranks a drawing's own colours only.
   const guessed = distinct.filter((hex) => !opts.map.has(hex));
   const summary =
     `${opts.name.padEnd(18)} ${String(kept.length).padStart(2)} paths  ` +
@@ -513,10 +453,8 @@ export function extract(svg: string, label: string, opts: ExtractOptions) {
     paint,
     guessed,
     /*
-     * Whether this was drawn on the base at all. A drawing that finds none of
-     * the bird extracts happily and produces an accessory shaped like a whole
-     * owl. Deliberate replacements are counted in `replaced`, not here, so
-     * found + missed does not have to equal ofBird.
+     * Whether this was drawn on the base at all. A drawing that finds none of the bird
+     * extracts happily and produces an accessory shaped like a whole owl.
      */
     missed: unexplained.length,
     replaced: [...hides],

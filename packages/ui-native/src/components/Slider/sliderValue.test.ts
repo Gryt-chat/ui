@@ -35,13 +35,8 @@ describe("valueAt", () => {
 
 describe("dragging (GRYT-378)", () => {
   /**
-   * PanResponder's `gesture.dx` is measured from where the gesture started, not
-   * from the previous event. The thumb must therefore be positioned at
-   * `origin + dx` — anchored once — and never at `currentPosition + dx`, which
-   * adds the whole travel again on every move.
-   *
-   * The reported symptom was the thumb accelerating away from the finger while
-   * tapping stayed correct.
+   * PanResponder's `gesture.dx` is measured from where the gesture started, so the thumb is
+   * positioned at `origin + dx` and never at `currentPosition + dx`, which doubles it.
    */
   it("tracks the finger instead of accelerating away from it", () => {
     const origin = 0;

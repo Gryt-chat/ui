@@ -21,10 +21,8 @@ const RAMP: Record<AlertSeverity, "accent" | "success" | "warning" | "danger"> =
 };
 
 /**
- * Severity is carried by colour and by the accessibility role, not an icon —
- * colour alone does not tell somebody an alert is an error, and the live region
- * reaches a screen reader where an icon does not. A visible icon still wants an
- * icon set; noted in the exceptions table.
+ * Severity is carried by colour and by the accessibility role, not an icon: colour alone
+ * does not say "error", and the live region reaches a screen reader.
  */
 export function Alert({ severity = "info", title, children, style }: AlertProps) {
   const theme = useTheme();

@@ -1,19 +1,6 @@
 /**
- * `dist/index.js` is one file that imports nothing. Keep it that way.
- *
- * Two things depend on it: a plain `<script type="module">` can take the file
- * as-is, and the mobile app's bundler gets one module rather than a graph.
- * Neither breaks loudly when it stops being true.
- *
- * It is one `entry:` away from being undone. Adding a second entry to the main
- * vite config makes rollup hoist whatever the two share into a chunk, and
- * `index.js` becomes an importer of it: measured at 86kB to 13kB plus two
- * imports, silently, with an exit code of 0. That is why the CLI is built by a
- * config of its own and why this runs after both.
- *
- * The bare `#!` check is the other half: `npx` runs the file directly, so a CLI
- * without a shebang fails on somebody else's machine with a syntax error from
- * their shell.
+ * `dist/index.js` is one file that imports nothing, and a second `entry:` silently undoes
+ * that. The bare `#!` check is the other half: `npx` runs the CLI file directly.
  */
 
 import { readFileSync } from "node:fs";

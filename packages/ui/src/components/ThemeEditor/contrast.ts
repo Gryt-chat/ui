@@ -1,18 +1,5 @@
-/* The checks the library asserts on its own palette, run against yours.
- *
- * packages/ui/src/theme/theme.test.ts fails the build if Gryt's own scales stop
- * carrying text. A theme built here gets no such build, so the same ratios are
- * measured live and reported next to the colour that caused them — the point
- * being to say so while somebody is picking the colour, rather than letting
- * them export something unreadable and find out in their own app.
- *
- * Thresholds are WCAG AA: 4.5 for text, and one advisory below that for a
- * border, which is not text and has no required ratio but does need to be
- * visible at all. AA rather than the 7:1 the library holds its own text step
- * to — several published palettes sit between the two, and calling Catppuccin
- * Latte broken because its text is 6.6:1 rather than 7 would be reporting a
- * preference as a failure.
- */
+/* The checks the library asserts on its own palette, run against yours and reported next
+ * to the colour that caused them. Thresholds are WCAG AA, not the library's own 7:1. */
 
 import { contrast } from "@gryt/theme";
 import type { CSSProperties } from "react";
@@ -124,9 +111,8 @@ export function contrastChecks(
     );
   }
 
-  // The filled-button case: the label sits on step 9, and step 9 is whatever
-  // hue was picked. This is the check somebody breaks first, because a pale
-  // accent looks good in a swatch and takes its dark ink with it.
+  // The filled-button case: the label sits on step 9, which is whatever hue was picked.
+  // Broken first, because a pale accent looks good in a swatch and keeps its dark ink.
   const fills = [
     { family: "accent", on: "onAccent", label: "Label on a filled button" },
     { family: "secondary", on: "onSecondary", label: "Label on a secondary button" },

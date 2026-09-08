@@ -1,11 +1,6 @@
 /**
- * The eyes the bird is drawn with.
- *
- * One shape, traced off the artboard, and no styles. Expressions used to live
- * here as ten hand-built variants — arcs for pleased, a wedge for cross — which
- * had to be kept in step with a drawing they were only approximating. They are
- * drawings now: see the `expression` slot in `accessories.ts`. An expression
- * brings its own eyes and hides these.
+ * The eyes the bird is drawn with: one shape traced off the artboard, no styles.
+ * Expressions are drawings now — see the `expression` slot — and they hide these.
  */
 
 import { closedPath, type Point } from "../geometry";
@@ -13,11 +8,8 @@ import type { OwlMetrics } from "../metrics";
 import type { OwlPalette } from "../types";
 
 /**
- * A squircle rotated an eighth of a turn.
- *
- * Four identical segments at ninety degrees to each other, with control points
- * reaching past the radius — that overshoot is what keeps the corners full
- * instead of pinching, and it is why this is not just an ellipse.
+ * A squircle rotated an eighth of a turn: four identical segments with control points
+ * reaching past the radius. That overshoot is what keeps the corners from pinching.
  */
 const BLOB: readonly Point[] = [
   [-0.36, -1],

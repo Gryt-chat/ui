@@ -34,9 +34,8 @@ export const Composer = forwardRef<HTMLTextAreaElement, ComposerProps>(
   ) {
     const innerRef = useRef<HTMLTextAreaElement | null>(null);
 
-    // Replaces MUI's TextareaAutosize. Reset to auto first, otherwise
-    // scrollHeight only ever reports the current height and the box can grow
-    // but never shrink.
+    // Reset to auto first, or scrollHeight only reports the current height and the box can
+    // grow but never shrink.
     const resize = useCallback(() => {
       const node = innerRef.current;
       if (!node) {

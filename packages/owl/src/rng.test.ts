@@ -21,9 +21,8 @@ describe("adding a candidate", () => {
 
       if (before === after) continue;
 
-      // The only licensed change: this seed now gets the new one. Anything
-      // else means a fourth drawing moved somebody who did not get it, which
-      // is what the shared range used to do to a fifth of everybody.
+      // The only licensed change: this seed gets the new one. Anything else means a fourth
+      // drawing moved somebody who did not get it, which the shared range used to do.
       took += 1;
       expect(after).toBe("d");
     }
@@ -103,15 +102,8 @@ describe("the by-name draw", () => {
   });
 
   /*
-   * The keys are rounded before they are compared, because `Math.log` is
-   * allowed to land a bit apart on two JavaScript engines and the desktop app
-   * and the phone have to draw one person the same way. Rounding makes an
-   * exact tie possible where there would otherwise be none, so the name breaks
-   * it — never the iteration order.
-   *
-   * Two candidates sharing an id would tie on every seed and the name could not
-   * separate them. That cannot arise: an id here is an accessory name, and the
-   * generator refuses two drawings that would take the same one.
+   * The keys are rounded before comparison, because `Math.log` may land a bit apart on two
+   * engines. Rounding makes ties possible, so the name breaks them, never iteration order.
    */
   it("gives the same answer at every rounding, not only the current one", () => {
     // A weight ratio that lands keys close together, run wide enough that any

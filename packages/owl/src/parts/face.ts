@@ -1,21 +1,14 @@
 /**
- * The pale plate the eyes and beak sit on, and the beak under them.
- *
- * Both are the reference traced exactly, and neither has a style to pick. The
- * plate's two brow lobes meeting in a notch are the thing that makes the
- * silhouette read as an owl rather than as a bird, and a set of avatars that
- * varies it is a set of avatars of different animals.
+ * The pale plate the eyes and beak sit on, and the beak under them. The plate's two brow
+ * lobes are what make the silhouette read as an owl rather than as a bird.
  */
 
 import { symmetricPath, type Half } from "../geometry";
 import type { OwlMetrics } from "../metrics";
 
 /**
- * Measured off the artboard and divided through by its half-width and height.
- *
- * Seven segments, which is the drawing's own count rather than a fit down to
- * three. The lobes are the whole character of it and a three-segment fit
- * rounded the notch off into a dent.
+ * Measured off the artboard and divided through by its half-width and height. Seven
+ * segments, the drawing's own count: a three-segment fit rounded the notch into a dent.
  */
 const PLATE: Half = {
   points: [
@@ -31,12 +24,8 @@ const PLATE: Half = {
 };
 
 /**
- * A horizontal cusp at the top, widest a third of the way down, tapering to a
- * rounded tip.
- *
- * The cusp is why the first control point sits a full width out at zero height:
- * the curve leaves the axis travelling sideways, which is what gives the beak
- * its flat shoulder instead of a point.
+ * A horizontal cusp at the top, widest a third of the way down, tapering to a rounded tip.
+ * The first control point sits a full width out at zero height, which is the shoulder.
  */
 const BEAK: Half = {
   points: [[0, 0], [1.004, 0.0034], [0.4035, 0.6483], [0.0621, 0.9965]],

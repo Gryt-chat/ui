@@ -7,11 +7,8 @@ import { cn } from "../utils/cn";
 export type FormProps = ComponentPropsWithoutRef<typeof BaseForm>;
 
 /**
- * Wires server-side errors back to the fields that caused them.
- *
- * Pass `errors` keyed by field name and Base UI routes each message to the
- * matching Field, so a rejected form points at the input rather than printing a
- * paragraph at the top that the user has to map back themselves.
+ * Wires server-side errors back to the fields that caused them: pass `errors` keyed by
+ * field name and Base UI routes each message to the matching Field.
  */
 export const Form = forwardRef<HTMLFormElement, FormProps>(function Form(
   { className, ...props },

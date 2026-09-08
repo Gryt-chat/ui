@@ -1,8 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
-// Deep imports, one file per icon, rather than the barrel. Metro does not
-// tree-shake, so the barrel pulls the whole set in. The `*Icon` suffix is the
-// spelling @phosphor-icons/react uses; the bare names are deprecated.
+// Deep imports, one file per icon, rather than the barrel: Metro does not tree-shake. The
+// `*Icon` suffix is the spelling @phosphor-icons/react uses.
 import { MinusIcon } from "phosphor-react-native/src/icons/Minus";
 import { PlusIcon } from "phosphor-react-native/src/icons/Plus";
 import { TextInput } from "../../internal/TextInput";
@@ -11,12 +10,8 @@ import { Text } from "../../internal/Text";
 import { useTheme } from "../../theme";
 
 /**
- * Declared here rather than inside NumberField.
- *
- * A component defined in another component's body is a new type on every
- * render, so React unmounts and remounts it each time and any state inside is
- * lost. Harmless for a button with no state, and still the kind of thing that
- * bites later.
+ * Declared here rather than inside NumberField. A component defined in another's body is a
+ * new type on every render, so React remounts it and any state inside is lost.
  */
 function StepButton({
   icon,
@@ -56,12 +51,8 @@ export interface NumberFieldProps {
 }
 
 /**
- * Typed or stepped, with the keyboard set to numeric.
- *
- * The web version also scrubs: press the label and drag sideways to change the
- * value. That gesture is not reproduced. It competes with scrolling on a phone,
- * and the same interaction already exists here as Slider, which is a better fit
- * for a screen you touch.
+ * Typed or stepped, with the keyboard set to numeric. The web's scrub gesture is not
+ * reproduced: it competes with scrolling, and Slider already covers it here.
  */
 export function NumberField({
   value: controlled,

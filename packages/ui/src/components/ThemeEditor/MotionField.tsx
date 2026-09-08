@@ -13,25 +13,12 @@ import { Select } from "../Select/Select";
 import { Slider } from "../Slider/Slider";
 import { CurveEditor } from "./CurveEditor";
 
-/* How Gryt moves, as two questions and a graph.
- *
- * How fast is one slider over every tier rather than one per tier. The tiers
- * are already in proportion — a drawer takes longer than a button because it
- * travels further — and five sliders would be re-deciding that relationship
- * with no way to tell it had gone wrong except by opening a drawer.
- *
- * What shape is three named curves and a bezier you can drag. The named ones
- * keep the library's two apart: the overshooting spring for things that grow
- * in place, the critically damped one for things that travel inside their
- * bounds. A bezier cannot be both, so drawing one collapses them — which the
- * panel says out loud, because a curve that overshoots is fine on a button and
- * throws a drawer outside its own container.
- */
+/* How Gryt moves, as two questions and a graph. One speed slider over every tier, and
+ * three named curves or a bezier — a bezier collapses the library's two into one. */
 
 const CUSTOM = "custom";
-/* Somewhere to start dragging from. Roughly ease-out: most of the distance
-   early, settling at the end, and no overshoot — so the first thing anybody
-   sees is a curve that works rather than one that needs fixing. */
+/* Somewhere to start dragging from. Roughly ease-out with no overshoot, so the first
+   thing anybody sees is a curve that works rather than one that needs fixing. */
 const CUSTOM_START: GrytBezier = [0.22, 1, 0.36, 1];
 
 interface MotionFieldProps {
@@ -41,9 +28,8 @@ interface MotionFieldProps {
 
 export function MotionField({ motion, onChange }: MotionFieldProps) {
   const current = motion ?? grytMotion;
-  /* The narrowed value rather than a boolean. `isBezier(x) ? … : …` on a
-     separate line does not teach TypeScript anything about `current.curve`
-     later in the function, and every use below needs it to know. */
+  /* The narrowed value rather than a boolean: `isBezier(x) ? … : …` on a separate line
+     teaches TypeScript nothing about `current.curve` later on. */
   const bezier = isBezier(current.curve) ? current.curve : null;
   const [lastBezier, setLastBezier] = useState<GrytBezier>(
     bezier ?? CUSTOM_START

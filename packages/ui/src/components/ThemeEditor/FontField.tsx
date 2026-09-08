@@ -12,20 +12,8 @@ import {
   primaryFamily
 } from "./fonts";
 
-/* One role's typeface: a list of good ones, and a box for everything else.
- *
- * The box is not a fallback for a short list — it is how the long tail works.
- * A curated dozen cannot cover what somebody wants, and downloading Google's
- * sixteen hundred families to populate a dropdown would be a request to Google
- * made by a picker, on an app where talking to Google is a setting. So the
- * list is what is worth suggesting and the box is what is possible.
- *
- * What is typed is a family name, not a stack. Asking somebody to write
- * `"Bodoni Moda", ui-serif, Georgia, serif` is asking them to know CSS, and
- * getting the tail wrong is how a theme ends up unreadable on a machine that
- * does not have the face. The tail comes from whichever listed choice the role
- * is nearest to.
- */
+/* One role's typeface: a list of good ones, and a box for everything else. What is typed
+ * is a family name, not a stack — the tail comes from the nearest listed choice. */
 
 interface FontFieldProps {
   role: GrytFontKey;
@@ -49,9 +37,8 @@ export function FontField({
     listed === undefined ? primaryFamily(stack) : ""
   );
 
-  /* The tail a typed family inherits. Mono keeps a mono tail, because a
-     proportional fallback under a column of hex values is worse than the
-     wrong face. */
+  /* The tail a typed family inherits. Mono keeps a mono tail: a proportional fallback
+     under a column of hex values is worse than the wrong face. */
   const tail =
     role === "mono"
       ? "ui-monospace, Menlo, Consolas, monospace"

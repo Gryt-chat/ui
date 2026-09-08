@@ -12,14 +12,8 @@ export interface SelectOption {
 }
 
 /**
- * A run of options under a heading.
- *
- * `options` takes these mixed in with plain options, so a caller that never
- * needed groups does not change. The theme library is what asked for it: the
- * presets went to forty-seven across ten collections, and the docs switcher
- * was putting the collection into every label to make one flat list scannable.
- * That reads well enough and it says "Winter" forty-seven times to a screen
- * reader instead of naming the group once.
+ * A run of options under a heading. `options` takes these mixed in with plain ones. The
+ * theme library asked: forty-seven presets read as one flat list to a screen reader.
  */
 export interface SelectOptionGroup {
   label: ReactNode;
@@ -50,19 +44,8 @@ export interface SelectProps
 }
 
 /*
- * **The popup portals to the document body and no caller can change that per
- * call site.** It follows GrytProvider's `containOverlays` and nothing else.
- *
- * A `portalContainer` prop existed briefly and does not work. Base UI computes
- * the popup's coordinates against the viewport, and a dialog is `position:
- * fixed` with `translate: -50% -50%` — both make it a containing block, so the
- * dialog's own offset is counted twice. Measured with the dialog at (16, 226):
- * the popup landed 227px low and 17px right. `positionMethod="fixed"` changes
- * nothing, and removing the translate fixes only the vertical error.
- *
- * The other half of GRYT-242 — a popup that has to live inside a themed subtree
- * — is `containOverlays`, set once for a subtree by whoever established the
- * theme rather than per call.
+ * The popup portals to the document body and no caller can change that per call site; it
+ * follows GrytProvider's `containOverlays`. A dialog is a containing block, so it drifts.
  */
 function renderItem(option: SelectOption) {
   return (

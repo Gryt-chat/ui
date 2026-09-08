@@ -1,19 +1,6 @@
 /**
- * Writing an owl out as a file, so it can be used somewhere other than Gryt.
- *
- * Four formats, and the differences are not cosmetic:
- *
- *   - **SVG** is what the generator actually produces. A few kilobytes, no
- *     resolution at all. Every other option here is that file, flattened.
- *   - **PNG** is the one to hand to something that will not take an SVG. Keeps
- *     its transparency.
- *   - **WebP** is the same picture at roughly a third of the bytes.
- *   - **JPEG** has no alpha. The owl is drawn on its palette background, so
- *     there is something behind it rather than the black a transparent PNG
- *     collapses to — but it is last for that reason.
- *
- * 1024 square for the rasters: the frame the generator draws on, so it is a
- * whole-number scale of the real geometry rather than a resample.
+ * Writing an owl out as a file. SVG is what the generator produces; PNG and WebP are that
+ * flattened, and JPEG has no alpha. 1024 square for the rasters, the generator's frame.
  */
 
 import { owlAvatarDataUri, owlAvatarSvg, type WornLook,wornToOptions } from "@gryt/owl";
@@ -38,11 +25,8 @@ export const EXPORT_FORMATS: readonly ExportFormat[] = [
 ];
 
 /**
- * The owl as a blob in one of the formats above.
- *
- * The rasters go through an `<img>` and a canvas so the browser draws the same
- * SVG it would have drawn on screen, rather than this reimplementing the
- * geometry and getting a slightly different owl.
+ * The owl as a blob in one of the formats above. The rasters go through an `<img>` and a
+ * canvas, so the browser draws the same SVG rather than this reimplementing the geometry.
  */
 export async function renderOwl(
   seed: string,
@@ -74,18 +58,16 @@ export async function renderOwl(
     canvas.toBlob(
       (blob) => {
         if (!blob) {
-          // A browser that does not encode this format hands back null rather
-          // than throwing, and a caller that assumed otherwise would save an
-          // empty file. WebP is the one this happens to.
+          // A browser that does not encode this format hands back null rather than
+          // throwing, and a caller assuming otherwise saves an empty file. WebP is the one.
           reject(new Error(`this browser cannot write ${format.label}`));
           return;
         }
         resolve(blob);
       },
       format.mime,
-      // Only read for the lossy formats. 0.92 is the browser default for JPEG
-      // and is well past the point where an owl — flat fills and hard edges —
-      // shows any artefacts.
+      // Only read for the lossy formats. 0.92 is the browser default for JPEG and is well
+      // past where an owl — flat fills, hard edges — shows any artefacts.
       0.92,
     );
   });
@@ -103,11 +85,8 @@ export function exportFilename(nickname: string, format: ExportFormat): string {
 }
 
 /**
- * Hand the blob to the browser as a download.
- *
- * The object URL is revoked on a timer rather than immediately. Revoking in the
- * same tick can beat the download starting, and the failure is a save that
- * silently does nothing.
+ * Hand the blob to the browser as a download. The object URL is revoked on a timer:
+ * revoking in the same tick can beat the download starting, and the save does nothing.
  */
 export function saveBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);

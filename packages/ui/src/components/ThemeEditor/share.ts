@@ -1,15 +1,5 @@
-/* Getting a theme out of the page, and back into it.
- *
- * The link and the JSON are the library's format now — the client reads the
- * same one — so encoding and parsing live there and this file is what the page
- * puts around them: the createGrytTheme call somebody pastes into an app, and
- * the error strings for a paste that did not work out.
- *
- * Three ways out, because they answer three different questions. The
- * createGrytTheme call is what you paste into an app. The JSON is what you keep
- * or hand to someone else's tooling. The link is what you send in a message,
- * and it is the one people will actually use.
- */
+/* Getting a theme out of the page, and back into it. The link and the JSON are the
+ * library's format; what is here is the createGrytTheme call and the error strings. */
 
 import {
   decodeGrytTheme,

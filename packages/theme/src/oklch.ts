@@ -1,10 +1,6 @@
 /**
- * sRGB and OKLCH, and the scale generator. At runtime rather than only in a
- * script because overriding a colour has to regenerate its whole scale — a
- * theme that set `--gryt-accent` and left `--gryt-accent-9` alone would change
- * almost nothing, since the components read the scale.
- *
- * No dependency: the published OKLab matrices are eighty lines of arithmetic.
+ * sRGB and OKLCH, and the scale generator. At runtime because overriding a colour has to
+ * regenerate its whole scale. No dependency: the matrices are eighty lines of arithmetic.
  */
 
 export interface Oklch {
@@ -92,10 +88,8 @@ const HUE_L = [0.195, 0.24, 0.27, 0.3, 0.33, 0.37, 0.43, 0.52];
 const HUE_C = [0.014, 0.026, 0.04, 0.052, 0.062, 0.072, 0.084, 0.1];
 
 /**
- * Twelve steps for a hue. 1-8 are backgrounds and borders, 9 and 10 the
- * anchors, 11 and 12 text — **placed relative to 10 rather than at a fixed
- * lightness**, since the -light tokens differ family to family and a fixed
- * value puts text above the fill in one scale and below it in another.
+ * Twelve steps for a hue. 1-8 are backgrounds and borders, 9 and 10 the anchors, 11 and
+ * 12 text — placed relative to 10, since the -light tokens differ family to family.
  */
 export function hueScale(solid: string, solidHover: string): string[] {
   const { h } = hexToOklch(solid);
@@ -120,10 +114,8 @@ const NEUTRAL_C = [
 ];
 
 /**
- * Twelve neutral steps, from the six an app names directly.
- *
- * Those six are kept exactly — a theme that says its background is #0b0b0f
- * means it, and interpolating through it would move it by a shade.
+ * Twelve neutral steps, from the six an app names directly. Those six are kept exactly:
+ * a theme that says its background is #0b0b0f means it.
  */
 export function neutralScale(anchors: {
   bg: string;
@@ -148,11 +140,8 @@ export function neutralScale(anchors: {
 }
 
 /**
- * The same steps as translucent overlays.
- *
- * Solved rather than guessed: the smallest alpha whose overlay colour is still
- * inside the gamut, which is what makes a tinted hover composite to the same
- * value over an avatar as it does over the app background.
+ * The same steps as translucent overlays. Solved rather than guessed — the smallest alpha
+ * still inside the gamut, so a tinted hover composites the same over any ground.
  */
 export function alphaScale(scale: string[], background: string): string[] {
   const bg = hexToRgb(background);
@@ -179,12 +168,8 @@ export function alphaScale(scale: string[], background: string): string[] {
 }
 
 /* ── light ──────────────────────────────────────────────────────────────
-   Not a mirror of the dark ramps, because elevation does not mirror: step 1 is
-   a light grey page and step 2 is white, so **the ramp is deliberately not
-   monotonic across those two** — that non-monotonicity is the elevation.
-
-   The text steps were measured. Here they have to be dark enough on white,
-   which is tighter than being light enough on near-black. */
+   Not a mirror of the dark ramps: step 1 is a light grey page and step 2 is white, so the
+   ramp is deliberately not monotonic. The text steps were measured on white. */
 
 const LIGHT_NEUTRAL_L = [
   0.962, 1.0, 0.978, 0.952, 0.928, 0.898, 0.855, 0.79, 0.66, 0.61, 0.48, 0.25
@@ -221,12 +206,8 @@ export function neutralScaleLight(anchors: {
 }
 
 /**
- * Twelve light steps for a hue.
- *
- * Step 9 stays the brand colour, so a filled button is the same colour in both
- * appearances and Gryt looks like Gryt either way. 10 goes *darker* for hover,
- * which is the light-mode direction — the dark set goes lighter. 11 and 12 are
- * text, dark enough to read on white.
+ * Twelve light steps for a hue. Step 9 stays the brand colour so a filled button matches
+ * in both appearances; 10 goes darker for hover, and 11 and 12 are text on white.
  */
 export function hueScaleLight(solid: string): string[] {
   const { l, c, h } = hexToOklch(solid);
@@ -235,10 +216,8 @@ export function hueScaleLight(solid: string): string[] {
   );
   steps.push(solid);
   steps.push(oklchToHex({ l: Math.max(0, l - 0.07), c, h }));
-  // 0.46 rather than 0.5, which is where this started. Step 11 has to carry
-  // text on step 3 as well as on the page — a Chip, an Alert and a Toast are
-  // all that pairing — and at 0.5 the secondary hue measured 4.48:1 against its
-  // own tint. Four hundredths of lightness is not visible; failing AA is.
+  // 0.46 rather than 0.5. Step 11 carries text on step 3 as well as on the page — Chip,
+  // Alert, Toast — and at 0.5 the secondary hue measured 4.48:1 against its own tint.
   steps.push(oklchToHex({ l: 0.46, c: 0.15, h }));
   steps.push(oklchToHex({ l: 0.33, c: 0.1, h }));
   return steps;

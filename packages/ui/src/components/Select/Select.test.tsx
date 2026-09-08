@@ -4,15 +4,8 @@ import { GrytProvider } from "../../GrytProvider";
 import { Select } from "./Select";
 
 /**
- * Groups are optional and mix with plain options in the same array, so the two
- * things worth asserting are that a grouped option still selects and that the
- * trigger can still name it.
- *
- * That second one is the failure this would otherwise ship with. Base UI reads
- * `items` to turn a value back into a label, and the obvious implementation
- * hands it the array it was given — which for a grouped select is the groups,
- * not the options. Everything looks right until something is selected and the
- * trigger shows the raw value.
+ * Groups mix with plain options in one array, so what matters is that a grouped option
+ * still selects and the trigger can name it — Base UI reads `items` to find the label.
  */
 const GROUPED = [
   {

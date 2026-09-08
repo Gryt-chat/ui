@@ -3,13 +3,8 @@ import { describe, expect, it } from "vitest";
 import { reachOf, seedFor } from "./drawerPull";
 
 /**
- * The property worth having, rather than the arithmetic.
- *
- * `Math.max` is obvious on its own, and on its own it is also not enough. The
- * release is what makes it interesting: the caller drops its pull at the same
- * moment the spring starts running, on a different clock, and the larger of two
- * numbers still shrinks if the falling one starts above the rising one. The
- * third test here failed for exactly that reason before the spring was seeded.
+ * The property worth having, rather than the arithmetic. The release is the interesting
+ * part: the larger of two numbers still shrinks if the falling one starts above the rising.
  */
 
 describe("reachOf", () => {
@@ -28,9 +23,8 @@ describe("reachOf", () => {
 
 describe("the release", () => {
   /**
-   * What made this necessary. Without the seed the spring runs from 0 while the
-   * pull falls from where the finger was, and for the first few frames the
-   * falling one is still the larger — so the panel goes backwards.
+   * What made this necessary. Without the seed the spring runs from 0 while the pull falls
+   * from where the finger was, and for a few frames the panel goes backwards.
    */
   it("goes backwards if the spring starts from nothing", () => {
     const fromZero = [0, 0.1, 0.35, 0.62, 0.85, 1];
@@ -45,9 +39,8 @@ describe("the release", () => {
     const seed = seedFor(0, 0.6);
     expect(seed).toBe(0.6);
 
-    /* The same spring, from the seed rather than from zero. The pull falls on
-       its own clock and never matters again, which is the point: the caller can
-       clear it the moment it commits. */
+    /* The same spring, from the seed rather than from zero. The pull falls on its own clock
+       and never matters again, so the caller can clear it the moment it commits. */
     const spring = [seed, 0.68, 0.79, 0.9, 0.97, 1];
     const pull = [0.6, 0.45, 0.3, 0.15, 0.05, 0];
 

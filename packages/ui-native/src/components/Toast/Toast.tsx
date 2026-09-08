@@ -31,16 +31,8 @@ interface ToastContextValue {
 const ToastContext = createContext<ToastContextValue | null>(null);
 
 /**
- * Where toasts live: a provider near the top of the tree.
- *
- * **Mount it above everything else it has to cover.** The viewport renders as a
- * sibling after `children`, so it paints over anything inside them — put it
- * below `SheetProvider` and the sheet wins instead.
- *
- * **Deliberately not built on `Modal`**, which intercepts touches for the whole
- * screen. The cost: a `Modal` is a separate native window, so `Dialog`,
- * `Drawer` and `ActionSheetIOS` draw *over* a toast whatever the z-index says.
- * A flow that raises a dialog should toast after it closes.
+ * Where toasts live: a provider near the top of the tree, above everything it has to cover.
+ * Not built on `Modal`, so a Dialog or Drawer draws over a toast whatever the z-index says.
  */
 export function ToastProvider({ children }: { children?: ReactNode }) {
   const [toasts, setToasts] = useState<QueuedToast[]>([]);
@@ -96,24 +88,13 @@ function Viewport({
         position: "absolute",
         left: 0,
         right: 0,
-        /* The top, which on a phone is the only edge that is reliably free.
-         *
-         * The bottom is where a tab bar sits, where the home indicator sits,
-         * and where every sheet in the app rises from — so a toast there is
-         * either under the chrome or in the way of the gesture. It is also
-         * where iOS puts nothing of its own, precisely because that edge is
-         * the user's.
-         *
-         * Below the status bar rather than over it: the clock and the battery
-         * are not ours to cover, and a toast that starts under the notch reads
-         * as a system banner rather than as this app talking. */
+        /* The top, which on a phone is the only edge reliably free: the bottom holds the
+         * tab bar, the home indicator and every sheet. Below the status bar, not over it. */
         top: insets.top + theme.space(2),
         paddingHorizontal: theme.space(4),
         gap: theme.space(2),
-        /* Explicit rather than relying on paint order. Within this tree the
-         * viewport is already last, but a caller can put something absolutely
-         * positioned after it — a floating bar, a call pill — and the toast
-         * has to win. `elevation` is the Android half of the same statement. */
+        /* Explicit rather than relying on paint order: a caller can put something
+         * absolutely positioned after it. `elevation` is the Android half of that. */
         zIndex: 1000,
         elevation: 24,
       }}

@@ -1,12 +1,6 @@
 /**
- * The loop the drawing guide describes, run end to end.
- *
- * `owlBaseSvg` writes the bird somebody draws on and `extract` reads their
- * drawing back, and the two only work together because they agree on layer
- * names and on what document order means. Nothing else fails when they stop
- * agreeing: the extraction still succeeds, and the accessory it produces is
- * quietly wrong — an eye drawn over the bird's own, or a headset worn on the
- * wrong side of the head.
+ * The loop the drawing guide describes, run end to end. `owlBaseSvg` and `extract` only
+ * work together because they agree on layer names, and nothing else fails when they stop.
  */
 
 import { describe, expect, it } from "vitest";
@@ -56,10 +50,8 @@ describe("a drawing made on the bird the guide hands out", () => {
   });
 
   /*
-   * A layer inside the group that is not one of the bird's parts is dropped
-   * with the bird, so it is neither drawn nor extracted. The drawing looks
-   * right in Figma and the accessory comes out missing a piece, which is the
-   * kind of thing a warning has to catch.
+   * A layer inside the group that is not one of the bird's parts is dropped with the bird,
+   * so it is neither drawn nor extracted. Only a warning catches that.
    */
   it("says so when a layer inside the group is not a part of the bird", () => {
     const stray = base

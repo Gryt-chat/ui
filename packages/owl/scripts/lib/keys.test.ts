@@ -23,9 +23,8 @@ describe("the alphabet", () => {
 });
 
 /*
- * The whole reason this is a ledger and not an index. A saved look is a string
- * of keys; if adding a drawing renumbered the ones after it, everybody who had
- * saved an outfit would quietly be wearing something else.
+ * The whole reason this is a ledger and not an index. A saved look is a string of keys; if
+ * adding a drawing renumbered the rest, everybody would quietly be wearing something else.
  */
 describe("adding a drawing", () => {
   it("does not move any key already given out", () => {

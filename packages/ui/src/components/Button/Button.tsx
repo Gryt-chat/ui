@@ -6,18 +6,8 @@ import { cn } from "../utils/cn";
 type ButtonTone = "primary" | "secondary" | "neutral" | "danger" | "ghost";
 type ButtonSize = "xsmall" | "small" | "medium" | "large";
 
-// Base UI marks a disabled button with data-disabled rather than the native
-// attribute, because it stays focusable when disabled. Hover and press styles
-// hang off not-data-disabled so they don't fire on a dead button.
-//
-// **Disabled drops the fill rather than fading it.** Every tone used to share
-// one `opacity-50`, which reads on the quiet tones and does not on a filled
-// one: the accent at half opacity over a dark page is still a saturated purple
-// button. On the phone that cost somebody two taps on a Save button to believe
-// it was inert (GRYT-511).
-//
-// So a disabled filled button becomes the surface it sits on, with a muted
-// label. Ghost has no fill to lose, so the opacity below is what carries it.
+// Base UI marks a disabled button with data-disabled rather than the native attribute, so
+// hover and press hang off not-data-disabled. Disabled drops the fill rather than fading it.
 const toneStyles: Record<ButtonTone, string> = {
   primary:
     "bg-gryt-accent text-gryt-on-accent hover:not-data-disabled:bg-gryt-accent-light data-disabled:bg-gryt-surface-raised data-disabled:text-gryt-muted",
@@ -43,9 +33,8 @@ export interface ButtonProps
   tone?: ButtonTone;
   size?: ButtonSize;
   className?: string;
-  // Carried over from the MUI-based Button. Base UI has no equivalent, but
-  // dropping them would break every existing call site for no gain — the flex
-  // gap below already spaces them correctly.
+  // Carried over from the MUI-based Button. Base UI has no equivalent, and dropping them
+  // would break every call site for no gain — the flex gap already spaces them.
   startIcon?: ReactNode;
   endIcon?: ReactNode;
 }
@@ -70,29 +59,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           "gryt-button",
           "inline-flex cursor-pointer items-center justify-center gap-2 border-0 shadow-none",
           "rounded-(--gryt-radius-control) font-semibold whitespace-nowrap select-none",
-          // scale, not transform: Tailwind v4's scale-* utilities set the
-          // standalone `scale` property, so transitioning `transform` alone
-          // leaves the hover grow snapping instantly.
+          // scale, not transform: Tailwind v4's scale-* utilities set the standalone
+          // `scale` property, so transitioning `transform` alone snaps the hover grow.
           "transition-[scale,background-color,color]",
           "duration-(--gryt-dur-spring) ease-spring",
 
-          // Press travels further than hover, so the button reads as being
-          // pushed down rather than just acknowledging the cursor.
-          // A button that opens something does not grow under the cursor.
-          // Base UI positions the popup against the trigger's measured box, and
-          // it keeps measuring while the popup is open — so a trigger that
-          // scales on hover drags its own menu a pixel or two sideways every
-          // time the pointer crosses it. aria-haspopup is how the trigger says
-          // that is what it is; Base UI puts it there, nothing to pass.
+          // Press travels further than hover, so the button reads as pushed. A trigger
+          // that scales on hover drags its own popup sideways, so one that opens does not.
           "motion-safe:not-[[aria-haspopup]]:hover:not-data-disabled:scale-[1.03]",
           "motion-safe:not-[[aria-haspopup]]:active:not-data-disabled:scale-[0.96]",
 
           "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gryt-accent-light",
-          // Lighter than it was, because the fill swap above is doing the work
-          // now. It is kept because `startIcon` and `endIcon` are the caller's
-          // elements with the caller's colours — nothing here can mute those,
-          // and an icon at full strength on a dead button is the same lie in
-          // miniature.
+          // Lighter than it was, since the fill swap does the work now. Kept because the
+          // icons are the caller's elements with the caller's colours.
           "data-disabled:cursor-not-allowed data-disabled:opacity-60",
           sizeStyles[size],
           toneStyles[tone],

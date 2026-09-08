@@ -10,17 +10,8 @@ export type TabProps = ComponentPropsWithoutRef<typeof BaseTabs.Tab>;
 export type TabsPanelProps = ComponentPropsWithoutRef<typeof BaseTabs.Panel>;
 
 /**
- * Orientation is Base UI's `orientation` prop on Root, and every part below
- * styles itself from the `data-orientation` it puts on the DOM rather than from
- * a prop of ours. That is why none of these take an orientation of their own:
- * setting it in two places is how a list ends up vertical and its indicator
- * still travelling sideways.
- *
- * Vertical is the same visual language turned ninety degrees — the accent pill
- * still slides between rows. It suits a rail of five or six destinations. Past
- * about a dozen the filled pill becomes a block of accent parked in the corner
- * of the screen, and a quieter marker is the better call; the docs sidebar is
- * that case and deliberately does not use this.
+ * Orientation is Base UI's prop on Root, and every part styles itself from the
+ * `data-orientation` it sets. Past a dozen items a filled pill is the wrong marker.
  */
 const Root = forwardRef<HTMLDivElement, TabsProps>(function TabsRoot(
   { className, ...props },
@@ -31,9 +22,8 @@ const Root = forwardRef<HTMLDivElement, TabsProps>(function TabsRoot(
       ref={ref}
       className={cn(
         "gryt-tabs",
-        // Vertical puts the rail and the panel side by side. min-w-0 on the
-        // panel does the rest; without the flex here the panel lands under the
-        // rail and the layout reads as a very tall accordion.
+        // Vertical puts the rail and the panel side by side. Without the flex here the
+        // panel lands under the rail and the layout reads as a very tall accordion.
         "data-[orientation=vertical]:flex data-[orientation=vertical]:items-stretch",
         className
       )}
@@ -74,21 +64,14 @@ const Tab = forwardRef<HTMLButtonElement, TabProps>(function Tab(
         "gryt-tab inline-flex min-h-8 cursor-pointer items-center justify-center whitespace-nowrap",
         "rounded-(--gryt-radius-full) border-0 bg-transparent px-4 py-1.5",
         "text-sm font-medium text-gryt-muted select-none",
-        // Scale as well as colour, matching Button exactly — 1.03 under the
-        // cursor, 0.96 pressed, on the spring duration and curve. A tab that
-        // only changed colour read as not being a button at all next to
-        // anything that did move, and the owl designer's rail was reported as
-        // "not using the Gryt UI tabs" for precisely that reason.
-        //
-        // motion-safe, so the whole thing is colour-only for anybody who asked
-        // for reduced motion.
+        // Scale as well as colour, matching Button exactly: a tab that only changed colour
+        // read as not being a button. motion-safe, so reduced motion gets colour only.
         "relative z-10 hover:text-gryt-text",
         "transition-[scale,color,background-color] duration-(--gryt-dur-spring) ease-spring",
         "motion-safe:hover:scale-[1.03] motion-safe:active:scale-[0.96]",
         "motion-reduce:transition-colors motion-reduce:duration-150",
-        // Base UI marks the selected tab with data-active, not data-selected.
-        // The fill moved to Indicator so it can travel between tabs; the tab
-        // itself only changes its text colour.
+        // Base UI marks the selected tab with data-active, not data-selected. The fill
+        // moved to Indicator so it can travel; the tab only changes its text colour.
         "data-active:text-gryt-on-accent",
         // Left-aligned and taller in a rail. Centred labels in a vertical list
         // leave the text edge ragged, which is what makes a rail look untidy.
@@ -108,15 +91,8 @@ export type TabsIndicatorProps = ComponentPropsWithoutRef<
   typeof BaseTabs.Indicator
 >;
 
-// Base UI measures the active tab and publishes --active-tab-left and
-// --active-tab-width, plus --active-tab-top and --active-tab-height, which is
-// what lets the pill slide rather than jump. renderBeforeHydration keeps it
-// positioned on the first paint instead of animating in from the left edge.
-//
-// The vertical rules hang off the ancestor's data-orientation rather than the
-// indicator's own. Root is the part guaranteed to carry it, and an indicator
-// that reads its orientation from somewhere other than the root it belongs to
-// is a bug waiting for someone to nest two sets of tabs.
+// Base UI publishes --active-tab-left and friends, which is what lets the pill slide.
+// The vertical rules hang off Root's data-orientation, the part guaranteed to carry it.
 const Indicator = forwardRef<HTMLSpanElement, TabsIndicatorProps>(
   function TabsIndicator({ className, ...props }, ref) {
     return (

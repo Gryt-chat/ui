@@ -16,20 +16,8 @@ export interface SliderProps
 const DRAG_SLOP = 3;
 
 /**
- * The travel is animated, on the spring. Two things about that before changing
- * it.
- *
- * It uses --ease-spring-tight rather than --ease-spring. The overshoot in the
- * standard spring is a percentage of the travel, which is texture on a control
- * that scales in place and a problem on one whose travel is its own width: a
- * full-track jump measured 110% along a 919px track, putting the thumb 96px
- * outside the slider. The thumb still scales on the standard spring.
- *
- * And it animates on a click or an arrow key but not under a dragging pointer,
- * where a transition means the thumb lags behind the cursor. Base UI's
- * data-dragging is not the right signal: it appears on pointerdown, which is
- * also how you click the track. What matters is whether the pointer has moved,
- * with a few pixels of slop, because a mouse rarely stays still through a click.
+ * The travel is animated on --ease-spring-tight, not --ease-spring: the standard overshoot
+ * put the thumb 96px outside the track. It does not animate under a dragging pointer.
  */
 export function Slider({
   className,
@@ -45,9 +33,8 @@ export function Slider({
       return;
     }
 
-    // On window rather than the control: the pointer is very often released
-    // outside a 6px-tall track, and a pointerup we never hear about leaves the
-    // slider stuck in its dragging state with the animation off for good.
+    // On window rather than the control: the pointer is often released outside a 6px track,
+    // and a pointerup nobody hears leaves the slider stuck in its dragging state.
     const end = () => {
       origin.current = null;
       setDragging(false);
@@ -81,10 +68,8 @@ export function Slider({
     }
   }
 
-  // Base UI positions the thumb with inset-inline-start and sizes the fill with
-  // width, so those are the properties that move. `translate` stays out of it:
-  // that holds the -50% centring offset, and animating it would drift the thumb
-  // off the track rather than along it.
+  // Base UI positions the thumb with inset-inline-start and sizes the fill with width, so
+  // those move. `translate` holds the -50% centring and would drift the thumb off.
   const travel = dragging
     ? "transition-none"
     : "duration-(--gryt-dur-spring) ease-spring-tight motion-reduce:transition-none";
@@ -115,10 +100,8 @@ export function Slider({
               "group h-4 w-4 rounded-(--gryt-radius-full) select-none",
               "transition-[inset-inline-start]",
               travel,
-              // The ring goes on the thumb but the focus lands on the visually
-              // hidden input inside it, so this has to match a descendant.
-              // Without it the slider is the one control here you cannot see
-              // yourself tab to.
+              // The ring goes on the thumb but focus lands on the hidden input inside it,
+              // so this matches a descendant. Without it you cannot see yourself tab to it.
               focusRingWithin
             )}
           >

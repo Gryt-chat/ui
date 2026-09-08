@@ -11,12 +11,8 @@ export interface SkeletonProps {
 }
 
 /**
- * Still, not shimmering.
- *
- * The web version pulses. A looping animation here would run for as long as the
- * request takes, on a device where that costs battery, and it is the kind of
- * motion reduce-motion users turn off first. A flat block reads as "loading"
- * without any of that. Recorded in the parity exceptions table.
+ * Still, not shimmering. The web version pulses; a loop here runs for as long as the
+ * request takes, on a device where that costs battery. In the exceptions table.
  */
 export function Skeleton({
   width = "100%",

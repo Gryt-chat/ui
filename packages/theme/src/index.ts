@@ -1,12 +1,6 @@
 /**
- * The theme layer on its own, with no components and no DOM. **Everything here
- * has to stay framework-free** — `@gryt/ui`'s main entry bundles 95 components,
- * imports Base UI and pulls `styles/index.css` in as a side effect, none of
- * which React Native can take.
- *
- * That is what makes the RN library a second renderer for one design system
- * rather than a second design system. Everything here is also exported from the
- * main entry, so nothing changes for the web (GRYT-351).
+ * The theme layer on its own, with no components and no DOM. Everything here has to stay
+ * framework-free: `@gryt/ui`'s entry pulls in Base UI and a stylesheet (GRYT-351).
  */
 
 export {
@@ -20,11 +14,8 @@ export {
 } from "./createGrytTheme";
 export type { GrytThemeOptions, GrytTokens } from "./createGrytTheme";
 export { contrast, hexToOklch, oklchToHex } from "./oklch";
-// The ramp builders, not just the colour conversions. @gryt/ui composes these
-// into CSS custom properties in createGrytTheme; React Native cannot use custom
-// properties, so @gryt/ui-native composes the same functions into plain values
-// instead. Exporting them is what stops the OKLab maths being copied into the
-// second renderer. See GRYT-342.
+// The ramp builders, not just the colour conversions. React Native cannot use custom
+// properties, so exporting these is what stops the OKLab maths being copied (GRYT-342).
 export {
   alphaScale,
   hexToRgb,

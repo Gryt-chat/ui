@@ -5,10 +5,8 @@ import { cn } from "../utils/cn";
 import { popupMotion } from "../utils/styles";
 
 export interface TooltipProps {
-  // Kept as a single-child wrapper rather than exposing Base UI's five parts.
-  // Both MUI and Radix Themes spell a tooltip this way, so client call sites
-  // move across unchanged, and a tooltip has no useful middle ground to
-  // compose anyway.
+  // Kept as a single-child wrapper rather than exposing Base UI's five parts. MUI and
+  // Radix spell it this way, and a tooltip has no useful middle ground to compose.
   title: ReactNode;
   children: ReactElement;
   side?: "top" | "bottom" | "left" | "right";
@@ -16,9 +14,8 @@ export interface TooltipProps {
   className?: string;
 }
 
-// Hover delay is not set here — it belongs to Tooltip.Provider, which shares
-// timing across every tooltip so moving between two triggers does not restart
-// the wait. GrytProvider renders one; see its tooltipDelay prop.
+// Hover delay belongs to Tooltip.Provider, which shares timing across every tooltip so
+// moving between triggers does not restart the wait. GrytProvider renders one.
 export function Tooltip({
   children,
   className,
@@ -53,7 +50,6 @@ export function Tooltip({
   );
 }
 
-// Base UI shares hover timing across tooltips through this provider, so moving
-// between two triggers skips the delay the second time. GrytProvider renders
+// Base UI shares hover timing across tooltips through this provider. GrytProvider renders
 // one already; this is exported for apps that do not use GrytProvider.
 export const TooltipProvider = BaseTooltip.Provider;

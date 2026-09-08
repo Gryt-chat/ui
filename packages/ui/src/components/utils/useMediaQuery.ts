@@ -3,16 +3,8 @@ import { useCallback, useSyncExternalStore } from "react";
 const noop = () => () => {};
 
 /**
- * Matches a media query, safely on the server.
- *
- * Written here rather than taken from Base UI's `unstable-use-media-query`,
- * because a component library should not put an explicitly unstable export on
- * its public path.
- *
- * useSyncExternalStore rather than useState in an effect: matchMedia is an
- * external store, and reading it into state after mount means an extra render
- * on every consumer plus a frame where the answer is wrong. The server snapshot
- * is false so the first client paint agrees with the server's.
+ * Matches a media query, safely on the server. useSyncExternalStore rather than state in an
+ * effect: matchMedia is an external store, and the server snapshot is false.
  */
 export function useMediaQuery(query: string): boolean {
   const subscribe = useCallback(

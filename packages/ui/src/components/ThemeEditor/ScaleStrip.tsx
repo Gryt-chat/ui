@@ -1,11 +1,6 @@
 /**
- * The twelve steps a family generated, under the anchors that generated them.
- *
- * This is the part that makes the page worth building rather than describing.
- * Changing one hex value moves a whole ramp — component backgrounds, hover
- * states, borders, the text step — and seeing that happen is the difference
- * between "it takes a colour" and "it takes a colour and knows what to do with
- * it".
+ * The twelve steps a family generated, under the anchors that generated them. Changing one
+ * hex value moves a whole ramp, and seeing that happen is the point of the page.
  */
 export interface ScaleStripProps {
   label: string;

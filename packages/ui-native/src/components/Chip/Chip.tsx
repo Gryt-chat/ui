@@ -14,10 +14,8 @@ export interface ChipProps {
 }
 
 /**
- * A small status label. No interaction — that is Button's job.
- *
- * Steps 3, 9 and 11 are the same ones `@gryt/ui` picks: 3 is the soft fill, 9
- * is the solid one, 11 is text that passes contrast against both.
+ * A small status label; no interaction, which is Button's job. Steps 3, 9 and 11 are the
+ * ones `@gryt/ui` picks: soft fill, solid fill, and text that passes against both.
  */
 export function Chip({
   label,

@@ -1,13 +1,6 @@
 /**
- * Where everything is.
- *
- * Every number here came off the 1024 artboard, and none of them varies. That
- * is a decision: the accessories are drawn on the same 1024 frame and dropped
- * in at their own coordinates, so anything that moved an eye would move it out
- * from behind its glasses.
- *
- * Parts take these rather than reading the constants directly, so a part is
- * still a function of where things are rather than of a global.
+ * Where everything is. Every number came off the 1024 artboard and none varies: the
+ * accessories are drawn on that frame, so moving an eye moves it out of its glasses.
  */
 
 export interface OwlMetrics {

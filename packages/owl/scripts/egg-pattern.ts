@@ -1,20 +1,6 @@
 /**
- * Pull the curated pattern tiles out of pattern.monster's own data.
- *
- *   bun scripts/egg-pattern.ts
- *   bun scripts/egg-pattern.ts --check
- *
- * The eggs are patterned with tiles from pattern.monster
- * (github.com/catchspider2002/svelte-svg-patterns, MIT). Upstream ships 330 of
- * them in one 970 kB module; `artwork/eggs/patterns.json` names the few dozen
- * that read as themselves at 32 px.
- *
- * Fetching rather than vendoring the module, because vendoring a megabyte to
- * keep forty tiles is a megabyte in every diff and every clone. A development
- * command: not part of `build`, and the file it writes is checked in.
- *
- * Everything upstream computes from its sliders is baked here. The generator
- * draws a tile; it does not know what a "colorCount" is.
+ * Pull the curated pattern tiles out of pattern.monster's own data (MIT). Fetched rather
+ * than vendored: upstream is 970 kB for 330 tiles and this keeps a few dozen.
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
@@ -34,9 +20,8 @@ interface Upstream {
   width: number;
   height: number;
   /**
-   * How much of `height` one row of the shape takes, for the tiles that stack
-   * the same shape several times. Zero for everything else, and that zero is
-   * what upstream branches on — so it is the flag as well as the number.
+   * How much of `height` one row of the shape takes, for tiles that stack it. Zero
+   * otherwise, and that zero is what upstream branches on — the flag as well as the number.
    */
   vHeight: number;
   /** The layers, back to front, separated by `~`. */
@@ -65,9 +50,8 @@ const list = JSON.parse(readFileSync(listFile, "utf8")) as {
 const url = `https://raw.githubusercontent.com/catchspider2002/svelte-svg-patterns/${list.revision}/src/routes/_index.js`;
 const module_ = await (await fetch(url)).text();
 
-// The file is `const index = [...]` and nothing else. Trimming the assignment
-// off is enough, and JSON.parse then rejects anything that is not the array
-// this expects — which is the check that matters if upstream ever restructures.
+// The file is `const index = [...]` and nothing else. Trimming the assignment off is
+// enough, and JSON.parse then rejects anything that is not the array this expects.
 const body = module_
   .replace(/^\s*const index\s*=\s*/, "")
   .replace(/;?\s*(export default index;?)?\s*$/, "");
@@ -76,11 +60,8 @@ const upstream = new Map<string, Upstream>(
 );
 
 /**
- * One curated entry, with everything upstream's UI would have decided baked in.
- *
- * The two branches are upstream's. A tile with a `vHeight` stacks rows of one
- * shape and can be cut down to fewer, which is how a five-row chevron becomes
- * one row of chevrons; a tile without one draws every layer it has.
+ * One curated entry, with everything upstream's UI would have decided baked in. A tile
+ * with a `vHeight` stacks rows of one shape and can be cut down; one without draws all.
  */
 function bake(entry: Curated) {
   const p = upstream.get(entry.slug);

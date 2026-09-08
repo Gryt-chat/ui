@@ -4,10 +4,8 @@ import { Dimensions, type View } from "react-native";
 import type { AnchorRect } from "./placePopup";
 
 /**
- * Measures a trigger in window coordinates.
- *
- * `measureInWindow` is asynchronous and its callback can fire after the popup
- * has closed again, so a stale result is dropped rather than applied.
+ * Measures a trigger in window coordinates. `measureInWindow` is asynchronous and its
+ * callback can fire after the popup has closed, so a stale result is dropped.
  */
 export function useAnchorMeasure() {
   const [anchor, setAnchor] = useState<AnchorRect | null>(null);

@@ -1,19 +1,8 @@
 import { grytFonts } from "@gryt/theme";
 import type { GrytFontKey, GrytFonts } from "@gryt/theme";
 
-/* Typefaces to choose from, and how the list is drawn up.
- *
- * A curated list rather than Google's catalogue. The catalogue is about sixteen
- * hundred families and fetching it is itself a request to Google, on an app
- * where asking Google anything is a setting somebody has to turn on first — so
- * a picker that had to download a list would be empty for exactly the people
- * who left the setting off. A short list covers the range, and a free-text box
- * takes the rest.
- *
- * `local` means the stack asks for nothing over the network — a face that ships
- * with the app or one the OS already has. Those work with the Google setting
- * off, which is the default, so they are what the list opens on.
- */
+/* Typefaces to choose from. A curated list rather than Google's catalogue, since fetching
+ * it is itself a request to Google. `local` asks for nothing, so the list opens there. */
 
 export interface FontChoice {
   /** What the picker shows. */

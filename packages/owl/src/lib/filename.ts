@@ -1,32 +1,13 @@
 /**
- * Where an accessory goes, read off the name of the file it was drawn in.
- * Adding a cosmetic is dropping an SVG into artwork/ and running the script.
- *
- * The grammar is `type_family[_variant][.tag].svg`. Underscores separate the
- * three fields; a hyphen joins words inside one of them.
- *
- *   scarf.svg                       a type on its own is its own family
- *   glasses_round.svg               round glasses
- *   glasses_round_gold.svg          the gold pair of them
- *   hat_winter-beanie_red.svg       family of two words, variant of one
- *   glasses_heart.rare.svg          seen less often than the other eyewear
- *   hoodie_plain.covers-head.svg    a garment with a hood, so no hat over it
- *   sporran_dress.neck.svg          a type word the table below has not met
- *   _hat_winter_old.svg             ignored entirely
- *
- * The type is the first field and KEYWORDS turns it into a slot.
- *
- * **Nothing here guesses.** A word that is not in the table is an error naming
- * the file, not a default — a silent wrong slot looks like a scarf worn as a hat.
+ * Where an accessory goes, read off its filename: `type_family[_variant][.tag].svg`.
+ * Nothing guesses — a word not in KEYWORDS is an error naming the file, not a default.
  */
 
 import type { AccessorySlot } from "../types";
 
 /**
- * How likely an accessory is against the others in its slot — **not against the
- * owl as a whole**, which is SLOT_PRESENCE's job. Marking something rare makes
- * it lose to its neighbours rather than making the slot emptier. Untagged is
- * `common`.
+ * How likely an accessory is against the others in its slot, not against the owl as a
+ * whole — that is SLOT_PRESENCE. Rare loses to its neighbours; untagged is `common`.
  */
 export const RARITY_SHARE = {
   common: 1,
@@ -38,11 +19,8 @@ export const RARITY_SHARE = {
 export type Rarity = keyof typeof RARITY_SHARE;
 
 /**
- * The word in a filename that says which slot a drawing belongs in.
- *
- * Deliberately a list of the things people actually draw rather than a clever
- * rule. It is meant to be added to: a new noun is one line here, and until it
- * is, the script refuses the file by name instead of putting it somewhere.
+ * The word in a filename that says which slot a drawing belongs in. A list of what people
+ * draw rather than a rule: a new noun is one line, and until then the file is refused.
  */
 export const KEYWORDS: Record<string, AccessorySlot> = {
   // expression — the face itself, not something worn on it
@@ -107,12 +85,8 @@ export const KEYWORDS: Record<string, AccessorySlot> = {
 };
 
 /**
- * What a slot takes off the bird by default.
- *
- * A garment has a collar, so it and a neck accessory cannot both be worn. Both
- * of the drawn garments say so, which makes it the slot's behaviour rather than
- * each drawing's. A hood on top of that is `covers-head`, because a jacket has
- * no opinion about hats and a hoodie does.
+ * What a slot takes off the bird by default. A garment has a collar, so it and a neck
+ * accessory cannot both be worn; a hood on top of that is `covers-head`.
  */
 export const SLOT_EXCLUDES: Partial<Record<AccessorySlot, AccessorySlot[]>> = {
   body: ["neck"],
@@ -120,9 +94,8 @@ export const SLOT_EXCLUDES: Partial<Record<AccessorySlot, AccessorySlot[]>> = {
 
 /** Where each slot lands unless a tag says otherwise. */
 export const DEFAULT_LAYER: Record<AccessorySlot, string> = {
-  // Spectacles go over the eyes, because that is what a drawing of spectacles
-  // does — the lens is painted and it covers the eye behind it. `over-face` is
-  // for a pair drawn as holes only, where the expression should show through.
+  // Spectacles go over the eyes: the lens is painted and covers the eye behind it.
+  // `over-face` is for a pair drawn as holes only, where the expression shows through.
   expression: "overFace",
   eyewear: "overEyes",
   head: "overAll",
@@ -133,9 +106,8 @@ export const DEFAULT_LAYER: Record<AccessorySlot, string> = {
 };
 
 const LAYERS: Record<string, string> = {
-  // Where the drawing sits relative to `<g id="owl">` already says this, so a
-  // tag is only for overriding that — a drawing exported with the bird in
-  // front of it that is meant to be worn on top, or the other way round.
+  // Where the drawing sits relative to `<g id="owl">` already says this, so a tag is only
+  // for overriding it — a drawing exported with the bird in front and meant to be on top.
   behind: "behind",
   "over-face": "overFace",
   "over-eyes": "overEyes",
@@ -148,12 +120,8 @@ export interface Placement {
   /** The first field, and what KEYWORDS reads to find the slot. */
   type: string;
   /**
-   * The thing itself, with its variants — round glasses, whatever colour.
-   *
-   * Families compete for the slot, and variants split whatever their family
-   * gets. Without that, six colourways of one pair of glasses take six shares
-   * of eyewear and end up 5.9x as likely as a pair drawn once, which is the
-   * slot-presence problem again one level down.
+   * The thing itself, with its variants. Families compete for the slot and variants split
+   * what their family gets, or six colourways take six shares of eyewear.
    */
   family: string;
   /** Empty when the family has only the one drawing. */
@@ -166,10 +134,8 @@ export interface Placement {
 
 /** A file the scan should walk past rather than read. */
 export function isIgnored(filename: string): boolean {
-  // A leading underscore, so a drawing can be kept next to the ones in use
-  // without being in use. Winter_Hat_Small.svg is the reason this exists: it
-  // was exported over the top of Winter_Hat.svg, is byte-identical to it, and
-  // is kept for whenever it becomes a different hat.
+  // A leading underscore, so a drawing can be kept next to the ones in use without being
+  // in use. Winter_Hat_Small.svg is byte-identical to Winter_Hat.svg and kept anyway.
   return filename.startsWith("_") || filename.startsWith(".");
 }
 
@@ -180,11 +146,8 @@ function fail(file: string, message: string): never {
 }
 
 /**
- * Reads a drawing's filename.
- *
- * Throws rather than returning a default, and the message says what to rename
- * the file to. Every failure here is one somebody can fix without reading this
- * file.
+ * Reads a drawing's filename. Throws rather than returning a default, and the message
+ * says what to rename the file to.
  */
 export function placementFor(filename: string, slots: readonly AccessorySlot[]): Placement {
   const base = filename.replace(/\.svg$/i, "");
@@ -249,17 +212,15 @@ export function placementFor(filename: string, slots: readonly AccessorySlot[]):
   }
 
   if (!slot) {
-    // The type field only, not any word in the name. A family called "bow"
-    // under type "glasses" is a shape of frame, not a thing worn on the head,
-    // and reading every field would have made that a conflict to resolve.
+    // The type field only, not any word in the name. A family called "bow" under type
+    // "glasses" is a shape of frame, and reading every field would make it a conflict.
     const found = new Map<AccessorySlot, string>();
     const match = KEYWORDS[type];
     if (match) found.set(match, type);
 
     if (found.size === 0) {
-      // Grouped by slot rather than listed flat. Fifty words on one line is a
-      // wall to read past; grouped, it shows the convention as well as the
-      // vocabulary, so the next drawing gets named right without asking.
+      // Grouped by slot rather than listed flat. Fifty words on one line is a wall;
+      // grouped, it shows the convention as well as the vocabulary.
       const bySlot = new Map<AccessorySlot, string[]>();
       for (const [word, slot] of Object.entries(KEYWORDS)) {
         if (!bySlot.has(slot)) bySlot.set(slot, []);
@@ -296,9 +257,8 @@ export function placementFor(filename: string, slots: readonly AccessorySlot[]):
 }
 
 /**
- * The weight each accessory gets, so its slot fills at the rate SLOT_PRESENCE
- * asks for however many drawings are in it — a new drawing changes which
- * glasses you see rather than whether you see any.
+ * The weight each accessory gets, so its slot fills at SLOT_PRESENCE's rate however many
+ * drawings are in it: a new drawing changes which glasses you see, not whether you do.
  */
 export function weightsFor<
   T extends { name: string; slot: AccessorySlot; family: string; rarity: Rarity },
@@ -314,14 +274,8 @@ export function weightsFor<
     const inSlot = items.filter((i) => i.slot === slot);
 
     /*
-     * Families compete for the slot; variants split what their family wins.
-     *
-     * The alternative is letting every drawing compete directly, and six
-     * colourways of round glasses then take six shares of eyewear — 5.9x as
-     * likely to turn up as a pair drawn once, for no reason anybody chose.
-     * That is the same thing SLOT_PRESENCE fixes between slots, and it needs
-     * fixing between families too or drawing variants quietly buries whatever
-     * only exists in one.
+     * Families compete for the slot; variants split what their family wins. Otherwise six
+     * colourways of round glasses are 5.9x as likely to turn up as a pair drawn once.
      */
     const families = [...new Set(inSlot.map((i) => i.family))].sort();
     const shares = families.map((family) => {
@@ -336,16 +290,12 @@ export function weightsFor<
     const slotTotal = Math.round((emptyWeight * p) / (1 - p));
 
     /*
-     * Rounded by largest remainder rather than one at a time, so the weights
-     * add up to slotTotal exactly and the slot fills at the rate asked for.
-     *
-     * Rounding each independently does not: thirty hats sharing a total of 43
-     * are 1.43 each, every one of them rounds down to 1, and the slot quietly
-     * drops from 30% of owls to 23%. That error grows with the number of
-     * drawings, which is the direction this repository goes in.
+     * Rounded by largest remainder, so the weights add up to slotTotal exactly. Rounding
+     * each independently drops thirty hats from 30% of owls to 23%.
      */
-    // A family's whole share first, then split between its variants, so the
-    // rounding is done once at each level rather than compounding.
+
+    // A family's whole share first, then split between its variants, so the rounding is
+    // done once at each level rather than compounding.
     const exact = shares.map((share, i) => {
       const variants = inSlot.filter((item) => item.family === families[i]).length;
       return (slotTotal * share) / shareTotal / variants;
@@ -355,11 +305,8 @@ export function weightsFor<
 
     let left = slotTotal - floors.reduce((sum, n, i) => sum + n * counts[i], 0);
 
-    // Hand the leftover units to whoever was rounded down hardest. If there is
-    // nothing left over — more drawings in the slot than it has weight to give
-    // — every one of them is on the floor of 1 and the slot ends up commoner
-    // than asked. Better than an accessory that has been drawn and can never
-    // be worn.
+    // Hand the leftover units to whoever was rounded down hardest. With nothing left over
+    // every drawing sits on the floor of 1 and the slot ends up commoner than asked.
     const order = exact
       .map((n, i) => [i, n - Math.floor(n)] as const)
       .sort((a, b) => b[1] - a[1]);

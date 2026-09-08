@@ -10,25 +10,15 @@ import { useTheme } from "../theme/useTheme";
 
 export interface TextProps extends RNTextProps {
   /**
-   * Draw this in the code face.
-   *
-   * A prop rather than a second component, because the only difference is which
-   * family a weight resolves to.
+   * Draw this in the code face. A prop rather than a second component, because the only
+   * difference is which family a weight resolves to.
    */
   mono?: boolean;
 }
 
 /**
- * `Text`, in whatever face the theme was given. React Native has no cascade, so
- * every `Text` has to name its own family — **every component in this library
- * imports it from here rather than from `react-native`**, which is what makes
- * `GrytThemeProvider fonts={…}` reach a component written next year.
- *
- * The style is flattened because the weight has to be read before the family
- * can be chosen.
- *
- * **A `fontFamily` already in the style wins**, and a theme with no faces
- * changes nothing.
+ * `Text`, in whatever face the theme was given. Every component here imports it from this
+ * file rather than react-native, which is what makes `fonts={…}` reach new components.
  */
 export const Text = forwardRef<RNText, TextProps>(function GrytText(
   { style, mono = false, ...props },

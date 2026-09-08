@@ -1,23 +1,5 @@
-/* The theme controls, as a component rather than as a page.
- *
- * These lived in the docs site, which made the docs site the only place a theme
- * could be built. What somebody wants to know is whether a colour survives a
- * member list, a voice tile and a mention, and none of those are on a
- * documentation page. So it ships here and both hosts mount the same one.
- *
- * What is deliberately not in here:
- *
- * - **The preview.** In the docs it is a panel of specimens; in the client it
- *   is the client. Neither belongs to the editor.
- * - **The address bar.** The docs page writes the theme into the query string
- *   so the link in the bar is the link you paste. There is no bar in a desktop
- *   app, so copying is a slot the host fills.
- * - **Export as code.** Rendering `createGrytTheme` needs a syntax highlighter,
- *   which is a docs dependency. `footer` is where that goes.
- *
- * Import stays, because pasting a link somebody sent you is the other half of
- * sharing one and it needs nothing but the decoder.
- */
+/* The theme controls, as a component rather than as a page, so the docs site and the
+ * client mount the same one. The preview, the address bar and export are the host's. */
 import type { GrytAppearance, GrytFontKey, GrytMotion } from "@gryt/theme";
 import {
   GRYT_FONT_KEYS,
@@ -65,12 +47,8 @@ import { generateDraft, labelsAreAuto, repairDraft, withAutoLabels } from "./gen
 import { importTheme } from "./share";
 
 /**
- * How far each radius slider travels.
- *
- * `full` is the odd one: the token is 999px, and a slider that ran to 999 would
- * put every value anybody wants inside the first four percent of the track. So
- * it travels to 40 and the far end means pill, which is the only thing past 40
- * that anyone picks.
+ * How far each radius slider travels. `full` is the odd one: the token is 999px, so it
+ * travels to 40 and the far end means pill.
  */
 const RADIUS_MAX: Record<RadiusKey, number> = {
   sm: 24,
@@ -95,20 +73,14 @@ export interface ThemeEditorProps {
   value: ThemeDraft;
   onChange: (next: ThemeDraft) => void;
   /**
-   * Which half is on the bench.
-   *
-   * The host's, not the editor's: editing the light half while the app around
-   * it is dark would be looking at two themes at once.
+   * Which half is on the bench — the host's, not the editor's: editing the light half
+   * while the app around it is dark would be looking at two themes at once.
    */
   appearance: GrytAppearance;
   onAppearanceChange: (next: GrytAppearance) => void;
   /**
-   * Whether a face this machine has to fetch will actually be fetched.
-   *
-   * The client keeps that behind a setting, so the picker says when a choice
-   * will not take effect rather than letting somebody pick a font and wonder
-   * why nothing changed. Defaults to true, which is right for the docs site
-   * and for anything with no such setting.
+   * Whether a face this machine has to fetch will actually be fetched. The client keeps
+   * that behind a setting, so the picker says when a choice will not take effect.
    */
   remoteFontsAllowed?: boolean;
   /** End of the header row. Where a host puts its own copy or save control. */
@@ -129,13 +101,8 @@ export function ThemeEditor({
   className
 }: ThemeEditorProps) {
   /**
-   * Whether the label colours follow their fills.
-   *
-   * On by default, because picking the ink for a filled button by hand is a
-   * job with one right answer and it is the answer people get wrong — the
-   * library's own accent shipped at 6.7:1 for a year. It turns itself off when
-   * a theme arrives carrying labels somebody else chose, which is every ported
-   * preset: overwriting Dracula's ink would make it not Dracula.
+   * Whether the label colours follow their fills. On by default; it turns itself off for a
+   * theme carrying labels somebody else chose, since overwriting Dracula's ink is wrong.
    */
   const [autoLabels, setAutoLabels] = useState(
     () =>
@@ -144,16 +111,11 @@ export function ThemeEditor({
   );
 
   /**
-   * A theme the editor did not produce is a theme somebody else chose.
-   *
-   * The host can replace `value` at any time — a shared link on arrival, a
-   * preset picked somewhere else in the app — and when it does, the automatic
-   * labels have to be reconsidered exactly as they are for a preset picked in
-   * here. Without this, opening a link to Dracula and then touching one slider
-   * would quietly rewrite its ink.
+   * A theme the editor did not produce is one somebody else chose, so the automatic labels
+   * are reconsidered when `value` is replaced from outside.
    */
-  // State rather than a ref, because this is read while rendering and a ref
-  // read during render is a lie about when it was written.
+
+  // State rather than a ref, because this is read while rendering.
   const [emitted, setEmitted] = useState<ThemeDraft | null>(null);
   if (emitted !== null && emitted !== draft) {
     setEmitted(null);
@@ -236,13 +198,8 @@ export function ThemeEditor({
   }
 
   /**
-   * Give light its own hues, or take them away again.
-   *
-   * Off is the library's own arrangement and the right default: a filled
-   * button that changes colour when somebody flips appearance is usually a
-   * mistake. On is for palettes where it is not — Catppuccin and GitHub both
-   * publish a different accent per half, and forcing one on them would make
-   * the preset wrong in one of the two.
+   * Give light its own hues, or take them away again. Off is the library's arrangement;
+   * on is for palettes like Catppuccin and GitHub that publish an accent per half.
    */
   function toggleSplit(split: boolean) {
     commit((current) => ({
@@ -275,9 +232,8 @@ export function ThemeEditor({
     commit((current) => ({ ...current, name: value === "" ? undefined : value }));
   }
 
-  /* Fonts are not per-appearance, so this writes one block rather than one
-     per half. A theme that changed typeface when somebody flipped to light
-     would be two themes. */
+  /* Fonts are not per-appearance, so this writes one block rather than one per half. A
+     theme that changed typeface on flipping to light would be two themes. */
   function setFont(role: GrytFontKey, stack: string) {
     commit((current) => ({
       ...current,
@@ -355,9 +311,8 @@ export function ThemeEditor({
         <div className="ml-auto flex items-end gap-3">
           <ToggleGroup
             aria-label="Appearance"
-            // Last one wins, and an empty array is a click on the one already
-            // pressed — which should leave the appearance alone rather than
-            // switch to neither.
+            // Last one wins, and an empty array is a click on the one already pressed,
+            // which should leave the appearance alone rather than switch to neither.
             onValueChange={(value: string[]) => {
               const next = value[value.length - 1];
               if (next === "dark" || next === "light") onAppearanceChange(next);

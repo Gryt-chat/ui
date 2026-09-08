@@ -11,9 +11,8 @@ import { useTheme } from "../theme/useTheme";
 export type TextInputProps = RNTextInputProps;
 
 /**
- * `TextInput`, in whatever face the theme was given — the same job the internal
- * `Text` does. Without it a field's text stays on the platform font while its
- * label changes, which only shows up once somebody types.
+ * `TextInput`, in whatever face the theme was given — the same job the internal `Text`
+ * does. Without it a field's text stays on the platform font while its label changes.
  */
 export const TextInput = forwardRef<RNTextInput, TextInputProps>(function GrytTextInput(
   { style, ...props },

@@ -1,37 +1,6 @@
 /**
- * Turn a drawing of an owl wearing something into just the something.
- *
- * The workflow this exists for: `--base` writes the bare bird as an SVG, you
- * open it, draw a hat on it, save it into `artwork/`, and this subtracts the
- * bird back out and leaves the hat. No measuring, no anchor point, no scale
- * factor — the hat is already in the coordinates the generator draws in.
- *
- *   bun scripts/owl-accessory.ts --base
- *   bun scripts/owl-accessory.ts --all
- *   bun scripts/owl-accessory.ts artwork/Winter_Hat.svg --slot head
- *
- * `--all` rebuilds every accessory listed in `artwork/accessories.json` and
- * writes the registry, so a corrected drawing is one command.
- *
- * The bird it subtracts is generated on the spot from the same code that draws
- * avatars, not read from a file kept beside it. A stored copy can go stale, and
- * a stale one fails in the worst way available: it stops matching, every path
- * survives the subtraction, and the accessory you get is a second owl.
- *
- * Paths are matched on what they draw, not on how they are written down. A
- * drawing tool rewrites path data on the way out — rounding numbers, turning a
- * degenerate curve into `H`, dropping a redundant control point — so comparing
- * strings finds nothing. Each path is flattened into a polyline and identified
- * by its extent, its length and its area.
- *
- * Recolouring part of the bird counts as part of the accessory. A coat covers
- * the owl's arms, so the drawing paints the wings in the background's colour and
- * they disappear. Subtracting that as "unchanged base" would throw the intent
- * away, so a matched path whose fill has moved is recorded as a repaint — see
- * `recolour` on Accessory.
- *
- * Keep the source drawings. They are the only record of how an accessory was
- * positioned, and the day one needs a nudge the alternative is redrawing it.
+ * Turn a drawing of an owl wearing something into just the something: `--base` writes the
+ * bare bird, you draw on it, and this subtracts the bird back out. Keep the drawings.
  */
 
 import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
@@ -55,11 +24,8 @@ const root = path.resolve(import.meta.dir, "..");
 const GENERATED = "src/accessories.generated.ts";
 
 /**
- * The bird the script draws and subtracts.
- *
- * Defined in the package rather than here, because the drawing guide on the
- * site hands the same bird out as a download and the two have to be the same
- * one. See OWL_BASE for why that matters.
+ * The bird the script draws and subtracts. Defined in the package rather than here,
+ * because the site's drawing guide hands the same bird out and the two must agree.
  */
 const BASE = owl.OWL_BASE;
 
@@ -102,9 +68,8 @@ for (let i = 2; i < process.argv.length; i += 1) {
   }
 }
 /**
- * A valued flag's value, or the fallback. Switches are read with `has`, so a
- * `true` sitting in the map here means the flag was given without its value and
- * the fallback is the right answer.
+ * A valued flag's value, or the fallback. Switches are read with `has`, so a `true` here
+ * means the flag was given without its value.
  */
 function flag(name: string, fallback: string): string;
 function flag(name: string, fallback?: string): string | undefined;
@@ -116,12 +81,8 @@ function flag(name: string, fallback?: string): string | undefined {
 const has = (name: string) => options.get(name) === true;
 
 /**
- * The palette roles an accessory's paths may ask for, so `--map` and the
- * manifest can be checked against them rather than trusted.
- *
- * A misspelled role used to travel all the way into accessories.generated.ts as
- * a fill nothing resolves, and the first sign of it was an owl wearing an
- * invisible hat.
+ * The palette roles an accessory's paths may ask for, so `--map` and the manifest are
+ * checked rather than trusted. A misspelled role used to ship as an invisible hat.
  */
 const PALETTE_ROLES = new Set<string>(ROLES);
 
@@ -142,22 +103,16 @@ function accessorySlot(value: string, where: string): owl.AccessorySlot {
 }
 
 /**
- * The ink table as the extractor wants it: lowercase hex to palette role.
- *
- * Typechecked at the source — artwork/inks.ts is TypeScript precisely so a
- * misspelled role is a red squiggle rather than something the run finds out
- * about — so there is nothing to validate here beyond the casing.
+ * The ink table as the extractor wants it: lowercase hex to palette role. Typechecked at
+ * the source, so there is nothing to validate here beyond the casing.
  */
 const inks = new Map<string, owl.PaletteSlot>(
   Object.entries(INKS).map(([hex, role]) => [hex.toLowerCase(), role]),
 );
 
 /**
- * What the run did to each slot.
- *
- * Printed because the weights are no longer written down anywhere a person
- * reads. The fill rate is the number to check: it should match SLOT_PRESENCE
- * whatever was added, and if it has moved, the model is not doing its job.
+ * What the run did to each slot. The fill rate is the number to check: it should match
+ * SLOT_PRESENCE whatever was added, and if it moved the model is not doing its job.
  */
 function reportSlots(
   placements: ReadonlyArray<{ name: string; slot: owl.AccessorySlot; rarity: Rarity }>,
@@ -208,9 +163,8 @@ if (has("base")) {
 if (has("all")) {
   const dir = flag("out", path.join(root, "artwork"));
 
-  // Every drawing in the folder, in a fixed order. readdir's order is the
-  // filesystem's and differs between machines, so sorting is what keeps the
-  // generated file from changing depending on who ran the script.
+  // Every drawing in the folder, in a fixed order. readdir's order is the filesystem's, so
+  // sorting is what keeps the generated file from depending on who ran the script.
   const files = readdirSync(dir)
     .filter((f) => f.toLowerCase().endsWith(".svg"))
     .filter((f) => !isIgnored(f))
@@ -221,10 +175,8 @@ if (has("all")) {
     process.exit(1);
   }
 
-  // Read every filename before extracting anything. The weights depend on how
-  // many drawings are in each slot, so they cannot be worked out one file at a
-  // time — and a misnamed file should fail before the slow part rather than
-  // seventeen extractions later.
+  // Read every filename before extracting anything: the weights depend on how many
+  // drawings are in each slot, and a misnamed file should fail before the slow part.
   const placements: Array<{ file: string } & Placement> = [];
   const failures: string[] = [];
   for (const file of files) {
@@ -248,9 +200,8 @@ if (has("all")) {
     process.exit(1);
   }
 
-  // A family competes for its slot as one thing, so a rarity is a property of
-  // the family and not of each drawing in it. Two variants disagreeing has no
-  // answer — taking either one silently makes the other tag do nothing.
+  // A family competes for its slot as one thing, so a rarity belongs to the family. Two
+  // variants disagreeing has no answer that does not silently ignore one tag.
   const rarityByFamily = new Map<string, Map<string, string[]>>();
   for (const p of placements) {
     if (!rarityByFamily.has(p.family)) rarityByFamily.set(p.family, new Map());
@@ -271,9 +222,8 @@ if (has("all")) {
   const weights = weightsFor(placements, owl.SLOT_PRESENCE, owl.EMPTY_WEIGHT.head);
 
   /*
-   * Keys before anything is extracted, so a run that adds a drawing writes the
-   * ledger even if a later drawing fails to build. A half-written ledger is
-   * recoverable; a key handed out twice is not.
+   * Keys before anything is extracted, so a run writes the ledger even if a later drawing
+   * fails. A half-written ledger is recoverable; a key handed out twice is not.
    */
   const ledgerPath = path.join(dir, "keys.json");
   const ledger = updateLedger(readLedger(ledgerPath), placements.map((p) => p.name));
@@ -322,11 +272,8 @@ if (has("all")) {
   reportSlots(placements, weights);
 
   /*
-   * `--check` is for CI. The build regenerates this file, so a forgotten run is
-   * harmless locally — but a stale one committed alongside a changed drawing
-   * means the repository and the app disagree about what an owl is wearing, and
-   * a build that quietly rewrites a tracked file is not where anyone should find
-   * that out.
+   * `--check` is for CI. A stale generated file committed with a changed drawing means the
+   * repository and the app disagree about what an owl is wearing.
    */
   if (has("check")) {
     const target = path.join(root, GENERATED);
@@ -364,10 +311,8 @@ if (!input) {
   process.exit(1);
 }
 
-// One drawing on its own, for looking at before it goes in the folder. The
-// filename decides the same things it decides in --all, so what comes out here
-// is what will come out there; the flags below only exist to try something
-// without renaming the file first.
+// One drawing on its own, for looking at before it goes in the folder. The filename
+// decides the same things it does in --all; the flags only avoid a rename first.
 const fileName = path.basename(input);
 let placement: Placement;
 try {

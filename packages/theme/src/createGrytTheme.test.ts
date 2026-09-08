@@ -17,9 +17,8 @@ describe("createGrytTheme", () => {
   });
 
   /**
-   * The one that matters. The components read the scale, so an override that
-   * only moved the flat token would leave the app its old colour and look like
-   * theming was broken rather than absent.
+   * The one that matters. The components read the scale, so an override that only moved
+   * the flat token would leave the app its old colour and read as broken theming.
    */
   it("regenerates a scale when its anchor is overridden", () => {
     const theme = createGrytTheme({ color: { accent: "#ff5c00" } }) as Vars;
@@ -40,9 +39,8 @@ describe("createGrytTheme", () => {
   it("keeps the Tailwind names in step with the raw ones", () => {
     const theme = createGrytTheme({ color: { accent: "#22d3ee" } }) as Vars;
 
-    // Both sets have to move together: the utilities compile against --color-*,
-    // so an override that missed them would change bg-gryt-accent-9 and not
-    // var(--gryt-accent-9), or the other way round.
+    // Both sets have to move together: the utilities compile against --color-*, so an
+    // override that missed them would change one name and not the other.
     for (const step of [1, 5, 9, 12]) {
       expect(theme[`--color-gryt-accent-${step}`]).toBe(
         theme[`--gryt-accent-${step}`]

@@ -1,8 +1,7 @@
 import { useCallback, useRef, useState, type ReactNode } from "react";
 import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
-// Deep imports, one file per icon, rather than the barrel. Metro does not
-// tree-shake, so the barrel pulls the whole set in. The `*Icon` suffix is the
-// spelling @phosphor-icons/react uses; the bare names are deprecated.
+// Deep imports, one file per icon, rather than the barrel: Metro does not tree-shake. The
+// `*Icon` suffix is the spelling @phosphor-icons/react uses.
 import { CaretDownIcon } from "phosphor-react-native/src/icons/CaretDown";
 import { CheckIcon } from "phosphor-react-native/src/icons/Check";
 import { Text } from "../../internal/Text";
@@ -37,17 +36,8 @@ export interface SelectProps {
 }
 
 /**
- * A single component, like the web's, rather than a namespace.
- *
- * `@gryt/ui`'s Select takes an `options` array and renders the trigger, the
- * list, the checkmark and the positioning itself, so this matches that shape
- * instead of exposing Root/Trigger/Popup.
- *
- * Underneath it is the same anchored popup Menu uses. The one thing worth
- * knowing: the platform pickers are not used. iOS would give a wheel and Android
- * a dialog, neither takes the Gryt palette, and the two look nothing like each
- * other. A list matching the rest of the library is more use than two native
- * controls that match neither.
+ * A single component, like the web's, rather than a namespace. The platform pickers are not
+ * used: iOS gives a wheel and Android a dialog, and neither takes the Gryt palette.
  */
 export function Select({
   options = [],
