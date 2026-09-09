@@ -183,6 +183,15 @@
     --color-gryt-on-secondary: #02121a;
     --color-gryt-on-danger: #1f0405;
 
+    /* Unread. Its own colour rather than a step of a family, and the same value
+       under .light, so every theme inherits it and `color.unread` overrides it.
+
+       danger was doing this job and measured 2.56:1 on the light surface, under
+       the 3:1 a filled shape wants. This is 4.75 dark and 3.28 light, at chroma
+       0.23 against danger's 0.17, hue 29 against the accent's 295. */
+    --color-gryt-unread: #ff3b30;
+    --color-gryt-on-unread: #1f0405;
+
     /* A damped-spring solution sampled into linear() — the real curve of a
        spring rather than a physics engine approximating one. Damping 0.5591,
        peaking 12% past target and settling without a second visible swing.
@@ -248,6 +257,9 @@
     --gryt-success: var(--gryt-success-9);
     --gryt-danger: var(--gryt-danger-9);
     --gryt-warning: var(--gryt-warning-9);
+    /* Not an alias onto a scale: unread is its own colour, not a step of one. */
+    --gryt-unread: #ff3b30;
+    --gryt-on-unread: #1f0405;
     /* ── the scales ─────────────────────────────────────────────
        Twelve steps per family, each step meaning the same thing wherever it
        appears:

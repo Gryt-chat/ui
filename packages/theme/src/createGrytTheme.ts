@@ -34,7 +34,11 @@ export const grytTokens = {
     // that always sits on a saturated colour, so they are held to AAA rather than AA.
     onAccent: "#0c0a20",
     onSecondary: "#02121a",
-    onDanger: "#1f0405"
+    onDanger: "#1f0405",
+    // Its own colour, not a step of a family, and the same under light: danger was
+    // doing this and measured 2.56:1 on the light surface, under the 3:1 a fill wants.
+    unread: "#ff3b30",
+    onUnread: "#1f0405"
   },
   radius: {
     sm: 8,
@@ -298,6 +302,8 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
     "--gryt-on-accent": color.onAccent,
     "--gryt-on-secondary": color.onSecondary,
     "--gryt-on-danger": color.onDanger,
+    "--gryt-unread": color.unread,
+    "--gryt-on-unread": color.onUnread,
 
     // Tailwind's @theme emits --color-* names and the utilities compile against those.
     // Both sets have to move together or an override changes the var and not the class.
@@ -319,6 +325,8 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
     "--color-gryt-on-accent": color.onAccent,
     "--color-gryt-on-secondary": color.onSecondary,
     "--color-gryt-on-danger": color.onDanger,
+    "--color-gryt-unread": color.unread,
+    "--color-gryt-on-unread": color.onUnread,
 
     "--gryt-radius-sm": `${radius.sm}px`,
     "--gryt-radius-md": `${radius.md}px`,

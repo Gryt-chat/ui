@@ -375,9 +375,10 @@ function RadioExample() {
 </Badge>
 
 // With no children it is the pill on its own, in normal flow — for a row
-// that ends in a count rather than an avatar wearing one. Neutral for
-// messages that are merely unread, primary for the one that named you.
-<Badge badgeContent={4} tone="neutral" />
+// that ends in a count rather than an avatar wearing one. Unread for
+// anything waiting, primary for the one that named you. Unread is its own
+// colour rather than a step of a family, so it lands the same on every theme.
+<Badge badgeContent={4} tone="unread" />
 <Badge badgeContent={2} tone="primary" />`
   },
   {
