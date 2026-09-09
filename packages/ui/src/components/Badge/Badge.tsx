@@ -39,9 +39,8 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   /** Which corner of `children` it sits on. Ignored when there are none. */
   placement?: BadgePlacement;
   /**
-   * How loud it is. The channel list uses two: `unread` for anything waiting,
-   * primary for a conversation that named you. Neutral is grey on a grey
-   * sidebar, which is how people came to miss messages.
+   * How loud it is. The channel list uses `unread` for anything waiting and
+   * primary for a conversation that named you; neutral was grey on grey.
    */
   tone?: BadgeTone;
   /**

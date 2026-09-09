@@ -183,16 +183,12 @@
     --color-gryt-on-secondary: #02121a;
     --color-gryt-on-danger: #1f0405;
 
-    /* Unread. Not a step of any family and the same value under .light: a badge
-       saying "something is here" has to be found rather than harmonised, and it
-       is the one colour in the library that means only that.
+    /* Unread. Its own colour rather than a step of a family, and the same value
+       under .light, so every theme inherits it and `color.unread` overrides it.
 
        danger was doing this job and measured 2.56:1 on the light surface, under
-       the 3:1 a filled shape wants. This is 4.75:1 on the dark sidebar and
-       3.28:1 on the light one, at chroma 0.23 against danger's 0.17. Hue 29,
-       nowhere near the accent's 295, so unread and a mention stay two colours.
-
-       A theme inherits it without doing anything. `color.unread` overrides it. */
+       the 3:1 a filled shape wants. This is 4.75 dark and 3.28 light, at chroma
+       0.23 against danger's 0.17, hue 29 against the accent's 295. */
     --color-gryt-unread: #ff3b30;
     --color-gryt-on-unread: #1f0405;
 

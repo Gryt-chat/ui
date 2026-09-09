@@ -35,10 +35,8 @@ export const grytTokens = {
     onAccent: "#0c0a20",
     onSecondary: "#02121a",
     onDanger: "#1f0405",
-    // Unread. Not a step of any family, and the same value in both appearances: a badge
-    // saying "something is here" has to be found rather than harmonised, and `danger`
-    // measured 2.56:1 on the light surface, which is below the 3:1 a filled shape wants.
-    // Themes inherit it without doing anything, and `color.unread` overrides it.
+    // Its own colour, not a step of a family, and the same under light: danger was
+    // doing this and measured 2.56:1 on the light surface, under the 3:1 a fill wants.
     unread: "#ff3b30",
     onUnread: "#1f0405"
   },
