@@ -105,7 +105,7 @@ export type { AvatarProps } from "./components/Avatar/Avatar";
 // normalised nickname, and the raw one draws an owl from a seed nothing else uses.
 export { avatarSeed } from "@gryt/owl";
 export { Badge } from "./components/Badge/Badge";
-export type { BadgePlacement, BadgeProps } from "./components/Badge/Badge";
+export type { BadgePlacement, BadgeProps, BadgeTone } from "./components/Badge/Badge";
 export { Chip } from "./components/Chip/Chip";
 export type { ChipProps, ChipTone } from "./components/Chip/Chip";
 export { Checkbox } from "./components/Checkbox/Checkbox";

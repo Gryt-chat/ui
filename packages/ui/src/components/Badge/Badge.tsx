@@ -4,6 +4,17 @@ import { cn } from "../utils/cn";
 import { toneFill } from "../utils/styles";
 import type { Tone } from "../utils/styles";
 
+/**
+ * Badge's own union. `Tone` is closed on purpose so Checkbox, Radio, Switch and
+ * Slider cannot invent a colour, and unread is a colour only a badge has.
+ */
+export type BadgeTone = Tone | "unread";
+
+const badgeFill: Record<BadgeTone, string> = {
+  ...toneFill,
+  unread: "bg-gryt-unread text-gryt-on-unread"
+};
+
 export type BadgePlacement =
   | "top-right"
   | "top-left"
@@ -28,10 +39,11 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   /** Which corner of `children` it sits on. Ignored when there are none. */
   placement?: BadgePlacement;
   /**
-   * How loud it is. The channel list uses two: neutral for unread, primary for a
-   * conversation that named you. One accent badge per row makes every channel urgent.
+   * How loud it is. The channel list uses two: `unread` for anything waiting,
+   * primary for a conversation that named you. Neutral is grey on a grey
+   * sidebar, which is how people came to miss messages.
    */
-  tone?: Tone;
+  tone?: BadgeTone;
   /**
    * A ring in the page background colour, so the pill reads as sitting on top of what it
    * overlaps. Off when the badge stands alone, where there is nothing to lift it off.
@@ -65,7 +77,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(function Badge(
         "gryt-badge-dot inline-flex items-center justify-center",
         "min-w-5 rounded-(--gryt-radius-full) px-1.5 py-0.5",
         "text-[0.65rem] leading-none font-semibold",
-        toneFill[tone],
+        badgeFill[tone],
         // A count is read as a number, so the digits have to hold a column —
         // otherwise a badge counting up flickers wider and narrower on the 1s.
         "tabular-nums",
