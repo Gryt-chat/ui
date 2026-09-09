@@ -57,6 +57,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         className={cn(
           "gryt-button",
+          // A consumer that underlines its links renders this as an `a` when it is
+          // given an href, and a button is a button wherever it lands (GRYT-1098).
+          "no-underline",
           "inline-flex cursor-pointer items-center justify-center gap-2 border-0 shadow-none",
           "rounded-(--gryt-radius-control) font-semibold whitespace-nowrap select-none",
           // scale, not transform: Tailwind v4's scale-* utilities set the standalone
