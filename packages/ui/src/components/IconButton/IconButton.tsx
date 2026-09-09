@@ -44,6 +44,8 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         ref={ref}
         className={cn(
           "gryt-icon-button",
+          // Rendered as an `a` when given an href. See the note in Button.
+          "no-underline",
           "inline-flex shrink-0 items-center justify-center border-0 bg-transparent p-0",
           "rounded-(--gryt-radius-control) select-none",
           // scale rather than transform — see the note in Button.

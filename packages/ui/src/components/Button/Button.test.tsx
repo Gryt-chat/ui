@@ -1,18 +1,29 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { Button } from "./Button";
+import { IconButton } from "../IconButton/IconButton";
 import { GrytProvider } from "../../GrytProvider";
 
-describe("Button", () => {
-  it("renders accessible button text", () => {
+// A consumer that underlines its links draws a line through these unless they
+// say not to. Only the one rendered *as* the anchor: inline-flex blocks the rest.
+describe("controls rendered as links", () => {
+  it("keeps a Button from being underlined", () => {
     render(
       <GrytProvider>
-        <Button>New chat</Button>
+        <Button render={<a href="/download">Download</a>} />
       </GrytProvider>
     );
 
-    const button = screen.getByRole("button", { name: "New chat" });
-    expect(button).toBeInTheDocument();
-    expect(button).toHaveClass("cursor-pointer");
+    expect(screen.getByRole("link", { name: "Download" })).toHaveClass("no-underline");
+  });
+
+  it("keeps an IconButton from being underlined", () => {
+    render(
+      <GrytProvider>
+        <IconButton aria-label="Open" render={<a href="/open">·</a>} />
+      </GrytProvider>
+    );
+
+    expect(screen.getByRole("link", { name: "Open" })).toHaveClass("no-underline");
   });
 });
