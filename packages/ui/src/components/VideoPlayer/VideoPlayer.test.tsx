@@ -238,6 +238,14 @@ describe("VideoPlayer", () => {
     expect(root).toHaveAttribute("data-state", "loading");
   });
 
+  it("reports a poster that fails to load", () => {
+    const onPosterError = vi.fn();
+    const { container } = renderPlayer({ poster: "/poster.png", onPosterError });
+
+    fireEvent.error(container.querySelector("img")!);
+    expect(onPosterError).toHaveBeenCalledTimes(1);
+  });
+
   it("keeps the position when trying again", () => {
     const { video, root } = renderPlayer({ autoLoad: true });
     vi.spyOn(video, "load").mockImplementation(() => undefined);

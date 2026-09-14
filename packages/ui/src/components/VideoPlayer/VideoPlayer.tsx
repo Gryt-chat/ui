@@ -37,6 +37,8 @@ export interface VideoPlayerProps {
    * on from the same spot, once, and shows the error only if that fails too.
    */
   onError?: (event: SyntheticEvent<HTMLVideoElement>) => void;
+  /** The poster failed to load. A new `poster` is picked up as it is. */
+  onPosterError?: (event: SyntheticEvent<HTMLImageElement>) => void;
   className?: string;
 }
 
@@ -57,6 +59,7 @@ export function VideoPlayer({
   volume,
   onVolumeChange,
   onError,
+  onPosterError,
   className
 }: VideoPlayerProps) {
   const p = useVideoPlayer({ src, autoLoad, volume, onVolumeChange, onError });
@@ -84,7 +87,13 @@ export function VideoPlayer({
       />
       {!p.loaded &&
         (poster ? (
-          <img src={poster} alt="" className="block w-full object-cover" draggable={false} />
+          <img
+            src={poster}
+            alt=""
+            className="block w-full object-cover"
+            draggable={false}
+            onError={onPosterError}
+          />
         ) : (
           <div className="grid aspect-video w-full place-items-center bg-gryt-surface-raised text-gryt-muted">
             <FilmStrip size={40} aria-hidden />
