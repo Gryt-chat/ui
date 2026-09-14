@@ -1,5 +1,15 @@
 # @gryt/ui
 
+## 0.32.0
+
+### Minor Changes
+
+- 1710954: `VideoPlayer` takes an `onError` prop, called when the video fails to load or play. Hand back a new `src` from it, like a URL with a fresh file token, and the player loads that and carries on from the same spot. It keeps playing if it was playing, and the error doesn't show. It only does this once. If the new `src` fails too before playback gets past that spot, you get the error as before.
+
+  There's an `onPosterError` too, called when the poster fails to load, so a parent can swap in a fresh poster URL as well.
+
+  Try again keeps the position now too, where it used to start over from 0.
+
 ## 0.31.0
 
 ### Minor Changes
