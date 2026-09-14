@@ -146,7 +146,7 @@ export function VideoPlayer({
         <>
           <div
             data-hidden={hidden}
-            className={cn("absolute right-2 bottom-4 flex items-center rounded-(--gryt-radius-full) bg-black/60 px-1", onMedia, fade)}
+            className={cn("absolute right-2 bottom-8 flex items-center rounded-(--gryt-radius-full) bg-black/60 px-1", onMedia, fade)}
             onPointerEnter={() => p.setPinned(true)}
             onPointerLeave={() => p.setPinned(false)}
           >
@@ -252,7 +252,11 @@ function ControlButton({
 function SeekBar({ player: p, thin }: { player: VideoPlayerController; thin: boolean }) {
   return (
     <BaseSlider.Root
-      className="gryt-video-seek absolute inset-x-0 bottom-0"
+      className={cn(
+        "gryt-video-seek absolute",
+        // Inset by the thumb's radius and lifted off the corner, so the whole thumb shows at both ends.
+        thin ? "inset-x-0 bottom-0" : "inset-x-2 bottom-2"
+      )}
       data-thin={thin || undefined}
       value={p.currentTime}
       min={0}
@@ -265,23 +269,23 @@ function SeekBar({ player: p, thin }: { player: VideoPlayerController; thin: boo
     >
       <BaseSlider.Control
         className={cn(
-          "flex w-full cursor-pointer touch-none items-end select-none data-disabled:cursor-default",
-          thin ? "h-1" : "h-4"
+          "flex w-full cursor-pointer touch-none items-center select-none data-disabled:cursor-default",
+          thin ? "h-1" : "h-4 px-2"
         )}
       >
         <BaseSlider.Track
           className={cn(
             "relative w-full bg-white/25 transition-[height] duration-200 motion-reduce:transition-none",
-            thin ? "h-1" : "h-1.5"
+            thin ? "h-1" : "h-1.5 rounded-(--gryt-radius-full)"
           )}
         >
           <div
             aria-hidden
             data-testid="video-buffered"
-            className="absolute inset-y-0 left-0 bg-white/35"
+            className="absolute inset-y-0 left-0 rounded-[inherit] bg-white/35"
             style={{ width: `${p.bufferedPercent}%` }}
           />
-          <BaseSlider.Indicator className="h-full bg-gryt-accent" />
+          <BaseSlider.Indicator className="h-full rounded-[inherit] bg-gryt-accent" />
           <BaseSlider.Thumb
             aria-label="Seek"
             getAriaValueText={(_, value) => `${formatTime(value)} of ${formatTime(p.duration)}`}
