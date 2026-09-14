@@ -27,6 +27,7 @@
     "typecheck": "bun --filter '*' typecheck",
     "test": "bun --filter @gryt/theme --filter @gryt/owl --filter @gryt/ui --filter @gryt/ui-native test",
     "test:comment-length": "node scripts/check-comment-length.mjs",
+    "test:retired-logo": "node scripts/check-retired-logo.mjs",
     "lint": "eslint . --max-warnings 114",
     "format": "prettier --write .",
     "changeset": "changeset",
