@@ -337,8 +337,8 @@ function RadioExample() {
 
 // fallback is what shows while the image loads, and what stays if it
 // never arrives — so it is initials rather than a spinner.
-<Avatar src="/owl.png" alt="Gryt" fallback="G" />
-<Avatar size="large" src="/owl.png" alt="Gryt" fallback="G" />
+<Avatar src="/gryt-logo.svg" alt="Gryt" fallback="G" />
+<Avatar size="large" src="/gryt-logo.svg" alt="Gryt" fallback="G" />
 
 // seed draws this person's owl, from @gryt/owl. Pass avatarSeed(nickname)
 // rather than the nickname: the two differ for anyone not already lower
@@ -356,16 +356,16 @@ function RadioExample() {
     code: `import { Avatar, Badge } from "@gryt/ui";
 
 <Badge badgeContent={3}>
-  <Avatar size="small" src="/owl.png" alt="Gryt" fallback="G" />
+  <Avatar size="small" src="/gryt-logo.svg" alt="Gryt" fallback="G" />
 </Badge>
 <Badge badgeContent={12}>
-  <Avatar src="/owl.png" alt="Gryt" fallback="G" />
+  <Avatar src="/gryt-logo.svg" alt="Gryt" fallback="G" />
 </Badge>
 
 // Over max it reads 99+, so the badge can never outgrow what it is
 // pinned to. An empty string gives a plain dot.
 <Badge badgeContent={240}>
-  <Avatar size="large" src="/owl.png" alt="Gryt" fallback="G" />
+  <Avatar size="large" src="/gryt-logo.svg" alt="Gryt" fallback="G" />
 </Badge>
 <Badge badgeContent="">
   <Avatar>G</Avatar>
@@ -373,7 +373,7 @@ function RadioExample() {
 
 // Any corner.
 <Badge badgeContent={7} placement="bottom-right">
-  <Avatar src="/owl.png" alt="Gryt" fallback="G" />
+  <Avatar src="/gryt-logo.svg" alt="Gryt" fallback="G" />
 </Badge>
 
 // With no children it is the pill on its own, in normal flow — for a row

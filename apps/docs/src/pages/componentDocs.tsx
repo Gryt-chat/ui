@@ -345,9 +345,9 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
           <ExampleSection title="Image">
             {/* The fallback is what shows while the image is still loading or
                 if it never arrives, so it is initials rather than a spinner. */}
-            <Avatar size="small" src={OWL} alt="Gryt" fallback="G" />
-            <Avatar src={OWL} alt="Gryt" fallback="G" />
-            <Avatar size="large" src={OWL} alt="Gryt" fallback="G" />
+            <Avatar size="small" src={LOGO} alt="Gryt" fallback="G" />
+            <Avatar src={LOGO} alt="Gryt" fallback="G" />
+            <Avatar size="large" src={LOGO} alt="Gryt" fallback="G" />
           </ExampleSection>
           <ExampleSection title="Generated">
             {/* No src, so each of these is drawn from the seed. The same
@@ -364,15 +364,15 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
         <div className="grid w-full gap-6">
           <ExampleSection title="Count">
             <Badge badgeContent={3}>
-              <Avatar size="small" src={OWL} alt="Gryt" fallback="G" />
+              <Avatar size="small" src={LOGO} alt="Gryt" fallback="G" />
             </Badge>
             <Badge badgeContent={12}>
-              <Avatar src={OWL} alt="Gryt" fallback="G" />
+              <Avatar src={LOGO} alt="Gryt" fallback="G" />
             </Badge>
             {/* Over max it reads 99+, so a badge can never outgrow the thing
                 it is pinned to. */}
             <Badge badgeContent={240}>
-              <Avatar size="large" src={OWL} alt="Gryt" fallback="G" />
+              <Avatar size="large" src={LOGO} alt="Gryt" fallback="G" />
             </Badge>
           </ExampleSection>
           <ExampleSection title="Dot">
@@ -396,7 +396,7 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
               ] as BadgePlacement[]
             ).map((placement) => (
               <Badge key={placement} badgeContent={7} placement={placement}>
-                <Avatar src={OWL} alt="Gryt" fallback="G" />
+                <Avatar src={LOGO} alt="Gryt" fallback="G" />
               </Badge>
             ))}
           </ExampleSection>
@@ -1005,9 +1005,9 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
   }
 }
 
-/* Served from apps/docs/public. The Gryt client's own app icon, so the
-   avatar examples show a real image rather than a placeholder service. */
-const OWL = "/owl.png";
+/* Served from apps/docs/public: the current Gryt logo, copied from the client's
+   public/logo-square.svg, so the avatar examples show a real image. */
+const LOGO = "/gryt-logo.svg";
 
 const PERMISSIONS = ["read", "write", "manage"];
 const PERMISSION_LABELS = [

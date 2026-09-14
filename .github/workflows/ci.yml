@@ -35,6 +35,7 @@ jobs:
       # No comment runs past two lines. The script carries the list of paths still
       # to be swept, and that list only ever shrinks.
       - run: bun run test:comment-length
+      - run: bun run test:retired-logo
       - run: bun run test
       # Only artwork/ itself: a subfolder holds another generator's drawings, which this
       # reports as slotless. A drawing not drawn on the base extracts as a whole owl.
