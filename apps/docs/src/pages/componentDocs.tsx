@@ -1047,7 +1047,7 @@ function VideoPlayerExample() {
           <VideoPlayer
             src="/video-demo.mp4"
             poster="/video-demo-poster.jpg"
-            fileName="owl-flyby.mp4"
+            fileName="sample-clip.mp4"
             volume={volume}
             onVolumeChange={setVolume}
           />
@@ -1055,7 +1055,7 @@ function VideoPlayerExample() {
         <ExampleBlock title="autoLoad">
           <VideoPlayer
             src="/video-demo.mp4"
-            fileName="owl-flyby.mp4"
+            fileName="sample-clip.mp4"
             autoLoad
             volume={volume}
             onVolumeChange={setVolume}
