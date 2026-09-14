@@ -453,6 +453,14 @@ function Attachment() {
 // length show before anyone presses play.
 <VideoPlayer src="/clip.mp4" fileName="clip.mp4" autoLoad />
 
+// onError gets the failed load. Hand back a new src, like a URL with a
+// fresh token, and it carries on from the same spot without showing
+// the error. It does that once, then leaves it to Try again.
+function Upload({ fileId }: { fileId: string }) {
+  const [src, setSrc] = useState(() => fileUrl(fileId));
+  return <VideoPlayer src={src} onError={() => setSrc(fileUrl(fileId))} />;
+}
+
 // Space or K plays and pauses, the arrow keys skip 5 seconds,
 // M mutes and F goes fullscreen.`
   },

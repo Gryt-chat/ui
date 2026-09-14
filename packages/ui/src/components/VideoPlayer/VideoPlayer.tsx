@@ -11,7 +11,7 @@ import {
   SpeakerX,
   WarningCircle
 } from "@phosphor-icons/react";
-import type { ReactElement, ReactNode } from "react";
+import type { ReactElement, ReactNode, SyntheticEvent } from "react";
 import { Button } from "../Button/Button";
 import { IconButton } from "../IconButton/IconButton";
 import { Spinner } from "../Progress/Progress";
@@ -32,6 +32,11 @@ export interface VideoPlayerProps {
   /** 0 to 100. Leave it out and the player keeps its own. */
   volume?: number;
   onVolumeChange?: (volume: number) => void;
+  /**
+   * The video failed to load or play. Pass a new `src` to recover: the player loads it and carries
+   * on from the same spot, once, and shows the error only if that fails too.
+   */
+  onError?: (event: SyntheticEvent<HTMLVideoElement>) => void;
   className?: string;
 }
 
@@ -51,9 +56,10 @@ export function VideoPlayer({
   autoLoad,
   volume,
   onVolumeChange,
+  onError,
   className
 }: VideoPlayerProps) {
-  const p = useVideoPlayer({ src, autoLoad, volume, onVolumeChange });
+  const p = useVideoPlayer({ src, autoLoad, volume, onVolumeChange, onError });
   const chrome = p.loaded && p.state !== "error";
   const hidden = !p.controlsShown || undefined;
   const atStart = p.state === "idle" || (p.state === "paused" && p.currentTime === 0);

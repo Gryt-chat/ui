@@ -18,6 +18,20 @@ export interface VideoPlayerOptions {
   autoLoad?: boolean;
   volume?: number;
   onVolumeChange?: (volume: number) => void;
+  onError?: (event: SyntheticEvent<HTMLVideoElement>) => void;
+}
+
+interface Failure {
+  src: string;
+  time: number;
+  play: boolean;
+  // An automatic retry was already spent when this one failed.
+  retried: boolean;
+}
+
+interface Resume {
+  time: number;
+  play: boolean;
 }
 
 const HIDE_AFTER_MS = 2500;
@@ -48,18 +62,25 @@ export function useVideoPlayer({
   src,
   autoLoad = false,
   volume,
-  onVolumeChange
+  onVolumeChange,
+  onError
 }: VideoPlayerOptions) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<WebkitVideo | null>(null);
   const hideTimer = useRef<number | null>(null);
   const surfacePress = useRef(false);
+  // A new load rewinds the element to 0 before it can fail, which would lose where it was.
+  const emptied = useRef(false);
 
   const [loaded, setLoaded] = useState(autoLoad);
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [ended, setEnded] = useState(false);
-  const [failed, setFailed] = useState(false);
+  const [failure, setFailure] = useState<Failure | null>(null);
+  const [resume, setResume] = useState<Resume | null>(null);
+  // Where the last automatic retry picked up from, until playback gets past it.
+  const [spentAt, setSpentAt] = useState<number | null>(null);
+  const [lastSrc, setLastSrc] = useState(src);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [buffered, setBuffered] = useState(0);
@@ -73,14 +94,26 @@ export function useVideoPlayer({
 
   const level = clampVolume(volume ?? ownVolume);
   const silent = muted || level === 0;
+  const failed = failure !== null;
+
+  // A new src after a failure is the parent's fix, so pick up where it failed instead of erroring.
+  if (src !== lastSrc) {
+    setLastSrc(src);
+    if (failure && !failure.retried) {
+      setFailure(null);
+      setResume({ time: failure.time, play: failure.play });
+      setSpentAt(failure.time);
+      setLoading(failure.play);
+    }
+  }
 
   // Not a prop: React setting src again, even to the same value, restarts the load.
   useEffect(() => {
     const video = videoRef.current;
-    if (video && loaded && video.getAttribute("src") !== src) {
-      video.src = src;
-    }
-  }, [loaded, src]);
+    if (!video || !loaded || failure || video.getAttribute("src") === src) return;
+    video.src = src;
+    if (resume?.play) void video.play()?.catch(() => setLoading(false));
+  }, [failure, loaded, resume, src]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -142,7 +175,7 @@ export function useVideoPlayer({
     // Synchronous, inside the press: Safari only lets play() have sound from a gesture.
     if (video.getAttribute("src") !== src) video.src = src;
     setLoaded(true);
-    setFailed(false);
+    setFailure(null);
     setLoading(true);
     void video.play()?.catch(() => setLoading(false));
   }, [src]);
@@ -201,11 +234,15 @@ export function useVideoPlayer({
   const retry = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
-    setFailed(false);
+    // Loading again rewinds to 0, so the position is put back once the metadata is in.
+    setResume({ time: failure?.time ?? 0, play: true });
+    setFailure(null);
+    setSpentAt(null);
     setLoading(true);
-    video.load();
+    if (video.getAttribute("src") !== src) video.src = src;
+    else video.load();
     void video.play()?.catch(() => setLoading(false));
-  }, []);
+  }, [failure, src]);
 
   const state: VideoPlayerState = failed
     ? "error"
@@ -301,15 +338,36 @@ export function useVideoPlayer({
       setPlaying(false);
       setEnded(true);
     },
-    onError: () => {
-      setFailed(true);
+    onError: (event: SyntheticEvent<HTMLVideoElement>) => {
+      const video = event.currentTarget;
+      setFailure({
+        src: video.getAttribute("src") ?? src,
+        time: resume?.time ?? (video.currentTime || currentTime),
+        play: playing || !video.paused,
+        retried: spentAt !== null
+      });
+      setResume(null);
       setLoading(false);
       setPlaying(false);
+      onError?.(event);
     },
-    onLoadedMetadata: onDuration,
+    onEmptied: () => {
+      emptied.current = true;
+    },
+    onLoadedMetadata: (event: SyntheticEvent<HTMLVideoElement>) => {
+      const video = event.currentTarget;
+      emptied.current = false;
+      onDuration(event);
+      if (resume && resume.time > 0) video.currentTime = resume.time;
+      setCurrentTime(video.currentTime);
+      setResume(null);
+    },
     onDurationChange: onDuration,
     onTimeUpdate: (event: SyntheticEvent<HTMLVideoElement>) => {
-      setCurrentTime(event.currentTarget.currentTime);
+      if (emptied.current) return;
+      const time = event.currentTarget.currentTime;
+      setCurrentTime(time);
+      if (spentAt !== null && time > spentAt + 1) setSpentAt(null);
       setBuffered(bufferedEnd(event.currentTarget));
     },
     onProgress: (event: SyntheticEvent<HTMLVideoElement>) =>

@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
+import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { GrytProvider } from "../../GrytProvider";
 import { formatTime } from "./formatTime";
@@ -19,6 +20,24 @@ function renderPlayer(props: Partial<VideoPlayerProps> = {}) {
   const controls = () =>
     screen.getByRole("button", { name: /^(Mute|Unmute)$/ }).parentElement!;
   return { ...result, video, root, controls };
+}
+
+// Hands the player a new URL from onError, the way a parent swaps in a fresh file token.
+function FreshTokenPlayer({ onError }: { onError: () => void }) {
+  const [attempt, setAttempt] = useState(0);
+  return (
+    <GrytProvider>
+      <VideoPlayer
+        src={attempt === 0 ? SRC : `${SRC}?try=${attempt}`}
+        fileName="clip.mp4"
+        autoLoad
+        onError={() => {
+          onError();
+          setAttempt((n) => n + 1);
+        }}
+      />
+    </GrytProvider>
+  );
 }
 
 function setDuration(video: HTMLVideoElement, seconds: number) {
@@ -217,6 +236,106 @@ describe("VideoPlayer", () => {
     expect(load).toHaveBeenCalled();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(root).toHaveAttribute("data-state", "loading");
+  });
+
+  it("keeps the position when trying again", () => {
+    const { video, root } = renderPlayer({ autoLoad: true });
+    vi.spyOn(video, "load").mockImplementation(() => undefined);
+    setDuration(video, 60);
+    fireEvent.click(screen.getByRole("button", { name: "Play video" }));
+    setTime(video, 20);
+
+    fireEvent.error(video);
+    fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+    // A real load rewinds to 0 before the metadata comes back.
+    video.currentTime = 0;
+    fireEvent.loadedMetadata(video);
+    fireEvent.canPlay(video);
+
+    expect(video.currentTime).toBe(20);
+    expect(root).toHaveAttribute("data-state", "playing");
+  });
+
+  it("reports an error and recovers from the same spot when src changes", () => {
+    const onError = vi.fn();
+    const { container } = render(<FreshTokenPlayer onError={onError} />);
+    const video = container.querySelector("video")!;
+    const root = screen.getByRole("group", { name: "clip.mp4" });
+    setDuration(video, 60);
+    fireEvent.click(screen.getByRole("button", { name: "Play video" }));
+    setTime(video, 30);
+    vi.mocked(HTMLMediaElement.prototype.play).mockClear();
+
+    fireEvent.error(video);
+
+    expect(onError).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(video).toHaveAttribute("src", `${SRC}?try=1`);
+    expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
+
+    video.currentTime = 0;
+    fireEvent.loadedMetadata(video);
+    expect(video.currentTime).toBe(30);
+    expect(root).toHaveAttribute("data-state", "playing");
+  });
+
+  it("stays paused when it recovers a paused video", () => {
+    const next = "https://example.test/clip.mp4?token=fresh";
+    const { video, root, rerender } = renderPlayer({ autoLoad: true });
+    setDuration(video, 60);
+    setTime(video, 12);
+
+    fireEvent.error(video);
+    rerender(
+      <GrytProvider>
+        <VideoPlayer src={next} fileName="clip.mp4" />
+      </GrytProvider>
+    );
+
+    expect(video).toHaveAttribute("src", next);
+    expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
+    fireEvent.loadedMetadata(video);
+    expect(video.currentTime).toBe(12);
+    expect(root).toHaveAttribute("data-state", "paused");
+  });
+
+  it("retries on its own only once, even if src keeps changing", () => {
+    const onError = vi.fn();
+    const { container } = render(<FreshTokenPlayer onError={onError} />);
+    const video = container.querySelector("video")!;
+    const root = screen.getByRole("group", { name: "clip.mp4" });
+    fireEvent.click(screen.getByRole("button", { name: "Play video" }));
+
+    fireEvent.error(video);
+    expect(video).toHaveAttribute("src", `${SRC}?try=1`);
+    fireEvent.error(video);
+
+    expect(onError).toHaveBeenCalledTimes(2);
+    expect(root).toHaveAttribute("data-state", "error");
+    // The newest src waits for Try again rather than loading behind the error.
+    expect(video).toHaveAttribute("src", `${SRC}?try=1`);
+
+    fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+    expect(video).toHaveAttribute("src", `${SRC}?try=2`);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("retries on its own again once playback gets past the last failure", () => {
+    const onError = vi.fn();
+    const { container } = render(<FreshTokenPlayer onError={onError} />);
+    const video = container.querySelector("video")!;
+    setDuration(video, 60);
+    fireEvent.click(screen.getByRole("button", { name: "Play video" }));
+    setTime(video, 10);
+
+    fireEvent.error(video);
+    fireEvent.loadedMetadata(video);
+    setTime(video, 25);
+    fireEvent.error(video);
+
+    expect(onError).toHaveBeenCalledTimes(2);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(video).toHaveAttribute("src", `${SRC}?try=2`);
   });
 
   it("hides the controls while playing and brings them back on movement", () => {

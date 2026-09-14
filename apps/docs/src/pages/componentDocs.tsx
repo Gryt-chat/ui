@@ -1036,9 +1036,11 @@ const SCROLL_ROWS = [
 // The mic level a client would feed from an analyser node. Driven here on an
 // interval so the meter is doing the thing it exists for rather than sitting
 // at a fixed number.
-// One volume shared by all three, the way the client ties players to its media volume setting.
+// One volume shared by all of them, the way the client ties players to its media volume setting.
 function VideoPlayerExample() {
   const [volume, setVolume] = useState(80);
+  // Starts on a missing file, so the first play fails and onError swaps in the real one.
+  const [src, setSrc] = useState("/missing-video.mp4");
 
   return (
     <div className="grid w-full gap-6">
@@ -1057,6 +1059,15 @@ function VideoPlayerExample() {
             src="/video-demo.mp4"
             fileName="sample-clip.mp4"
             autoLoad
+            volume={volume}
+            onVolumeChange={setVolume}
+          />
+        </ExampleBlock>
+        <ExampleBlock title="onError hands back a working src">
+          <VideoPlayer
+            src={src}
+            fileName="sample-clip.mp4"
+            onError={() => setSrc("/video-demo.mp4")}
             volume={volume}
             onVolumeChange={setVolume}
           />
