@@ -61,7 +61,8 @@ export interface ComponentDoc {
     | "number-field"
     | "otp-field"
     | "preview-card"
-    | "toolbar";
+    | "toolbar"
+    | "video-player";
   code: string;
 }
 
@@ -110,7 +111,8 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "Badge", slug: "badge" },
       { name: "Chip", slug: "chip" },
       { name: "Tooltip", slug: "tooltip" },
-      { name: "Divider", slug: "divider" }
+      { name: "Divider", slug: "divider" },
+      { name: "VideoPlayer", slug: "video-player" }
     ]
   },
   {
@@ -422,6 +424,37 @@ function RadioExample() {
     code: `import { Divider } from "@gryt/ui";
 
 <Divider />`
+  },
+  {
+    slug: "video-player",
+    name: "VideoPlayer",
+    description:
+      "Plays a video attachment with its own controls. It shows the poster and fetches nothing until someone presses play, unless you pass autoLoad.",
+    importName: "VideoPlayer",
+    preview: "video-player",
+    code: `import { VideoPlayer } from "@gryt/ui";
+import { useState } from "react";
+
+function Attachment() {
+  const [volume, setVolume] = useState(80);
+
+  return (
+    <VideoPlayer
+      src="/clip.mp4"
+      poster="/clip.jpg"
+      fileName="clip.mp4"
+      volume={volume}
+      onVolumeChange={setVolume}
+    />
+  );
+}
+
+// autoLoad attaches src straight away, so the first frame and the
+// length show before anyone presses play.
+<VideoPlayer src="/clip.mp4" fileName="clip.mp4" autoLoad />
+
+// Space or K plays and pauses, the arrow keys skip 5 seconds,
+// M mutes and F goes fullscreen.`
   },
   {
     slug: "alert",

@@ -30,7 +30,7 @@ export type DrawingKind =
   | "toast" | "scroll-area"
   | "alert-dialog" | "collapsible" | "checkbox-group" | "number-field"
   | "otp-field" | "combobox" | "preview-card" | "toolbar" | "menubar"
-  | "navigation-menu" | "form" | "fieldset";
+  | "navigation-menu" | "form" | "fieldset" | "video-player";
 
 // Satori accepts a React-like tree of plain objects.
 type Style = Record<string, string | number>;
@@ -284,6 +284,16 @@ export function drawing(kind: DrawingKind): Node {
           border: `1.5px solid ${C.rule}`, borderLeft: `4px solid ${C.accent}` },
         [circle(12, C.accent), col({ gap: 8 }, [bar(150, 9, C.ink2), bar(220, 9, C.rule)])]
       );
+
+    case "video-player":
+      return col({ gap: 0, width: 320 }, [
+        el(
+          { width: 320, height: 180, borderRadius: 14, backgroundColor: C.paper3,
+            alignItems: "center", justifyContent: "center" },
+          [circle(56, C.accent)]
+        ),
+        row({ marginTop: 14 }, [bar(130, 8, C.accent), bar(190, 8, C.rule)])
+      ]);
 
     case "progress":
       return col({ gap: 14, width: 300 }, [

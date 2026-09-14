@@ -116,6 +116,9 @@ export { Switch } from "./components/Switch/Switch";
 export type { SwitchProps } from "./components/Switch/Switch";
 export { Slider } from "./components/Slider/Slider";
 export type { SliderProps } from "./components/Slider/Slider";
+export { VideoPlayer } from "./components/VideoPlayer/VideoPlayer";
+export type { VideoPlayerProps } from "./components/VideoPlayer/VideoPlayer";
+export type { VideoPlayerState } from "./components/VideoPlayer/useVideoPlayer";
 export { Select } from "./components/Select/Select";
 export type {
   SelectOption,

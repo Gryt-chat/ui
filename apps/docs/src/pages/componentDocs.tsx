@@ -50,6 +50,7 @@ import {
   Toggle,
   ToggleGroup,
   Tooltip,
+  VideoPlayer,
   useToastManager
 } from "@gryt/ui";
 import { avatarSeed } from "@gryt/owl";
@@ -469,6 +470,8 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
           <span />
         </div>
       );
+    case "video-player":
+      return <VideoPlayerExample />;
     case "divider":
       return (
         <div className="w-full">
@@ -1033,6 +1036,63 @@ const SCROLL_ROWS = [
 // The mic level a client would feed from an analyser node. Driven here on an
 // interval so the meter is doing the thing it exists for rather than sitting
 // at a fixed number.
+// One volume shared by all three, the way the client ties players to its media volume setting.
+function VideoPlayerExample() {
+  const [volume, setVolume] = useState(80);
+
+  return (
+    <div className="grid w-full gap-6">
+      <div className="grid gap-6 md:grid-cols-2">
+        <ExampleBlock title="Click to load">
+          <VideoPlayer
+            src="/video-demo.mp4"
+            poster="/video-demo-poster.jpg"
+            fileName="owl-flyby.mp4"
+            volume={volume}
+            onVolumeChange={setVolume}
+          />
+        </ExampleBlock>
+        <ExampleBlock title="autoLoad">
+          <VideoPlayer
+            src="/video-demo.mp4"
+            fileName="owl-flyby.mp4"
+            autoLoad
+            volume={volume}
+            onVolumeChange={setVolume}
+          />
+        </ExampleBlock>
+        <ExampleBlock title="Can't be played">
+          <VideoPlayer
+            src="/missing-video.mp4"
+            fileName="missing.mp4"
+            autoLoad
+            volume={volume}
+            onVolumeChange={setVolume}
+          />
+        </ExampleBlock>
+      </div>
+      <p className="m-0 text-sm text-gryt-muted">Volume: {volume}%</p>
+    </div>
+  );
+}
+
+function ExampleBlock({
+  title,
+  children
+}: {
+  title: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="grid content-start gap-2">
+      <p className="m-0 text-xs font-semibold uppercase tracking-wider text-gryt-muted">
+        {title}
+      </p>
+      {children}
+    </div>
+  );
+}
+
 function ContextMenuExample() {
   const [notifications, setNotifications] = useState("mentions");
 
