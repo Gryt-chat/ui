@@ -29,7 +29,9 @@ RUN bun install --frozen-lockfile
 COPY . .
 RUN bun --filter @gryt/docs build
 
-FROM nginx:alpine
+# nginx.conf is written on the build machine and copied into the final image, which
+# then has no RUN, so an arm64 image builds on an amd64 builder without emulation.
+FROM --platform=$BUILDPLATFORM alpine:3.22 AS nginx-conf
 
 RUN printf '%s\n' \
   'events { worker_connections 1024; }' \
@@ -70,8 +72,11 @@ RUN printf '%s\n' \
   '    location = /404.html { internal; }' \
   '    location /health { return 200 "healthy"; add_header Content-Type text/plain; }' \
   '  }' \
-  '}' > /etc/nginx/nginx.conf
+  '}' > /nginx.conf
 
+FROM nginx:alpine
+
+COPY --from=nginx-conf /nginx.conf /etc/nginx/nginx.conf
 COPY --from=builder /app/apps/docs/dist /usr/share/nginx/html
 
 EXPOSE 80
