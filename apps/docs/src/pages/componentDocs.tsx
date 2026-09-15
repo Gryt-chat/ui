@@ -51,6 +51,7 @@ import {
   ToggleGroup,
   Tooltip,
   VideoPlayer,
+  WebhookCard,
   useToastManager
 } from "@gryt/ui";
 import { avatarSeed } from "@gryt/owl";
@@ -472,6 +473,8 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
       );
     case "video-player":
       return <VideoPlayerExample />;
+    case "webhook-card":
+      return <WebhookCardExample />;
     case "divider":
       return (
         <div className="w-full">
@@ -1083,6 +1086,93 @@ function VideoPlayerExample() {
         </ExampleBlock>
       </div>
       <p className="m-0 text-sm text-gryt-muted">Volume: {volume}%</p>
+    </div>
+  );
+}
+
+const sampleCard = {
+  author: {
+    name: "Build runner",
+    url: "https://example.com/runner",
+    iconUrl: "/webhook-cards/sample-icon.png"
+  },
+  title: "Deploy finished: api v2.14.0",
+  url: "https://example.com/deploys/2140",
+  description:
+    "Rolled out to eu-north and us-east in 4 minutes.\nTwo migrations ran, 0047_threads took the longest.",
+  color: "#3fb27f",
+  fields: [
+    { name: "Environment", value: "production", inline: true },
+    { name: "Commit", value: "a1b2c3d", inline: true },
+    { name: "Duration", value: "4m 12s", inline: true },
+    {
+      name: "Changes",
+      value:
+        "Thread replies keep their scroll position.\nUploads over 50 MB resume after a dropped connection."
+    }
+  ],
+  thumbnailUrl: "/webhook-cards/sample-thumb.jpg",
+  imageUrl: "/webhook-cards/sample-image.jpg",
+  footer: { text: "ci.example.com", iconUrl: "/webhook-cards/sample-icon.png" },
+  timestamp: "2026-09-15T07:42:00Z"
+};
+
+const statusFields = [
+  ["api", "200 · 84 ms"],
+  ["auth", "503 · timeout"],
+  ["sfu-eu", "200 · 31 ms"],
+  ["sfu-us", "200 · 122 ms"],
+  ["uploads", "502 · bad gateway"],
+  ["docs", "200 · 19 ms"],
+  ["reports", "200 · 40 ms"],
+  ["tasks", "timeout after 10 s"]
+].map(([name, value]) => ({ name, value, inline: true }));
+
+// Three payloads a webhook really sends: everything, the least, and a wall of fields.
+function WebhookCardExample() {
+  return (
+    <div className="grid w-full gap-6 md:grid-cols-2">
+      <ExampleBlock title="Every part">
+        <WebhookCard card={sampleCard} />
+      </ExampleBlock>
+      <div className="grid content-start gap-6">
+        <ExampleBlock title="Title and description">
+          <WebhookCard
+            card={{
+              title: "Backup completed",
+              description:
+                "Nightly snapshot of the media bucket finished without errors. 18.4 GB, 212 new files."
+            }}
+          />
+        </ExampleBlock>
+        <ExampleBlock title="Lots of fields">
+          <WebhookCard
+            card={{
+              author: { name: "Uptime check" },
+              title: "2 of 8 checks failing",
+              url: "https://example.com/status",
+              color: "#e5484d",
+              fields: [
+                ...statusFields,
+                {
+                  name: "Last healthy",
+                  value: "07:31 UTC, 11 minutes before the first failure"
+                }
+              ],
+              footer: { text: "Checked every 60 s" },
+              timestamp: "2026-09-15T07:42:00Z"
+            }}
+          />
+        </ExampleBlock>
+        <ExampleBlock title="A picture that failed">
+          <WebhookCard
+            card={{
+              title: "Weekly traffic",
+              imageUrl: "/webhook-cards/missing.jpg"
+            }}
+          />
+        </ExampleBlock>
+      </div>
     </div>
   );
 }

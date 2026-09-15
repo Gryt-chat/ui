@@ -30,7 +30,7 @@ export type DrawingKind =
   | "toast" | "scroll-area"
   | "alert-dialog" | "collapsible" | "checkbox-group" | "number-field"
   | "otp-field" | "combobox" | "preview-card" | "toolbar" | "menubar"
-  | "navigation-menu" | "form" | "fieldset" | "video-player";
+  | "navigation-menu" | "form" | "fieldset" | "video-player" | "webhook-card";
 
 // Satori accepts a React-like tree of plain objects.
 type Style = Record<string, string | number>;
@@ -284,6 +284,14 @@ export function drawing(kind: DrawingKind): Node {
           border: `1.5px solid ${C.rule}`, borderLeft: `4px solid ${C.accent}` },
         [circle(12, C.accent), col({ gap: 8 }, [bar(150, 9, C.ink2), bar(220, 9, C.rule)])]
       );
+
+    case "webhook-card":
+      return col({ gap: 12, width: 340, padding: 18, borderRadius: 12, border: `2px solid ${C.rule}` }, [
+        row({ gap: 10, alignItems: "center" }, [circle(12, C.accent), bar(110, 8, C.rule)]),
+        bar(220, 12, C.accent),
+        bar(300, 8, C.rule),
+        row({ gap: 8 }, [bar(90, 22, C.paper3), bar(90, 22, C.paper3), bar(70, 22, C.paper3)])
+      ]);
 
     case "video-player":
       return col({ gap: 0, width: 320 }, [
