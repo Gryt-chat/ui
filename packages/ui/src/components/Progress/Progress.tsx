@@ -1,3 +1,5 @@
+"use client";
+
 import { Progress as BaseProgress } from "@base-ui/react/progress";
 import { CircleNotch } from "@phosphor-icons/react";
 import type { ComponentPropsWithoutRef } from "react";

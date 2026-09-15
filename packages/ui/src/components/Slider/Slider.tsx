@@ -1,3 +1,5 @@
+"use client";
+
 import { Slider as BaseSlider } from "@base-ui/react/slider";
 import { useEffect, useRef, useState } from "react";
 import type { ComponentPropsWithoutRef, PointerEvent as ReactPointerEvent } from "react";

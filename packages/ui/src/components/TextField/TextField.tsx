@@ -1,3 +1,5 @@
+"use client";
+
 import { Field } from "@base-ui/react/field";
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";

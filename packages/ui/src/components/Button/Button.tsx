@@ -1,3 +1,5 @@
+"use client";
+
 import { Button as BaseButton } from "@base-ui/react/button";
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";

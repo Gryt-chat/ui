@@ -94,6 +94,9 @@ jobs:
       - run: bunx @arethetypeswrong/cli --pack packages/theme
       - run: bunx @arethetypeswrong/cli --pack packages/owl
       - run: bunx @arethetypeswrong/cli --pack packages/ui --exclude-entrypoints ./styles.css --exclude-entrypoints ./theme.css --exclude-entrypoints ./components.css
+      # attw skips the ./* pattern, so two component subpaths are named. node10 predates
+      # exports, and there are too many subpaths to give each a stub directory like ./theme.
+      - run: bunx @arethetypeswrong/cli --pack packages/ui --profile node16 --entrypoints ./button ./video-player
 
       # ui-native is ESM only, so cjs-resolves-to-esm is the intended shape. The rest is
       # on: it caught the extensionless imports tsc emits, which only Metro resolved.

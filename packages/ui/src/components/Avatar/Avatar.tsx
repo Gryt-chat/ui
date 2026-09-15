@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar as BaseAvatar } from "@base-ui/react/avatar";
 import { eggAvatarDataUri, owlAvatarDataUri } from "@gryt/owl";
 import { forwardRef, useMemo } from "react";

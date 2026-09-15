@@ -1,3 +1,5 @@
+"use client";
+
 import { TextField } from "../TextField/TextField";
 import { Warning } from "@phosphor-icons/react";
 import { useId, useState } from "react";

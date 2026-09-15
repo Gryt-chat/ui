@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Choosing what your owl looks like, instead of only what your name hashes to. Options are
  * drawn, never named: `eyes-eyelashes-surprised` in a dropdown tells nobody anything.

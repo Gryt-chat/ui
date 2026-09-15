@@ -1,3 +1,5 @@
+"use client";
+
 import { AlertDialog as BaseAlertDialog } from "@base-ui/react/alert-dialog";
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";

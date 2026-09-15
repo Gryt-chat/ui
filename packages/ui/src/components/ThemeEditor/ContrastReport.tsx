@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "../Button/Button";
 import { Check, Warning, X } from "@phosphor-icons/react";
 import type { ContrastCheck } from "./contrast";

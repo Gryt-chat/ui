@@ -1,3 +1,5 @@
+"use client";
+
 import { OTPField as BaseOtpField } from "@base-ui/react/otp-field";
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";

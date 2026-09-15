@@ -1,3 +1,5 @@
+"use client";
+
 import { Drawer as BaseDrawer } from "@base-ui/react/drawer";
 import { createContext, forwardRef, useContext } from "react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";

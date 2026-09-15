@@ -92,6 +92,20 @@ private, and consumes the workspace package through Vite.
 `bun run build:lib` names the two libraries rather than building everything,
 because the docs app blocked a publish once.
 
+## Adding a component
+
+Add a file to `packages/ui/src/entries`, named after the component in kebab case. It exports the same names as the component's lines in `src/index.ts`:
+
+```ts
+// packages/ui/src/entries/webhook-card.ts
+export { WebhookCard } from "../components/WebhookCard/WebhookCard";
+export type { WebhookCardProps } from "../components/WebhookCard/WebhookCard";
+```
+
+That file is the whole step. The build picks it up and it ships as `@gryt/ui/webhook-card`. `src/entries.test.ts` fails if a folder in `src/components` has no entry, or if the root exports something no entry does.
+
+If the component uses hooks, context, event handlers, Base UI or Phosphor, start the file with `"use client";`. The same test checks that as well.
+
 ## React Native
 
 `packages/ui-native` renders the same tokens through React Native. It imports

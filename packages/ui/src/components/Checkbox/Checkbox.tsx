@@ -1,3 +1,5 @@
+"use client";
+
 import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
 import { Check } from "@phosphor-icons/react";
 import { forwardRef } from "react";

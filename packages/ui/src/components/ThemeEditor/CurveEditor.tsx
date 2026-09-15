@@ -1,3 +1,5 @@
+"use client";
+
 import type { GrytBezier } from "@gryt/theme";
 import { useCallback, useRef, useState } from "react";
 

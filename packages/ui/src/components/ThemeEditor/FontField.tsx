@@ -1,3 +1,5 @@
+"use client";
+
 import type { GrytFontKey, GrytFonts } from "@gryt/theme";
 import { grytFonts, isFontStack } from "@gryt/theme";
 import { useState } from "react";

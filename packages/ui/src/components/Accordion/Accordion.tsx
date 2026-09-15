@@ -1,3 +1,5 @@
+"use client";
+
 import { Accordion as BaseAccordion } from "@base-ui/react/accordion";
 import { CaretDown } from "@phosphor-icons/react";
 import { forwardRef } from "react";

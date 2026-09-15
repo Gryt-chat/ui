@@ -1,3 +1,5 @@
+"use client";
+
 import type { GrytBezier, GrytMotion, GrytMotionCurve } from "@gryt/theme";
 import {
   GRYT_MOTION_SCALE_MAX,

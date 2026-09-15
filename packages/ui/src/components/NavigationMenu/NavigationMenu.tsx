@@ -1,3 +1,5 @@
+"use client";
+
 import { Menubar as BaseMenubar } from "@base-ui/react/menubar";
 import { NavigationMenu as BaseNavigationMenu } from "@base-ui/react/navigation-menu";
 import { forwardRef } from "react";

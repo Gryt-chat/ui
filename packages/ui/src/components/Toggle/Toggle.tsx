@@ -1,3 +1,5 @@
+"use client";
+
 import { Toggle as BaseToggle } from "@base-ui/react/toggle";
 import { ToggleGroup as BaseToggleGroup } from "@base-ui/react/toggle-group";
 import { forwardRef } from "react";
