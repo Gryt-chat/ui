@@ -102,7 +102,9 @@ export function Select({
             sizeStyles[size]
           )}
         >
-          <BaseSelect.Value placeholder={placeholder} />
+          {/* min-w-0 here and not on the wrapper, where two Selects in one row split it
+              evenly and cut off the longer label. A caller that needs the Select to shrink adds it. */}
+          <BaseSelect.Value className="min-w-0 truncate" placeholder={placeholder} />
           <BaseSelect.Icon className="shrink-0 text-gryt-muted">
             <CaretUpDown size={16} />
           </BaseSelect.Icon>
