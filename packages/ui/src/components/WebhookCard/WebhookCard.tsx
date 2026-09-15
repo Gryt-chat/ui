@@ -190,6 +190,8 @@ export const WebhookCard = forwardRef<HTMLElement, WebhookCardProps>(
       card.color && HEX_COLOR.test(card.color) ? card.color : undefined;
     const markdown = (text: string) =>
       renderMarkdown ? renderMarkdown(text) : text;
+    // Plain text keeps its line breaks. A markdown renderer draws its own, so pre-line would double them.
+    const lines = renderMarkdown ? undefined : "whitespace-pre-line";
     const time = card.timestamp ? formatTimestamp(card.timestamp) : "";
     const fields = card.fields?.length ? card.fields : null;
 
@@ -260,7 +262,7 @@ export const WebhookCard = forwardRef<HTMLElement, WebhookCardProps>(
         ) : null}
 
         {card.description ? (
-          <div className="gryt-webhook-card-description min-w-0 text-sm leading-6 break-words whitespace-pre-line">
+          <div className={cn("gryt-webhook-card-description min-w-0 text-sm leading-6 break-words", lines)}>
             {markdown(card.description)}
           </div>
         ) : null}
@@ -276,7 +278,7 @@ export const WebhookCard = forwardRef<HTMLElement, WebhookCardProps>(
                 )}
               >
                 <dt className="shrink-0 text-gryt-muted">{field.name}</dt>
-                <dd className="min-w-0 break-words whitespace-pre-line text-gryt-text">
+                <dd className={cn("min-w-0 break-words text-gryt-text", lines)}>
                   {markdown(field.value)}
                 </dd>
               </div>

@@ -66,9 +66,14 @@ describe("WebhookCard", () => {
     expect(screen.getByText("md:Two fixes")).toBeInTheDocument();
   });
 
-  it("shows plain text when there is no markdown renderer", () => {
+  it("shows plain text with its line breaks when there is no markdown renderer", () => {
     renderCard();
-    expect(screen.getByText("Rolled out in **4 minutes**.")).toBeInTheDocument();
+    expect(screen.getByText("Rolled out in **4 minutes**.")).toHaveClass("whitespace-pre-line");
+  });
+
+  it("leaves line breaks to the markdown renderer when there is one", () => {
+    const { container } = renderCard({ renderMarkdown: (text) => <p>{text}</p> });
+    expect(container.querySelector(".whitespace-pre-line")).toBeNull();
   });
 
   it("uses the colour for the dot only, and ignores one that is not #rrggbb", () => {
