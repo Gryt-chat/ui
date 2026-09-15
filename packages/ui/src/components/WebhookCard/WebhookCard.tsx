@@ -1,3 +1,5 @@
+"use client";
+
 import { ImageBroken } from "@phosphor-icons/react";
 import { forwardRef, useState } from "react";
 import type { CSSProperties, HTMLAttributes, MouseEvent, ReactNode } from "react";
