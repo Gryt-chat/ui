@@ -1,3 +1,5 @@
+"use client";
+
 import { Select as BaseSelect } from "@base-ui/react/select";
 import { CaretUpDown, Check } from "@phosphor-icons/react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";

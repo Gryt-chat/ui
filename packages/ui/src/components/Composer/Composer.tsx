@@ -1,3 +1,5 @@
+"use client";
+
 import { PaperPlaneTilt } from "@phosphor-icons/react";
 import { useCallback, useLayoutEffect, useRef } from "react";
 import type {

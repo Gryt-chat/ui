@@ -55,6 +55,17 @@ for (const filePath of await declarationFiles(distDir)) {
 await copyFile(indexDtsPath, indexDCtsPath);
 await copyFile(themeDtsPath, themeDCtsPath);
 
+// Each component subpath gets the same .d.cts twin, for the same reason.
+const entriesDir = resolve(distDir, "entries");
+for (const file of await readdir(entriesDir)) {
+  if (file.endsWith(".d.ts")) {
+    await copyFile(
+      resolve(entriesDir, file),
+      resolve(entriesDir, file.replace(/\.d\.ts$/, ".d.cts"))
+    );
+  }
+}
+
 // Copied verbatim rather than built: Tailwind resolves @theme into :root variables, and a
 // consumer that wants bg-gryt-accent in its own app needs the @theme block intact.
 await copyFile(themeSourcePath, themeDistPath);

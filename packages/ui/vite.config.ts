@@ -1,7 +1,9 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import { resolve } from "node:path";
+import { readdirSync } from "node:fs";
+import { basename, resolve } from "node:path";
 import { defineConfig } from "vite";
+import type { Plugin } from "vite";
 import dts from "vite-plugin-dts";
 
 import pkg from "./package.json" with { type: "json" };
@@ -16,10 +18,45 @@ const bundledExternally = [
   ...Object.keys(pkg.peerDependencies ?? {})
 ];
 
+// Every file in src/entries is a subpath: src/entries/button.ts ships as @gryt/ui/button.
+const componentEntries = Object.fromEntries(
+  readdirSync(resolve(__dirname, "src/entries"))
+    .filter((file) => file.endsWith(".ts"))
+    .map((file) => [
+      `entries/${basename(file, ".ts")}`,
+      resolve(__dirname, "src/entries", file)
+    ])
+);
+
+// Rollup drops module-level directives, so "use client" is put back on each module that had it.
+function keepUseClient(): Plugin {
+  const clientModules = new Set<string>();
+  return {
+    name: "gryt:keep-use-client",
+    transform(code, id) {
+      if (/^\s*["']use client["']/.test(code)) clientModules.add(id);
+      return null;
+    },
+    onLog(level, log) {
+      if (
+        log.code === "MODULE_LEVEL_DIRECTIVE" &&
+        log.message.includes("use client")
+      )
+        return false;
+    },
+    banner(chunk) {
+      return chunk.moduleIds.some((id) => clientModules.has(id))
+        ? '"use client";'
+        : "";
+    }
+  };
+}
+
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    keepUseClient(),
     dts({
       insertTypesEntry: true,
       // tsconfig.build.json, not tsconfig.json: the typecheck config maps @gryt/theme to
@@ -34,7 +71,8 @@ export default defineConfig({
       // components in — React Native can take the tokens and none of the rest (GRYT-351).
       entry: {
         index: resolve(__dirname, "src/index.ts"),
-        theme: resolve(__dirname, "src/theme/index.ts")
+        theme: resolve(__dirname, "src/theme/index.ts"),
+        ...componentEntries
       },
       formats: ["es", "cjs"],
       fileName: (format, entryName) =>
@@ -44,6 +82,9 @@ export default defineConfig({
       external: (id) =>
         bundledExternally.some((dep) => id === dep || id.startsWith(`${dep}/`)),
       output: {
+        // One file per source module, so a bundler can drop what a page never imports.
+        preserveModules: true,
+        preserveModulesRoot: "src",
         assetFileNames: (assetInfo) =>
           assetInfo.name?.endsWith(".css")
             ? "styles.css"

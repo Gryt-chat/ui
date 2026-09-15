@@ -24,7 +24,7 @@
     "voice-chat"
   ],
   "sideEffects": [
-    "./dist/styles.css"
+    "*.css"
   ],
   "files": [
     "dist",
@@ -58,7 +58,17 @@
     "./styles.css": "./dist/styles.css",
     "./components.css": "./dist/components.css",
     "./theme.css": "./dist/theme.css",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./*": {
+      "import": {
+        "types": "./dist/entries/*.d.ts",
+        "default": "./dist/entries/*.js"
+      },
+      "require": {
+        "types": "./dist/entries/*.d.cts",
+        "default": "./dist/entries/*.cjs"
+      }
+    }
   },
   "publishConfig": {
     "access": "public"

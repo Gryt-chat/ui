@@ -1,3 +1,5 @@
+"use client";
+
 import { CheckboxGroup as BaseCheckboxGroup } from "@base-ui/react/checkbox-group";
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";

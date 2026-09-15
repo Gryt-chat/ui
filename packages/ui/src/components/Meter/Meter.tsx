@@ -1,3 +1,5 @@
+"use client";
+
 import { Meter as BaseMeter } from "@base-ui/react/meter";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { cn } from "../utils/cn";

@@ -1,3 +1,5 @@
+"use client";
+
 import { Toast as BaseToast } from "@base-ui/react/toast";
 import { X } from "@phosphor-icons/react";
 import { forwardRef } from "react";

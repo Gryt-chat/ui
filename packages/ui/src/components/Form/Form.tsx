@@ -1,3 +1,5 @@
+"use client";
+
 import { Form as BaseForm } from "@base-ui/react/form";
 import { Fieldset as BaseFieldset } from "@base-ui/react/fieldset";
 import { forwardRef } from "react";

@@ -1,3 +1,5 @@
+"use client";
+
 import { Tooltip } from "@base-ui/react/tooltip";
 import { useRef } from "react";
 import type { CSSProperties, ReactNode } from "react";

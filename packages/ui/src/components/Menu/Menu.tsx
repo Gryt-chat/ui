@@ -1,3 +1,5 @@
+"use client";
+
 import { Menu as BaseMenu } from "@base-ui/react/menu";
 import { CaretRight, Check } from "@phosphor-icons/react";
 import { forwardRef } from "react";

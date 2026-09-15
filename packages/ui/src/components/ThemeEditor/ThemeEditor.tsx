@@ -1,3 +1,5 @@
+"use client";
+
 /* The theme controls, as a component rather than as a page, so the docs site and the
  * client mount the same one. The preview, the address bar and export are the host's. */
 import type { GrytAppearance, GrytFontKey, GrytMotion } from "@gryt/theme";

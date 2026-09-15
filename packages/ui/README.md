@@ -105,6 +105,21 @@ Includes Base UI-backed primitives for buttons, inputs, selects, tabs, menus, di
 
 The package also exports `GrytProvider`, `createGrytTheme`, and `grytTokens` for apps that need a consistent Gryt theme boundary.
 
+## Importing one component
+
+Every component has its own entry point too. The name is the component in kebab case.
+
+```tsx
+import { Button } from "@gryt/ui/button";
+import { VideoPlayer } from "@gryt/ui/video-player";
+```
+
+`@gryt/ui` still works and exports everything. Both paths load the same files, so a bundler that tree-shakes only ships what you use either way.
+
+Interactive components carry `"use client"`, so a Next.js server component can import them. On webpack, import from the subpath in server components, or add `@gryt/ui` to `experimental.optimizePackageImports`. Without that, a root import from a server component pulls in every component. Turbopack doesn't have this problem.
+
+Subpath types need `moduleResolution` set to `bundler`, `node16` or `nodenext`. The old `node` setting only resolves `@gryt/ui` and `@gryt/ui/theme`.
+
 ## Styles
 
 `@gryt/ui/styles.css` contains the compiled component styles. Import it once globally; do not import it inside every component.

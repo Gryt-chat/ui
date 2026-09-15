@@ -1,3 +1,5 @@
+"use client";
+
 import { PreviewCard as BasePreviewCard } from "@base-ui/react/preview-card";
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";

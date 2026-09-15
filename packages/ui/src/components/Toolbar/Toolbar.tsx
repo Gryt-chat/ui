@@ -1,3 +1,5 @@
+"use client";
+
 import { Toolbar as BaseToolbar } from "@base-ui/react/toolbar";
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
