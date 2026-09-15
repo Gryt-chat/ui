@@ -241,7 +241,18 @@ function SelectExample() {
       ]}
     />
   );
-}`
+}
+
+// A label wider than the Select ends in an ellipsis. In a flex row, give the
+// Select min-w-0 too, or it'll widen to fit the label.
+<Select
+  label="Channel"
+  defaultValue="deploys"
+  options={[
+    { label: "# general", value: "general" },
+    { label: "# deployment-notifications-from-the-production-cluster", value: "deploys" }
+  ]}
+/>`
   },
   {
     slug: "checkbox",

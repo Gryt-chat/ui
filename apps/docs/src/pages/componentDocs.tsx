@@ -225,7 +225,7 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
       );
     case "select":
       return (
-        <div className="grid w-full gap-4 md:grid-cols-2">
+        <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
           <Select
             label="Input device"
             value={inputDevice}
@@ -244,6 +244,17 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
               { label: "Speakers", value: "speakers" },
               { label: "Headphones", value: "headphones" },
               { label: "Unavailable display", value: "display", disabled: true }
+            ]}
+          />
+          <Select
+            label="Channel"
+            defaultValue="deploys"
+            options={[
+              { label: "# general", value: "general" },
+              {
+                label: "# deployment-notifications-from-the-production-cluster",
+                value: "deploys"
+              }
             ]}
           />
         </div>

@@ -62,3 +62,34 @@ describe("Select with groups", () => {
     expect(screen.getByText("Large")).toBeInTheDocument();
   });
 });
+
+// happy-dom does no layout, so this checks the classes. What they do was measured in
+// Chrome, on the Select docs page at 390px.
+describe("Select with a long label", () => {
+  const LONG = "# deployment-notifications-from-the-production-cluster";
+
+  it("truncates the label instead of widening the trigger", () => {
+    render(
+      <GrytProvider>
+        <Select
+          aria-label="Channel"
+          options={[
+            { label: "# general", value: "general" },
+            { label: LONG, value: "deploys" }
+          ]}
+          value="deploys"
+        />
+      </GrytProvider>
+    );
+    expect(screen.getByText(LONG)).toHaveClass("min-w-0", "truncate");
+  });
+
+  it("truncates the placeholder the same way", () => {
+    render(
+      <GrytProvider>
+        <Select aria-label="Channel" options={[]} placeholder={LONG} />
+      </GrytProvider>
+    );
+    expect(screen.getByText(LONG)).toHaveClass("min-w-0", "truncate");
+  });
+});
