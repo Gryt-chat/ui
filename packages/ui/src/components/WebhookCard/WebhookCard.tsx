@@ -123,12 +123,12 @@ function CardImage({ src, className, small, onPress }: CardImageProps) {
     <div
       data-state={status}
       className={cn(
-        "gryt-webhook-card-image relative overflow-hidden rounded-(--gryt-radius-sm) bg-gryt-surface-raised",
+        "gryt-webhook-card-image relative overflow-hidden rounded-(--gryt-radius-sm) bg-gryt-text/5",
         className
       )}
     >
       {status === "loading" ? (
-        <div className="absolute inset-0 animate-pulse bg-gryt-surface-hover motion-reduce:animate-none" />
+        <div className="absolute inset-0 animate-pulse bg-gryt-text/5 motion-reduce:animate-none" />
       ) : null}
       {status === "error" ? (
         <div
@@ -168,10 +168,8 @@ function Icon({ src }: { src?: string }) {
   );
 }
 
-/**
- * A webhook's card, drawn compact: a hairline box with the payload colour as one dot.
- * The colour never sits behind text, so a webhook can't make its card unreadable.
- */
+/** A webhook's card: a hairline box, the payload colour as one dot, never behind text. Fills
+    tint the text colour, so chips show on whatever surface the host puts the card on. */
 export const WebhookCard = forwardRef<HTMLElement, WebhookCardProps>(
   function WebhookCard(
     {
@@ -273,7 +271,7 @@ export const WebhookCard = forwardRef<HTMLElement, WebhookCardProps>(
               <div
                 key={index}
                 className={cn(
-                  "flex max-w-full min-w-0 items-baseline gap-1.5 rounded-(--gryt-radius-sm) bg-gryt-surface-raised px-2 py-1 text-xs",
+                  "flex max-w-full min-w-0 items-baseline gap-1.5 rounded-(--gryt-radius-sm) bg-gryt-text/6 px-2 py-1 text-xs",
                   !field.inline && "basis-full"
                 )}
               >
