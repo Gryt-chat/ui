@@ -1,5 +1,11 @@
 # @gryt/ui-native
 
+## 0.16.0
+
+### Minor Changes
+
+- e28ce83: Add `WebhookCard`, the card a webhook message can carry. It's the compact look: a thin border, a coloured dot beside the author, fields as small chips, a full-width image and a muted footer. Links go through `onOpenUrl`, and markdown through `renderMarkdown` when the host passes one.
+
 ## 0.15.1
 
 ### Patch Changes

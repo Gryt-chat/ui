@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.34.0
+
+### Minor Changes
+
+- d9102d2: Add `WebhookCard`, which draws a card a webhook posted: author, title, description, fields, a thumbnail, an image, a footer and a timestamp. The payload colour only draws a dot, so a webhook can't make its card unreadable. Pass `renderMarkdown` for the description and field values.
+
 ## 0.33.0
 
 ### Minor Changes
