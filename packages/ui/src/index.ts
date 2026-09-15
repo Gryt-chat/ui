@@ -127,6 +127,14 @@ export type {
 } from "./components/Select/Select";
 export { Tooltip, TooltipProvider } from "./components/Tooltip/Tooltip";
 export type { TooltipProps } from "./components/Tooltip/Tooltip";
+export { WebhookCard } from "./components/WebhookCard/WebhookCard";
+export type {
+  WebhookCardAuthor,
+  WebhookCardData,
+  WebhookCardField,
+  WebhookCardFooter,
+  WebhookCardProps
+} from "./components/WebhookCard/WebhookCard";
 export { Divider } from "./components/Divider/Divider";
 export type { DividerProps } from "./components/Divider/Divider";
 export {

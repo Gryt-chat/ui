@@ -96,7 +96,8 @@ const drawingBySlug: Record<string, DrawingKind> = {
   "navigation-menu": "navigation-menu",
   form: "form",
   fieldset: "fieldset",
-  "video-player": "video-player"
+  "video-player": "video-player",
+  "webhook-card": "webhook-card"
 };
 
 /** First sentence, so a long description does not run past the canvas. */

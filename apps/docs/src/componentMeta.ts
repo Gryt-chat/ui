@@ -62,7 +62,8 @@ export interface ComponentDoc {
     | "otp-field"
     | "preview-card"
     | "toolbar"
-    | "video-player";
+    | "video-player"
+    | "webhook-card";
   code: string;
 }
 
@@ -112,7 +113,8 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "Chip", slug: "chip" },
       { name: "Tooltip", slug: "tooltip" },
       { name: "Divider", slug: "divider" },
-      { name: "VideoPlayer", slug: "video-player" }
+      { name: "VideoPlayer", slug: "video-player" },
+      { name: "WebhookCard", slug: "webhook-card" }
     ]
   },
   {
@@ -463,6 +465,37 @@ function Upload({ fileId }: { fileId: string }) {
 
 // Space or K plays and pauses, the arrow keys skip 5 seconds,
 // M mutes and F goes fullscreen.`
+  },
+  {
+    slug: "webhook-card",
+    name: "WebhookCard",
+    description:
+      "A card a webhook posted: author, title, description, fields, pictures and a footer, in one compact box.",
+    importName: "WebhookCard",
+    preview: "webhook-card",
+    code: `import { WebhookCard } from "@gryt/ui";
+
+// The server stores file ids, so turn each into the URL you load uploads from.
+<WebhookCard
+  card={{
+    author: { name: "Build runner", iconUrl: fileUrl(card.author.icon_file_id) },
+    title: "Deploy finished: api v2.14.0",
+    url: "https://ci.example.com/deploys/2140",
+    description: "Rolled out to **eu-north** and **us-east** in 4 minutes.",
+    color: "#3fb27f",
+    fields: [
+      { name: "Environment", value: "production", inline: true },
+      { name: "Commit", value: "a1b2c3d", inline: true }
+    ],
+    imageUrl: fileUrl(card.image_file_id),
+    footer: { text: "ci.example.com" },
+    timestamp: "2026-09-15T07:42:00Z"
+  }}
+  renderMarkdown={(text) => <Markdown>{text}</Markdown>}
+/>
+
+// The colour only draws the dot by the author. It never goes behind text,
+// so whatever a webhook sends, the card stays readable.`
   },
   {
     slug: "alert",
