@@ -5,7 +5,12 @@ import { CaretUpDown, Check } from "@phosphor-icons/react";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { usePortalContainer } from "../../portalContainer";
 import { cn } from "../utils/cn";
-import { focusRing, popupMotion, popupSurface } from "../utils/styles";
+import {
+  focusRing,
+  popupCollisionPadding,
+  popupMotion,
+  popupSurface
+} from "../utils/styles";
 
 export interface SelectOption {
   label: ReactNode;
@@ -113,13 +118,23 @@ export function Select({
 
       <BaseSelect.Portal container={portalContainer}>
         <BaseSelect.Positioner
+          // Base UI's default lays the popup over the trigger and sizes it to the window itself.
+          // A max-height there leaves the popup nowhere near the trigger, so it's off.
+          alignItemWithTrigger={false}
+          collisionPadding={popupCollisionPadding}
           sideOffset={6}
           className="gryt-select-positioner outline-none"
         >
           <BaseSelect.Popup
-            className={cn("min-w-(--anchor-width) p-1", popupSurface, popupMotion)}
+            className={cn(
+              "flex max-h-[min(24rem,var(--available-height))] min-w-(--anchor-width) flex-col p-1",
+              popupSurface,
+              popupMotion
+            )}
           >
-            <BaseSelect.List>
+            {/* The list scrolls inside the popup, so the padding and corners stay put. scroll-pt-7
+                is one group label tall, so arrowing up to a group's first option shows the label. */}
+            <BaseSelect.List className="min-h-0 scroll-pt-7 overflow-x-hidden overflow-y-auto overscroll-contain">
               {options.map((entry, index) =>
                 isGroup(entry) ? (
                   <BaseSelect.Group key={index}>

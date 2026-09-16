@@ -1,5 +1,5 @@
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { GrytProvider } from "../../GrytProvider";
 import { Select } from "./Select";
 
@@ -91,5 +91,51 @@ describe("Select with a long label", () => {
       </GrytProvider>
     );
     expect(screen.getByText(LONG)).toHaveClass("min-w-0", "truncate");
+  });
+});
+
+// No layout here either, so these pin the classes and the mode. The cap itself was measured
+// in Chrome on the docs header's theme picker, at 1280x600, 1280x400 and 390x700.
+describe("Select with more options than fit", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  async function openGrouped() {
+    render(
+      <GrytProvider>
+        <Select aria-label="Theme" options={GROUPED} value="aurora" />
+      </GrytProvider>
+    );
+    await act(async () => {
+      fireEvent.click(screen.getByRole("combobox"));
+    });
+    return screen.findByRole("listbox");
+  }
+
+  it("opens below the trigger rather than over it", async () => {
+    // A trigger mid-window. At happy-dom's all-zero rects Base UI drops the overlap by itself.
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue(
+      DOMRect.fromRect({ x: 100, y: 300, width: 144, height: 36 })
+    );
+    vi.spyOn(document.documentElement, "clientHeight", "get").mockReturnValue(800);
+
+    const list = await openGrouped();
+    // data-side="none" is the overlapping mode, which sizes the popup itself and ignores the cap.
+    expect(list.closest(".gryt-select-positioner")).toHaveAttribute(
+      "data-side",
+      "bottom"
+    );
+  });
+
+  it("caps the popup at the room to the window edge and scrolls the list", async () => {
+    const list = await openGrouped();
+    expect(list.parentElement).toHaveClass(
+      "flex",
+      "flex-col",
+      "p-1",
+      "max-h-[min(24rem,var(--available-height))]"
+    );
+    expect(list).toHaveClass("min-h-0", "overflow-y-auto");
   });
 });
