@@ -8,6 +8,7 @@ import {
   fieldControl,
   fieldSizes,
   focusRing,
+  popupCollisionPadding,
   popupMotion,
   popupSurface
 } from "../utils/styles";
@@ -57,10 +58,19 @@ const Input = forwardRef<
 const Positioner = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<typeof BaseCombobox.Positioner>
->(function ComboboxPositioner({ className, sideOffset = 6, ...props }, ref) {
+>(function ComboboxPositioner(
+  {
+    className,
+    collisionPadding = popupCollisionPadding,
+    sideOffset = 6,
+    ...props
+  },
+  ref
+) {
   return (
     <BaseCombobox.Positioner
       ref={ref}
+      collisionPadding={collisionPadding}
       sideOffset={sideOffset}
       className={cn("gryt-combobox-positioner outline-none", className)}
       {...props}
@@ -74,7 +84,7 @@ const Popup = forwardRef<HTMLDivElement, ComboboxPopupProps>(
       <BaseCombobox.Popup
         ref={ref}
         className={cn(
-          "gryt-combobox max-h-64 w-(--anchor-width) overflow-y-auto overscroll-contain p-1 outline-none",
+          "gryt-combobox max-h-[min(16rem,var(--available-height))] w-(--anchor-width) overflow-y-auto overscroll-contain p-1 outline-none",
           popupSurface,
           popupMotion,
           className

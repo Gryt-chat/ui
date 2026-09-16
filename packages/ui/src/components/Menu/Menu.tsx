@@ -5,7 +5,11 @@ import { CaretRight, Check } from "@phosphor-icons/react";
 import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
-import { popupMotion, popupSurfaceColors } from "../utils/styles";
+import {
+  popupCollisionPadding,
+  popupMotion,
+  popupSurfaceColors
+} from "../utils/styles";
 
 export type MenuPopupProps = ComponentPropsWithoutRef<typeof BaseMenu.Popup>;
 export type MenuItemProps = ComponentPropsWithoutRef<typeof BaseMenu.Item>;
@@ -43,10 +47,19 @@ const menuItem = [
 ].join(" ");
 
 const Positioner = forwardRef<HTMLDivElement, MenuPositionerProps>(
-  function MenuPositioner({ className, sideOffset = 8, ...props }, ref) {
+  function MenuPositioner(
+    {
+      className,
+      collisionPadding = popupCollisionPadding,
+      sideOffset = 8,
+      ...props
+    },
+    ref
+  ) {
     return (
       <BaseMenu.Positioner
         ref={ref}
+        collisionPadding={collisionPadding}
         sideOffset={sideOffset}
         className={cn("gryt-menu-positioner outline-none", className)}
         {...props}
@@ -64,6 +77,9 @@ const Popup = forwardRef<HTMLDivElement, MenuPopupProps>(function MenuPopup(
       ref={ref}
       className={cn(
         "gryt-menu min-w-44 outline-none",
+        // The room to the window edge and no ceiling: a menu is as long as its commands,
+        // and one that fits the screen shouldn't scroll.
+        "max-h-(--available-height) overflow-x-hidden overflow-y-auto overscroll-contain",
         popupSurfaceColors,
         // Concentric with the rows inside it: the popup radius less this 8px inset is
         // exactly the item's, which is what --gryt-radius-popup means.

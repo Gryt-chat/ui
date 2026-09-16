@@ -5,7 +5,11 @@ import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
 import { listboxInputClass, listboxItemClass } from "../Combobox/Combobox";
-import { popupMotion, popupSurface } from "../utils/styles";
+import {
+  popupCollisionPadding,
+  popupMotion,
+  popupSurface
+} from "../utils/styles";
 
 /**
  * A text input that suggests as you type. The typed text is the answer and the list is a
@@ -28,10 +32,19 @@ const Input = forwardRef<
 const Positioner = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<typeof BaseAutocomplete.Positioner>
->(function AutocompletePositioner({ className, sideOffset = 6, ...props }, ref) {
+>(function AutocompletePositioner(
+  {
+    className,
+    collisionPadding = popupCollisionPadding,
+    sideOffset = 6,
+    ...props
+  },
+  ref
+) {
   return (
     <BaseAutocomplete.Positioner
       ref={ref}
+      collisionPadding={collisionPadding}
       sideOffset={sideOffset}
       className={cn("gryt-autocomplete-positioner outline-none", className)}
       {...props}
@@ -47,7 +60,7 @@ const Popup = forwardRef<
     <BaseAutocomplete.Popup
       ref={ref}
       className={cn(
-        "gryt-autocomplete max-h-64 w-(--anchor-width) overflow-y-auto overscroll-contain p-1 outline-none",
+        "gryt-autocomplete max-h-[min(16rem,var(--available-height))] w-(--anchor-width) overflow-y-auto overscroll-contain p-1 outline-none",
         popupSurface,
         popupMotion,
         className

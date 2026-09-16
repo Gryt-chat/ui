@@ -5,6 +5,7 @@ import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
 import { Menu } from "../Menu/Menu";
+import { popupCollisionPadding } from "../utils/styles";
 
 export type ContextMenuPositionerProps = ComponentPropsWithoutRef<
   typeof BaseContextMenu.Positioner
@@ -15,10 +16,19 @@ export type ContextMenuPositionerProps = ComponentPropsWithoutRef<
  * ones — Menu styles all of them now, so this list can be the passthrough it claimed.
  */
 const Positioner = forwardRef<HTMLDivElement, ContextMenuPositionerProps>(
-  function ContextMenuPositioner({ className, sideOffset = 2, ...props }, ref) {
+  function ContextMenuPositioner(
+    {
+      className,
+      collisionPadding = popupCollisionPadding,
+      sideOffset = 2,
+      ...props
+    },
+    ref
+  ) {
     return (
       <BaseContextMenu.Positioner
         ref={ref}
+        collisionPadding={collisionPadding}
         // Smaller than Menu's 8. This anchors to the pointer rather than to a
         // trigger element, and 8px from the cursor reads as a menu that missed.
         sideOffset={sideOffset}

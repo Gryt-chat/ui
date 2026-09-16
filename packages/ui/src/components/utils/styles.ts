@@ -36,6 +36,10 @@ export const popupSurfaceColors =
 
 export const popupSurface = `rounded-(--gryt-radius-popup) ${popupSurfaceColors}`;
 
+// How close a list popup may come to the window edge. Base UI measures --available-height
+// inside this gap, so a popup capped at that variable stops 8px short. Base UI's own is 5.
+export const popupCollisionPadding = 8;
+
 // Base UI sets data-starting-style and data-ending-style for one frame either
 // side of open and close. The element carries the transition itself.
 export const popupMotion = [
