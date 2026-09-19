@@ -9,11 +9,12 @@ const componentsDir = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 function popupWidth(file: string): string {
   const source = readFileSync(join(componentsDir, file), "utf8");
-  const match = /"flex (w-\[[^\]]+\]|w-\d+) max-w-\[calc\(100vw-3rem\)\]/.exec(
+  const popupClasses = /"flex ([^"]*max-w-\[calc\(100vw-3rem\)\][^"]*)"/.exec(
     source
-  );
-  if (!match) throw new Error(`No popup width found in ${file}`);
-  return match[1];
+  )?.[1];
+  const width = popupClasses?.match(/\bw-(?:\[[^\]]+\]|\d+)(?=\s|$)/)?.[0];
+  if (!width) throw new Error(`No popup width found in ${file}`);
+  return width;
 }
 
 /**
