@@ -12,7 +12,7 @@ function popupWidth(file: string): string {
   const popupClasses = /"flex ([^"]*max-w-\[calc\(100vw-3rem\)\][^"]*)"/.exec(
     source
   )?.[1];
-  const width = popupClasses?.match(/\bw-(?:\[[^\]]+\]|\d+)\b/)?.[0];
+  const width = popupClasses?.match(/\bw-(?:\[[^\]]+\]|\d+)(?=\s|$)/)?.[0];
   if (!width) throw new Error(`No popup width found in ${file}`);
   return width;
 }
