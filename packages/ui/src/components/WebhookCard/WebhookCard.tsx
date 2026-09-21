@@ -26,6 +26,7 @@ export interface WebhookCardFooter {
 /** One card a webhook posted, with its pictures already turned into URLs the host can load. */
 export interface WebhookCardData {
   title?: string;
+  /** Where a click anywhere on the card goes. Needs a title, and only http(s) counts. */
   url?: string;
   description?: string;
   /** `#rrggbb`. Anything else is ignored. */
@@ -52,6 +53,16 @@ export interface WebhookCardProps
 
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 
+/** Only http(s) becomes a link. Anything else draws as plain text, as on the phone. */
+function openableUrl(url: string | undefined): string | undefined {
+  const trimmed = url?.trim();
+  return trimmed && /^https?:\/\/\S+$/i.test(trimmed) ? trimmed : undefined;
+}
+
+// What handles its own click: links and controls, and a picture the host drew in the markdown.
+const OWN_CLICK =
+  "a, button, input, select, textarea, summary, [role=button], [role=link], .gryt-webhook-card-description img, .gryt-webhook-card-field img";
+
 function defaultTimestamp(iso: string): string {
   const date = new Date(iso);
   if (Number.isNaN(date.getTime())) return "";
@@ -66,9 +77,11 @@ interface CardLinkProps {
   className?: string;
   children: ReactNode;
   onOpenUrl?: (url: string) => void;
+  /** The card draws this link's focus ring, because the whole card is the link. */
+  cardFocus?: boolean;
 }
 
-function CardLink({ href, className, children, onOpenUrl }: CardLinkProps) {
+function CardLink({ href, className, children, onOpenUrl, cardFocus }: CardLinkProps) {
   if (!href) return <span className={className}>{children}</span>;
   const onClick = onOpenUrl
     ? (event: MouseEvent<HTMLAnchorElement>) => {
@@ -84,7 +97,7 @@ function CardLink({ href, className, children, onOpenUrl }: CardLinkProps) {
       onClick={onClick}
       className={cn(
         "rounded-sm underline-offset-2 hover:underline active:opacity-80",
-        focusRing,
+        cardFocus ? "outline-none" : focusRing,
         className
       )}
     >
@@ -125,12 +138,12 @@ function CardImage({ src, className, small, onPress }: CardImageProps) {
     <div
       data-state={status}
       className={cn(
-        "gryt-webhook-card-image relative overflow-hidden rounded-(--gryt-radius-sm) bg-gryt-text/5",
+        "gryt-webhook-card-image relative overflow-hidden rounded-(--gryt-radius-sm) bg-gryt-surface-raised",
         className
       )}
     >
       {status === "loading" ? (
-        <div className="absolute inset-0 animate-pulse bg-gryt-text/5 motion-reduce:animate-none" />
+        <div className="absolute inset-0 animate-pulse bg-gryt-surface-hover motion-reduce:animate-none" />
       ) : null}
       {status === "error" ? (
         <div
@@ -170,14 +183,15 @@ function Icon({ src }: { src?: string }) {
   );
 }
 
-/** A webhook's card: a hairline box, the payload colour as one dot, never behind text. Fills
-    tint the text colour, so chips show on whatever surface the host puts the card on. */
+/** A webhook's card: the app background inside a hairline box, so the host's row hover stops at
+    the border. The payload colour is one dot, never behind text. A click anywhere opens `url`. */
 export const WebhookCard = forwardRef<HTMLElement, WebhookCardProps>(
   function WebhookCard(
     {
       card,
       className,
       formatTimestamp = defaultTimestamp,
+      onClick,
       onOpenUrl,
       onPressImage,
       renderMarkdown,
@@ -188,12 +202,24 @@ export const WebhookCard = forwardRef<HTMLElement, WebhookCardProps>(
   ) {
     const color =
       card.color && HEX_COLOR.test(card.color) ? card.color : undefined;
+    const cardUrl = card.title ? openableUrl(card.url) : undefined;
     const markdown = (text: string) =>
       renderMarkdown ? renderMarkdown(text) : text;
     // Plain text keeps its line breaks. A markdown renderer draws its own, so pre-line would double them.
     const lines = renderMarkdown ? undefined : "whitespace-pre-line";
     const time = card.timestamp ? formatTimestamp(card.timestamp) : "";
     const fields = card.fields?.length ? card.fields : null;
+
+    // The same new tab the title link opens. A drag that selected text ends in a click too,
+    // and that one opens nothing.
+    const onCardClick = (event: MouseEvent<HTMLElement>) => {
+      onClick?.(event);
+      if (!cardUrl || event.defaultPrevented) return;
+      if ((event.target as Element).closest(OWN_CLICK)) return;
+      if (window.getSelection()?.toString()) return;
+      if (onOpenUrl) onOpenUrl(cardUrl);
+      else window.open(cardUrl, "_blank", "noopener,noreferrer");
+    };
 
     return (
       <article
@@ -205,8 +231,14 @@ export const WebhookCard = forwardRef<HTMLElement, WebhookCardProps>(
             "--gryt-webhook-card-color": color ?? "var(--gryt-border)"
           } as CSSProperties
         }
+        onClick={cardUrl ? onCardClick : onClick}
         className={cn(
-          "gryt-webhook-card @container flex w-full max-w-[32rem] min-w-0 flex-col gap-2 rounded-(--gryt-radius-sm) border border-gryt-border px-3 py-2.5 text-gryt-text",
+          "gryt-webhook-card @container flex w-full max-w-[32rem] min-w-0 flex-col gap-2 rounded-(--gryt-radius-sm) border border-gryt-border bg-gryt-bg px-3 py-2.5 text-gryt-text",
+          cardUrl && [
+            "cursor-pointer transition-colors duration-150 motion-reduce:transition-none",
+            "hover:border-gryt-neutral-8 [&:hover_.gryt-webhook-card-title]:underline",
+            "has-[.gryt-webhook-card-title:focus-visible]:outline-2 has-[.gryt-webhook-card-title:focus-visible]:outline-offset-2 has-[.gryt-webhook-card-title:focus-visible]:outline-gryt-accent-light"
+          ],
           className
         )}
         {...props}
@@ -231,7 +263,7 @@ export const WebhookCard = forwardRef<HTMLElement, WebhookCardProps>(
                   />
                   <Icon key={card.author.iconUrl} src={card.author.iconUrl} />
                   <CardLink
-                    href={card.author.url}
+                    href={openableUrl(card.author.url)}
                     onOpenUrl={onOpenUrl}
                     className="min-w-0 truncate text-xs text-gryt-muted"
                   >
@@ -241,11 +273,12 @@ export const WebhookCard = forwardRef<HTMLElement, WebhookCardProps>(
               ) : null}
               {card.title ? (
                 <CardLink
-                  href={card.url}
+                  href={cardUrl}
+                  cardFocus
                   onOpenUrl={onOpenUrl}
                   className={cn(
-                    "flex min-w-0 items-center gap-2 text-sm leading-5 font-semibold break-words",
-                    card.url ? "text-gryt-accent-11" : "text-gryt-text"
+                    "gryt-webhook-card-title flex min-w-0 items-center gap-2 text-sm leading-5 font-semibold break-words",
+                    cardUrl ? "text-gryt-accent-11" : "text-gryt-text"
                   )}
                 >
                   {card.author ? null : (
@@ -273,12 +306,12 @@ export const WebhookCard = forwardRef<HTMLElement, WebhookCardProps>(
               <div
                 key={index}
                 className={cn(
-                  "flex max-w-full min-w-0 items-baseline gap-1.5 rounded-(--gryt-radius-sm) bg-gryt-text/6 px-2 py-1 text-xs",
+                  "flex max-w-full min-w-0 items-baseline gap-1.5 rounded-(--gryt-radius-sm) bg-gryt-surface-raised px-2 py-1 text-xs",
                   !field.inline && "basis-full"
                 )}
               >
                 <dt className="shrink-0 text-gryt-muted">{field.name}</dt>
-                <dd className={cn("min-w-0 break-words text-gryt-text", lines)}>
+                <dd className={cn("gryt-webhook-card-field min-w-0 break-words text-gryt-text", lines)}>
                   {markdown(field.value)}
                 </dd>
               </div>

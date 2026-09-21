@@ -145,7 +145,8 @@ function FooterIcon({ uri }: { uri: string }) {
   );
 }
 
-/** Compact: hairline border, no fill, and the payload colour only in the author dot. */
+/** Compact: the app background inside a hairline border, the payload colour only in the author
+    dot. A tap anywhere opens the card's URL; the title stays a link for screen readers. */
 export function WebhookCard({
   card,
   renderMarkdown,
@@ -155,7 +156,7 @@ export function WebhookCard({
   style,
 }: WebhookCardProps) {
   const theme = useTheme();
-  const titleUrl = onOpenUrl ? openableUrl(card.url) : undefined;
+  const cardUrl = onOpenUrl && card.title ? openableUrl(card.url) : undefined;
   const authorUrl = onOpenUrl ? openableUrl(card.author?.url) : undefined;
   const time = card.timestamp ? formatTimestamp(card.timestamp) : "";
   const footer = footerText(card.footer?.text, time);
@@ -174,18 +175,22 @@ export function WebhookCard({
   };
 
   return (
-    <View
+    <Pressable
       testID="webhook-card"
-      style={[
+      accessible={false}
+      onPress={cardUrl ? () => onOpenUrl?.(cardUrl) : undefined}
+      style={({ pressed }) => [
         {
           width: "100%",
           maxWidth: 512,
           borderWidth: 1,
-          borderColor: theme.color.border,
+          borderColor: pressed && cardUrl ? theme.scales.neutral[8] : theme.color.border,
           borderRadius: theme.radius.sm,
+          backgroundColor: theme.color.bg,
           paddingHorizontal: theme.space(3),
           paddingVertical: theme.space(2.5),
           gap: theme.space(2),
+          opacity: pressed && cardUrl ? 0.9 : 1,
         },
         style,
       ]}
@@ -228,10 +233,10 @@ export function WebhookCard({
               ) : null}
               {card.title ? (
                 <Text
-                  accessibilityRole={titleUrl ? "link" : "header"}
-                  onPress={titleUrl ? () => onOpenUrl?.(titleUrl) : undefined}
+                  accessibilityRole={cardUrl ? "link" : "header"}
+                  onPress={cardUrl ? () => onOpenUrl?.(cardUrl) : undefined}
                   style={{
-                    color: titleUrl ? theme.scales.accent[10] : theme.color.text,
+                    color: cardUrl ? theme.scales.accent[10] : theme.color.text,
                     fontSize: 14,
                     lineHeight: 20,
                     fontWeight: "600",
@@ -300,6 +305,6 @@ export function WebhookCard({
           </Text>
         </View>
       ) : null}
-    </View>
+    </Pressable>
   );
 }
