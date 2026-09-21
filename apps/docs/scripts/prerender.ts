@@ -41,8 +41,13 @@ function escapeAttr(value: string): string {
     .replace(/"/g, "&quot;");
 }
 
+/** The page's address, as its canonical tag and the sitemap both give it. */
+function urlFor(route: string): string {
+  return route === "" ? `${ORIGIN}/` : `${ORIGIN}/${route}`;
+}
+
 function headFor(page: OgPage): string {
-  const url = page.route === "" ? `${ORIGIN}/` : `${ORIGIN}/${page.route}`;
+  const url = urlFor(page.route);
   const image = `${ORIGIN}/og/${fileNameFor(page.route)}`;
   const title = escapeAttr(page.title);
   const description = escapeAttr(page.description);
@@ -148,11 +153,23 @@ function main() {
     );
   }
 
+  // And a path the router or the sidebar serves with no file: /eggs was that, a 404 on load.
+  const unwritten = routerPaths().filter((route) => !docsRoutes.includes(route));
+
+  if (unwritten.length > 0) {
+    throw new Error(
+      `prerender: main.tsx or AppShell.tsx serves paths that are not in src/routes.ts: ${unwritten.join(", ")}`
+    );
+  }
+
+  const indexed: string[] = [];
+
   for (const route of docsRoutes) {
     const page = byRoute.get(route);
 
     if (page) {
       write(route, render(shell, headFor(page)));
+      indexed.push(urlFor(route));
       continue;
     }
 
@@ -166,8 +183,40 @@ function main() {
   const notFound = noindexHead("Page not found — Gryt UI", "There is nothing at this address.");
   writeFileSync(join(distDir, "404.html"), render(shell, notFound));
 
+  // Every page with a share card, which is every page with a canonical. The rest are noindex.
+  const urls = indexed.map((url) => `  <url>\n    <loc>${escapeAttr(url)}</loc>\n  </url>`);
+  writeFileSync(
+    join(distDir, "sitemap.xml"),
+    [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+      ...urls,
+      "</urlset>",
+      ""
+    ].join("\n")
+  );
+  writeFileSync(
+    join(distDir, "robots.txt"),
+    `User-agent: *\nAllow: /\n\nSitemap: ${ORIGIN}/sitemap.xml\n`
+  );
+
   console.log(
-    `prerender: ${docsRoutes.length} routes + 404.html -> dist (origin ${ORIGIN})`
+    `prerender: ${docsRoutes.length} routes + 404.html -> dist, ${indexed.length} in sitemap.xml (origin ${ORIGIN})`
+  );
+}
+
+/** Literal paths in the router and the sidebar, without the leading slash. */
+function routerPaths(): string[] {
+  const src = join(here, "..", "src");
+  const router = readFileSync(join(src, "main.tsx"), "utf8");
+  const sidebar = readFileSync(join(src, "AppShell.tsx"), "utf8");
+  const paths = [
+    ...[...router.matchAll(/path: "([^"]+)"/g)].map((match) => match[1]),
+    ...[...sidebar.matchAll(/href: "(\/[^"]*)"/g)].map((match) => match[1])
+  ];
+
+  return [...new Set(paths.map((path) => path.replace(/^\//, "")))].filter(
+    (path) => !path.includes(":") && !path.includes("*")
   );
 }
 

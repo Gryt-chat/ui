@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3000 --open",
-    "build": "tsc -p tsconfig.json --noEmit && bun scripts/generate-og.ts && vite build && bun scripts/prerender.ts",
+    "build": "tsc -p tsconfig.json --noEmit && bun scripts/generate-og.ts && vite build && bun scripts/prerender.ts && bun scripts/check-sitemap.ts",
     "og": "bun scripts/generate-og.ts",
     "preview": "vite preview --port 3000 --open",
     "typecheck": "tsc -p tsconfig.json --noEmit"
