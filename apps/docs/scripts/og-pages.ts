@@ -167,6 +167,15 @@ const staticPages: OgPage[] = [
     hero: namedImport("owlAvatarSvg"),
     caption: "Draw on the bird. The script subtracts it back out.",
     drawing: "avatar"
+  },
+  {
+    route: "eggs",
+    title: "Eggs — Gryt UI",
+    description:
+      "Give @gryt/owl a string and it returns an SVG of eggs, the generated image for a group chat that hasn't had a picture uploaded.",
+    hero: namedImport("Avatar"),
+    caption: "One, two or three eggs, picked by the seed.",
+    drawing: "avatar"
   }
 ];
 

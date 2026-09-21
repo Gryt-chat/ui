@@ -64,6 +64,8 @@ RUN printf '%s\n' \
   '    # metadata: a status check called a missing page fine, and crawlers' \
   '    # indexed it as a duplicate of the home page. Same fix as packages/site.' \
   '    location / { try_files $uri $uri/index.html =404; }' \
+  '    # application/xml, which is what a sitemap is. mime.types would say text/xml.' \
+  '    location = /sitemap.xml { types { } default_type application/xml; try_files $uri =404; }' \
   '    location = /index.html { add_header Cache-Control "no-cache"; }' \
   '    # The SPA boots from this exactly as it does from any other entry point,' \
   '    # and the catch-all route renders NotFound — with a real 404 status' \
