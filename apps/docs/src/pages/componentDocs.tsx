@@ -56,7 +56,7 @@ import {
 } from "@gryt/ui";
 import { avatarSeed } from "@gryt/owl";
 import { Bell, DotsThree, PaperPlaneTilt } from "@phosphor-icons/react";
-import type { BadgePlacement, DrawerSide, Tone, ToastSeverity } from "@gryt/ui";
+import type { BadgePlacement, DrawerSide, Tone, ToastSeverity, WebhookCardData } from "@gryt/ui";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
@@ -1101,7 +1101,7 @@ function VideoPlayerExample() {
   );
 }
 
-const sampleCard = {
+const sampleCard: WebhookCardData = {
   author: {
     name: "Build runner",
     url: "https://example.com/runner",
@@ -1110,7 +1110,7 @@ const sampleCard = {
   title: "Deploy finished: api v2.14.0",
   url: "https://example.com/deploys/2140",
   description:
-    "Rolled out to eu-north and us-east in 4 minutes.\nTwo migrations ran, 0047_threads took the longest.",
+    "Rolled out to **eu-north** and **us-east** in 4 minutes.\nTwo migrations ran, `0047_threads` took the longest. [Full log](https://example.com/deploys/2140/log)",
   color: "#3fb27f",
   fields: [
     { name: "Environment", value: "production", inline: true },
@@ -1128,6 +1128,60 @@ const sampleCard = {
   timestamp: "2026-09-15T07:42:00Z"
 };
 
+// The three cards the shared notifier really posts: a CI run, a push, and a release.
+const ciCard: WebhookCardData = {
+  author: { name: "example/app", url: "https://github.com/example/app" },
+  title: "❌ CI failed",
+  url: "https://github.com/example/app/actions/runs/4127",
+  description: "**Failed jobs**\n- e2e (chromium)\n- typecheck",
+  color: "#e5484d",
+  fields: [
+    { name: "Branch", value: "main", inline: true },
+    { name: "Run", value: "#4127", inline: true },
+    { name: "Commit", value: "8f65a09", inline: true },
+    { name: "Actor", value: "[@octocat](https://github.com/octocat)", inline: true },
+    { name: "Event", value: "push", inline: true }
+  ],
+  footer: { text: "Gryt CI · main" },
+  timestamp: "2026-09-21T08:12:00Z"
+};
+
+const pushCard: WebhookCardData = {
+  author: { name: "example/app", url: "https://github.com/example/app" },
+  title: "2 commits pushed to main",
+  url: "https://github.com/example/app/compare/a1b2c3d...e4f5a6b",
+  description:
+    "- [a1b2c3d](https://github.com/example/app/commit/a1b2c3d) Keep dialogs inside the viewport — octocat\n- [e4f5a6b](https://github.com/example/app/commit/e4f5a6b) Version Packages — octocat",
+  color: "#968ff8",
+  fields: [
+    { name: "Actor", value: "[@octocat](https://github.com/octocat)", inline: true },
+    { name: "Context", value: "main", inline: true }
+  ],
+  footer: { text: "GitHub · Push" },
+  timestamp: "2026-09-19T14:03:00Z"
+};
+
+const releaseCard: WebhookCardData = {
+  author: { name: "Gryt Releases", url: "https://github.com/Gryt-chat" },
+  title: "client v1.12.0",
+  url: "https://github.com/Gryt-chat/client/releases",
+  description:
+    "New desktop build is available.\n\n**Highlights**\n- Thread replies keep their scroll position.\n- Uploads over 50 MB resume after a dropped connection.",
+  color: "#3fb27f",
+  fields: [
+    { name: "Component", value: "client", inline: true },
+    { name: "Channel", value: "Stable", inline: true },
+    { name: "Version", value: "1.12.0", inline: true },
+    {
+      name: "Downloads",
+      value:
+        "[macOS](https://gryt.chat/download) · [Windows](https://gryt.chat/download) · [Linux](https://gryt.chat/download)"
+    }
+  ],
+  footer: { text: "Gryt Releases · Gryt-chat/client" },
+  timestamp: "2026-09-21T09:00:00Z"
+};
+
 const statusFields = [
   ["api", "200 · 84 ms"],
   ["auth", "503 · timeout"],
@@ -1139,14 +1193,78 @@ const statusFields = [
   ["tasks", "timeout after 10 s"]
 ].map(([name, value]) => ({ name, value, inline: true }));
 
-// Three payloads a webhook really sends: everything, the least, and a wall of fields.
+const MARKDOWN_TOKEN = /(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)\s]+\))/;
+
+// Enough markdown for the samples: bold, code, links and line breaks. The apps pass their own renderer.
+function docsMarkdown(text: string): ReactNode {
+  return text.split("\n").map((line, row) => (
+    <span key={row} className="block">
+      {line.split(MARKDOWN_TOKEN).map((part, index) => {
+        if (part.startsWith("**")) return <strong key={index}>{part.slice(2, -2)}</strong>;
+        if (part.startsWith("`")) {
+          return (
+            <code key={index} className="rounded-sm bg-gryt-surface-raised px-1 font-mono text-[0.9em]">
+              {part.slice(1, -1)}
+            </code>
+          );
+        }
+        const link = /^\[([^\]]+)\]\(([^)]+)\)$/.exec(part);
+        if (link) {
+          return (
+            <a
+              key={index}
+              href={link[2]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gryt-accent-11 underline-offset-2 hover:underline"
+            >
+              {link[1]}
+            </a>
+          );
+        }
+        return part || "\u00a0";
+      })}
+    </span>
+  ));
+}
+
+// A chat row like the client's, hover colour included, so the card's own surface shows holding.
+function MessageRow({ children }: { children: ReactNode }) {
+  return (
+    <div className="-mx-2 flex gap-3 rounded-(--gryt-radius-md) px-2 py-1.5 transition-colors hover:bg-gryt-surface-hover">
+      <div
+        aria-hidden="true"
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gryt-surface-raised text-sm font-semibold text-gryt-text"
+      >
+        C
+      </div>
+      <div className="grid min-w-0 flex-1 gap-1">
+        <p className="m-0 flex items-center gap-2 text-sm leading-6">
+          <span className="font-semibold text-gryt-text">Gryt CI</span>
+          <span className="rounded-sm bg-gryt-accent-a3 px-1 text-[10px] font-semibold tracking-wide text-gryt-accent-11">
+            BOT
+          </span>
+          <span className="text-xs text-gryt-muted">09:42</span>
+        </p>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// What a webhook really sends: the notifier's three cards, everything at once, the least, and a wall of fields.
 function WebhookCardExample() {
   return (
     <div className="grid w-full gap-6 md:grid-cols-2">
-      <ExampleBlock title="Every part">
-        <WebhookCard card={sampleCard} />
-      </ExampleBlock>
       <div className="grid content-start gap-6">
+        <ExampleBlock title="Every part">
+          <WebhookCard card={sampleCard} renderMarkdown={docsMarkdown} />
+        </ExampleBlock>
+        <ExampleBlock title="In a message row">
+          <MessageRow>
+            <WebhookCard card={ciCard} renderMarkdown={docsMarkdown} />
+          </MessageRow>
+        </ExampleBlock>
         <ExampleBlock title="Title and description">
           <WebhookCard
             card={{
@@ -1155,6 +1273,14 @@ function WebhookCardExample() {
                 "Nightly snapshot of the media bucket finished without errors. 18.4 GB, 212 new files."
             }}
           />
+        </ExampleBlock>
+      </div>
+      <div className="grid content-start gap-6">
+        <ExampleBlock title="A push">
+          <WebhookCard card={pushCard} renderMarkdown={docsMarkdown} />
+        </ExampleBlock>
+        <ExampleBlock title="A release">
+          <WebhookCard card={releaseCard} renderMarkdown={docsMarkdown} />
         </ExampleBlock>
         <ExampleBlock title="Lots of fields">
           <WebhookCard

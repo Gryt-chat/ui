@@ -481,7 +481,7 @@ function Upload({ fileId }: { fileId: string }) {
     slug: "webhook-card",
     name: "WebhookCard",
     description:
-      "A card a webhook posted: author, title, description, fields, pictures and a footer, in one compact box.",
+      "A card a webhook posted: author, title, description, fields, pictures and a footer, on its own surface. A click anywhere on it opens its link.",
     importName: "WebhookCard",
     preview: "webhook-card",
     code: `import { WebhookCard } from "@gryt/ui";
@@ -506,7 +506,10 @@ function Upload({ fileId }: { fileId: string }) {
 />
 
 // The colour only draws the dot by the author. It never goes behind text,
-// so whatever a webhook sends, the card stays readable.`
+// so whatever a webhook sends, the card stays readable.
+//
+// A click anywhere on the card opens its url. The author link, the pictures
+// and any link in the description still open on their own.`
   },
   {
     slug: "alert",

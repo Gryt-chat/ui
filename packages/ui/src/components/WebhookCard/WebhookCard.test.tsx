@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { GrytProvider } from "../../GrytProvider";
 import { WebhookCard } from "./WebhookCard";
 import type { WebhookCardData, WebhookCardProps } from "./WebhookCard";
@@ -28,6 +28,10 @@ function renderCard(props: Partial<WebhookCardProps> = {}) {
   );
 }
 
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 describe("WebhookCard", () => {
   it("draws every part of the card", () => {
     const { container } = renderCard({ formatTimestamp: () => "at 07:42" });
@@ -43,6 +47,20 @@ describe("WebhookCard", () => {
     expect(container.querySelectorAll(".gryt-webhook-card-image")).toHaveLength(2);
   });
 
+  it("sits on its own surface inside a border, and shows a pointer when it opens something", () => {
+    const { container, rerender } = renderCard();
+    const card = container.querySelector("article")!;
+    expect(card).toHaveClass("bg-gryt-bg", "border-gryt-border", "cursor-pointer");
+
+    rerender(
+      <GrytProvider>
+        <WebhookCard card={{ title: "Backup completed", description: "18.4 GB" }} />
+      </GrytProvider>
+    );
+    expect(card).toHaveClass("bg-gryt-bg", "border-gryt-border");
+    expect(card).not.toHaveClass("cursor-pointer");
+  });
+
   it("opens links with noopener and without a referrer", () => {
     renderCard();
     const link = screen.getByRole("link", { name: "Deploy finished" });
@@ -55,7 +73,103 @@ describe("WebhookCard", () => {
     const onOpenUrl = vi.fn();
     renderCard({ onOpenUrl });
     fireEvent.click(screen.getByRole("link", { name: "Deploy finished" }));
+    expect(onOpenUrl).toHaveBeenCalledTimes(1);
     expect(onOpenUrl).toHaveBeenCalledWith("https://ci.example.test/deploys/1");
+  });
+
+  it("opens the card's link from a click anywhere on it", () => {
+    const onOpenUrl = vi.fn();
+    renderCard({ onOpenUrl, formatTimestamp: () => "at 07:42" });
+    fireEvent.click(screen.getByText("Rolled out in **4 minutes**."));
+    fireEvent.click(screen.getByText("Environment"));
+    fireEvent.click(screen.getByText("at 07:42"));
+    expect(onOpenUrl).toHaveBeenCalledTimes(3);
+    expect(onOpenUrl).toHaveBeenLastCalledWith("https://ci.example.test/deploys/1");
+  });
+
+  it("opens a new tab without an opener when there is no onOpenUrl", () => {
+    const open = vi.spyOn(window, "open").mockReturnValue(null);
+    const { container } = renderCard();
+    fireEvent.click(container.querySelector("article")!);
+    expect(open).toHaveBeenCalledTimes(1);
+    expect(open).toHaveBeenCalledWith(
+      "https://ci.example.test/deploys/1",
+      "_blank",
+      "noopener,noreferrer"
+    );
+  });
+
+  it("leaves a click on something inside the card to that thing", () => {
+    const onOpenUrl = vi.fn();
+    const onPressImage = vi.fn();
+    renderCard({
+      onOpenUrl,
+      onPressImage,
+      renderMarkdown: (text) => (
+        <a href="https://docs.example.test" onClick={(event) => event.preventDefault()}>
+          {text}
+        </a>
+      )
+    });
+    fireEvent.click(screen.getByRole("link", { name: "Build runner" }));
+    expect(onOpenUrl).toHaveBeenCalledTimes(1);
+    expect(onOpenUrl).toHaveBeenCalledWith("https://ci.example.test");
+
+    fireEvent.click(screen.getAllByRole("button", { name: "Open image" })[1]);
+    expect(onPressImage).toHaveBeenCalledWith("/image.jpg");
+    fireEvent.click(screen.getByRole("link", { name: "Two fixes" }));
+    expect(onOpenUrl).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not open the link when the click ended a text selection", () => {
+    const onOpenUrl = vi.fn();
+    renderCard({ onOpenUrl });
+    vi.spyOn(window, "getSelection").mockReturnValue({
+      toString: () => "Rolled out"
+    } as Selection);
+    fireEvent.click(screen.getByText("Rolled out in **4 minutes**."));
+    expect(onOpenUrl).not.toHaveBeenCalled();
+  });
+
+  it("still calls the host's onClick, and stops when it prevented the default", () => {
+    const onOpenUrl = vi.fn();
+    const onClick = vi.fn();
+    const { rerender } = renderCard({ onOpenUrl, onClick });
+    fireEvent.click(screen.getByText("Environment"));
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onOpenUrl).toHaveBeenCalledTimes(1);
+
+    rerender(
+      <GrytProvider>
+        <WebhookCard
+          card={full}
+          onOpenUrl={onOpenUrl}
+          onClick={(event) => event.preventDefault()}
+        />
+      </GrytProvider>
+    );
+    fireEvent.click(screen.getByText("Environment"));
+    expect(onOpenUrl).toHaveBeenCalledTimes(1);
+  });
+
+  it("only links to http(s), and needs a title to open anything", () => {
+    const onOpenUrl = vi.fn();
+    const { container, rerender } = renderCard({
+      onOpenUrl,
+      card: { ...full, url: "javascript:alert(1)", author: { name: "Runner", url: "ftp://x" } }
+    });
+    expect(screen.queryByRole("link")).toBeNull();
+    fireEvent.click(screen.getByText("Environment"));
+    expect(onOpenUrl).not.toHaveBeenCalled();
+    expect(container.querySelector("article")).not.toHaveClass("cursor-pointer");
+
+    rerender(
+      <GrytProvider>
+        <WebhookCard card={{ url: full.url, description: "No title" }} onOpenUrl={onOpenUrl} />
+      </GrytProvider>
+    );
+    fireEvent.click(screen.getByText("No title"));
+    expect(onOpenUrl).not.toHaveBeenCalled();
   });
 
   it("passes the description and field values through renderMarkdown", () => {
