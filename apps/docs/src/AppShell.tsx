@@ -146,6 +146,13 @@ export function AppShell() {
                 <X size={18} />
               </button>
             </div>
+            {/* The header's switcher is `sm:block`, so below that breakpoint
+                this is the only way to reach it. `sm:hidden` here, rather than
+                dropping it once the header's copy appears, keeps it from
+                showing twice. */}
+            <div className="mb-4 px-2 sm:hidden">
+              <ThemeSwitcher />
+            </div>
             <ScrollArea.Root className="min-h-0 flex-1">
               <ScrollArea.Viewport>
                 <ScrollArea.Content>
