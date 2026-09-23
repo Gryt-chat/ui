@@ -107,7 +107,7 @@ const Footer = forwardRef<HTMLDivElement, DialogFooterProps>(
       <div
         ref={ref}
         className={cn(
-          "gryt-dialog-footer flex justify-end gap-3",
+          "gryt-dialog-footer flex flex-wrap justify-end gap-3",
           className
         )}
         {...props}
