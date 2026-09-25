@@ -1,7 +1,12 @@
 /* A whole theme, as a thing you can hand to somebody. Dark and light do not derive from
  * each other, so a theme that travels carries both, and only the differences travel. */
 
-import { grytLightSurfaceHover, grytLightTokens, grytTokens } from "./createGrytTheme";
+import {
+  grytLightAccentLight,
+  grytLightSurfaceHover,
+  grytLightTokens,
+  grytTokens
+} from "./createGrytTheme";
 import type { GrytThemeOptions } from "./createGrytTheme";
 
 export type GrytAppearance = "dark" | "light";
@@ -164,7 +169,21 @@ export const grytTheme: GrytTheme = {
     onSecondary: grytTokens.color.onSecondary,
     onDanger: grytTokens.color.onDanger
   },
-  lightHue: null,
+  // Light borrows every hue from dark except accentLight, which needs its own
+  // value on a light page (see grytLightAccentLight) to clear AA (GRYT-1466).
+  lightHue: {
+    accent: grytTokens.color.accent,
+    accentLight: grytLightAccentLight,
+    secondary: grytTokens.color.secondary,
+    secondaryLight: grytTokens.color.secondaryLight,
+    success: grytTokens.color.success,
+    danger: grytTokens.color.danger,
+    dangerLight: grytTokens.color.dangerLight,
+    warning: grytTokens.color.warning,
+    onAccent: grytTokens.color.onAccent,
+    onSecondary: grytTokens.color.onSecondary,
+    onDanger: grytTokens.color.onDanger
+  },
   dark: {
     bg: grytTokens.color.bg,
     surface: grytTokens.color.surface,
@@ -296,11 +315,14 @@ export function encodeGrytTheme(
       params.set(HUE_PARAM[key], bare(theme.hue[key]));
     }
   }
-  // A split light set is carried whole rather than diffed. It is only there when somebody
-  // meant it, and diffing against the dark hues would drop what makes it a split.
+  // Diffed against Gryt's own light half, not this theme's own dark hues (which
+  // would drop a key that is split but coincidentally matches dark).
   if (theme.lightHue !== null) {
+    const base = grytTheme.lightHue;
     for (const key of GRYT_HUE_KEYS) {
-      params.set(`lh-${HUE_PARAM[key]}`, bare(theme.lightHue[key]));
+      if (base === null || theme.lightHue[key] !== base[key]) {
+        params.set(`lh-${HUE_PARAM[key]}`, bare(theme.lightHue[key]));
+      }
     }
   }
   for (const half of ["dark", "light"] as const) {

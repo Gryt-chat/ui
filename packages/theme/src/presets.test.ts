@@ -103,6 +103,22 @@ describe("the generated collections hold Gryt's own bar", () => {
  * A theme with `lightHue` carries a second set of fills and ink, and until GRYT-994
  * nothing looked at it. Only generated collections are held here; ported ones miss it.
  */
+describe("the shipped Gryt preset's link colour reads on a light page", () => {
+  // GRYT-1466: accentLight shared the dark value (#b4afff) in light mode,
+  // about 2:1 on white. It needs its own lightHue entry to clear AA.
+  const gryt = grytPresets.find((p) => p.id === "gryt")!;
+  const hues = gryt.theme.lightHue!;
+
+  it("clears 4.5:1 on the light page and surface", () => {
+    expect(
+      Number(contrast(hues.accentLight, gryt.theme.light.bg).toFixed(2))
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(
+      Number(contrast(hues.accentLight, gryt.theme.light.surface).toFixed(2))
+    ).toBeGreaterThanOrEqual(4.5);
+  });
+});
+
 describe("a split light hue set is held to the same bar", () => {
   const split = grytPresets.filter(
     (preset) => GENERATED.has(preset.collection) && preset.theme.lightHue !== null

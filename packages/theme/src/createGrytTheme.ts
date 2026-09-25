@@ -134,6 +134,12 @@ export const grytLightTokens = {
   text: "#1f2129"
 } as const;
 
+/**
+ * accentLight on a light page: the dark value (#b4afff) is ~2:1 on white, so light
+ * needs its own. Same violet hue, ~5.9:1 on surface and ~5.3:1 on the page (GRYT-1466).
+ */
+export const grytLightAccentLight = "#4e42ff";
+
 export const grytScales = {
   neutral: neutralScale({
     bg: grytTokens.color.bg,
@@ -185,7 +191,8 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
     ? {
         ...grytTokens.color,
         ...grytLightTokens,
-        surfaceHover: grytLightSurfaceHover
+        surfaceHover: grytLightSurfaceHover,
+        accentLight: grytLightAccentLight
       }
     : grytTokens.color;
   const color = { ...defaults, ...options.color };
