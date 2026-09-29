@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-/* global fetch */
 // Bakes the card's pattern tiles out of pattern.monster's data (MIT), as @gryt/owl does for eggs.
 // Run after editing cardPatterns.json; `--check` fails when the generated files are stale.
+
+/* global fetch */
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
