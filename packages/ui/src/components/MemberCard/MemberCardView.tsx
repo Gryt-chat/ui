@@ -44,6 +44,8 @@ export interface MemberCardViewProps {
   owlHex: string;
   bannerUrl?: string | null;
   game?: RichActivity | null;
+  /** Art for the game, drawn faintly behind the band. A server's /api/game-art/<id> in Gryt. */
+  gameArtUrl?: string | null;
   chips?: CardChip[];
   appearance: "light" | "dark";
   /** Seeds a scatter pattern, so everybody sees the same one: the member's id. */
@@ -71,6 +73,7 @@ export function MemberCardView({
   owlHex,
   bannerUrl,
   game,
+  gameArtUrl,
   chips = [],
   appearance,
   seedKey,
@@ -120,7 +123,7 @@ export function MemberCardView({
       </div>
 
       {playing && game ? (
-        <GameBand card={game} />
+        <GameBand card={game} art={gameArtUrl} />
       ) : line ? (
         <section className="gmc-band">
           <span className="gmc-band-verb">Status</span>
@@ -151,7 +154,7 @@ export function MemberCardView({
 }
 
 /** A game's Rich Presence, as the band between the banner and the rest of the card. */
-function GameBand({ card }: { card: RichActivity }) {
+function GameBand({ card, art }: { card: RichActivity; art?: string | null }) {
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -168,7 +171,8 @@ function GameBand({ card }: { card: RichActivity }) {
     .filter((b): b is { label: string; link: { href: string; host: string } } => b.link !== null);
 
   return (
-    <section className="gmc-band" aria-label={`${verb} ${card.name}`}>
+    <section className={art ? "gmc-band has-art" : "gmc-band"} aria-label={`${verb} ${card.name}`}>
+      {art && <span className="gmc-band-art" aria-hidden="true" style={{ backgroundImage: `url("${art.replace(/["\\]/g, "")}")` }} />}
       <div className="gmc-band-top">
         <span className="gmc-band-verb">{verb}</span>
         {time && (
