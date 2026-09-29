@@ -73,3 +73,10 @@ await copyFile(themeSourcePath, themeDistPath);
 // Same reason, one layer down: the @apply calls in components.css have to resolve against
 // the consuming app's own Tailwind build, so this one is copied too.
 await copyFile(componentsSourcePath, componentsDistPath);
+
+// The member card's own sheet, for an app that uses components.css rather than styles.css:
+// styles.css has it through the component's import, components.css doesn't.
+await copyFile(
+  resolve(import.meta.dir, "../src/components/MemberCard/memberCard.css"),
+  resolve(distDir, "member-card.css")
+);
