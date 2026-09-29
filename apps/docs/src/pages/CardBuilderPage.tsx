@@ -12,6 +12,7 @@ import {
   MemberCardEditor,
   type RichActivity,
   seedFromId,
+  Select,
   setCardIconLoader,
   TextField
 } from "@gryt/ui";
@@ -22,14 +23,34 @@ import { useSiteTheme } from "../lib/theme/siteTheme";
 
 setCardIconLoader(() => import("../lib/cardIcons"));
 
-const SAMPLE_GAME: RichActivity = {
-  type: "playing",
-  name: "Minecraft",
-  details: "Harbourtown SMP",
-  state: "Survival",
-  party: { size: 2, max: 8 },
-  startedAt: Date.now() - (23 * 60 + 41) * 1000
-};
+/* Real games, with their Steam art resized and served from this site, so the page never
+   loads anything from Steam or Discord. In Gryt the art comes from the member's server. */
+const SAMPLE_GAMES: { id: string; name: string; details: string; state: string; party?: [number, number] }[] = [
+  { id: "1158877933042143272", name: "Counter-Strike 2", details: "Premier · Ancient", state: "In a match", party: [5, 5] },
+  { id: "356875988589740042", name: "Dota 2", details: "Ranked All Pick", state: "Playing Invoker", party: [3, 5] },
+  { id: "1137125502985961543", name: "Baldur's Gate III", details: "Act II · Moonrise Towers", state: "Co-op", party: [2, 4] },
+  { id: "1402418436809953330", name: "ELDEN RING", details: "Limgrave", state: "Level 42" },
+  { id: "1124358970618953818", name: "Valheim", details: "The Black Forest", state: "Building a longhouse", party: [4, 10] },
+  { id: "359509387670192128", name: "Stardew Valley", details: "Summer 12, Year 2", state: "Pelican Town", party: [2, 4] },
+  { id: "1402418344912752671", name: "Terraria", details: "Expert world", state: "Fighting the Eye of Cthulhu", party: [3, 8] },
+  { id: "1402418594532298837", name: "Rust", details: "Rustafied EU Main", state: "Online for 3 hours" },
+  { id: "1402418717781921935", name: "PUBG: BATTLEGROUNDS", details: "Erangel · Squad", state: "34 left", party: [4, 4] }
+];
+
+const STARTED = Date.now() - (23 * 60 + 41) * 1000;
+
+function sampleGame(id: string): RichActivity {
+  const g = SAMPLE_GAMES.find((x) => x.id === id) ?? SAMPLE_GAMES[0];
+  return {
+    type: "playing",
+    name: g.name,
+    appId: g.id,
+    details: g.details,
+    state: g.state,
+    party: g.party ? { size: g.party[0], max: g.party[1] } : undefined,
+    startedAt: STARTED
+  };
+}
 
 export function CardBuilderPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,6 +58,7 @@ export function CardBuilderPage() {
   const [style, setStyle] = useState<CardStyle>(() => decodeGrytCard(searchParams.toString()) ?? DEFAULT_CARD_STYLE);
   const [name, setName] = useState("Sivert");
   const [playing, setPlaying] = useState(true);
+  const [gameId, setGameId] = useState(SAMPLE_GAMES[0].id);
   const appearance = useSiteTheme().appearance;
 
   const seed = avatarSeed(name) ?? avatarSeed("Gryt") ?? "gryt";
@@ -83,14 +105,23 @@ export function CardBuilderPage() {
             </label>
             <label className="flex items-center gap-2 text-sm text-gryt-text">
               <input type="checkbox" checked={playing} onChange={(e) => setPlaying(e.target.checked)} />
-              Playing a game
+              Playing
             </label>
+            {playing && (
+              <Select
+                aria-label="Game"
+                value={gameId}
+                onValueChange={(v) => setGameId(String(v))}
+                options={SAMPLE_GAMES.map((g) => ({ value: g.id, label: g.name }))}
+              />
+            )}
           </div>
           <div style={{ width: 340, maxWidth: "100%" }}>
             <MemberCard
               appearance={appearance}
               avatarSrc={avatar}
-              game={playing ? SAMPLE_GAME : null}
+              game={playing ? sampleGame(gameId) : null}
+              gameArtUrl={playing ? `/card-games/${gameId}.webp` : null}
               name={name || "Gryt"}
               owlHex={owlHex}
               profile={{ cardStyle: style, bio: "Mostly on after nine.", pronouns: null, statusLine: "Around tonight for co-op." }}
