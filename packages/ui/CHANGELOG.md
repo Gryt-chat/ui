@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.35.2
+
+### Patch Changes
+
+- 2fc64a9: `MemberCard` takes `gameArtUrl`, drawn faintly behind the game band and fading out towards the text.
+
 ## 0.35.1
 
 ### Patch Changes
