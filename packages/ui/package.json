@@ -79,6 +79,8 @@
     "generate-theme": "bun scripts/generate-theme.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
+    "test:card": "bun scripts/check-member-card.mjs",
+    "card-patterns": "bun scripts/card-patterns.mjs",
     "prepublishOnly": "bun run typecheck && bun run test && bun run build"
   },
   "peerDependencies": {

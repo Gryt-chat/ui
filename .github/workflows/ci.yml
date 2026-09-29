@@ -37,6 +37,7 @@ jobs:
       - run: bun run test:comment-length
       - run: bun run test:retired-logo
       - run: bun run test
+      - run: bun --filter @gryt/ui test:card
       # Only artwork/ itself: a subfolder holds another generator's drawings, which this
       # reports as slotless. A drawing not drawn on the base extracts as a whole owl.
       - name: Check drawings added by this pull request

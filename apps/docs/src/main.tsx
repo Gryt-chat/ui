@@ -20,6 +20,7 @@ import { AvatarsPage } from "./pages/AvatarsPage";
 import { HomePage } from "./pages/HomePage";
 import { InstallationPage } from "./pages/InstallationPage";
 import { DrawingPage } from "./pages/DrawingPage";
+import { CardBuilderPage } from "./pages/CardBuilderPage";
 import { EggsPage } from "./pages/EggsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ThemeGeneratorPage } from "./pages/ThemeGeneratorPage";
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
       { path: "avatars", element: <AvatarsPage /> },
       { path: "avatars/drawing", element: <DrawingPage /> },
       { path: "eggs", element: <EggsPage /> },
+      { path: "card", element: <CardBuilderPage /> },
       {
         path: "components",
         element: <Navigate replace to="/components/button" />
