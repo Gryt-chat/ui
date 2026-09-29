@@ -54,7 +54,7 @@ export default function CardIconPicker({ value, onPick }: { value?: string; onPi
   const [query, setQuery] = useState("");
   const current = value ?? DEFAULT_ICON;
   const icons = useIconModule();
-  const names = icons?.ICON_NAMES ?? [];
+  const names = useMemo(() => icons?.ICON_NAMES ?? [], [icons]);
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase().replace(/\s+/g, "-");
     const all = q ? names.filter((n) => n.includes(q)) : names;
