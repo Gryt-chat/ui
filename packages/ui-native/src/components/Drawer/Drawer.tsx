@@ -25,10 +25,8 @@ import {
 } from "react-native-gesture-handler";
 import Animated, {
   runOnJS,
-  useAnimatedReaction,
   useAnimatedStyle,
-  useSharedValue,
-  type SharedValue
+  useSharedValue
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -36,7 +34,6 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { grytDrawerBleed } from "@gryt/theme";
 import { durations, travel as travelTo } from "../../motion";
 import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
-import { reachOf, seedFor } from "./drawerPull";
 import { useTheme } from "../../theme";
 
 export type DrawerSide = "left" | "right" | "bottom";
@@ -44,8 +41,6 @@ export type DrawerSide = "left" | "right" | "bottom";
 interface DrawerContextValue {
   open: boolean;
   setOpen: (open: boolean) => void;
-  /** The caller's own reach into the panel, 0 to 1. See `DrawerRootProps`. */
-  pull?: SharedValue<number>;
 }
 
 const DrawerContext = createContext<DrawerContextValue | null>(null);
@@ -77,21 +72,12 @@ function useDrawer(part: string) {
 
 export interface DrawerRootProps extends OpenStateProps {
   children?: ReactNode;
-  /**
-   * How far the caller has pulled the panel out, 0 shut to 1 open, for dragging it open
-   * from elsewhere. It composes: the panel takes whichever of pull and spring reaches further.
-   */
-  pull?: SharedValue<number>;
 }
 
-function Root({ children, pull, ...openProps }: DrawerRootProps) {
+function Root({ children, ...openProps }: DrawerRootProps) {
   const state = useOpenState(openProps);
-  const value = useMemo(
-    () => ({ ...state, pull }),
-    [state, pull]
-  );
   return (
-    <DrawerContext.Provider value={value}>{children}</DrawerContext.Provider>
+    <DrawerContext.Provider value={state}>{children}</DrawerContext.Provider>
   );
 }
 
@@ -145,7 +131,7 @@ function Popup({
   dismissible = true,
   style
 }: DrawerPopupProps) {
-  const { open, setOpen, pull } = useDrawer("Popup");
+  const { open, setOpen } = useDrawer("Popup");
   const theme = useTheme();
   /**
    * A side panel is full height, so its first row sits under the Dynamic Island unless it
@@ -158,14 +144,6 @@ function Popup({
   const extent = vertical ? screen.height * size : screen.width * size;
 
   const progress = useSharedValue(0);
-
-  /**
-   * A local stand-in so the worklets below can read one value either way. A caller that
-   * passes nothing leaves it at 0, and `reach` is then `progress`.
-   */
-  const ownPull = useSharedValue(0);
-  const pulled = pull ?? ownPull;
-
 
   /**
    * The panel is built `grytDrawerBleed` larger and hangs that much off-screen: the spring
@@ -217,12 +195,6 @@ function Popup({
       return;
     }
 
-    /* Opening starts from wherever a drag had got to. Springing from 0 would take the
-       panel back to the edge, and the larger-of-two rule cannot save it. */
-    if (open) {
-      progress.value = seedFor(progress.value, pulled.value);
-    }
-
     // eslint-disable-next-line react-hooks/immutability
     progress.value = travelTo(
       open ? 1 : 0,
@@ -234,7 +206,7 @@ function Popup({
         if (finished && !open) runOnJS(setMounted)(false);
       }
     );
-  }, [open, mounted, progress, pulled, reducedMotion]);
+  }, [open, mounted, progress, reducedMotion]);
 
   /**
    * How far the finger has dragged the panel away from open, in points. Kept off
@@ -242,29 +214,10 @@ function Popup({
    */
   const drag = useSharedValue(0);
 
-  /**
-   * How far out the panel is, from whichever is reaching further. `Math.max` rather than a
-   * flag: the panel cannot go backwards, because it is always the larger of the two.
-   */
-  const reach = () => {
-    "worklet";
-    return reachOf(progress.value, pulled.value);
-  };
-
-  /* A pull off zero mounts the panel and a pull back to zero takes it away, or an abandoned
-     drag leaves a Modal up with nothing in view. Only while `open` is false. */
-  useAnimatedReaction(
-    () => pulled.value > 0,
-    (reaching, was) => {
-      if (reaching === was) return;
-      if (reaching) runOnJS(setMounted)(true);
-      else if (!open) runOnJS(setMounted)(false);
-    },
-    [open]
-  );
-
+  /* Read shared values right here. Reanimated subscribes only to ones in this closure, and a
+     helper that read them for it left the panel frozen off-screen (GRYT-1623). */
   const panelStyle = useAnimatedStyle(() => {
-    const travel = hidden + (0 - hidden) * reach() + drag.value;
+    const travel = hidden + (0 - hidden) * progress.value + drag.value;
     return {
       // Transform only. The panel slides; it does not fade — the web's Popup declares
       // `transition-transform` and nothing else, and a fading panel reads as a dialog.
@@ -278,7 +231,7 @@ function Popup({
    */
   const scrimStyle = useAnimatedStyle(() => {
     const dragged = extent > 0 ? Math.min(1, Math.abs(drag.value) / extent) : 0;
-    return { opacity: reach() * (1 - dragged) };
+    return { opacity: progress.value * (1 - dragged) };
   });
 
   /**
