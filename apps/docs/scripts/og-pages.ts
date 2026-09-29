@@ -169,6 +169,15 @@ const staticPages: OgPage[] = [
     drawing: "avatar"
   },
   {
+    route: "card",
+    title: "Build your own card — Gryt UI",
+    description:
+      "Pick a colour and a pattern for your Gryt member card, tune it, and share it as a link. Paste the link into Edit my card in the app.",
+    hero: namedImport("MemberCard"),
+    caption: "Your colours, 300 patterns, one link.",
+    drawing: "palette"
+  },
+  {
     route: "eggs",
     title: "Eggs — Gryt UI",
     description:

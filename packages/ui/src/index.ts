@@ -262,3 +262,7 @@ export type { ToolbarRootProps } from "./components/Toolbar/Toolbar";
 export { cn } from "./components/utils/cn";
 export { useMediaQuery } from "./components/utils/useMediaQuery";
 export type { Tone } from "./components/utils/styles";
+
+/* The member card and its editor, moved here from the client so the phone and the docs'
+   card builder draw the same card. Style codes use the theme generator's link format. */
+export * from "./entries/member-card";
