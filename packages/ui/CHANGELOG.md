@@ -1,5 +1,15 @@
 # @gryt/ui
 
+## 0.35.0
+
+### Minor Changes
+
+- ac809cf: The member card now lives here. `MemberCard` draws it, `MemberCardEditor` edits its style, and `encodeGrytCard`/`decodeGrytCard` turn a style into a link or code in the same format as a theme link. It brings 306 tile patterns (loaded only when one is drawn), scatter patterns, built-in styles and `randomCardStyle`. Icon patterns need the app to hand over a loader with `setCardIconLoader`. The docs have a "Build your own card" page at /card that copies a link, which Edit my card in the app accepts.
+
+### Patch Changes
+
+- 198d15f: A game card can be of the `using` kind, which reads "Using Figma", for apps rather than games.
+
 ## 0.34.4
 
 ### Patch Changes
