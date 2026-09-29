@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.35.1
+
+### Patch Changes
+
+- c881425: `@gryt/ui/member-card.css` is the member card's stylesheet on its own, for apps that import `components.css` instead of `styles.css`. Without it the card drew unstyled there.
+
 ## 0.35.0
 
 ### Minor Changes
