@@ -1,5 +1,11 @@
 # @gryt/ui-native
 
+## 0.17.1
+
+### Patch Changes
+
+- 7b91ed4: `Drawer` closes in about 200ms with an eased curve instead of the 700ms soft spring. The Modal behind it takes every tap until it's gone, so the screen underneath answers much sooner.
+
 ## 0.17.0
 
 ### Minor Changes
