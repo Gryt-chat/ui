@@ -1,10 +1,10 @@
 "use client";
 
-import { Palette, Shuffle, SquaresFour, Swatches } from "@phosphor-icons/react";
-import { type CSSProperties, type ReactNode, useEffect, useMemo, useState } from "react";
+import { Palette, Shuffle, SquaresFour } from "@phosphor-icons/react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 
 import { type BannerColours, readBannerColours } from "../../memberCard/bannerColours";
-import { BUILTIN_CARD_STYLES, randomCardStyle, styleSwatch } from "../../memberCard/builtinStyles";
+import { randomCardStyle } from "../../memberCard/builtinStyles";
 import { type CardStyle, encodeCardStyle, TUNING } from "../../memberCard/cardStyle";
 import { cardVars } from "../../memberCard/cardVars";
 import { isTunable } from "../../memberCard/patterns";
@@ -231,52 +231,32 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
     </>
   );
 
-  const styles = (
-    <Group title="Card styles" description="A style is a card's colours and pattern. It never carries a banner, bio or pronouns.">
-      <div className="flex flex-wrap gap-1.5">
-        {BUILTIN_CARD_STYLES.map((b) => (
-          <button
-            key={b.id}
-            type="button"
-            onClick={() => apply(b.style)}
-            aria-pressed={encodeCardStyle(b.style) === encodeCardStyle(style)}
-            className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-gryt-border bg-gryt-surface-raised py-1 pr-2.5 pl-1 text-[12.5px] font-bold text-gryt-text hover:bg-gryt-surface-hover aria-pressed:border-gryt-accent"
-          >
-            <i className="h-[18px] w-[18px] rounded-full border border-gryt-border" style={{ background: styleSwatch(b.style) } as CSSProperties} />
-            {b.name}
-          </button>
-        ))}
-      </div>
-      <div>
-        <Button size="small" tone="neutral" onClick={() => apply(randomCardStyle())}>
-          <Shuffle weight="bold" size={14} />
-          Surprise me
-        </Button>
-      </div>
-    </Group>
-  );
-
   const all: MemberCardPane[] = [
     { value: "colour", label: "Colour", icon: <Palette weight="fill" size={16} />, content: colour },
     { value: "pattern", label: "Pattern", icon: <SquaresFour weight="fill" size={16} />, content: pattern },
-    { value: "styles", label: "Styles", icon: <Swatches weight="fill" size={16} />, content: styles },
     ...panes,
   ];
   const current = all.find((p) => p.value === pane) ?? all[0];
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-      <Tabs className="shrink-0 px-4 pt-3" onValueChange={(v) => setPane(String(v))} value={current.value}>
-        <Tabs.List aria-label="What to change" className="max-w-full overflow-x-auto">
-          {all.map((p) => (
-            <Tabs.Tab className={TAB_PRESS} key={p.value} value={p.value}>
-              {p.icon}
-              <span>{p.label}</span>
-            </Tabs.Tab>
-          ))}
-          <Tabs.Indicator />
-        </Tabs.List>
-      </Tabs>
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 px-4 pt-3">
+        <Tabs className="min-w-0" onValueChange={(v) => setPane(String(v))} value={current.value}>
+          <Tabs.List aria-label="What to change" className="max-w-full overflow-x-auto">
+            {all.map((p) => (
+              <Tabs.Tab className={TAB_PRESS} key={p.value} value={p.value}>
+                {p.icon}
+                <span>{p.label}</span>
+              </Tabs.Tab>
+            ))}
+            <Tabs.Indicator />
+          </Tabs.List>
+        </Tabs>
+        <Button size="small" tone="neutral" onClick={() => apply(randomCardStyle())}>
+          <Shuffle weight="bold" size={14} />
+          Surprise me
+        </Button>
+      </div>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-6 overflow-y-auto p-4">{current.content}</div>
     </div>
   );

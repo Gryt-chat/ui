@@ -13,7 +13,6 @@ import {
   encodeGrytCard,
   MemberCard,
   MemberCardEditor,
-  randomCardStyle,
   type RichActivity,
   seedFromId,
   Select,
@@ -132,10 +131,15 @@ export function CardBuilderPage() {
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Button size="small" onClick={() => setStyle(randomCardStyle())}>
-              Surprise me
-            </Button>
             <CopyCardLink style={style} link={shareLink} />
+            <Button
+              size="small"
+              tone="neutral"
+              // The browser asks before it opens Gryt, and Gryt shows the card before anything is saved.
+              onClick={() => { window.location.href = `gryt://card?${encodeGrytCard(style)}`; }}
+            >
+              Use in Gryt
+            </Button>
             <Button size="small" tone="neutral" onClick={() => avatarInput.current?.click()}>
               {ownAvatar ? "Change avatar" : "Try your avatar"}
             </Button>

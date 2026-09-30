@@ -422,6 +422,8 @@ export function OwlDesigner({
   onCancel,
   active = true,
   followSeed = false,
+  initialWorn,
+  onUseInApp,
 }: {
   nickname: string;
   saving: boolean;
@@ -434,10 +436,14 @@ export function OwlDesigner({
    * changes something here. gryt.chat sets this; the client opens on your last look.
    */
   followSeed?: boolean;
+  /** A look to open on, as a worn string: one somebody shared. It wins over the last look and the seed. */
+  initialWorn?: string;
+  /** Adds "Open in Gryt", for a page outside the app that can hand the look over to it. */
+  onUseInApp?: (worn: string) => void;
 }) {
   const seed = avatarSeed(nickname) ?? "";
   const [look, setLookState] = useState<WornLook>(() =>
-    startingLook(followSeed ? (avatarSeed(nickname) ?? "") : undefined),
+    (initialWorn ? decodeWorn(initialWorn) : null) ?? startingLook(followSeed ? (avatarSeed(nickname) ?? "") : undefined),
   );
   /**
    * Whether anything in here has been touched. Only `setLook` sets it, so the effects
@@ -461,7 +467,7 @@ export function OwlDesigner({
   useEffect(() => {
     if (!active) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- the reset above
-    setLookState(startingLook(followSeed ? seed : undefined));
+    setLookState((initialWorn ? decodeWorn(initialWorn) : null) ?? startingLook(followSeed ? seed : undefined));
     setCustomised(false);
     setPane("expression");
     setWardrobe(readWardrobe());
@@ -472,7 +478,7 @@ export function OwlDesigner({
     // keystroke would also reset the pane. The effect below follows the name.
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, allNames, followSeed]);
+  }, [active, allNames, followSeed, initialWorn]);
 
   /** Follow the name, until somebody picks a hat. Then it is theirs. */
   useEffect(() => {
@@ -816,6 +822,11 @@ export function OwlDesigner({
             <Button disabled={saving} onClick={() => void handleSave()} size="small">
               {saving ? "Saving..." : "Use this owl"}
             </Button>
+            {onUseInApp && (
+              <Button onClick={() => onUseInApp(worn)} size="small" tone="neutral">
+                Open in Gryt
+              </Button>
+            )}
             <SaveAs look={look} nickname={nickname} seed={seed} />
             {onCancel && (
               <Button disabled={saving} onClick={onCancel} size="small" tone="neutral">
@@ -839,10 +850,13 @@ export function OwlDesignerDialog({
   saving,
   onOpenChange,
   onSave,
+  initialWorn,
 }: {
   open: boolean;
   nickname: string;
   saving: boolean;
+  /** A shared look to open on. */
+  initialWorn?: string;
   onOpenChange: (open: boolean) => void;
   onSave: (png: Blob, worn: string) => void;
 }) {
@@ -854,6 +868,7 @@ export function OwlDesignerDialog({
           <Dialog.Title className="sr-only">Design your owl</Dialog.Title>
           <OwlDesigner
             active={open}
+            initialWorn={initialWorn}
             nickname={nickname}
             onCancel={() => onOpenChange(false)}
             onSave={onSave}
