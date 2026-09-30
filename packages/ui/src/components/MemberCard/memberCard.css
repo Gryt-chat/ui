@@ -115,9 +115,7 @@
 .gmc { overflow: hidden; --pat-color: color-mix(in oklch, var(--m-accent) 70%, transparent); --base: linear-gradient(var(--owl), var(--owl)); }
 .gmc.menu-open { overflow: visible; }
 .gmc-banner { position: relative; height: 164px; background-color: var(--owl); background-position: center;
-  background-image: var(--pat-img, linear-gradient(transparent, transparent)), var(--base); background-size: var(--pat-size, auto), cover;
-  /* The card's radius less its outline, so a thick outline leaves no gap at the corners. */
-  --r-in: max(0px, calc(var(--r-lg) - var(--gmc-edge, 1px))); border-radius: var(--r-in) var(--r-in) 0 0; }
+  background-image: var(--pat-img, linear-gradient(transparent, transparent)), var(--base); background-size: var(--pat-size, auto), cover; }
 .gmc-banner.short { height: 96px; }
 .gmc .gmc-banner.short .gmc-over { padding-top: 12px; }
 .gmc:not([data-fc]) .gmc-banner.img { background-image: var(--img) !important; background-size: cover !important; }
