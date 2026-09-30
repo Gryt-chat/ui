@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.37.1
+
+### Patch Changes
+
+- 1f38330: The same code as 0.37.0, which never reached npm: banner colours for the card, a pattern in front of the banner, line weight and outline.
+
 ## 0.37.0
 
 ### Minor Changes
