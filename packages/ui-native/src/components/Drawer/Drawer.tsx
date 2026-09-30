@@ -24,6 +24,7 @@ import {
   ScrollView as GestureScrollView
 } from "react-native-gesture-handler";
 import Animated, {
+  Easing,
   runOnJS,
   useAnimatedStyle,
   useSharedValue
@@ -196,9 +197,10 @@ function Popup({
     }
 
     // eslint-disable-next-line react-hooks/immutability
+    // A quick eased close, not the soft spring: the Modal eats every tap until it's gone.
     progress.value = travelTo(
       open ? 1 : 0,
-      { duration: durations.springSoft },
+      open ? { duration: durations.springSoft } : { duration: durations.fast + 50, easing: Easing.out(Easing.cubic) },
       (finished) => {
         "worklet";
         // Unmount only once the panel is gone and only if the animation ran to the end —
