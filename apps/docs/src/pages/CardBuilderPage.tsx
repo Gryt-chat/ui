@@ -6,6 +6,7 @@ import {
   Button,
   type CardStyle,
   CardIcon,
+  CopyCardLink,
   DEFAULT_CARD_STYLE,
   decodeGrytCard,
   encodeGrytCard,
@@ -96,15 +97,14 @@ export function CardBuilderPage() {
         </p>
       </header>
 
-      <div className="grid min-w-0 items-start gap-(--space-md) lg:grid-cols-[22rem_minmax(0,1fr)]">
-        <aside className="min-w-0 lg:max-h-[calc(100dvh-6rem)] lg:overflow-y-auto lg:pr-2 lg:sticky lg:top-20">
+      <div className="grid min-w-0 items-start gap-(--space-md) lg:grid-cols-[34rem_minmax(0,1fr)]">
+        <aside className="flex min-w-0 overflow-hidden rounded-(--gryt-radius-lg) border border-gryt-border lg:sticky lg:top-20 lg:h-[min(40rem,calc(100dvh-6rem))]">
           <MemberCardEditor
             appearance={appearance}
             nickname={name}
             onChange={setStyle}
             owlHex={owlHex}
             seed={seedFromId(name)}
-            shareLink={shareLink}
             value={style}
           />
         </aside>
@@ -132,6 +132,7 @@ export function CardBuilderPage() {
             <Button size="small" onClick={() => setStyle(randomCardStyle())}>
               Surprise me
             </Button>
+            <CopyCardLink style={style} link={shareLink} />
             <label className="cursor-pointer rounded-md border border-gryt-border bg-gryt-surface-raised px-2.5 py-1 text-xs font-bold text-gryt-text hover:bg-gryt-surface-hover">
               {ownAvatar ? "Change avatar" : "Try your avatar"}
               <input type="file" accept="image/*" className="hidden" onChange={pick(setOwnAvatar)} />
