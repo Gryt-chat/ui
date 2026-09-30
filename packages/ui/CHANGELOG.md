@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.37.4
+
+### Patch Changes
+
+- c402ddd: Member cards: "No fade" is a third choice for the banner, leaving a hard edge. A thick outline no longer leaves a gap at the banner's corners.
+
 ## 0.37.3
 
 ### Patch Changes
