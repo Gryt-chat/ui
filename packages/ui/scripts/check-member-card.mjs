@@ -89,15 +89,22 @@ check("whole-card colours keep small text at 4.5:1 or better, for every pick swe
   console.log(`        worst of ${everyPick().length}: ${worst.worst.toFixed(2)}:1`);
 });
 
-check("Surprise me always gives a readable card, with a pattern it knows", () => {
+check("Surprise me always gives a readable card, and rolls every field", () => {
   let seed = 7;
   const random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+  const seen = {};
   for (let i = 0; i < 500; i++) {
     const style = randomCardStyle(random);
-    const { worst } = worstOnCard({ mode: style.fill, c1: style.c1, c2: style.c2 ?? style.c1, angle: style.angle });
+    const pick = style.fill === "owl" ? owlGradient("#7c5cff") : { mode: style.fill, c1: style.c1, c2: style.c2 ?? style.c1, angle: style.angle };
+    const { worst } = worstOnCard(pick);
     assert.ok(worst >= AA, `${JSON.stringify(style)} gives ${worst.toFixed(2)}:1`);
-    assert.notEqual(style.pattern, "icon");
+    assert.equal(style.pattern === "icon", Boolean(style.pIcon), "the icon pattern comes with an icon, and only it does");
+    const code = encodeCardStyle(style);
+    assert.equal(encodeCardStyle(decodeCardStyle(code)), code, "a rolled style survives a share link");
+    for (const key of ["fill", "pattern", "colours", "cover", "fade", "pFade", "pOpacity", "pInk"]) (seen[key] ??= new Set()).add(style[key]);
   }
+  for (const [key, values] of Object.entries(seen)) assert.ok(values.size > 1, `${key} never changed`);
+  assert.equal(seen.fill.size, 3);
 });
 
 check("every built-in style keeps small text at 4.5:1 or better", () => {
