@@ -60,6 +60,8 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
   if (shown !== style) {
     setShown(style);
     setCode(encodeCardStyle(style));
+    // A style from outside, like a pasted link or a Surprise me beside the card, moves the pickers too.
+    if (style.fill !== "owl" && style.c1) setPicks({ c1: style.c1, c2: style.c2 ?? style.c1, angle: style.angle });
   }
 
   const drawn = useMemo(() => cardVars(style, owlHex, { appearance, seed }), [style, owlHex, appearance, seed]);

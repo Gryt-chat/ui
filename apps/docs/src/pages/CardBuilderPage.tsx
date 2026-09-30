@@ -3,6 +3,7 @@
  * the app puts in Edit my card, so a link from here pastes straight in there.
  */
 import {
+  Button,
   type CardStyle,
   CardIcon,
   DEFAULT_CARD_STYLE,
@@ -10,6 +11,7 @@ import {
   encodeGrytCard,
   MemberCard,
   MemberCardEditor,
+  randomCardStyle,
   type RichActivity,
   seedFromId,
   Select,
@@ -17,7 +19,7 @@ import {
   TextField
 } from "@gryt/ui";
 import { avatarSeed, owlAvatarColour, owlAvatarDataUri } from "@gryt/owl";
-import { useMemo, useState } from "react";
+import { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useSiteTheme } from "../lib/theme/siteTheme";
 
@@ -59,6 +61,16 @@ export function CardBuilderPage() {
   const [name, setName] = useState("Sivert");
   const [playing, setPlaying] = useState(true);
   const [gameId, setGameId] = useState(SAMPLE_GAMES[0].id);
+  // Pictures picked here stay in this browser as object URLs; nothing is uploaded.
+  const [ownAvatar, setOwnAvatar] = useState<string | null>(null);
+  const [ownBanner, setOwnBanner] = useState<string | null>(null);
+  useEffect(() => () => { if (ownAvatar) URL.revokeObjectURL(ownAvatar); }, [ownAvatar]);
+  useEffect(() => () => { if (ownBanner) URL.revokeObjectURL(ownBanner); }, [ownBanner]);
+  const pick = (set: (url: string | null) => void) => (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (file && file.type.startsWith("image/")) set(URL.createObjectURL(file));
+  };
   const appearance = useSiteTheme().appearance;
 
   const seed = avatarSeed(name) ?? avatarSeed("Gryt") ?? "gryt";
@@ -116,10 +128,30 @@ export function CardBuilderPage() {
               />
             )}
           </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button size="small" onClick={() => setStyle(randomCardStyle())}>
+              Surprise me
+            </Button>
+            <label className="cursor-pointer rounded-md border border-gryt-border bg-gryt-surface-raised px-2.5 py-1 text-xs font-bold text-gryt-text hover:bg-gryt-surface-hover">
+              {ownAvatar ? "Change avatar" : "Try your avatar"}
+              <input type="file" accept="image/*" className="hidden" onChange={pick(setOwnAvatar)} />
+            </label>
+            <label className="cursor-pointer rounded-md border border-gryt-border bg-gryt-surface-raised px-2.5 py-1 text-xs font-bold text-gryt-text hover:bg-gryt-surface-hover">
+              {ownBanner ? "Change banner" : "Try a banner"}
+              <input type="file" accept="image/*" className="hidden" onChange={pick(setOwnBanner)} />
+            </label>
+            {(ownAvatar || ownBanner) && (
+              <Button size="small" tone="neutral" onClick={() => { setOwnAvatar(null); setOwnBanner(null); }}>
+                Back to the owl
+              </Button>
+            )}
+          </div>
+          <span className="text-xs text-gryt-muted">Pictures you pick stay in your browser. Nothing is uploaded.</span>
           <div style={{ width: 340, maxWidth: "100%" }}>
             <MemberCard
               appearance={appearance}
-              avatarSrc={avatar}
+              avatarSrc={ownAvatar ?? avatar}
+              bannerUrl={ownBanner}
               game={playing ? sampleGame(gameId) : null}
               gameArtUrl={playing ? `/card-games/${gameId}.webp` : null}
               name={name || "Gryt"}
