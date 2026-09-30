@@ -1,5 +1,11 @@
 # @gryt/ui-native
 
+## 0.17.2
+
+### Patch Changes
+
+- 43ab6dd: Drawer and sheet backdrops stay at a fixed shade while panels slide. Member card tooltips appear after 120ms.
+
 ## 0.17.1
 
 ### Patch Changes
