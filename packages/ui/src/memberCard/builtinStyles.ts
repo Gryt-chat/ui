@@ -87,5 +87,8 @@ export function randomCardStyle(random: () => number = Math.random): CardStyle {
   if (random() < 0.4) style.pOpacity = int(8, TUNING.pOpacity.max);
   if (random() < 0.25) style.pInk = hsl(Math.floor(random() * 360), 0.5 + random() * 0.4, 0.4 + random() * 0.4);
   if (pattern === "icon") style.pIcon = pick(RANDOM_ICONS);
+  if (random() < 0.3) style.pStroke = pick([60, 150, 200, 250]);
+  if (random() < 0.3) style.edge = pick([0, 2, 3, 4]);
+  if (random() < 0.3) style.pLayer = "front";
   return style;
 }

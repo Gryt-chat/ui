@@ -100,6 +100,7 @@ export function CardBuilderPage() {
         <aside className="flex min-w-0 overflow-hidden rounded-(--gryt-radius-lg) border border-gryt-border xl:sticky xl:top-20 xl:h-[min(40rem,calc(100dvh-6rem))]">
           <MemberCardEditor
             appearance={appearance}
+            bannerUrl={ownBanner}
             nickname={name}
             onChange={setStyle}
             owlHex={owlHex}

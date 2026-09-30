@@ -32,6 +32,12 @@ export interface CardStyle {
   pInk?: string;
   /** A Phosphor icon, kebab-case, for the `icon` pattern. */
   pIcon?: string;
+  /** Line weight of a line pattern, percent of its own. Absent is 100. */
+  pStroke?: number;
+  /** "front" draws the pattern over a banner picture. Absent, the picture covers it. */
+  pLayer?: "front";
+  /** The card's outline in pixels. Absent is the usual one. */
+  edge?: number;
 }
 
 export const PATTERN_FADES = ["none", "top", "bottom", "left", "right", "radial"] as const;
@@ -43,6 +49,8 @@ export const TUNING = {
   pRotate: { min: 0, max: 359, default: 0 },
   pOpacity: { min: 3, max: 40 },
   pSeed: { min: 0, max: 65535 },
+  pStroke: { min: 40, max: 300, default: 100 },
+  edge: { min: 0, max: 6, default: 1 },
 } as const;
 
 const ICON_NAME = /^[a-z0-9-]{1,48}$/;
@@ -110,6 +118,11 @@ function readTuning(r: Record<string, unknown>, out: CardStyle): void {
   const ink = hexColour(r.pInk);
   if (ink) out.pInk = ink;
   if (typeof r.pIcon === "string" && ICON_NAME.test(r.pIcon)) out.pIcon = r.pIcon;
+  const stroke = intIn(r.pStroke, TUNING.pStroke.min, TUNING.pStroke.max);
+  if (stroke !== undefined && stroke !== TUNING.pStroke.default) out.pStroke = stroke;
+  if (r.pLayer === "front") out.pLayer = "front";
+  const edge = intIn(r.edge, TUNING.edge.min, TUNING.edge.max);
+  if (edge !== undefined && edge !== TUNING.edge.default) out.edge = edge;
 }
 
 /** The style as the server stores it: defaults left out, so the default card is null. */
@@ -135,6 +148,9 @@ export function cardStyleForWire(style: CardStyle): Partial<CardStyle> | null {
   if (s.pSeed !== undefined) out.pSeed = s.pSeed;
   if (s.pInk) out.pInk = s.pInk;
   if (s.pIcon) out.pIcon = s.pIcon;
+  if (s.pStroke !== undefined) out.pStroke = s.pStroke;
+  if (s.pLayer) out.pLayer = s.pLayer;
+  if (s.edge !== undefined) out.edge = s.edge;
   return Object.keys(out).length ? out : null;
 }
 
@@ -209,6 +225,9 @@ export function encodeCardStyle(style: CardStyle): string {
   if (st.pSeed !== undefined) q.set("pSeed", String(st.pSeed));
   if (st.pInk) q.set("pInk", st.pInk.replace("#", ""));
   if (st.pIcon) q.set("pIcon", st.pIcon);
+  if (st.pStroke !== undefined) q.set("pStroke", String(st.pStroke));
+  if (st.pLayer) q.set("pLayer", st.pLayer);
+  if (st.edge !== undefined) q.set("edge", String(st.edge));
   return q.toString();
 }
 

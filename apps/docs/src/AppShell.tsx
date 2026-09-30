@@ -22,12 +22,8 @@ interface NavItem {
   href: string;
   label: string;
   badge?: string;
-  /**
-   * The version this page arrived in. It wears a New tag until the library has
-   * moved on a minor — so a patch keeps it and 0.12 clears it, without anybody
-   * having to remember to take the tag off.
-   */
-  since?: string;
+  /** The day this page arrived, as YYYY-MM-DD. It wears a New tag for six months from then. */
+  added?: string;
 }
 
 interface NavSection {
@@ -42,11 +38,11 @@ const navSections: NavSection[] = [
       { href: "/", label: "Overview" },
       { href: "/installation", label: "Installation" },
       { href: "/theme", label: "Theme" },
-      { href: "/theme/generator", label: "Theme generator", since: "0.11.0" },
-      { href: "/avatars", label: "Avatars", since: "0.19.0" },
-      { href: "/avatars/drawing", label: "Drawing a cosmetic", since: "0.20.0" },
-      { href: "/eggs", label: "Eggs", since: "0.21.0" },
-      { href: "/card", label: "Build your own card", since: "0.35.0" }
+      { href: "/theme/generator", label: "Theme generator", added: "2026-08-13" },
+      { href: "/avatars", label: "Avatars", added: "2026-08-24" },
+      { href: "/avatars/drawing", label: "Drawing a cosmetic", added: "2026-08-25" },
+      { href: "/eggs", label: "Eggs", added: "2026-08-29" },
+      { href: "/card", label: "Build your own card", added: "2026-09-30" }
     ]
   },
   // Above the components, not below them. Someone arriving at a component
@@ -93,18 +89,14 @@ const paletteEntries: PaletteEntry[] = navSections
 /** Routes that render a tool rather than a document, and want the full width. */
 const WIDE_ROUTES = ["/theme/generator", "/card"];
 
-/**
- * Whether a page added in `since` is still new.
- *
- * Same major and minor as the version being documented, so a patch keeps the
- * tag and the next minor takes it off. Nobody has to remember, which is the
- * only way a "New" tag stays honest — the alternative is the one that is still
- * on the page a year later.
- */
-function isNewIn(since: string | undefined, version: string): boolean {
-  if (since === undefined) return false;
-  const minor = (value: string) => value.split(".").slice(0, 2).join(".");
-  return minor(since) === minor(version);
+/** How long a page keeps its "New" tag. */
+const NEW_FOR_DAYS = 183;
+
+/** Whether a page added on `added` is still new: six months from that day, then the tag goes by itself. */
+function isNew(added: string | undefined, now: number = Date.now()): boolean {
+  if (added === undefined) return false;
+  const age = now - Date.parse(added);
+  return age >= 0 && age < NEW_FOR_DAYS * 24 * 60 * 60 * 1000;
 }
 
 export function AppShell() {
@@ -356,7 +348,7 @@ function SidebarLink({
     <>
       <span className="truncate">{item.label}</span>
       <span className="flex shrink-0 items-center gap-2">
-        {isNewIn(item.since, __UI_VERSION__) ? (
+        {isNew(item.added) ? (
           <span
             className={[
               "rounded-full px-2 py-0.5 text-[10px] font-medium",

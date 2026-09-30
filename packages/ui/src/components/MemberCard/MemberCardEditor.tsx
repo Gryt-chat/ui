@@ -1,10 +1,11 @@
 "use client";
 
 import { Palette, Shuffle, SquaresFour, Swatches } from "@phosphor-icons/react";
-import { type CSSProperties, type ReactNode, useMemo, useState } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useMemo, useState } from "react";
 
+import { type BannerColours, readBannerColours } from "../../memberCard/bannerColours";
 import { BUILTIN_CARD_STYLES, randomCardStyle, styleSwatch } from "../../memberCard/builtinStyles";
-import { type CardStyle, encodeCardStyle } from "../../memberCard/cardStyle";
+import { type CardStyle, encodeCardStyle, TUNING } from "../../memberCard/cardStyle";
 import { cardVars } from "../../memberCard/cardVars";
 import { isTunable } from "../../memberCard/patterns";
 import { Button } from "../Button/Button";
@@ -47,6 +48,8 @@ export interface MemberCardEditorProps {
   appearance: "light" | "dark";
   /** Panes that belong to the app, like bio or banner, listed after the built-in ones. */
   panes?: MemberCardPane[];
+  /** The member's banner picture, if they have one. Its colours are offered for the card. */
+  bannerUrl?: string | null;
 }
 
 /* Same press feedback as the owl designer's tabs. */
@@ -58,7 +61,7 @@ const TAB_PRESS =
  * Everything about how a member card looks, in tabs with one pane at a time, so
  * nothing needs a long scroll.
  */
-export function MemberCardEditor({ value: style, onChange, owlHex, nickname = "", worn = null, seed, appearance, panes = [] }: MemberCardEditorProps) {
+export function MemberCardEditor({ value: style, onChange, owlHex, nickname = "", worn = null, seed, appearance, panes = [], bannerUrl = null }: MemberCardEditorProps) {
   const [pane, setPane] = useState("colour");
   const [picks, setPicks] = useState(() => ({
     c1: style.c1 ?? START.c1,
@@ -71,6 +74,19 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
     // A style from outside, like a pasted link or a Surprise me beside the card, moves the pickers too.
     if (style.fill !== "owl" && style.c1) setPicks({ c1: style.c1, c2: style.c2 ?? style.c1, angle: style.angle });
   }
+
+  const [banner, setBanner] = useState<{ url: string; colours: BannerColours | null } | null>(null);
+  useEffect(() => {
+    if (!bannerUrl) return;
+    let live = true;
+    void readBannerColours(bannerUrl).then((colours) => {
+      if (live) setBanner({ url: bannerUrl, colours });
+    });
+    return () => {
+      live = false;
+    };
+  }, [bannerUrl]);
+  const fromBanner = bannerUrl && banner?.url === bannerUrl ? banner.colours : null;
 
   const drawn = useMemo(() => cardVars(style, owlHex, { appearance, seed }), [style, owlHex, appearance, seed]);
   const change = (over: Partial<CardStyle>) => onChange({ ...style, ...over });
@@ -131,6 +147,26 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
           </div>
         )}
       </Group>
+      {fromBanner && (
+        <Group title="From your banner" description="Colour the card to match the picture. The first is where the banner meets the card.">
+          <div className="flex flex-wrap gap-1.5">
+            {[fromBanner.bottom, ...fromBanner.palette].map((hex, i) => (
+              <button
+                key={hex + i}
+                type="button"
+                title={i === 0 ? "Match the bottom edge" : hex}
+                aria-label={i === 0 ? "Match the bottom edge of the banner" : `Use ${hex} from the banner`}
+                // A flat bottom edge needs only the short fade; a busy one is faded all the way down.
+                onClick={() => apply({ ...style, fill: "solid", c1: hex, c2: hex, colours: "card", fade: i === 0 && fromBanner.flat ? "bottom" : "banner" })}
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-gryt-border bg-gryt-surface-raised py-1 pr-2.5 pl-1 text-[12.5px] font-bold text-gryt-text hover:bg-gryt-surface-hover"
+              >
+                <i className="h-[18px] w-[18px] rounded-full border border-gryt-border" style={{ background: hex }} />
+                {i === 0 ? "Bottom edge" : hex}
+              </button>
+            ))}
+          </div>
+        </Group>
+      )}
       <Group title="Colour fills" description="The whole card, or only the banner and the band under it.">
         <Select
           value={style.colours}
@@ -153,6 +189,20 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
           />
         </Group>
       )}
+      <Group title="Outline" description="The line around the card. None at 0.">
+        <div className="flex items-center gap-2.5">
+          <input
+            aria-label="Outline thickness"
+            type="range"
+            min={TUNING.edge.min}
+            max={TUNING.edge.max}
+            value={style.edge ?? TUNING.edge.default}
+            onChange={(e) => change({ edge: Number(e.target.value) === TUNING.edge.default ? undefined : Number(e.target.value) })}
+            style={{ flex: 1, minWidth: 120, accentColor: "var(--gryt-accent)" }}
+          />
+          <output className="min-w-[3.5em] font-mono text-xs text-gryt-muted">{style.edge ?? TUNING.edge.default}px</output>
+        </div>
+      </Group>
     </>
   );
 
@@ -169,6 +219,18 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
             options={[
               { value: "banner", label: "The banner" },
               { value: "card", label: "The whole card" },
+            ]}
+          />
+        </Group>
+      )}
+      {bannerUrl && style.pattern !== "none" && (
+        <Group title="Pattern sits" description="Over your banner picture, or behind it so the picture covers it.">
+          <Select
+            value={style.pLayer ?? "behind"}
+            onValueChange={(v) => change({ pLayer: v === "front" ? "front" : undefined })}
+            options={[
+              { value: "behind", label: "Behind the banner" },
+              { value: "front", label: "In front of the banner" },
             ]}
           />
         </Group>

@@ -27,6 +27,8 @@ export interface PatternDraw {
   rotate: number;
   fade: PatternFade;
   seed: number;
+  /** Line weight, 1 is the pattern's own. */
+  stroke?: number;
   /** Loaded on demand: a tile's paths, or the mark a scatter pattern strews. */
   tile?: Tile;
   mark?: PatternMark;
@@ -87,7 +89,7 @@ function classic(id: string, d: PatternDraw): string | null {
   if (id === "contours") {
     const step = 10.5 * d.scale;
     const rings = Array.from({ length: 70 }, (_, i) => `<circle cx='78%' cy='130%' r='${n(9.75 * d.scale + i * step)}'/>`).join("");
-    const content = `<g fill='none' stroke='${d.ink}' stroke-opacity='${n(d.alpha)}' stroke-width='${n(1.5 * d.scale)}'>${rings}</g>`;
+    const content = `<g fill='none' stroke='${d.ink}' stroke-opacity='${n(d.alpha)}' stroke-width='${n(1.5 * d.scale * (d.stroke ?? 1))}'>${rings}</g>`;
     return wrap("", content, d.fade);
   }
   return null;
@@ -102,7 +104,7 @@ function tile(t: Tile, d: PatternDraw): string {
       const paint =
         t.mode === "fill"
           ? `fill='${d.ink}' fill-opacity='${a}' stroke='none'`
-          : `fill='none' stroke='${d.ink}' stroke-opacity='${a}' stroke-width='${t.stroke}'` +
+          : `fill='none' stroke='${d.ink}' stroke-opacity='${a}' stroke-width='${n(t.stroke * (d.stroke ?? 1))}'` +
             (t.mode === "round" ? ` stroke-linejoin='round' stroke-linecap='round'` : "");
       return path.replace(/\/>\s*$/, ` ${paint}/>`);
     })

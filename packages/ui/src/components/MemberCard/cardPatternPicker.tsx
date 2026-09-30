@@ -171,6 +171,9 @@ export function PatternTuning({
       )}
       <Range id="p-scale" label="Size" min={TUNING.pScale.min} max={TUNING.pScale.max} value={style.pScale} unit="%" onChange={(v) => onChange({ pScale: v })} />
       <Range id="p-rotate" label="Rotation" min={TUNING.pRotate.min} max={TUNING.pRotate.max} value={style.pRotate} unit="°" onChange={(v) => onChange({ pRotate: v })} />
+      {pattern.kind !== "scatter" && (
+        <Range id="p-stroke" label="Line weight" min={TUNING.pStroke.min} max={TUNING.pStroke.max} value={style.pStroke ?? TUNING.pStroke.default} unit="%" onChange={(v) => onChange({ pStroke: v === TUNING.pStroke.default ? undefined : v })} />
+      )}
       <Range
         id="p-opacity"
         label="Strength"
@@ -215,7 +218,7 @@ export function PatternTuning({
         <Button
           size="small"
           tone="neutral"
-          onClick={() => onChange({ pScale: 100, pRotate: 0, pOpacity: undefined, pFade: "none", pSeed: undefined, pInk: undefined })}
+          onClick={() => onChange({ pScale: 100, pRotate: 0, pOpacity: undefined, pFade: "none", pSeed: undefined, pInk: undefined, pStroke: undefined })}
         >
           Reset
         </Button>

@@ -46,7 +46,15 @@ export function readablePatternAlpha(surfaces: readonly string[], ink: string, m
   return a;
 }
 
+/** The card's variables and attributes, with the outline and the pattern's layer added to whichever colouring applies. */
 export function cardVars(style: CardStyle, owlHex: string, opts: CardVarsOptions): CardVars {
+  const out = colourVars(style, owlHex, opts);
+  if (style.pLayer === "front") out.attrs["data-player"] = "front";
+  if (style.edge !== undefined) out.vars["--gmc-edge"] = style.edge + "px";
+  return out;
+}
+
+function colourVars(style: CardStyle, owlHex: string, opts: CardVarsOptions): CardVars {
   const col: CardColourPick | null =
     style.fill !== "owl" && style.c1 ? { mode: style.fill, c1: style.c1, c2: style.c2 ?? style.c1, angle: style.angle } : null;
   const draw = (ink: string, alpha: number) => {
@@ -59,6 +67,7 @@ export function cardVars(style: CardStyle, owlHex: string, opts: CardVarsOptions
         rotate: style.pRotate,
         fade: style.pFade,
         seed: style.pSeed ?? opts.seed,
+        stroke: (style.pStroke ?? 100) / 100,
         tile: opts.tile,
         mark: opts.mark,
       },
