@@ -3,7 +3,7 @@
  * lists them in this order, and the swatch is drawn from the style itself.
  */
 
-import { type CardStyle, DEFAULT_CARD_STYLE } from "./cardStyle";
+import { type CardStyle, DEFAULT_CARD_STYLE, PATTERN_FADES, TUNING } from "./cardStyle";
 import { CARD_PATTERNS } from "./patterns";
 
 export interface BuiltinCardStyle {
@@ -56,25 +56,36 @@ function hsl(h: number, sat: number, light: number): string {
   return `#${f(0)}${f(8)}${f(4)}`;
 }
 
-/** Scatter patterns that need a pick of their own are left to the person. */
-const RANDOM_PATTERNS = CARD_PATTERNS.filter((p) => p.kind !== "none" && p.id !== "icon").map((p) => p.id);
+const RANDOM_PATTERNS = CARD_PATTERNS.filter((p) => p.kind !== "none").map((p) => p.id);
 
-/** A card style for the Surprise me button. Colours are kept in a range that reads well. */
+/** Icons the `icon` pattern can land on; all are in Phosphor. */
+const RANDOM_ICONS = ["star", "heart", "moon", "lightning", "leaf", "fire", "music-note", "game-controller", "paw-print", "planet", "skull", "ghost", "flower", "crown", "sparkle"];
+
+/** A card style for the Surprise me button: every field is rolled. Colours stay in a range that reads well. */
 export function randomCardStyle(random: () => number = Math.random): CardStyle {
   const pick = <T,>(list: readonly T[]): T => list[Math.floor(random() * list.length)];
+  const int = (min: number, max: number) => min + Math.floor(random() * (max - min + 1));
   const hue = Math.floor(random() * 360);
-  const light = 0.35 + random() * 0.3;
-  const gradient = random() < 0.6;
+  const fill = pick(["owl", "solid", "solid", "gradient", "gradient", "gradient"] as const);
+  // The owl's own colour with no pattern is the default card, which is no surprise.
+  const pattern = fill === "owl" || random() < 0.85 ? pick(RANDOM_PATTERNS) : "none";
   const style: CardStyle = {
     ...DEFAULT_CARD_STYLE,
-    fill: gradient ? "gradient" : "solid",
-    c1: hsl(hue, 0.55 + random() * 0.35, light),
-    angle: Math.floor(random() * 360),
-    pattern: random() < 0.8 ? pick(RANDOM_PATTERNS) : "none",
+    fill,
+    angle: fill === "gradient" ? Math.floor(random() * 360) : DEFAULT_CARD_STYLE.angle,
+    pattern,
+    colours: random() < 0.7 ? "card" : "banner",
     cover: random() < 0.5 ? "card" : "banner",
-    pScale: 70 + Math.floor(random() * 90),
-    pRotate: pick([0, 0, 15, 30, 45, 90]),
+    fade: random() < 0.5 ? "banner" : "bottom",
+    pScale: int(70, 200),
+    pRotate: pick([0, 0, 15, 30, 45, 90, int(TUNING.pRotate.min, TUNING.pRotate.max)]),
+    pFade: random() < 0.5 ? "none" : pick(PATTERN_FADES),
+    pSeed: int(TUNING.pSeed.min, TUNING.pSeed.max),
   };
-  if (gradient) style.c2 = hsl((hue + 30 + random() * 120) % 360, 0.5 + random() * 0.4, 0.25 + random() * 0.35);
+  if (fill !== "owl") style.c1 = hsl(hue, 0.55 + random() * 0.35, 0.35 + random() * 0.3);
+  if (fill === "gradient") style.c2 = hsl((hue + 30 + random() * 120) % 360, 0.5 + random() * 0.4, 0.25 + random() * 0.35);
+  if (random() < 0.4) style.pOpacity = int(8, TUNING.pOpacity.max);
+  if (random() < 0.25) style.pInk = hsl(Math.floor(random() * 360), 0.5 + random() * 0.4, 0.4 + random() * 0.4);
+  if (pattern === "icon") style.pIcon = pick(RANDOM_ICONS);
   return style;
 }
