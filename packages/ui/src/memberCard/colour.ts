@@ -161,7 +161,8 @@ export function fullColours(col: CardColourPick): FullCardColours {
     hue: Math.round(H),
     ink: css(r.d.ink),
     muted: css(r.d.muted),
-    bg: grad ? "linear-gradient(" + col.angle + "deg, " + r.a.hex + ", " + r.b.hex + ")" : r.a.hex,
+    // Always an image, even for one colour: the whole-card pattern layers it under the pattern.
+    bg: grad ? "linear-gradient(" + col.angle + "deg, " + r.a.hex + ", " + r.b.hex + ")" : "linear-gradient(" + r.a.hex + ", " + r.a.hex + ")",
     mid: grad ? mid : r.a.hex,
     raw: grad
       ? "linear-gradient(" + col.angle + "deg, " + col.c1 + ", " + col.c2 + ")"
