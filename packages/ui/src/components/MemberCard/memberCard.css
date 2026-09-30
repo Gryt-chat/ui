@@ -114,7 +114,7 @@
 /* ---------- The banner ---------- */
 .gmc { overflow: hidden; --pat-color: color-mix(in oklch, var(--m-accent) 70%, transparent); --base: linear-gradient(var(--owl), var(--owl)); }
 .gmc.menu-open { overflow: visible; }
-.gmc-banner { position: relative; height: 164px; background-color: var(--owl); background-position: center;
+.gmc-banner { position: relative; height: 164px; overflow: hidden; border-radius: calc(var(--r-lg) - var(--gmc-edge, 1px)) calc(var(--r-lg) - var(--gmc-edge, 1px)) 0 0; background-color: var(--owl); background-position: center;
   background-image: var(--pat-img, linear-gradient(transparent, transparent)), var(--base); background-size: var(--pat-size, auto), cover; }
 .gmc-banner.short { height: 96px; }
 .gmc .gmc-banner.short .gmc-over { padding-top: 12px; }
