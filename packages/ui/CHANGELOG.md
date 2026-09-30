@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.35.3
+
+### Patch Changes
+
+- 206a0c3: `MemberCardEditor`'s colour pickers follow a style set from outside, such as a pasted link or a Surprise me button beside the card.
+
 ## 0.35.2
 
 ### Patch Changes
