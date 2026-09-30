@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.37.5
+
+### Patch Changes
+
+- 43ab6dd: Drawer and sheet backdrops stay at a fixed shade while panels slide. Member card tooltips appear after 120ms.
+
 ## 0.37.4
 
 ### Patch Changes
