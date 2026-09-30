@@ -49,14 +49,14 @@ export interface MemberCardEditorProps {
   panes?: MemberCardPane[];
 }
 
-/* Same press feedback as the owl designer's rail. */
+/* Same press feedback as the owl designer's tabs. */
 const TAB_PRESS =
   "transition-[scale,color,background-color] duration-(--gryt-dur-spring) ease-spring "
   + "motion-safe:hover:scale-[1.03] motion-safe:active:scale-[0.96] motion-reduce:transition-none";
 
 /**
- * Everything about how a member card looks, laid out like the owl designer: a rail of
- * panes on the left and one pane at a time, so nothing needs a long scroll.
+ * Everything about how a member card looks, in tabs with one pane at a time, so
+ * nothing needs a long scroll.
  */
 export function MemberCardEditor({ value: style, onChange, owlHex, nickname = "", worn = null, seed, appearance, panes = [] }: MemberCardEditorProps) {
   const [pane, setPane] = useState("colour");
@@ -207,35 +207,27 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
   );
 
   const all: MemberCardPane[] = [
-    { value: "colour", label: "Colour", icon: <Palette weight="fill" size={18} />, content: colour },
-    { value: "pattern", label: "Pattern", icon: <SquaresFour weight="fill" size={18} />, content: pattern },
-    { value: "styles", label: "Styles", icon: <Swatches weight="fill" size={18} />, content: styles },
+    { value: "colour", label: "Colour", icon: <Palette weight="fill" size={16} />, content: colour },
+    { value: "pattern", label: "Pattern", icon: <SquaresFour weight="fill" size={16} />, content: pattern },
+    { value: "styles", label: "Styles", icon: <Swatches weight="fill" size={16} />, content: styles },
     ...panes,
   ];
   const current = all.find((p) => p.value === pane) ?? all[0];
 
   return (
-    /* `@container` so the rail goes on top in a narrow space, whatever the window is. */
-    <div className="@container flex min-h-0 min-w-0 flex-1 flex-col">
-      <div className="flex min-h-0 flex-1 @max-lg:flex-col">
-        <Tabs
-          className="shrink-0 border-gryt-border @max-lg:border-b @lg:w-40 @lg:border-r"
-          onValueChange={(v) => setPane(String(v))}
-          orientation="vertical"
-          value={current.value}
-        >
-          <Tabs.List aria-label="What to change" className="gap-1 p-3">
-            {all.map((p) => (
-              <Tabs.Tab className={TAB_PRESS} key={p.value} value={p.value}>
-                {p.icon}
-                <span>{p.label}</span>
-              </Tabs.Tab>
-            ))}
-            <Tabs.Indicator />
-          </Tabs.List>
-        </Tabs>
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-6 overflow-y-auto p-4">{current.content}</div>
-      </div>
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      <Tabs className="shrink-0 px-4 pt-3" onValueChange={(v) => setPane(String(v))} value={current.value}>
+        <Tabs.List aria-label="What to change" className="max-w-full overflow-x-auto">
+          {all.map((p) => (
+            <Tabs.Tab className={TAB_PRESS} key={p.value} value={p.value}>
+              {p.icon}
+              <span>{p.label}</span>
+            </Tabs.Tab>
+          ))}
+          <Tabs.Indicator />
+        </Tabs.List>
+      </Tabs>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-6 overflow-y-auto p-4">{current.content}</div>
     </div>
   );
 }
