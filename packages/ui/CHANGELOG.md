@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.37.7
+
+### Patch Changes
+
+- 2641723: Clip card banners to the inside of thick rounded outlines.
+
 ## 0.37.6
 
 ### Patch Changes
