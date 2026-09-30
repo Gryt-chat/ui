@@ -160,7 +160,10 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
       <Group title="Colour fills" description="The whole card, or only the banner.">
         <Select
           value={style.colours}
-          onValueChange={(v) => change({ colours: v === "banner" ? "banner" : "card" })}
+          onValueChange={(v) => {
+            const colours = v === "banner" ? "banner" : "card";
+            change({ colours, ...(colours === "banner" && style.pattern !== "none" ? { pLayer: "front" as const } : {}) });
+          }}
           options={[
             { value: "card", label: "The whole card" },
             { value: "banner", label: "The banner" },
