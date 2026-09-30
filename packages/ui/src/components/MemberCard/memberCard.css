@@ -139,6 +139,7 @@
 .gmc-band-game b { font-size: 20px; font-weight: 800; letter-spacing: -0.014em; line-height: 1.15; overflow-wrap: anywhere; }
 .gmc-band .gmc-line { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; text-wrap: balance; overflow-wrap: anywhere; }
 .gmc-band .gmc-party { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--gryt-muted); }
+.gmc-game-activity { background: transparent; }
 .gmc.has-band .gmc-over { background: linear-gradient(180deg, transparent, color-mix(in oklch, var(--band) 80%, transparent) 55%, var(--band)); }
 
 /* Colour on the banner and band only. The band carries text, so it is clamped against the ink. */
@@ -149,6 +150,10 @@
 .gmc[data-cc] .gmc-band .gmc-glink.solid, .gmc[data-cc] .gmc-band .gmc-glink.solid span { background: var(--band-ink); color: var(--band-btn-ink); }
 .gmc[data-cc] .gmc-band .gmc-glink:not(.solid) { border-color: color-mix(in oklch, var(--band-ink) 35%, transparent); color: var(--band-ink); }
 .gmc[data-cc] .gmc-band .gmc-glink:not(.solid) span { color: color-mix(in oklch, var(--band-ink) 74%, transparent); }
+.gmc[data-cc] .gmc-game-activity { background: transparent; color: var(--gryt-text); border-color: var(--band-line); }
+.gmc[data-cc] .gmc-game-activity :is(.gmc-mut, .gmc-party, .gmc-band-verb) { color: var(--gryt-muted); }
+.gmc[data-cc] .gmc-game-activity .gmc-pips i { background: var(--gryt-border); }
+.gmc[data-cc] .gmc-game-activity .gmc-pips i.on { background: var(--gryt-text); }
 .gmc[data-cc].has-band .gmc-over { color: var(--band-ink); }
 /* The status word takes the band's ink here: presence green on a green banner can't be read. The ring still shows it. */
 .gmc[data-cc].has-band .gmc-over .gmc-st { color: color-mix(in oklch, var(--band-ink) 82%, transparent) !important; }
@@ -173,6 +178,7 @@
 .gmc[data-fc] .gmc-over :is(.gmc-nm, .gmc-st) { text-shadow: 0 1px 3px color-mix(in oklch, var(--fc-mid) 75%, transparent); }
 .gmc[data-fc] .gmc-band { background: color-mix(in oklch, var(--gryt-text) 7%, transparent); border-color: transparent; }
 .gmc[data-fc][data-fade="full"] .gmc-band { background: color-mix(in oklch, var(--gryt-text) 5%, transparent); }
+.gmc[data-fc] .gmc-game-activity, .gmc[data-fc][data-fade="full"] .gmc-game-activity { background: transparent; }
 .gmc[data-fc] .gmc-st { color: var(--gryt-text) !important; }
 .gmc[data-fc] .gmc-st.gmc-mut { color: var(--gryt-muted) !important; }
 .gmc[data-fc] .gmc-chip { background: color-mix(in oklch, var(--gryt-text) 10%, transparent); border-color: color-mix(in oklch, var(--gryt-text) 24%, transparent); }
