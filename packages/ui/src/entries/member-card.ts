@@ -8,6 +8,8 @@ export type { MemberCardEditorProps, MemberCardPane } from "../components/Member
 export { MemberCardView as MemberCard } from "../components/MemberCard/MemberCardView";
 export type { CardChip, MemberCardStatus, MemberCardViewProps as MemberCardProps } from "../components/MemberCard/MemberCardView";
 export { DEFAULT_ICON, usePatternAssets } from "../components/MemberCard/patternAssets";
+export { analyseBanner, readBannerColours } from "../memberCard/bannerColours";
+export type { BannerColours } from "../memberCard/bannerColours";
 export { BUILTIN_CARD_STYLES, randomCardStyle, styleSwatch } from "../memberCard/builtinStyles";
 export type { BuiltinCardStyle } from "../memberCard/builtinStyles";
 export {

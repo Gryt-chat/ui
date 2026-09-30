@@ -25,6 +25,7 @@ import { cardVars } from "../src/memberCard/cardVars.ts";
 import { bandColours, blend, contrast, fullColours, lum, lumOf, oklch, okToRgb, owlGradient } from "../src/memberCard/colour.ts";
 import { CARD_PATTERNS, patternId } from "../src/memberCard/patterns.ts";
 import { TILES } from "../src/memberCard/patterns/tiles.generated.ts";
+import { analyseBanner } from "../src/memberCard/bannerColours.ts";
 import { patternLayers } from "../src/memberCard/patternSvg.ts";
 import { scatter, seedFromId } from "../src/memberCard/scatter.ts";
 
@@ -101,10 +102,41 @@ check("Surprise me always gives a readable card, and rolls every field", () => {
     assert.equal(style.pattern === "icon", Boolean(style.pIcon), "the icon pattern comes with an icon, and only it does");
     const code = encodeCardStyle(style);
     assert.equal(encodeCardStyle(decodeCardStyle(code)), code, "a rolled style survives a share link");
-    for (const key of ["fill", "pattern", "colours", "cover", "fade", "pFade", "pOpacity", "pInk"]) (seen[key] ??= new Set()).add(style[key]);
+    for (const key of ["fill", "pattern", "colours", "cover", "fade", "pFade", "pOpacity", "pInk", "pStroke", "edge", "pLayer"]) (seen[key] ??= new Set()).add(style[key]);
   }
   for (const [key, values] of Object.entries(seen)) assert.ok(values.size > 1, `${key} never changed`);
   assert.equal(seen.fill.size, 3);
+});
+
+check("line weight, outline and the pattern's layer are kept in range and survive the wire and a link", () => {
+  const style = normalizeCardStyle({ pattern: "waves-1", pStroke: 220, edge: 3, pLayer: "front" });
+  assert.deepEqual([style.pStroke, style.edge, style.pLayer], [220, 3, "front"]);
+  assert.deepEqual(cardStyleForWire(style), { pattern: "waves-1", pStroke: 220, pLayer: "front", edge: 3 });
+  assert.deepEqual(decodeCardStyle(encodeCardStyle(style)), style);
+  // The defaults are left out, and a value outside its range is dropped.
+  const plain = normalizeCardStyle({ pStroke: 100, edge: 1, pLayer: "behind" });
+  assert.deepEqual([plain.pStroke, plain.edge, plain.pLayer], [undefined, undefined, undefined]);
+  for (const bad of [{ pStroke: 39 }, { pStroke: 301 }, { edge: -1 }, { edge: 7 }, { pLayer: "top" }]) {
+    assert.deepEqual(cardStyleForWire(normalizeCardStyle(bad)), null, JSON.stringify(bad));
+  }
+  const at = (stroke) => patternLayers("waves-1", { ink: "#000000", alpha: 0.2, scale: 1, rotate: 0, fade: "none", seed: 1, stroke, tile: TILES.find((t) => t.id === "waves-1") }, {}).image;
+  assert.notEqual(at(1), at(2), "a heavier line draws differently");
+  assert.equal(cardVars(style, "#7c5cff", { appearance: "dark", seed: 1 }).attrs["data-player"], "front");
+  assert.equal(cardVars(style, "#7c5cff", { appearance: "dark", seed: 1 }).vars["--gmc-edge"], "3px");
+});
+
+check("a banner's colours: the bottom edge, whether it is flat, and what fills the picture", () => {
+  const w = 8, h = 20;
+  const px = new Uint8ClampedArray(w * h * 4);
+  const paint = (y, [r, g, b]) => { for (let x = 0; x < w; x++) px.set([r, g, b, 255], (y * w + x) * 4); };
+  for (let y = 0; y < h; y++) paint(y, y < 12 ? [200, 30, 30] : y < 17 ? [20, 160, 60] : [16, 32, 96]);
+  const flat = analyseBanner(px, w, h);
+  assert.equal(flat.bottom, "#102060");
+  assert.equal(flat.flat, true);
+  assert.deepEqual(flat.palette, ["#c81e1e", "#14a03c"]);
+  // A striped bottom edge is busy, so the card fades the whole banner.
+  for (let y = 17; y < h; y++) for (let x = 0; x < w; x++) px.set(x % 2 ? [255, 255, 255, 255] : [0, 0, 0, 255], (y * w + x) * 4);
+  assert.equal(analyseBanner(px, w, h).flat, false);
 });
 
 check("every built-in style keeps small text at 4.5:1 or better", () => {
