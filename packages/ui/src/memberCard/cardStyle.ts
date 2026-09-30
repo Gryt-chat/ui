@@ -16,7 +16,7 @@ export interface CardStyle {
   cover: "banner" | "card";
   /** "banner" fades the whole banner into the card, "bottom" only its lower edge, and "none" leaves a hard edge. */
   fade: "bottom" | "banner" | "none";
-  /** Whether the colour fills the whole card or only the banner and band. */
+  /** Whether the colour fills the whole card or only the banner. */
   colours: "card" | "banner";
   /** Pattern size, percent of its own. */
   pScale: number;

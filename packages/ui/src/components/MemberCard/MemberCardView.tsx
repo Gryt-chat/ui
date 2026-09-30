@@ -183,7 +183,7 @@ function GameBand({ card }: { card: RichActivity }) {
     .filter((b): b is { label: string; link: { href: string; host: string } } => b.link !== null);
 
   return (
-    <section className="gmc-band" aria-label={`${verb} ${card.name}`}>
+    <section className="gmc-band gmc-game-activity" aria-label={`${verb} ${card.name}`}>
       <div className="gmc-band-top">
         <span className="gmc-band-verb">{verb}</span>
         {time && (

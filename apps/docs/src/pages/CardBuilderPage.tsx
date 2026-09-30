@@ -8,11 +8,11 @@ import {
   CardIcon,
   Checkbox,
   CopyCardLink,
-  DEFAULT_CARD_STYLE,
   decodeGrytCard,
   encodeGrytCard,
   MemberCard,
   MemberCardEditor,
+  randomCardStyle,
   type RichActivity,
   seedFromId,
   Select,
@@ -57,7 +57,7 @@ function sampleGame(id: string): RichActivity {
 export function CardBuilderPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   // Read once, like the theme generator: re-reading would fight the editor on every copy.
-  const [style, setStyle] = useState<CardStyle>(() => decodeGrytCard(searchParams.toString()) ?? DEFAULT_CARD_STYLE);
+  const [style, setStyle] = useState<CardStyle>(() => decodeGrytCard(searchParams.toString()) ?? randomCardStyle());
   const [name, setName] = useState("Sivert");
   const [playing, setPlaying] = useState(true);
   const [gameId, setGameId] = useState(SAMPLE_GAMES[0].id);

@@ -11,7 +11,6 @@ import { isTunable } from "../../memberCard/patterns";
 import { Button } from "../Button/Button";
 import { Select } from "../Select/Select";
 import { Tabs } from "../Tabs/Tabs";
-import { Toggle, ToggleGroup } from "../Toggle/Toggle";
 import { PatternPicker, PatternTuning, Range } from "./cardPatternPicker";
 
 /** The colours a Solid or Gradient pick starts from. */
@@ -104,15 +103,14 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
   const colour = (
     <>
       <Group title="Card colour" description="The owl's colour to start with. The text and buttons are worked out from it, so small text stays readable.">
-        <ToggleGroup
-          value={[style.fill]}
-          onValueChange={(v) => change(colourOf((v[0] as CardStyle["fill"] | undefined) ?? style.fill))}
-          aria-label="Card colour"
-        >
-          <Toggle value="owl" size="small">Owl colour</Toggle>
-          <Toggle value="solid" size="small">Solid</Toggle>
-          <Toggle value="gradient" size="small">Gradient</Toggle>
-        </ToggleGroup>
+        <Tabs value={style.fill} onValueChange={(v) => change(colourOf(String(v) as CardStyle["fill"]))}>
+          <Tabs.List aria-label="Card colour">
+            <Tabs.Tab value="owl">Owl colour</Tabs.Tab>
+            <Tabs.Tab value="solid">Solid</Tabs.Tab>
+            <Tabs.Tab value="gradient">Gradient</Tabs.Tab>
+            <Tabs.Indicator />
+          </Tabs.List>
+        </Tabs>
         {style.fill !== "owl" && (
           <div className="flex flex-wrap items-center gap-2.5">
             <input
@@ -159,13 +157,13 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
           </div>
         </Group>
       )}
-      <Group title="Colour fills" description="The whole card, or only the banner and the band under it.">
+      <Group title="Colour fills" description="The whole card, or only the banner.">
         <Select
           value={style.colours}
           onValueChange={(v) => change({ colours: v === "banner" ? "banner" : "card" })}
           options={[
             { value: "card", label: "The whole card" },
-            { value: "banner", label: "The banner and band" },
+            { value: "banner", label: "The banner" },
           ]}
         />
       </Group>
@@ -243,7 +241,7 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 px-4 pt-3">
         <Tabs className="min-w-0" onValueChange={(v) => setPane(String(v))} value={current.value}>
-          <Tabs.List aria-label="What to change" className="max-w-full overflow-x-auto">
+          <Tabs.List aria-label="What to change" className="max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {all.map((p) => (
               <Tabs.Tab className={TAB_PRESS} key={p.value} value={p.value}>
                 {p.icon}
