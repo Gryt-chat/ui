@@ -6,6 +6,7 @@ import {
   Button,
   type CardStyle,
   CardIcon,
+  Checkbox,
   CopyCardLink,
   DEFAULT_CARD_STYLE,
   decodeGrytCard,
@@ -20,7 +21,7 @@ import {
   TextField
 } from "@gryt/ui";
 import { avatarSeed, owlAvatarColour, owlAvatarDataUri } from "@gryt/owl";
-import { type ChangeEvent, useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useSiteTheme } from "../lib/theme/siteTheme";
 
@@ -71,6 +72,8 @@ export function CardBuilderPage() {
     e.target.value = "";
     if (file && file.type.startsWith("image/")) set(URL.createObjectURL(file));
   };
+  const avatarInput = useRef<HTMLInputElement>(null);
+  const bannerInput = useRef<HTMLInputElement>(null);
   const appearance = useSiteTheme().appearance;
 
   const seed = avatarSeed(name) ?? avatarSeed("Gryt") ?? "gryt";
@@ -116,7 +119,7 @@ export function CardBuilderPage() {
               <TextField value={name} onChange={(e) => setName(e.target.value.slice(0, 32))} />
             </label>
             <label className="flex items-center gap-2 text-sm text-gryt-text">
-              <input type="checkbox" checked={playing} onChange={(e) => setPlaying(e.target.checked)} />
+              <Checkbox checked={playing} onCheckedChange={(on) => setPlaying(on === true)} />
               Playing
             </label>
             {playing && (
@@ -133,19 +136,24 @@ export function CardBuilderPage() {
               Surprise me
             </Button>
             <CopyCardLink style={style} link={shareLink} />
-            <label className="cursor-pointer rounded-md border border-gryt-border bg-gryt-surface-raised px-2.5 py-1 text-xs font-bold text-gryt-text hover:bg-gryt-surface-hover">
+            <Button size="small" tone="neutral" onClick={() => avatarInput.current?.click()}>
               {ownAvatar ? "Change avatar" : "Try your avatar"}
-              <input type="file" accept="image/*" className="hidden" onChange={pick(setOwnAvatar)} />
-            </label>
-            <label className="cursor-pointer rounded-md border border-gryt-border bg-gryt-surface-raised px-2.5 py-1 text-xs font-bold text-gryt-text hover:bg-gryt-surface-hover">
-              {ownBanner ? "Change banner" : "Try a banner"}
-              <input type="file" accept="image/*" className="hidden" onChange={pick(setOwnBanner)} />
-            </label>
-            {(ownAvatar || ownBanner) && (
-              <Button size="small" tone="neutral" onClick={() => { setOwnAvatar(null); setOwnBanner(null); }}>
-                Back to the owl
+            </Button>
+            {ownAvatar && (
+              <Button size="small" tone="neutral" onClick={() => setOwnAvatar(null)}>
+                Remove avatar
               </Button>
             )}
+            <Button size="small" tone="neutral" onClick={() => bannerInput.current?.click()}>
+              {ownBanner ? "Change banner" : "Try a banner"}
+            </Button>
+            {ownBanner && (
+              <Button size="small" tone="neutral" onClick={() => setOwnBanner(null)}>
+                Remove banner
+              </Button>
+            )}
+            <input ref={avatarInput} type="file" accept="image/*" className="hidden" onChange={pick(setOwnAvatar)} />
+            <input ref={bannerInput} type="file" accept="image/*" className="hidden" onChange={pick(setOwnBanner)} />
           </div>
           <span className="text-xs text-gryt-muted">Pictures you pick stay in your browser. Nothing is uploaded.</span>
           <div style={{ width: 340, maxWidth: "100%" }}>

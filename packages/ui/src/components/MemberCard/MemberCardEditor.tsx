@@ -12,7 +12,7 @@ import { Button } from "../Button/Button";
 import { Select } from "../Select/Select";
 import { Tabs } from "../Tabs/Tabs";
 import { Toggle, ToggleGroup } from "../Toggle/Toggle";
-import { PatternPicker, PatternTuning } from "./cardPatternPicker";
+import { PatternPicker, PatternTuning, Range } from "./cardPatternPicker";
 
 /** The colours a Solid or Gradient pick starts from. */
 const START = { c1: "#7c5cff", c2: "#ff7a59", angle: 135 };
@@ -131,17 +131,9 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
                   onChange={(e) => pick({ ...picks, c2: e.target.value })}
                   className="h-8 w-11 cursor-pointer rounded-(--gryt-radius-sm) border border-gryt-border bg-gryt-surface p-0.5"
                 />
-                <input
-                  aria-label="Angle"
-                  type="range"
-                  min={0}
-                  max={360}
-                  step={15}
-                  value={picks.angle}
-                  onChange={(e) => pick({ ...picks, angle: Number(e.target.value) })}
-                  style={{ flex: 1, minWidth: 120, accentColor: "var(--gryt-accent)" }}
-                />
-                <output className="min-w-[3.5em] font-mono text-xs text-gryt-muted">{picks.angle}°</output>
+                <div className="min-w-[180px] flex-1">
+                  <Range id="card-angle" min={0} max={360} step={15} value={picks.angle} unit="°" onChange={(v) => pick({ ...picks, angle: v })} />
+                </div>
               </>
             )}
           </div>
@@ -190,18 +182,14 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
         </Group>
       )}
       <Group title="Outline" description="The line around the card. None at 0.">
-        <div className="flex items-center gap-2.5">
-          <input
-            aria-label="Outline thickness"
-            type="range"
-            min={TUNING.edge.min}
-            max={TUNING.edge.max}
-            value={style.edge ?? TUNING.edge.default}
-            onChange={(e) => change({ edge: Number(e.target.value) === TUNING.edge.default ? undefined : Number(e.target.value) })}
-            style={{ flex: 1, minWidth: 120, accentColor: "var(--gryt-accent)" }}
-          />
-          <output className="min-w-[3.5em] font-mono text-xs text-gryt-muted">{style.edge ?? TUNING.edge.default}px</output>
-        </div>
+        <Range
+          id="card-edge"
+          min={TUNING.edge.min}
+          max={TUNING.edge.max}
+          value={style.edge ?? TUNING.edge.default}
+          unit="px"
+          onChange={(v) => change({ edge: v === TUNING.edge.default ? undefined : v })}
+        />
       </Group>
     </>
   );

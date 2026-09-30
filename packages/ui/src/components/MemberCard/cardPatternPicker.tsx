@@ -2,6 +2,7 @@
 
 import { Button } from "../Button/Button";
 import { Select } from "../Select/Select";
+import { Slider } from "../Slider/Slider";
 import { type CSSProperties, lazy, Suspense, useEffect, useMemo, useState } from "react";
 
 import { usePatternAssets } from "./patternAssets";
@@ -107,36 +108,41 @@ export function PatternPicker({ style, owlHex, nickname, worn, seed, appearance,
   );
 }
 
-function Range({
+/** A labelled Gryt UI slider with its value beside it. */
+export function Range({
   id,
   label,
   min,
   max,
+  step,
   value,
   unit,
   onChange,
 }: {
   id: string;
-  label: string;
+  label?: string;
   min: number;
   max: number;
+  step?: number;
   value: number;
   unit: string;
   onChange: (v: number) => void;
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2.5">
-      <label htmlFor={id} className="w-20 text-xs font-bold text-gryt-muted">
-        {label}
-      </label>
-      <input
-        id={id}
-        type="range"
+      {label && (
+        <span id={id + "-label"} className="w-20 text-xs font-bold text-gryt-muted">
+          {label}
+        </span>
+      )}
+      <Slider
+        aria-label={label ?? id}
+        className="min-w-[120px] flex-1"
         min={min}
         max={max}
+        step={step}
         value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        style={{ flex: 1, minWidth: 120, accentColor: "var(--gryt-accent)" }}
+        onValueChange={(v) => onChange(Array.isArray(v) ? v[0] : (v as number))}
       />
       <output className="min-w-[3.5em] font-mono text-xs text-gryt-muted">
         {value}
