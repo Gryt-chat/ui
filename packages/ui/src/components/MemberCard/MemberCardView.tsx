@@ -35,6 +35,8 @@ export interface CardChip {
 export interface MemberCardViewProps {
   name: string;
   avatarSrc?: string;
+  /** Makes the picture a button, for opening it larger. Without it the picture is just a picture. */
+  onAvatarClick?: () => void;
   status: MemberCardStatus | string;
   channelName?: string;
   /** Something beside the name, like the app's bot tag. */
@@ -64,6 +66,7 @@ function hasPattern(style: MemberCardViewProps["profile"]["cardStyle"]): boolean
 export function MemberCardView({
   name,
   avatarSrc,
+  onAvatarClick,
   status,
   channelName,
   badge,
@@ -101,9 +104,21 @@ export function MemberCardView({
     >
       <div className={["gmc-banner", bannerUrl ? "img" : "", !bannerUrl && !hasPattern(profile.cardStyle) ? "short" : ""].filter(Boolean).join(" ")}>
         <div className="gmc-over">
-          <span className="gmc-av" style={{ "--s": "64px", "--ring": presence.ring } as CSSProperties}>
-            {avatarSrc ? <img alt="" src={avatarSrc} /> : <img alt="" />}
-          </span>
+          {onAvatarClick && avatarSrc ? (
+            <button
+              type="button"
+              className="gmc-av gmc-av-btn"
+              aria-label={`Open ${name}'s picture`}
+              onClick={onAvatarClick}
+              style={{ "--s": "64px", "--ring": presence.ring } as CSSProperties}
+            >
+              <img alt="" src={avatarSrc} />
+            </button>
+          ) : (
+            <span className="gmc-av" style={{ "--s": "64px", "--ring": presence.ring } as CSSProperties}>
+              {avatarSrc ? <img alt="" src={avatarSrc} /> : <img alt="" />}
+            </span>
+          )}
           <div>
             <div className="gmc-nm">
               {name}

@@ -27,6 +27,8 @@
 
 .gmc-av { position: relative; flex-shrink: 0; width: var(--s); height: var(--s); border-radius: 50%; padding: 3px; background: var(--ring); display: inline-grid; }
 .gmc-av img { width: 100%; height: 100%; border-radius: 50%; display: block; object-fit: cover; border: 2px solid var(--gryt-surface); background: var(--gryt-surface-raised); }
+.gmc-av-btn { border: 0; cursor: zoom-in; transition: transform var(--dur) var(--ease-out); }
+.gmc-av-btn:hover { transform: scale(1.04); }
 .gmc-nm { font-weight: 800; font-size: 16px; letter-spacing: -0.014em; overflow-wrap: anywhere; min-width: 0; }
 .gmc-pro { font-weight: 400; font-size: 13px; color: var(--gryt-muted); letter-spacing: 0; }
 .gmc-st { font-size: 12.5px; }
