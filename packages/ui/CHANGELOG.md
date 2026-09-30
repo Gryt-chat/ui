@@ -1,5 +1,12 @@
 # @gryt/ui
 
+## 0.37.6
+
+### Patch Changes
+
+- 97cb5fc: Keep patterns visible when colour only fills the banner, and let thick card outlines clip banner corners cleanly.
+- f457449: Randomize the card builder on fresh visits, remove game activity backgrounds, improve colour tabs, and keep editor navigation stable.
+
 ## 0.37.5
 
 ### Patch Changes
