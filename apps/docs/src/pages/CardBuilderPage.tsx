@@ -26,8 +26,7 @@ import { useSiteTheme } from "../lib/theme/siteTheme";
 
 setCardIconLoader(() => import("../lib/cardIcons"));
 
-/* Real games, with their Steam art resized and served from this site, so the page never
-   loads anything from Steam or Discord. In Gryt the art comes from the member's server. */
+/* Real games to try the band with. */
 const SAMPLE_GAMES: { id: string; name: string; details: string; state: string; party?: [number, number] }[] = [
   { id: "1158877933042143272", name: "Counter-Strike 2", details: "Premier · Ancient", state: "In a match", party: [5, 5] },
   { id: "356875988589740042", name: "Dota 2", details: "Ranked All Pick", state: "Playing Invoker", party: [3, 5] },
@@ -154,7 +153,6 @@ export function CardBuilderPage() {
               avatarSrc={ownAvatar ?? avatar}
               bannerUrl={ownBanner}
               game={playing ? sampleGame(gameId) : null}
-              gameArtUrl={playing ? `/card-games/${gameId}.webp` : null}
               name={name || "Gryt"}
               owlHex={owlHex}
               profile={{ cardStyle: style, bio: "Mostly on after nine.", pronouns: null, statusLine: "Around tonight for co-op." }}
