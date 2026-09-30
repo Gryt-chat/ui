@@ -1,5 +1,12 @@
 # @gryt/ui
 
+## 0.36.2
+
+### Patch Changes
+
+- 0a349a0: Game art behind the band is shown at full strength now, under a scrim that's the opposite of the text: dark under light text, light under dark. It used to be so faint it was hard to see.
+- fc5fc4c: On a card whose colour fills the banner and band, the status word ("Online") takes the band's text colour. It used to stay presence green, which couldn't be read on a green or teal card.
+
 ## 0.36.1
 
 ### Patch Changes
