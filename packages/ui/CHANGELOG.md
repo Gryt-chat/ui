@@ -1,5 +1,14 @@
 # @gryt/ui
 
+## 0.37.3
+
+### Patch Changes
+
+- 4ae5819: `MemberCard` takes `onAvatarClick`. With it the picture on the card is a button, so an app can open it larger.
+- 4ae5819: A portrait or landscape photo as the avatar on a member card stays inside its ring. It used to stretch into an oval and hang over the band below.
+- 4ae5819: The card editor's Styles tab is gone, with its four presets. Surprise me sits beside the tabs now, so it's there on every tab.
+- 4ae5819: `OwlDesigner` takes `initialWorn`, to open on a look somebody shared, and `onUseInApp`, which adds an "Open in Gryt" button for a page outside the app.
+
 ## 0.37.2
 
 ### Patch Changes
