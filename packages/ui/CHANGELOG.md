@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.37.2
+
+### Patch Changes
+
+- c77d401: The card editor's sliders (gradient angle, outline, and the pattern's size, rotation, line weight and strength) are the Gryt UI Slider now. They used to be the browser's own range input.
+
 ## 0.37.1
 
 ### Patch Changes
