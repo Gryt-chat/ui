@@ -156,6 +156,8 @@
 .gmc[data-cc] .gmc-band .gmc-glink:not(.solid) { border-color: color-mix(in oklch, var(--band-ink) 35%, transparent); color: var(--band-ink); }
 .gmc[data-cc] .gmc-band .gmc-glink:not(.solid) span { color: color-mix(in oklch, var(--band-ink) 74%, transparent); }
 .gmc[data-cc].has-band .gmc-over { color: var(--band-ink); }
+/* The status word takes the band's ink here: presence green on a green banner can't be read. The ring still shows it. */
+.gmc[data-cc].has-band .gmc-over .gmc-st { color: color-mix(in oklch, var(--band-ink) 82%, transparent) !important; }
 .gmc[data-cc].has-band .gmc-over :is(.gmc-band-verb, .gmc-mut) { color: color-mix(in oklch, var(--band-ink) 74%, transparent); }
 
 /* ---------- The whole card in the member's colours ---------- */
