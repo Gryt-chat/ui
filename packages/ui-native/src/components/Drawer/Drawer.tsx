@@ -119,12 +119,6 @@ export interface DrawerPopupProps {
  * that appears without moving reads as a screen change. Reduce-motion still turns it off.
  */
 
-/**
- * The scrim takes an animated opacity, so it has to be an animated component. Declared at
- * module scope — `createAnimatedComponent` in a render remounts the subtree.
- */
-const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
 function Popup({
   children,
   side = "left",
@@ -225,15 +219,6 @@ function Popup({
       // `transition-transform` and nothing else, and a fading panel reads as a dialog.
       transform: [vertical ? { translateY: travel } : { translateX: travel }]
     };
-  });
-
-  /**
-   * The scrim fades with the panel and thins further as it is dragged away, both the web's
-   * rules. The fade is the backdrop's, not the Popup's — without it the scrim blinks off.
-   */
-  const scrimStyle = useAnimatedStyle(() => {
-    const dragged = extent > 0 ? Math.min(1, Math.abs(drag.value) / extent) : 0;
-    return { opacity: progress.value * (1 - dragged) };
   });
 
   /**
@@ -342,9 +327,9 @@ function Popup({
       animationType="none"
       onRequestClose={dismissible ? () => setOpen(false) : undefined}
     >
-      <AnimatedPressable
+      <Pressable
         onPress={dismissible ? () => setOpen(false) : undefined}
-        style={[{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)" }, scrimStyle]}
+        style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)" }}
       >
         <GestureDetector gesture={pan}>
           <Animated.View
@@ -397,7 +382,7 @@ function Popup({
             </Pressable>
           </Animated.View>
         </GestureDetector>
-      </AnimatedPressable>
+      </Pressable>
     </Modal>
   );
 }

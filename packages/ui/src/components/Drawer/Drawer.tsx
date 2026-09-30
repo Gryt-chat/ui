@@ -172,13 +172,6 @@ const Backdrop = forwardRef<
       className={cn(
         "gryt-drawer-backdrop fixed inset-0 z-50 min-h-dvh bg-black/60",
         "backdrop-blur-(--gryt-backdrop-blur)",
-        // Lightens as the panel is dragged away, so letting go halfway does not
-        // leave a full-strength scrim over a half-gone sheet.
-        "[opacity:calc(1-var(--drawer-swipe-progress,0))]",
-        "transition-opacity duration-(--gryt-dur-spring-soft) ease-spring-tight",
-        "data-swiping:duration-0",
-        "data-starting-style:opacity-0 data-ending-style:opacity-0",
-        "motion-reduce:transition-none",
         className
       )}
       {...props}
