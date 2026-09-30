@@ -130,6 +130,13 @@
 .gmc-band.has-art { position: relative; isolation: isolate; overflow: hidden; }
 .gmc-band-art { position: absolute; inset: 0; z-index: -1; background-position: center; background-size: cover; opacity: 0.32;
   -webkit-mask-image: linear-gradient(90deg, transparent 5%, #000 75%); mask-image: linear-gradient(90deg, transparent 5%, #000 75%); }
+/* The art at full strength under a scrim the opposite of the text: dark under light text, light under dark. */
+@supports (color: oklch(from red l c h)) {
+  .gmc-band { --art-ink: var(--gryt-text); }
+  .gmc-band-art { opacity: 1; -webkit-mask-image: none; mask-image: none; --art-scrim: oklch(from var(--art-ink) calc(1 - l) 0.02 h); }
+  .gmc-band-art::after { content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, color-mix(in oklch, var(--art-scrim) 82%, transparent), color-mix(in oklch, var(--art-scrim) 58%, transparent)); }
+}
 .gmc-band-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
 .gmc-band-verb { font-size: 12px; font-weight: 700; color: color-mix(in oklch, var(--m-accent) 75%, var(--gryt-text)); }
 .gmc-band-time { font-family: var(--font-mono); font-size: 24px; font-weight: 600; letter-spacing: -0.02em; line-height: 1; }
@@ -141,7 +148,7 @@
 .gmc.has-band .gmc-over { background: linear-gradient(180deg, transparent, color-mix(in oklch, var(--band) 80%, transparent) 55%, var(--band)); }
 
 /* Colour on the banner and band only. The band carries text, so it is clamped against the ink. */
-.gmc[data-cc] .gmc-band { background: var(--band-bg); color: var(--band-ink); border-color: transparent; }
+.gmc[data-cc] .gmc-band { background: var(--band-bg); color: var(--band-ink); border-color: transparent; --art-ink: var(--band-ink); }
 .gmc[data-cc] .gmc-band :is(.gmc-mut, .gmc-party, .gmc-band-verb, .gmc-pro) { color: color-mix(in oklch, var(--band-ink) 74%, transparent); }
 .gmc[data-cc] .gmc-band .gmc-pips i { background: color-mix(in oklch, var(--band-ink) 25%, transparent); }
 .gmc[data-cc] .gmc-band .gmc-pips i.on { background: var(--band-ink); }

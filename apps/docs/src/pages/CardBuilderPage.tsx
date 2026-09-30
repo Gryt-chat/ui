@@ -97,8 +97,8 @@ export function CardBuilderPage() {
         </p>
       </header>
 
-      <div className="grid min-w-0 items-start gap-(--space-md) lg:grid-cols-[34rem_minmax(0,1fr)]">
-        <aside className="flex min-w-0 overflow-hidden rounded-(--gryt-radius-lg) border border-gryt-border lg:sticky lg:top-20 lg:h-[min(40rem,calc(100dvh-6rem))]">
+      <div className="grid min-w-0 items-start gap-(--space-md) xl:grid-cols-[minmax(0,1fr)_23rem]">
+        <aside className="flex min-w-0 overflow-hidden rounded-(--gryt-radius-lg) border border-gryt-border xl:sticky xl:top-20 xl:h-[min(40rem,calc(100dvh-6rem))]">
           <MemberCardEditor
             appearance={appearance}
             nickname={name}
@@ -109,7 +109,7 @@ export function CardBuilderPage() {
           />
         </aside>
 
-        <section className="flex min-w-0 flex-col items-start gap-4 lg:sticky lg:top-20">
+        <section className="flex min-w-0 flex-col items-start gap-4 xl:sticky xl:top-20">
           <div className="flex flex-wrap items-end gap-4">
             <label className="flex flex-col gap-1 text-xs font-bold text-gryt-muted">
               Name on the card
