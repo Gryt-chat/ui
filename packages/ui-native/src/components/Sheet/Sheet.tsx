@@ -11,7 +11,6 @@ import {
 import { Pressable, View, type StyleProp, type ViewStyle } from "react-native";
 import { Text } from "../../internal/Text";
 import {
-  BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetModalProvider,
   BottomSheetScrollView,
@@ -196,18 +195,15 @@ function useSheetModal() {
   });
 
   const renderBackdrop = useCallback(
-    (props: BottomSheetBackdropProps) => (
-      <BottomSheetBackdrop
-        {...props}
-        appearsOnIndex={0}
-        disappearsOnIndex={-1}
-        // Tracks the drag, so dragging the sheet down lightens the scrim
-        // rather than holding full opacity until it snaps shut.
-        opacity={0.6}
-        pressBehavior="close"
+    ({ style }: BottomSheetBackdropProps) => (
+      <Pressable
+        style={[style, { backgroundColor: "rgba(0,0,0,0.6)" }]}
+        accessibilityRole="button"
+        accessibilityLabel="Close sheet"
+        onPress={sheet.close}
       />
     ),
-    [],
+    [sheet.close],
   );
 
   return {
