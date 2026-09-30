@@ -14,8 +14,8 @@ export interface CardStyle {
   angle: number;
   pattern: string;
   cover: "banner" | "card";
-  /** "banner" fades the whole banner into the card; "bottom" only its lower edge. */
-  fade: "bottom" | "banner";
+  /** "banner" fades the whole banner into the card, "bottom" only its lower edge, and "none" leaves a hard edge. */
+  fade: "bottom" | "banner" | "none";
   /** Whether the colour fills the whole card or only the banner and band. */
   colours: "card" | "banner";
   /** Pattern size, percent of its own. */
@@ -100,7 +100,7 @@ export function normalizeCardStyle(raw: unknown): CardStyle {
   }
   out.pattern = patternId(r.pattern);
   if (r.cover === "card") out.cover = "card";
-  if (r.fade === "banner") out.fade = "banner";
+  if (r.fade === "banner" || r.fade === "none") out.fade = r.fade;
   if (r.colours === "banner") out.colours = "banner";
   readTuning(r, out);
   return out;
@@ -139,7 +139,7 @@ export function cardStyleForWire(style: CardStyle): Partial<CardStyle> | null {
   }
   if (s.pattern !== "none") out.pattern = s.pattern;
   if (s.cover === "card") out.cover = "card";
-  if (s.fade === "banner") out.fade = "banner";
+  if (s.fade !== "bottom") out.fade = s.fade;
   if (s.colours === "banner") out.colours = "banner";
   if (s.pScale !== TUNING.pScale.default) out.pScale = s.pScale;
   if (s.pRotate !== TUNING.pRotate.default) out.pRotate = s.pRotate;
@@ -217,7 +217,7 @@ export function encodeCardStyle(style: CardStyle): string {
   if (st.pattern !== "none") q.set("pattern", st.pattern);
   if (st.colours !== "card") q.set("fill", st.colours);
   if (st.colours === "card" && st.cover === "card") q.set("cover", "card");
-  if (st.colours === "card" && st.fade === "banner") q.set("fade", "full");
+  if (st.colours === "card" && st.fade !== "bottom") q.set("fade", st.fade === "banner" ? "full" : "none");
   if (st.pScale !== TUNING.pScale.default) q.set("pScale", String(st.pScale));
   if (st.pRotate !== TUNING.pRotate.default) q.set("pRotate", String(st.pRotate));
   if (st.pOpacity !== undefined) q.set("pOpacity", String(st.pOpacity));
@@ -268,6 +268,7 @@ export function decodeCardStyle(input: unknown): CardStyle | null {
   if (raw.fill === "banner") out.colours = "banner";
   if (raw.cover === "card") out.cover = "card";
   if (raw.fade === "full") out.fade = "banner";
+  if (raw.fade === "none") out.fade = "none";
   readTuning(raw, out);
   return present ? out : null;
 }

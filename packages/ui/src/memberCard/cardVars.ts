@@ -92,7 +92,7 @@ function colourVars(style: CardStyle, owlHex: string, opts: CardVarsOptions): Ca
       attrs: {
         "data-fc": "1",
         "data-cover": style.cover,
-        "data-fade": style.fade === "banner" ? "full" : "bottom",
+        "data-fade": style.fade === "banner" ? "full" : style.fade === "none" ? "none" : "bottom",
         "data-contrast": f.worst.toFixed(1),
       },
       vars: {

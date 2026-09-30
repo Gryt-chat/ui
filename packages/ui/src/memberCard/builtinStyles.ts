@@ -76,7 +76,7 @@ export function randomCardStyle(random: () => number = Math.random): CardStyle {
     pattern,
     colours: random() < 0.7 ? "card" : "banner",
     cover: random() < 0.5 ? "card" : "banner",
-    fade: random() < 0.5 ? "banner" : "bottom",
+    fade: pick(["bottom", "bottom", "banner", "banner", "none"] as const),
     pScale: int(70, 200),
     pRotate: pick([0, 0, 15, 30, 45, 90, int(TUNING.pRotate.min, TUNING.pRotate.max)]),
     pFade: random() < 0.5 ? "none" : pick(PATTERN_FADES),

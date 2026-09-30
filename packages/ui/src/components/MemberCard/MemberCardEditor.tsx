@@ -170,13 +170,14 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
         />
       </Group>
       {style.colours === "card" && (
-        <Group title="Banner fade" description="Fade only the bottom of the banner into the card, or all of it so there's no edge.">
+        <Group title="Banner fade" description="Fade the bottom of the banner into the card, all of it, or not at all.">
           <Select
             value={style.fade}
-            onValueChange={(v) => change({ fade: v === "banner" ? "banner" : "bottom" })}
+            onValueChange={(v) => change({ fade: v === "banner" || v === "none" ? v : "bottom" })}
             options={[
               { value: "bottom", label: "Bottom" },
               { value: "banner", label: "Whole banner" },
+              { value: "none", label: "No fade" },
             ]}
           />
         </Group>
