@@ -1,6 +1,7 @@
 "use client";
 
 import { MagnifyingGlass } from "@phosphor-icons/react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import type { HTMLAttributes, KeyboardEvent, ReactNode } from "react";
 
@@ -82,58 +83,27 @@ function EmojiCell({
   );
 }
 
-function Grid({
-  items,
-  selectedId,
-  onSelect
-}: {
-  items: EmojiPickerItem[];
-  selectedId?: string;
-  onSelect: (item: EmojiPickerItem) => void;
-}) {
-  const onKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    const cells = Array.from(
-      event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
-        "[data-emoji-cell]:not(:disabled)"
-      ) ?? []
-    );
-    const index = cells.indexOf(event.currentTarget);
-    const template = getComputedStyle(
-      event.currentTarget.parentElement!
-    ).gridTemplateColumns;
-    const columns =
-      template && template !== "none" ? template.split(" ").length : 8;
-    const movement: Record<string, number> = {
-      ArrowLeft: -1,
-      ArrowRight: 1,
-      ArrowUp: -columns,
-      ArrowDown: columns
-    };
-    let next =
-      movement[event.key] === undefined ? index : index + movement[event.key];
-    if (event.key === "Home") next = 0;
-    else if (event.key === "End") next = cells.length - 1;
-    else if (movement[event.key] === undefined) return;
-    event.preventDefault();
-    cells[Math.max(0, Math.min(cells.length - 1, next))]?.focus();
-  };
+const COLUMNS = 7;
 
-  return (
-    <div
-      role="group"
-      className="grid grid-cols-6 gap-1 p-2 min-[360px]:grid-cols-8"
-    >
-      {items.map((item) => (
-        <EmojiCell
-          key={item.id}
-          item={item}
-          selected={selectedId === item.id}
-          onSelect={onSelect}
-          onKeyDown={onKeyDown}
-        />
-      ))}
-    </div>
-  );
+type EmojiRow =
+  | { kind: "heading"; key: string; group: EmojiPickerGroup }
+  | { kind: "items"; key: string; groupId: string; items: EmojiPickerItem[] };
+
+function rowsFor(groups: EmojiPickerGroup[]): EmojiRow[] {
+  return groups.flatMap((group) => {
+    const rows: EmojiRow[] = [
+      { kind: "heading", key: `heading:${group.id}`, group }
+    ];
+    for (let index = 0; index < group.items.length; index += COLUMNS) {
+      rows.push({
+        kind: "items",
+        key: `${group.id}:${index}`,
+        groupId: group.id,
+        items: group.items.slice(index, index + COLUMNS)
+      });
+    }
+    return rows;
+  });
 }
 
 /* Hallmark · component: emoji picker · playful/utilitarian · Gryt tokens only.
@@ -158,40 +128,103 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
     const [activeGroup, setActiveGroup] = useState(firstGroup);
     const [query, setQuery] = useState("");
     const searchRef = useRef<HTMLInputElement>(null);
+    const scrollRef = useRef<HTMLDivElement>(null);
     const availableGroups = useMemo(
       () => groups.filter((group) => group.items.length > 0),
       [groups]
     );
-    const current =
-      availableGroups.find((group) => group.id === activeGroup) ??
-      availableGroups[0];
     const results = useMemo(
       () => filterEmojiItems(availableGroups, query),
       [availableGroups, query]
     );
-    const visibleItems = query.trim() ? results : (current?.items ?? []);
+    const visibleGroups = useMemo(
+      () =>
+        query.trim()
+          ? [
+              {
+                id: "search",
+                label: "Search results",
+                icon: "⌕",
+                items: results
+              }
+            ]
+          : availableGroups,
+      [availableGroups, query, results]
+    );
+    const rows = useMemo(() => rowsFor(visibleGroups), [visibleGroups]);
+    const headingIndexes = useMemo(
+      () =>
+        new Map(
+          rows.flatMap((row, index) =>
+            row.kind === "heading" ? [[row.group.id, index] as const] : []
+          )
+        ),
+      [rows]
+    );
+    // eslint-disable-next-line react-hooks/incompatible-library -- Virtualizer is intentionally stateful.
+    const virtualizer = useVirtualizer({
+      count: rows.length,
+      getScrollElement: () => scrollRef.current,
+      estimateSize: (index) => (rows[index]?.kind === "heading" ? 34 : 44),
+      getItemKey: (index) => rows[index]?.key ?? index,
+      overscan: 8,
+      initialRect: { width: 336, height: 300 }
+    });
 
     useEffect(() => {
       if (autoFocus) searchRef.current?.focus({ preventScroll: true });
     }, [autoFocus]);
 
-    const onCategoryKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-      const tabs = Array.from(
-        event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
-          '[role="tab"]'
+    useEffect(() => {
+      if (scrollRef.current) scrollRef.current.scrollTop = 0;
+    }, [query]);
+
+    const onGridKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+      const cells = Array.from(
+        scrollRef.current?.querySelectorAll<HTMLButtonElement>(
+          "[data-emoji-cell]:not(:disabled)"
         ) ?? []
       );
-      const index = tabs.indexOf(event.currentTarget);
+      const index = cells.indexOf(event.currentTarget);
+      const movement: Record<string, number> = {
+        ArrowLeft: -1,
+        ArrowRight: 1,
+        ArrowUp: -COLUMNS,
+        ArrowDown: COLUMNS
+      };
+      let next =
+        movement[event.key] === undefined ? index : index + movement[event.key];
+      if (event.key === "Home") next = 0;
+      else if (event.key === "End") next = cells.length - 1;
+      else if (movement[event.key] === undefined) return;
+      event.preventDefault();
+      cells[Math.max(0, Math.min(cells.length - 1, next))]?.focus();
+    };
+
+    const onCategoryKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+      const buttons = Array.from(
+        event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>(
+          "[data-emoji-category]"
+        ) ?? []
+      );
+      const index = buttons.indexOf(event.currentTarget);
       let next = index;
       if (event.key === "ArrowLeft") next = index - 1;
       else if (event.key === "ArrowRight") next = index + 1;
       else if (event.key === "Home") next = 0;
-      else if (event.key === "End") next = tabs.length - 1;
+      else if (event.key === "End") next = buttons.length - 1;
       else return;
       event.preventDefault();
-      const tab = tabs[(next + tabs.length) % tabs.length];
-      tab?.focus();
-      tab?.click();
+      const button = buttons[(next + buttons.length) % buttons.length];
+      button?.focus();
+      button?.click();
+    };
+
+    const jumpToGroup = (groupId: string) => {
+      const index = headingIndexes.get(groupId);
+      if (index === undefined) return;
+      setActiveGroup(groupId);
+      virtualizer.scrollToIndex(index, { align: "start" });
     };
 
     return (
@@ -227,27 +260,27 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
 
         {!query.trim() ? (
           <div
-            role="tablist"
+            role="navigation"
             aria-label="Emoji categories"
             className="flex shrink-0 gap-1 overflow-x-auto border-b border-gryt-border px-2 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             {availableGroups.map((group) => {
-              const active = group.id === current?.id;
+              const active = group.id === activeGroup;
               return (
                 <button
                   key={group.id}
                   type="button"
-                  role="tab"
+                  data-emoji-category
                   aria-label={group.label}
-                  aria-selected={active}
+                  aria-current={active ? "true" : undefined}
                   title={group.label}
-                  onClick={() => setActiveGroup(group.id)}
+                  onClick={() => jumpToGroup(group.id)}
                   onKeyDown={onCategoryKeyDown}
                   className={cn(
                     "h-9 w-9 shrink-0 rounded-(--gryt-radius-control) border-0 bg-transparent p-0 text-base",
                     "transition-[scale,background-color,color] duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none",
                     "hover:bg-gryt-surface-hover active:scale-90",
-                    "aria-selected:bg-gryt-accent-3 aria-selected:text-gryt-accent-11",
+                    "aria-current:bg-gryt-accent-3 aria-current:text-gryt-accent-11",
                     focusRing
                   )}
                 >
@@ -258,7 +291,23 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
           </div>
         ) : null}
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <div
+          ref={scrollRef}
+          data-emoji-scroll
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+          onScroll={(event) => {
+            if (query.trim()) return;
+            const top = event.currentTarget.scrollTop + 1;
+            let offset = 0;
+            let currentGroup = availableGroups[0]?.id ?? "";
+            for (const row of rows) {
+              if (offset > top) break;
+              if (row.kind === "heading") currentGroup = row.group.id;
+              offset += row.kind === "heading" ? 34 : 44;
+            }
+            setActiveGroup(currentGroup);
+          }}
+        >
           {loading ? (
             <div
               role="status"
@@ -273,12 +322,52 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
             >
               {error}
             </div>
-          ) : visibleItems.length > 0 ? (
-            <Grid
-              items={visibleItems}
-              selectedId={selectedId}
-              onSelect={onSelect}
-            />
+          ) : rows.length > 0 && visibleGroups[0]?.items.length ? (
+            <div
+              className="relative w-full"
+              style={{ height: `${virtualizer.getTotalSize()}px` }}
+            >
+              {virtualizer.getVirtualItems().map((virtualRow) => {
+                const row = rows[virtualRow.index];
+                if (!row) return null;
+                return (
+                  <div
+                    key={virtualRow.key}
+                    ref={virtualizer.measureElement}
+                    data-index={virtualRow.index}
+                    className="absolute left-0 top-0 w-full"
+                    style={{ transform: `translateY(${virtualRow.start}px)` }}
+                  >
+                    {row.kind === "heading" ? (
+                      <div className="flex h-[34px] items-center gap-2 px-3 pt-2 text-xs font-medium text-gryt-muted">
+                        <span aria-hidden>{row.group.icon}</span>
+                        <span>{row.group.label}</span>
+                      </div>
+                    ) : (
+                      <div
+                        role="group"
+                        aria-label={
+                          availableGroups.find(
+                            (group) => group.id === row.groupId
+                          )?.label
+                        }
+                        className="grid h-11 grid-cols-7 gap-1 px-2"
+                      >
+                        {row.items.map((item) => (
+                          <EmojiCell
+                            key={item.id}
+                            item={item}
+                            selected={selectedId === item.id}
+                            onSelect={onSelect}
+                            onKeyDown={onGridKeyDown}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           ) : (
             <div
               role="status"
@@ -291,8 +380,8 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
 
         <div className="shrink-0 border-t border-gryt-border px-3 py-2 text-xs text-gryt-muted">
           {query.trim()
-            ? `${visibleItems.length} result${visibleItems.length === 1 ? "" : "s"}`
-            : current?.label}
+            ? `${results.length} result${results.length === 1 ? "" : "s"}`
+            : `${availableGroups.reduce((total, group) => total + group.items.length, 0)} emoji`}
         </div>
       </div>
     );

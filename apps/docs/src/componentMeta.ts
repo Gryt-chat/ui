@@ -208,14 +208,25 @@ import { Bell, PaperPlaneTilt } from "@phosphor-icons/react";
     slug: "emoji-picker",
     name: "EmojiPicker",
     description:
-      "Searchable emoji browser with categories, custom images, and arrow-key navigation.",
+      "Virtualized emoji browser with server emoji first, a continuous native catalog, and category jump controls.",
     importName: "EmojiPicker, standardEmojiGroups",
     preview: "emoji-picker",
     code: `import { EmojiPicker, standardEmojiGroups } from "@gryt/ui";
 
+const serverEmoji = {
+  id: "server",
+  label: "This server",
+  icon: "✦",
+  items: server.emojis.map((emoji) => ({
+    id: emoji.id,
+    name: emoji.name,
+    imageUrl: emoji.url
+  }))
+};
+
 <EmojiPicker
-  groups={standardEmojiGroups()}
-  onSelect={(item) => console.log(item.emoji)}
+  groups={[serverEmoji, ...standardEmojiGroups()]}
+  onSelect={(item) => console.log(item)}
 />`
   },
   {

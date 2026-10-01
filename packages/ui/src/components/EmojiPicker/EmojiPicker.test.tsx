@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { EmojiPicker } from "./EmojiPicker";
 import { filterEmojiItems } from "./emojiSearch";
@@ -23,16 +23,27 @@ const GROUPS = [
 ];
 
 describe("EmojiPicker", () => {
-  it("switches categories and reports the selected item", () => {
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, "offsetWidth", "get").mockReturnValue(336);
+    vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(300);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("shows every category in one scroll and reports the selected item", () => {
     const onSelect = vi.fn();
     render(
       <EmojiPicker groups={GROUPS} onSelect={onSelect} autoFocus={false} />
     );
 
     expect(screen.getByRole("button", { name: ":smile:" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("tab", { name: "Things" }));
+    expect(screen.getByText("Faces")).toBeInTheDocument();
+    expect(screen.getByText("Things")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: ":light bulb:" }));
     expect(onSelect).toHaveBeenCalledWith(GROUPS[1].items[0]);
+    expect(screen.getByText("3 emoji")).toBeInTheDocument();
   });
 
   it("searches names and keywords across categories", () => {
@@ -71,7 +82,7 @@ describe("EmojiPicker", () => {
     expect(cry).toHaveFocus();
   });
 
-  it("moves and selects through category tabs with arrow keys", () => {
+  it("moves through category jump controls with arrow keys", () => {
     render(
       <EmojiPicker
         groups={GROUPS}
@@ -79,12 +90,12 @@ describe("EmojiPicker", () => {
         autoFocus={false}
       />
     );
-    const faces = screen.getByRole("tab", { name: "Faces" });
-    const things = screen.getByRole("tab", { name: "Things" });
+    const faces = screen.getByRole("button", { name: "Faces" });
+    const things = screen.getByRole("button", { name: "Things" });
     faces.focus();
     fireEvent.keyDown(faces, { key: "ArrowRight" });
     expect(things).toHaveFocus();
-    expect(things).toHaveAttribute("aria-selected", "true");
+    expect(things).toHaveAttribute("aria-current", "true");
   });
 
   it("renders custom image emoji and disabled state", () => {
