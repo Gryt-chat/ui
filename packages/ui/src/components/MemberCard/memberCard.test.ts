@@ -15,4 +15,10 @@ describe("MemberCard banner corners", () => {
       /border-radius:\s*calc\(var\(--r-lg\) - var\(--gmc-edge, 1px\)\)/
     );
   });
+
+  it("keeps the card fill inside a translucent outline", () => {
+    expect(css).toMatch(
+      /\.gmc\[data-fc\]\s*\{[^}]*background-clip:\s*padding-box/
+    );
+  });
 });
