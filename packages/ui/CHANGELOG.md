@@ -1,5 +1,12 @@
 # @gryt/ui
 
+## 0.37.8
+
+### Patch Changes
+
+- d2f896a: Keep the banner fade control and its saved value available when colour fills only the banner.
+- 079f2ba: Give thick card outlines their own rounded frame, tinted by the card colour and finished with a faint inner highlight.
+
 ## 0.37.7
 
 ### Patch Changes
