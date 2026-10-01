@@ -2,4 +2,4 @@
 "@gryt/ui": patch
 ---
 
-Keep card gradients inside translucent outlines.
+Give thick card outlines their own rounded frame, tinted by the card colour and finished with a faint inner highlight.

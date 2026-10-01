@@ -95,13 +95,17 @@ export function MemberCardView({
   if (bannerUrl) style["--img"] = `url("${bannerUrl.replace(/["\\]/g, "")}")`;
 
   return (
-    <article
-      className={["gmc", playing ? "playing" : "", hasBand ? "has-band" : "", menuOpen ? "menu-open" : ""].filter(Boolean).join(" ")}
-      data-appearance={appearance}
-      data-gryt="member-card"
-      {...attrs}
+    <div
+      className={["gmc-frame", menuOpen ? "menu-open" : ""].filter(Boolean).join(" ")}
+      data-fc={attrs["data-fc"]}
       style={style}
     >
+      <article
+        className={["gmc", playing ? "playing" : "", hasBand ? "has-band" : "", menuOpen ? "menu-open" : ""].filter(Boolean).join(" ")}
+        data-appearance={appearance}
+        data-gryt="member-card"
+        {...attrs}
+      >
       <div className={["gmc-banner", bannerUrl ? "img" : "", !bannerUrl && !hasPattern(profile.cardStyle) ? "short" : ""].filter(Boolean).join(" ")}>
         <div className="gmc-over">
           {onAvatarClick && avatarSrc ? (
@@ -143,7 +147,7 @@ export function MemberCardView({
         </section>
       ) : null}
 
-      <div className="gmc-body">
+        <div className="gmc-body">
         {profile.pronouns && (
           <div>
             <span className="gmc-pro">{profile.pronouns}</span>
@@ -160,8 +164,9 @@ export function MemberCardView({
           </div>
         )}
         {children}
-      </div>
-    </article>
+        </div>
+      </article>
+    </div>
   );
 }
 
