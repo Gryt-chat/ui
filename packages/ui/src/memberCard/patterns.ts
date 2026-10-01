@@ -32,6 +32,7 @@ export const CARD_PATTERNS: readonly CardPattern[] = [
   { id: "gryt-faces", name: "Gryt faces", group: "Gryt", kind: "scatter" },
   { id: "my-owl", name: "My owl", group: "Gryt", kind: "scatter" },
   { id: "icon", name: "An icon", group: "Gryt", kind: "scatter" },
+  { id: "emoji", name: "An emoji", group: "Gryt", kind: "scatter" },
   ...TILE_INDEX.map((t) => ({ id: t.id, name: t.name, group: t.group, kind: "tile" as const })),
 ];
 

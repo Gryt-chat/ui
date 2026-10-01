@@ -11,6 +11,7 @@ import { cardVars } from "../../memberCard/cardVars";
 import { seedFromId } from "../../memberCard/scatter";
 import { CardIcon } from "./cardIcons";
 import { usePatternAssets } from "./patternAssets";
+import type { EmojiPickerGroup } from "../EmojiPicker/EmojiPicker";
 
 /** Presence as the ring and the status line draw it. Offline gets no ring at all. */
 /** Presence, as the app knows it. */
@@ -52,6 +53,8 @@ export interface MemberCardViewProps {
   seedKey: string;
   /** Their designed look, for the my-owl pattern. */
   worn?: string | null;
+  /** Custom emoji from the server this card belongs to. */
+  emojiGroups?: readonly EmojiPickerGroup[];
   /** Lets a menu hang out of the card instead of being cut off at its edge. */
   menuOpen?: boolean;
   /** The actions row, the moderation row and the drawer. */
@@ -78,10 +81,11 @@ export function MemberCardView({
   appearance,
   seedKey,
   worn,
+  emojiGroups = [],
   menuOpen,
   children,
 }: MemberCardViewProps) {
-  const assets = usePatternAssets(profile.cardStyle, { nickname: name, worn });
+  const assets = usePatternAssets(profile.cardStyle, { nickname: name, worn }, emojiGroups);
   const { attrs, vars } = useMemo(
     () => cardVars(profile.cardStyle, owlHex, { appearance, seed: seedFromId(seedKey), ...assets }),
     [profile.cardStyle, owlHex, appearance, seedKey, assets],

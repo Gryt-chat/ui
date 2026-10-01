@@ -15,6 +15,8 @@ export interface PatternMark {
   clip?: string;
   /** A single-colour mark takes the ink as its fill; a coloured one is turned to the ink by tone. */
   mono: boolean;
+  /** False keeps an emoji or custom image in its original colours. */
+  tint?: boolean;
 }
 
 export interface PatternDraw {
@@ -126,7 +128,7 @@ export const MARK_SIZE = 34;
 function strew(mark: PatternMark, d: PatternDraw): string {
   const [r, g, b] = channels(d.ink);
   // Every pixel takes the ink; light parts come through strongest, so eyes and beak still read.
-  const tone = mark.mono
+  const tone = mark.mono || mark.tint === false
     ? ""
     : `<filter id='t' color-interpolation-filters='sRGB'><feColorMatrix type='matrix' values='0 0 0 0 ${n(r)} 0 0 0 0 ${n(g)} 0 0 0 0 ${n(b)} 0.45 0.9 0.15 0.3 -0.2'/></filter>`;
   const clip = mark.clip ? `<clipPath id='c'>${mark.clip}</clipPath>` : "";
@@ -138,7 +140,7 @@ function strew(mark: PatternMark, d: PatternDraw): string {
         `transform='translate(${n(m.x - m.size / 2)} ${n(m.y - m.size / 2)}) rotate(${n(m.turn)} ${n(m.size / 2)} ${n(m.size / 2)})'/>`,
     )
     .join("");
-  const paint = mark.mono ? ` fill='${d.ink}'` : " filter='url(#t)'";
+  const paint = mark.mono ? ` fill='${d.ink}'` : mark.tint === false ? "" : " filter='url(#t)'";
   return wrap(`${tone}${clip}${symbol}`, `<g opacity='${n(d.alpha)}'${paint}>${uses}</g>`, d.fade);
 }
 
