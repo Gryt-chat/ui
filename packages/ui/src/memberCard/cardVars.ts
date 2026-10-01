@@ -130,7 +130,10 @@ function colourVars(style: CardStyle, owlHex: string, opts: CardVarsOptions): Ca
     const ink = style.pInk ?? (rawDark ? hexAt(0.2, 0.02, h1) : hexAt(0.98, 0.01, h1));
     const alpha = wantedAlpha(rawDark ? 0.28 : 0.3);
     return {
-      attrs: { "data-cc": "1" },
+      attrs: {
+        "data-cc": "1",
+        "data-fade": style.fade === "banner" ? "full" : style.fade === "none" ? "none" : "bottom",
+      },
       vars: {
         ...draw(ink, alpha),
         "--m-hue": String(k.hue),

@@ -157,6 +157,8 @@
 .gmc[data-cc] .gmc-game-activity .gmc-pips i { background: var(--gryt-border); }
 .gmc[data-cc] .gmc-game-activity .gmc-pips i.on { background: var(--gryt-text); }
 .gmc[data-cc].has-band .gmc-over { color: var(--band-ink); }
+.gmc[data-cc][data-fade="full"] .gmc-over { inset: 0; background: linear-gradient(180deg, transparent, color-mix(in oklch, var(--band) 45%, transparent) 55%, var(--band)); }
+.gmc[data-cc][data-fade="none"] .gmc-over { background: none; }
 /* The status word takes the band's ink here: presence green on a green banner can't be read. The ring still shows it. */
 .gmc[data-cc].has-band .gmc-over .gmc-st { color: color-mix(in oklch, var(--band-ink) 82%, transparent) !important; }
 .gmc[data-cc].has-band .gmc-over :is(.gmc-band-verb, .gmc-mut) { color: color-mix(in oklch, var(--band-ink) 74%, transparent); }
