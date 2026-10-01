@@ -106,6 +106,9 @@ That file is the whole step. The build picks it up and it ships as `@gryt/ui/web
 
 If the component uses hooks, context, event handlers, Base UI or Phosphor, start the file with `"use client";`. The same test checks that as well.
 
+When a docs page is new or meaningfully updated, record its route, UTC date,
+and `New` or `Updated` label in `apps/docs/src/freshness.json`. Tags expire after six calendar months.
+
 ## React Native
 
 `packages/ui-native` renders the same tokens through React Native. It imports

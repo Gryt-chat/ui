@@ -95,6 +95,14 @@ export { MessageBubble } from "./components/MessageBubble/MessageBubble";
 export type { MessageBubbleProps } from "./components/MessageBubble/MessageBubble";
 export { TextField } from "./components/TextField/TextField";
 export type { TextFieldProps } from "./components/TextField/TextField";
+export { EmojiPicker } from "./components/EmojiPicker/EmojiPicker";
+export type {
+  EmojiPickerGroup,
+  EmojiPickerItem,
+  EmojiPickerProps
+} from "./components/EmojiPicker/EmojiPicker";
+export { standardEmojiGroups } from "./components/EmojiPicker/emojiData";
+export { filterEmojiItems } from "./components/EmojiPicker/emojiSearch";
 export { Composer } from "./components/Composer/Composer";
 export type { ComposerProps } from "./components/Composer/Composer";
 export { ConversationItem } from "./components/ConversationItem/ConversationItem";

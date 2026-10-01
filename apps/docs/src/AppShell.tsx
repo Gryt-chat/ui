@@ -15,6 +15,7 @@ import {
 } from "./components/CommandPalette";
 import { DocsFooter } from "./components/DocsFooter";
 import { ThemeSwitcher } from "./components/ThemeSwitcher";
+import { freshnessBadge } from "./freshness";
 import { componentNavSections } from "./pages/componentDocs";
 import { exampleNavSection } from "./pages/examples";
 
@@ -22,8 +23,6 @@ interface NavItem {
   href: string;
   label: string;
   badge?: string;
-  /** The day this page arrived, as YYYY-MM-DD. It wears a New tag for six months from then. */
-  added?: string;
 }
 
 interface NavSection {
@@ -38,11 +37,11 @@ const navSections: NavSection[] = [
       { href: "/", label: "Overview" },
       { href: "/installation", label: "Installation" },
       { href: "/theme", label: "Theme" },
-      { href: "/theme/generator", label: "Theme generator", added: "2026-08-13" },
-      { href: "/avatars", label: "Avatars", added: "2026-08-24" },
-      { href: "/avatars/drawing", label: "Drawing a cosmetic", added: "2026-08-25" },
-      { href: "/eggs", label: "Eggs", added: "2026-08-29" },
-      { href: "/card", label: "Build your own card", added: "2026-09-30" }
+      { href: "/theme/generator", label: "Theme generator" },
+      { href: "/avatars", label: "Avatars" },
+      { href: "/avatars/drawing", label: "Drawing a cosmetic" },
+      { href: "/eggs", label: "Eggs" },
+      { href: "/card", label: "Build your own card" }
     ]
   },
   // Above the components, not below them. Someone arriving at a component
@@ -88,16 +87,6 @@ const paletteEntries: PaletteEntry[] = navSections
 
 /** Routes that render a tool rather than a document, and want the full width. */
 const WIDE_ROUTES = ["/theme/generator", "/card"];
-
-/** How long a page keeps its "New" tag. */
-const NEW_FOR_DAYS = 183;
-
-/** Whether a page added on `added` is still new: six months from that day, then the tag goes by itself. */
-function isNew(added: string | undefined, now: number = Date.now()): boolean {
-  if (added === undefined) return false;
-  const age = now - Date.parse(added);
-  return age >= 0 && age < NEW_FOR_DAYS * 24 * 60 * 60 * 1000;
-}
 
 export function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -198,11 +187,7 @@ export function AppShell() {
                 generator is the only page where the column cap is the wrong
                 shape, so it opts out by name rather than every page carrying a
                 width prop it does not need. */}
-            <div
-              className={
-                wide ? "w-full" : "mx-auto w-full max-w-5xl"
-              }
-            >
+            <div className={wide ? "w-full" : "mx-auto w-full max-w-5xl"}>
               <Outlet />
               <DocsFooter />
             </div>
@@ -248,7 +233,9 @@ function BrandBlock() {
 function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const navRef = useRef<HTMLElement | null>(null);
   const { pathname } = useLocation();
-  const [pill, setPill] = useState<{ top: number; height: number } | null>(null);
+  const [pill, setPill] = useState<{ top: number; height: number } | null>(
+    null
+  );
   // The first placement jumps rather than animating. Without this the pill
   // flies down from the top of the list on every page load, which reads as the
   // page still loading. State rather than a ref, because it decides what gets
@@ -331,6 +318,7 @@ function SidebarLink({
 }) {
   const isExternal = item.href.startsWith("http");
   const isActive = useIsActive(item.href);
+  const freshness = freshnessBadge(item.href);
 
   // The fill lives on the pill in Sidebar so it can travel between rows, so the
   // row itself only changes its text colour — the same split Tabs makes between
@@ -348,7 +336,7 @@ function SidebarLink({
     <>
       <span className="truncate">{item.label}</span>
       <span className="flex shrink-0 items-center gap-2">
-        {isNew(item.added) ? (
+        {freshness ? (
           <span
             className={[
               "rounded-full px-2 py-0.5 text-[10px] font-medium",
@@ -359,7 +347,7 @@ function SidebarLink({
                 : "bg-gryt-accent-3 text-gryt-accent-11"
             ].join(" ")}
           >
-            New
+            {freshness}
           </span>
         ) : null}
         {item.badge ? (

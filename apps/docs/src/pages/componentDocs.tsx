@@ -29,6 +29,7 @@ import {
   Dialog,
   Divider,
   Drawer,
+  EmojiPicker,
   IconButton,
   Menu,
   MessageBubble,
@@ -52,11 +53,18 @@ import {
   Tooltip,
   VideoPlayer,
   WebhookCard,
+  standardEmojiGroups,
   useToastManager
 } from "@gryt/ui";
 import { avatarSeed } from "@gryt/owl";
 import { Bell, DotsThree, PaperPlaneTilt } from "@phosphor-icons/react";
-import type { BadgePlacement, DrawerSide, Tone, ToastSeverity, WebhookCardData } from "@gryt/ui";
+import type {
+  BadgePlacement,
+  DrawerSide,
+  Tone,
+  ToastSeverity,
+  WebhookCardData
+} from "@gryt/ui";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
@@ -66,6 +74,23 @@ import { Preview } from "../components/Preview";
 import type { ComponentDoc } from "../componentMeta";
 import { componentDocs } from "../componentMeta";
 import { NestedDialogs } from "../examples/NestedDialogs";
+
+const emojiPickerGroups = [
+  {
+    id: "server",
+    label: "Gryt server",
+    icon: "✦",
+    items: [
+      {
+        id: "server:gryt",
+        name: "gryt",
+        imageUrl: "/gryt-logo.svg",
+        keywords: ["custom", "server"]
+      }
+    ]
+  },
+  ...standardEmojiGroups()
+];
 
 // The registry moved to ../componentMeta so a build script can read it without
 // pulling in @gryt/ui and its stylesheet. Re-exported here so the pages and
@@ -128,7 +153,9 @@ export function ComponentDocPage() {
             to={`/components/${next.slug}`}
           >
             <span className="block text-xs text-gryt-muted">Next</span>
-            <span className="block font-medium text-gryt-text">{next.name}</span>
+            <span className="block font-medium text-gryt-text">
+              {next.name}
+            </span>
           </Link>
         ) : null}
       </nav>
@@ -144,7 +171,11 @@ const pagerClass =
  * demos this page documents. A second set built for the generator would drift
  * from these the first time one of them was improved.
  */
-export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"] }) {
+export function ComponentPreview({
+  preview
+}: {
+  preview: ComponentDoc["preview"];
+}) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [inputDevice, setInputDevice] = useState("studio");
   const [radioMode, setRadioMode] = useState("voice");
@@ -216,12 +247,18 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
             size="small"
             defaultValue="design-sync"
           />
-          <TextField
-            label="Topic"
-            defaultValue="Voice settings"
-          />
+          <TextField label="Topic" defaultValue="Voice settings" />
           <TextField label="Notes" multiline minRows={3} />
         </div>
+      );
+    case "emoji-picker":
+      return (
+        <EmojiPicker
+          groups={emojiPickerGroups}
+          onSelect={() => undefined}
+          autoFocus={false}
+          className="mx-auto"
+        />
       );
     case "select":
       return (
@@ -287,7 +324,11 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
               value={radioMode}
               onValueChange={(next) => setRadioMode(String(next))}
             >
-              <RadioOption tone="primary" label="Voice activity" value="voice" />
+              <RadioOption
+                tone="primary"
+                label="Voice activity"
+                value="voice"
+              />
               <RadioOption tone="secondary" label="Push to talk" value="push" />
               <RadioOption tone="danger" label="Muted" value="muted" />
             </RadioGroup>
@@ -513,9 +554,7 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
       return (
         <div>
           <Menu.Root>
-            <Menu.Trigger
-              render={<IconButton aria-label="Open menu" />}
-            >
+            <Menu.Trigger render={<IconButton aria-label="Open menu" />}>
               <DotsThree size={18} />
             </Menu.Trigger>
             <Menu.Portal>
@@ -557,9 +596,7 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
                 <Tabs.Tab value="files">Files</Tabs.Tab>
                 <Tabs.Indicator />
               </Tabs.List>
-              <Tabs.Panel value="chat">
-                Messages, threads and pins.
-              </Tabs.Panel>
+              <Tabs.Panel value="chat">Messages, threads and pins.</Tabs.Panel>
               <Tabs.Panel value="voice">
                 Input, output and suppression.
               </Tabs.Panel>
@@ -729,7 +766,9 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
           <ExampleSection title="Sides">
             {SIDES.map((side) => (
               <Popover.Root key={side}>
-                <Popover.Trigger render={<Button size="small" tone="neutral" />}>
+                <Popover.Trigger
+                  render={<Button size="small" tone="neutral" />}
+                >
                   {side}
                 </Popover.Trigger>
                 <Popover.Portal>
@@ -751,7 +790,9 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
           <ExampleSection title="Alignment">
             {ALIGNMENTS.map((align) => (
               <Popover.Root key={align}>
-                <Popover.Trigger render={<Button size="small" tone="neutral" />}>
+                <Popover.Trigger
+                  render={<Button size="small" tone="neutral" />}
+                >
                   {align}
                 </Popover.Trigger>
                 <Popover.Portal>
@@ -851,8 +892,18 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
     case "number-field":
       return (
         <div className="flex flex-wrap gap-6">
-          <NumberField label="Output volume" defaultValue={80} min={0} max={100} />
-          <NumberField label="Bitrate (kbps)" defaultValue={64} step={8} scrubbable />
+          <NumberField
+            label="Output volume"
+            defaultValue={80}
+            min={0}
+            max={100}
+          />
+          <NumberField
+            label="Bitrate (kbps)"
+            defaultValue={64}
+            step={8}
+            scrubbable
+          />
         </div>
       );
     case "otp-field":
@@ -972,7 +1023,9 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
               <NavigationMenu.Content className="grid w-56 gap-1 p-2">
                 <NavigationMenu.Link href="#voice">Voice</NavigationMenu.Link>
                 <NavigationMenu.Link href="#chat">Chat</NavigationMenu.Link>
-                <NavigationMenu.Link href="#servers">Servers</NavigationMenu.Link>
+                <NavigationMenu.Link href="#servers">
+                  Servers
+                </NavigationMenu.Link>
               </NavigationMenu.Content>
             </NavigationMenu.Item>
             <NavigationMenu.Item>
@@ -1013,7 +1066,11 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
         <Fieldset.Root className="w-full max-w-sm">
           <Fieldset.Legend>Server details</Fieldset.Legend>
           <TextField name="name" label="Name" defaultValue="Gryt" />
-          <TextField name="topic" label="Topic" placeholder="What is this for?" />
+          <TextField
+            name="topic"
+            label="Topic"
+            placeholder="What is this for?"
+          />
         </Fieldset.Root>
       );
   }
@@ -1139,7 +1196,11 @@ const ciCard: WebhookCardData = {
     { name: "Branch", value: "main", inline: true },
     { name: "Run", value: "#4127", inline: true },
     { name: "Commit", value: "8f65a09", inline: true },
-    { name: "Actor", value: "[@octocat](https://github.com/octocat)", inline: true },
+    {
+      name: "Actor",
+      value: "[@octocat](https://github.com/octocat)",
+      inline: true
+    },
     { name: "Event", value: "push", inline: true }
   ],
   footer: { text: "Gryt CI · main" },
@@ -1154,7 +1215,11 @@ const pushCard: WebhookCardData = {
     "- [a1b2c3d](https://github.com/example/app/commit/a1b2c3d) Keep dialogs inside the viewport — octocat\n- [e4f5a6b](https://github.com/example/app/commit/e4f5a6b) Version Packages — octocat",
   color: "#968ff8",
   fields: [
-    { name: "Actor", value: "[@octocat](https://github.com/octocat)", inline: true },
+    {
+      name: "Actor",
+      value: "[@octocat](https://github.com/octocat)",
+      inline: true
+    },
     { name: "Context", value: "main", inline: true }
   ],
   footer: { text: "GitHub · Push" },
@@ -1200,10 +1265,14 @@ function docsMarkdown(text: string): ReactNode {
   return text.split("\n").map((line, row) => (
     <span key={row} className="block">
       {line.split(MARKDOWN_TOKEN).map((part, index) => {
-        if (part.startsWith("**")) return <strong key={index}>{part.slice(2, -2)}</strong>;
+        if (part.startsWith("**"))
+          return <strong key={index}>{part.slice(2, -2)}</strong>;
         if (part.startsWith("`")) {
           return (
-            <code key={index} className="rounded-sm bg-gryt-surface-raised px-1 font-mono text-[0.9em]">
+            <code
+              key={index}
+              className="rounded-sm bg-gryt-surface-raised px-1 font-mono text-[0.9em]"
+            >
               {part.slice(1, -1)}
             </code>
           );
@@ -1365,9 +1434,7 @@ function ContextMenuExample() {
                   <ContextMenu.Popup>
                     <ContextMenu.RadioGroup
                       value={notifications}
-                      onValueChange={(value) =>
-                        setNotifications(String(value))
-                      }
+                      onValueChange={(value) => setNotifications(String(value))}
                     >
                       <ContextMenu.RadioItem value="all">
                         Everything
