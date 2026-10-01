@@ -158,7 +158,8 @@
 .gmc[data-cc].has-band .gmc-over :is(.gmc-band-verb, .gmc-mut) { color: color-mix(in oklch, var(--band-ink) 74%, transparent); }
 
 /* ---------- The whole card in the member's colours ---------- */
-.gmc[data-fc] { background: var(--fc-bg); background-clip: padding-box; color: var(--gryt-text); border-color: var(--fc-edge); box-shadow: var(--fc-shadow), inset 0 0 0 1px var(--fc-glint); }
+.gmc[data-fc] { background: var(--fc-bg); color: var(--gryt-text); border-color: transparent;
+  box-shadow: inset 0 0 0 var(--gmc-edge, 1px) var(--fc-edge), var(--fc-shadow), inset 0 0 0 1px var(--fc-glint); }
 .gmc[data-fc][data-cover="card"] { background-image: var(--pat-img, linear-gradient(transparent, transparent)), var(--fc-bg); background-size: var(--pat-size, auto), cover; }
 /* The banner's picture lives on a pseudo-element so the fade masks it and not the name on top. */
 .gmc[data-fc] .gmc-banner { background: none !important; --fade: linear-gradient(180deg, var(--fade-solid) 45%, transparent 100%); }

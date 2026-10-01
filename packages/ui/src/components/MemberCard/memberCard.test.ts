@@ -16,9 +16,12 @@ describe("MemberCard banner corners", () => {
     );
   });
 
-  it("keeps the card fill inside a translucent outline", () => {
+  it("draws the outline over the card fill", () => {
     expect(css).toMatch(
-      /\.gmc\[data-fc\]\s*\{[^}]*background-clip:\s*padding-box/
+      /\.gmc\[data-fc\]\s*\{[^}]*border-color:\s*transparent/
+    );
+    expect(css).toMatch(
+      /inset 0 0 0 var\(--gmc-edge, 1px\) var\(--fc-edge\)/
     );
   });
 });

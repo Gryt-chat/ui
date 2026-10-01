@@ -2,4 +2,4 @@
 "@gryt/ui": patch
 ---
 
-Keep card gradients inside translucent outlines.
+Draw thick card outlines over the card colour without square corners.
