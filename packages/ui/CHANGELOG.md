@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.38.0
+
+### Minor Changes
+
+- cf046a9: Add a searchable, keyboard-accessible emoji picker with standard Unicode and custom image emoji support.
+
 ## 0.37.8
 
 ### Patch Changes
