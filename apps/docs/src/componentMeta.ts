@@ -17,6 +17,7 @@ export interface ComponentDoc {
   preview:
     | "button"
     | "icon-button"
+    | "emoji-picker"
     | "text-field"
     | "select"
     | "checkbox"
@@ -84,6 +85,7 @@ export const componentNavSections: ComponentNavSection[] = [
     title: "Data Input",
     items: [
       { name: "TextField", slug: "text-field" },
+      { name: "EmojiPicker", slug: "emoji-picker" },
       { name: "Select", slug: "select" },
       { name: "Checkbox", slug: "checkbox" },
       { name: "Radio", slug: "radio" },
@@ -201,6 +203,20 @@ import { Bell, PaperPlaneTilt } from "@phosphor-icons/react";
 <IconButton tone="secondary" aria-label="Send">
   <PaperPlaneTilt size={18} />
 </IconButton>`
+  },
+  {
+    slug: "emoji-picker",
+    name: "EmojiPicker",
+    description:
+      "Searchable emoji browser with categories, custom images, and arrow-key navigation.",
+    importName: "EmojiPicker, standardEmojiGroups",
+    preview: "emoji-picker",
+    code: `import { EmojiPicker, standardEmojiGroups } from "@gryt/ui";
+
+<EmojiPicker
+  groups={standardEmojiGroups()}
+  onSelect={(item) => console.log(item.emoji)}
+/>`
   },
   {
     slug: "text-field",

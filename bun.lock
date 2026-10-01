@@ -67,7 +67,7 @@
     },
     "packages/theme": {
       "name": "@gryt/theme",
-      "version": "0.11.0",
+      "version": "0.12.1",
       "devDependencies": {
         "@types/node": "^24.10.1",
         "@types/react": "^19.2.7",
@@ -79,13 +79,14 @@
     },
     "packages/ui": {
       "name": "@gryt/ui",
-      "version": "0.29.0",
+      "version": "0.37.8",
       "dependencies": {
         "@base-ui/react": "^1.7.0",
-        "@gryt/owl": "^0.0.1",
-        "@gryt/theme": "^0.6.0",
+        "@gryt/owl": "^0.6.0",
+        "@gryt/theme": "^0.12.0",
         "@phosphor-icons/react": "^2.1.10",
         "clsx": "^2.1.1",
+        "gemoji": "^8.1.0",
         "tailwind-merge": "^3.4.0",
       },
       "devDependencies": {
@@ -114,7 +115,7 @@
     },
     "packages/ui-native": {
       "name": "@gryt/ui-native",
-      "version": "0.14.2",
+      "version": "0.17.2",
       "dependencies": {
         "@gryt/owl": "^0.6.0",
         "@gryt/theme": "^0.11.0",
@@ -1291,6 +1292,8 @@
     "fsevents": ["fsevents@2.3.3", "", { "os": "darwin" }, "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw=="],
 
     "function-bind": ["function-bind@1.1.2", "", {}, "sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA=="],
+
+    "gemoji": ["gemoji@8.1.0", "", {}, "sha512-HA4Gx59dw2+tn+UAa7XEV4ufUKI4fH1KgcbenVA9YKSj1QJTT0xh5Mwv5HMFNN3l2OtUe3ZIfuRwSyZS5pLIWw=="],
 
     "gensync": ["gensync@1.0.0-beta.2", "", {}, "sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg=="],
 

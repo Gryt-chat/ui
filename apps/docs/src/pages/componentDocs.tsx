@@ -29,6 +29,7 @@ import {
   Dialog,
   Divider,
   Drawer,
+  EmojiPicker,
   IconButton,
   Menu,
   MessageBubble,
@@ -52,6 +53,7 @@ import {
   Tooltip,
   VideoPlayer,
   WebhookCard,
+  standardEmojiGroups,
   useToastManager
 } from "@gryt/ui";
 import { avatarSeed } from "@gryt/owl";
@@ -222,6 +224,15 @@ export function ComponentPreview({ preview }: { preview: ComponentDoc["preview"]
           />
           <TextField label="Notes" multiline minRows={3} />
         </div>
+      );
+    case "emoji-picker":
+      return (
+        <EmojiPicker
+          groups={standardEmojiGroups()}
+          onSelect={() => undefined}
+          autoFocus={false}
+          className="mx-auto"
+        />
       );
     case "select":
       return (
