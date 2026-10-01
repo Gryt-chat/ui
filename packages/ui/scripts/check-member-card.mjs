@@ -242,6 +242,8 @@ check("each bad field falls back to its default and leaves the rest", () => {
   assert.equal(s.cover, "banner");
   assert.equal(s.fade, "banner");
   assert.equal(s.angle, 135);
+  assert.equal(normalizeCardStyle({ pEmoji: "line\nbreak" }).pEmoji, undefined);
+  assert.equal(normalizeCardStyle({ pEmoji: "a".repeat(97) }).pEmoji, undefined);
 });
 
 check("a gradient missing its second colour is still the colour they picked", () => {
@@ -333,7 +335,7 @@ check("a pattern colour and strength never take small text under 4.5:1", () => {
 });
 
 check("tuning is read key by key and only what differs is kept", () => {
-  const s = normalizeCardStyle({ pattern: "waves-1", pScale: 250, pRotate: 400, pOpacity: 12, pFade: "radial", pSeed: 70000, pInk: "#ABCDEF", pIcon: "coffee" });
+  const s = normalizeCardStyle({ pattern: "waves-1", pScale: 250, pRotate: 400, pOpacity: 12, pFade: "radial", pSeed: 70000, pInk: "#ABCDEF", pIcon: "coffee", pEmoji: "unicode:✨" });
   assert.equal(s.pScale, 250);
   assert.equal(s.pRotate, 0);
   assert.equal(s.pOpacity, 12);
@@ -341,10 +343,21 @@ check("tuning is read key by key and only what differs is kept", () => {
   assert.equal(s.pSeed, undefined);
   assert.equal(s.pInk, "#abcdef");
   assert.equal(s.pIcon, "coffee");
-  assert.deepEqual(cardStyleForWire(s), { pattern: "waves-1", pScale: 250, pOpacity: 12, pFade: "radial", pInk: "#abcdef", pIcon: "coffee" });
+  assert.equal(s.pEmoji, "unicode:✨");
+  assert.deepEqual(cardStyleForWire(s), { pattern: "waves-1", pScale: 250, pOpacity: 12, pFade: "radial", pInk: "#abcdef", pIcon: "coffee", pEmoji: "unicode:✨" });
   const code = encodeCardStyle(s);
-  assert.equal(code, "card=b4b&pattern=waves-1&pScale=250&pOpacity=12&pFade=radial&pInk=abcdef&pIcon=coffee");
+  assert.equal(code, "card=b4b&pattern=waves-1&pScale=250&pOpacity=12&pFade=radial&pInk=abcdef&pIcon=coffee&pEmoji=unicode%3A%E2%9C%A8");
   assert.deepEqual(decodeCardStyle(code), s);
+});
+
+check("a coloured emoji pattern keeps the mark's own colours", () => {
+  const image = patternLayers("emoji", {
+    ink: "#ff0000", alpha: 0.4, scale: 1, rotate: 0, fade: "none", seed: 1,
+    mark: { viewBox: "0 0 10 10", body: "<circle fill='#00ff00' r='5'/>", mono: false, tint: false },
+  }, {}).image;
+  const svg = decodeURIComponent(image.slice(5, -2));
+  assert.match(svg, /#00ff00/);
+  assert.doesNotMatch(svg, /feColorMatrix|filter=/);
 });
 
 check("built-in style ids are unique and each is already a valid style", () => {

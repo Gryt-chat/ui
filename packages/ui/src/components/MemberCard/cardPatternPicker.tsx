@@ -1,19 +1,22 @@
 "use client";
 
 import { Button } from "../Button/Button";
+import type { EmojiPickerGroup } from "../EmojiPicker/EmojiPicker";
+import { Popover } from "../Popover/Popover";
 import { Select } from "../Select/Select";
 import { Slider } from "../Slider/Slider";
 import { type CSSProperties, lazy, Suspense, useEffect, useMemo, useState } from "react";
 
-import { usePatternAssets } from "./patternAssets";
+import { DEFAULT_EMOJI, DEFAULT_ICON, usePatternAssets } from "./patternAssets";
 import { type CardStyle, PATTERN_FADES, type PatternFade, TUNING } from "../../memberCard/cardStyle";
 import { cardVars } from "../../memberCard/cardVars";
 import { GRYT_MARK } from "../../memberCard/grytMark";
 import { CARD_PATTERNS, cardPattern, isTunable, PATTERN_GROUPS } from "../../memberCard/patterns";
 import type { Tile } from "../../memberCard/patterns/tileTypes";
-import { patternLayers,type PatternMark } from "../../memberCard/patternSvg";
+import { patternLayers, type PatternMark } from "../../memberCard/patternSvg";
 
 const IconPicker = lazy(() => import("./cardIconPicker"));
+const EmojiPatternPicker = lazy(() => import("./cardEmojiPicker"));
 
 const FADE_LABEL: Record<PatternFade, string> = {
   none: "No fade",
@@ -31,6 +34,7 @@ interface PickerProps {
   worn: string | null;
   seed: number;
   appearance: "light" | "dark";
+  emojiGroups: readonly EmojiPickerGroup[];
   onPick: (over: Partial<CardStyle>) => void;
 }
 
@@ -38,10 +42,11 @@ interface PickerProps {
  * Every pattern as a swatch in your card's own colours, under its heading. The tiles
  * load in one go the first time this opens; scatter swatches use the mark they strew.
  */
-export function PatternPicker({ style, owlHex, nickname, worn, seed, appearance, onPick }: PickerProps) {
+export function PatternPicker({ style, owlHex, nickname, worn, seed, appearance, emojiGroups, onPick }: PickerProps) {
   const [tiles, setTiles] = useState<Map<string, Tile> | null>(null);
   const icon = usePatternAssets({ ...style, pattern: "icon" }, { nickname, worn }).mark;
   const owl = usePatternAssets({ ...style, pattern: "my-owl" }, { nickname, worn }).mark;
+  const emoji = usePatternAssets({ ...style, pattern: "emoji" }, { nickname, worn }, emojiGroups).mark;
 
   useEffect(() => {
     let live = true;
@@ -57,7 +62,7 @@ export function PatternPicker({ style, owlHex, nickname, worn, seed, appearance,
   const card = useMemo(() => cardVars({ ...style, pattern: "none", pFade: "none" }, owlHex, { appearance, seed }), [style, owlHex, appearance, seed]);
   const ground = card.vars["--fc-bg"] ?? card.vars["--base"] ?? owlHex;
 
-  const marks: Record<string, PatternMark | undefined> = { "gryt-faces": { ...GRYT_MARK, mono: false }, "my-owl": owl, icon };
+  const marks: Record<string, PatternMark | undefined> = { "gryt-faces": { ...GRYT_MARK, mono: false }, "my-owl": owl, icon, emoji };
 
   return (
     <div className="flex max-h-80 flex-col gap-3 overflow-y-auto rounded-(--gryt-radius-md) border border-gryt-border p-2.5">
@@ -157,23 +162,71 @@ export function PatternTuning({
   style,
   effectiveInk,
   effectiveAlpha,
+  emojiGroups,
   onChange,
 }: {
   style: CardStyle;
   effectiveInk: string;
   effectiveAlpha: number;
+  emojiGroups: readonly EmojiPickerGroup[];
   onChange: (over: Partial<CardStyle>) => void;
 }) {
   const pattern = cardPattern(style.pattern);
+  const [iconOpen, setIconOpen] = useState(false);
+  const [emojiOpen, setEmojiOpen] = useState(false);
   if (!isTunable(pattern.id)) return null;
   const strength = Math.round(effectiveAlpha * 100);
   const limited = style.pOpacity !== undefined && strength < style.pOpacity;
   return (
     <div className="flex flex-col gap-2.5">
       {pattern.id === "icon" && (
-        <Suspense fallback={<span className="text-xs text-gryt-muted">Loading icons…</span>}>
-          <IconPicker value={style.pIcon} onPick={(name) => onChange({ pIcon: name })} />
-        </Suspense>
+        <Popover.Root open={iconOpen} onOpenChange={setIconOpen}>
+          <Popover.Trigger render={<Button size="small" tone="neutral" />}>
+            Choose icon · {style.pIcon ?? DEFAULT_ICON}
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Positioner align="start">
+              <Popover.Popup className="w-[min(22rem,calc(100vw-2rem))] p-3">
+                <Popover.Title>Pattern icon</Popover.Title>
+                <Popover.Description>Search every Phosphor icon.</Popover.Description>
+                <div className="mt-3">
+                  <Suspense fallback={<span className="text-xs text-gryt-muted">Loading icons…</span>}>
+                    <IconPicker
+                      value={style.pIcon}
+                      onPick={(name) => {
+                        onChange({ pIcon: name });
+                        setIconOpen(false);
+                      }}
+                    />
+                  </Suspense>
+                </div>
+              </Popover.Popup>
+            </Popover.Positioner>
+          </Popover.Portal>
+        </Popover.Root>
+      )}
+      {pattern.id === "emoji" && (
+        <Popover.Root open={emojiOpen} onOpenChange={setEmojiOpen}>
+          <Popover.Trigger render={<Button size="small" tone="neutral" />}>
+            Choose emoji · {style.pEmoji?.startsWith("unicode:") ? style.pEmoji.slice(8) : style.pEmoji ? "server emoji" : DEFAULT_EMOJI.slice(8)}
+          </Popover.Trigger>
+          <Popover.Portal>
+            <Popover.Positioner align="start">
+              <Popover.Popup className="w-[min(22rem,calc(100vw-2rem))] overflow-hidden p-0">
+                <Suspense fallback={<span className="block p-4 text-xs text-gryt-muted">Loading emoji…</span>}>
+                  <EmojiPatternPicker
+                    customGroups={emojiGroups}
+                    value={style.pEmoji}
+                    onPick={(item) => {
+                      onChange({ pEmoji: item.id });
+                      setEmojiOpen(false);
+                    }}
+                  />
+                </Suspense>
+              </Popover.Popup>
+            </Popover.Positioner>
+          </Popover.Portal>
+        </Popover.Root>
       )}
       <Range id="p-scale" label="Size" min={TUNING.pScale.min} max={TUNING.pScale.max} value={style.pScale} unit="%" onChange={(v) => onChange({ pScale: v })} />
       <Range id="p-rotate" label="Rotation" min={TUNING.pRotate.min} max={TUNING.pRotate.max} value={style.pRotate} unit="°" onChange={(v) => onChange({ pRotate: v })} />

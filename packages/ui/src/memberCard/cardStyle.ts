@@ -32,6 +32,8 @@ export interface CardStyle {
   pInk?: string;
   /** A Phosphor icon, kebab-case, for the `icon` pattern. */
   pIcon?: string;
+  /** A Unicode or current-server emoji id for the `emoji` pattern. */
+  pEmoji?: string;
   /** Line weight of a line pattern, percent of its own. Absent is 100. */
   pStroke?: number;
   /** "front" draws the pattern over a banner picture. Absent, the picture covers it. */
@@ -54,6 +56,14 @@ export const TUNING = {
 } as const;
 
 const ICON_NAME = /^[a-z0-9-]{1,48}$/;
+const validEmojiId = (value: unknown): value is string =>
+  typeof value === "string" &&
+  [...value].length >= 1 &&
+  [...value].length <= 96 &&
+  [...value].every((character) => {
+    const code = character.codePointAt(0) ?? 0;
+    return code > 0x1f && (code < 0x7f || code > 0x9f);
+  });
 
 function intIn(value: unknown, min: number, max: number): number | undefined {
   const n = typeof value === "string" && value.trim() !== "" ? Number(value) : value;
@@ -118,6 +128,7 @@ function readTuning(r: Record<string, unknown>, out: CardStyle): void {
   const ink = hexColour(r.pInk);
   if (ink) out.pInk = ink;
   if (typeof r.pIcon === "string" && ICON_NAME.test(r.pIcon)) out.pIcon = r.pIcon;
+  if (validEmojiId(r.pEmoji)) out.pEmoji = r.pEmoji;
   const stroke = intIn(r.pStroke, TUNING.pStroke.min, TUNING.pStroke.max);
   if (stroke !== undefined && stroke !== TUNING.pStroke.default) out.pStroke = stroke;
   if (r.pLayer === "front") out.pLayer = "front";
@@ -148,6 +159,7 @@ export function cardStyleForWire(style: CardStyle): Partial<CardStyle> | null {
   if (s.pSeed !== undefined) out.pSeed = s.pSeed;
   if (s.pInk) out.pInk = s.pInk;
   if (s.pIcon) out.pIcon = s.pIcon;
+  if (s.pEmoji) out.pEmoji = s.pEmoji;
   if (s.pStroke !== undefined) out.pStroke = s.pStroke;
   if (s.pLayer) out.pLayer = s.pLayer;
   if (s.edge !== undefined) out.edge = s.edge;
@@ -225,6 +237,7 @@ export function encodeCardStyle(style: CardStyle): string {
   if (st.pSeed !== undefined) q.set("pSeed", String(st.pSeed));
   if (st.pInk) q.set("pInk", st.pInk.replace("#", ""));
   if (st.pIcon) q.set("pIcon", st.pIcon);
+  if (st.pEmoji) q.set("pEmoji", st.pEmoji);
   if (st.pStroke !== undefined) q.set("pStroke", String(st.pStroke));
   if (st.pLayer) q.set("pLayer", st.pLayer);
   if (st.edge !== undefined) q.set("edge", String(st.edge));

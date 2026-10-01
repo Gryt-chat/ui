@@ -9,6 +9,7 @@ import { type CardStyle, encodeCardStyle, TUNING } from "../../memberCard/cardSt
 import { cardVars } from "../../memberCard/cardVars";
 import { isTunable } from "../../memberCard/patterns";
 import { Button } from "../Button/Button";
+import type { EmojiPickerGroup } from "../EmojiPicker/EmojiPicker";
 import { Select } from "../Select/Select";
 import { Tabs } from "../Tabs/Tabs";
 import { PatternPicker, PatternTuning, Range } from "./cardPatternPicker";
@@ -49,6 +50,8 @@ export interface MemberCardEditorProps {
   panes?: MemberCardPane[];
   /** The member's banner picture, if they have one. Its colours are offered for the card. */
   bannerUrl?: string | null;
+  /** Custom emoji from the active server. Unicode is appended after these groups. */
+  emojiGroups?: readonly EmojiPickerGroup[];
 }
 
 /* Same press feedback as the owl designer's tabs. */
@@ -60,7 +63,7 @@ const TAB_PRESS =
  * Everything about how a member card looks, in tabs with one pane at a time, so
  * nothing needs a long scroll.
  */
-export function MemberCardEditor({ value: style, onChange, owlHex, nickname = "", worn = null, seed, appearance, panes = [], bannerUrl = null }: MemberCardEditorProps) {
+export function MemberCardEditor({ value: style, onChange, owlHex, nickname = "", worn = null, seed, appearance, panes = [], bannerUrl = null, emojiGroups = [] }: MemberCardEditorProps) {
   const [pane, setPane] = useState("colour");
   const [picks, setPicks] = useState(() => ({
     c1: style.c1 ?? START.c1,
@@ -197,7 +200,7 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
   const pattern = (
     <>
       <Group title="Pattern" description="Drawn from the colour, so there's nothing to upload.">
-        <PatternPicker style={style} owlHex={owlHex} nickname={nickname} worn={worn} seed={seed} appearance={appearance} onPick={change} />
+        <PatternPicker style={style} owlHex={owlHex} nickname={nickname} worn={worn} seed={seed} appearance={appearance} emojiGroups={emojiGroups} onPick={change} />
       </Group>
       {style.colours === "card" && (
         <Group title="Pattern covers" description="Just the banner, or the whole card behind everything.">
@@ -225,7 +228,7 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
       )}
       {isTunable(style.pattern) && (
         <Group title="Customise pattern" description="Size, turn, strength and colour. The strength is turned down if it would make small text hard to read.">
-          <PatternTuning style={style} effectiveInk={drawn.patternInk} effectiveAlpha={drawn.patternAlpha} onChange={change} />
+          <PatternTuning style={style} effectiveInk={drawn.patternInk} effectiveAlpha={drawn.patternAlpha} emojiGroups={emojiGroups} onChange={change} />
         </Group>
       )}
     </>
