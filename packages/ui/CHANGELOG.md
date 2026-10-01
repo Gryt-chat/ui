@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.39.0
+
+### Minor Changes
+
+- 7b744db: Let member cards use a chosen Phosphor icon, Unicode emoji, or current-server custom emoji as their pattern.
+
 ## 0.38.0
 
 ### Minor Changes
