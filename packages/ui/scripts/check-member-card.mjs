@@ -171,6 +171,13 @@ check("colour on the banner only keeps the band's ink at 4.5:1 or better", () =>
   assert.ok(worst >= AA, `${JSON.stringify(at)} gives ${worst.toFixed(2)}:1`);
 });
 
+check("banner-only colours keep the chosen banner fade", () => {
+  for (const [fade, attr] of [["bottom", "bottom"], ["banner", "full"], ["none", "none"]]) {
+    const style = { ...DEFAULT_CARD_STYLE, fill: "solid", c1: "#663399", c2: "#663399", colours: "banner", fade };
+    assert.equal(cardVars(style, "#d06274", { appearance: "dark", seed: 1 }).attrs["data-fade"], attr);
+  }
+});
+
 check("dark ink goes on light picks and light ink on dark ones", () => {
   assert.equal(fullColours({ mode: "solid", c1: "#ffff00", c2: "#ffff00", angle: 135 }).dark, true);
   assert.equal(fullColours({ mode: "solid", c1: "#0b0b0f", c2: "#0b0b0f", angle: 135 }).dark, false);
@@ -189,6 +196,7 @@ check("a code carries only what differs, in the mockup's format", () => {
     "card=b4b&colour=solid&c1=ffd400&pattern=dots&cover=card&fade=full",
   );
   assert.equal(encodeCardStyle({ ...DEFAULT_CARD_STYLE, colours: "banner", cover: "card" }), "card=b4b&fill=banner");
+  assert.equal(encodeCardStyle({ ...DEFAULT_CARD_STYLE, colours: "banner", fade: "none" }), "card=b4b&fill=banner&fade=none");
 });
 
 check("every built-in style survives a trip through a code", () => {

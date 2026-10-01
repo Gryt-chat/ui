@@ -217,7 +217,7 @@ export function encodeCardStyle(style: CardStyle): string {
   if (st.pattern !== "none") q.set("pattern", st.pattern);
   if (st.colours !== "card") q.set("fill", st.colours);
   if (st.colours === "card" && st.cover === "card") q.set("cover", "card");
-  if (st.colours === "card" && st.fade !== "bottom") q.set("fade", st.fade === "banner" ? "full" : "none");
+  if (st.fade !== "bottom") q.set("fade", st.fade === "banner" ? "full" : "none");
   if (st.pScale !== TUNING.pScale.default) q.set("pScale", String(st.pScale));
   if (st.pRotate !== TUNING.pRotate.default) q.set("pRotate", String(st.pRotate));
   if (st.pOpacity !== undefined) q.set("pOpacity", String(st.pOpacity));
