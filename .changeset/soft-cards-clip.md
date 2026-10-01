@@ -2,4 +2,4 @@
 "@gryt/ui": patch
 ---
 
-Draw thick card outlines over the card colour without square corners.
+Give thick card outlines their own rounded frame, tinted by the card colour and finished with a faint inner highlight.

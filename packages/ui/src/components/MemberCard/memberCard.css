@@ -2,7 +2,7 @@
    (member-card-designs.html, "B4b · The whole card in the member's colours"),
    with every class prefixed gmc- so nothing leaks into the rest of the app. */
 
-.gmc {
+.gmc, .gmc-frame {
   --r-sm: var(--gryt-radius-sm, 8px);
   --r-md: var(--gryt-radius-md, 12px);
   --r-lg: var(--gryt-radius-lg, 20px);
@@ -17,8 +17,12 @@
 .gmc[data-appearance="dark"] { --m-l: 76%; --m-c: 0.13; --m-ink-l: 18%; --shadow: 0 8px 24px -8px rgb(0 0 0 / .6); }
 
 /* ---------- Card parts ---------- */
+.gmc-frame { width: 320px; max-width: 100%; min-width: 0; box-sizing: border-box; border-radius: var(--r-lg); }
+.gmc-frame[data-fc] { padding: var(--gmc-edge, 1px); overflow: hidden;
+  background-image: linear-gradient(var(--fc-edge), var(--fc-edge)), var(--fc-bg); box-shadow: var(--fc-shadow); }
+.gmc-frame.menu-open { overflow: visible; }
 .gmc { --m-accent: oklch(var(--m-l) var(--m-c) var(--m-hue, 280)); --m-ink: oklch(var(--m-ink-l) 0.03 var(--m-hue, 280));
-  width: 320px; max-width: 100%; box-sizing: border-box; background: var(--gryt-surface); color: var(--gryt-text);
+  width: 100%; max-width: 100%; box-sizing: border-box; background: var(--gryt-surface); color: var(--gryt-text);
   border: var(--gmc-edge, 1px) solid var(--gryt-border); border-radius: var(--r-lg); font-size: 14px; line-height: 1.4; min-width: 0; position: relative;
   font-family: inherit; text-align: left; }
 .gmc * { box-sizing: border-box; }
@@ -158,8 +162,8 @@
 .gmc[data-cc].has-band .gmc-over :is(.gmc-band-verb, .gmc-mut) { color: color-mix(in oklch, var(--band-ink) 74%, transparent); }
 
 /* ---------- The whole card in the member's colours ---------- */
-.gmc[data-fc] { background: var(--fc-bg); color: var(--gryt-text); border-color: transparent;
-  box-shadow: inset 0 0 0 var(--gmc-edge, 1px) var(--fc-edge), var(--fc-shadow), inset 0 0 0 1px var(--fc-glint); }
+.gmc[data-fc] { background: var(--fc-bg); color: var(--gryt-text); border: 0;
+  border-radius: calc(var(--r-lg) - var(--gmc-edge, 1px)); box-shadow: inset 0 0 0 1px var(--fc-glint); }
 .gmc[data-fc][data-cover="card"] { background-image: var(--pat-img, linear-gradient(transparent, transparent)), var(--fc-bg); background-size: var(--pat-size, auto), cover; }
 /* The banner's picture lives on a pseudo-element so the fade masks it and not the name on top. */
 .gmc[data-fc] .gmc-banner { background: none !important; --fade: linear-gradient(180deg, var(--fade-solid) 45%, transparent 100%); }
