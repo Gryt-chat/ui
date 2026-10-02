@@ -123,8 +123,9 @@
 .gmc-banner.short { height: 96px; }
 .gmc .gmc-banner.short .gmc-over { padding-top: 12px; }
 .gmc:not([data-fc]) .gmc-banner.img { background-image: var(--img) !important; background-size: cover !important; }
+.gmc-banner-media { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 .gmc-body { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 12px; }
-.gmc .gmc-over { position: absolute; inset: auto 0 0 0; padding: 36px 14px 12px; display: flex; align-items: flex-end; gap: 12px;
+.gmc .gmc-over { position: absolute; z-index: 2; inset: auto 0 0 0; padding: 36px 14px 12px; display: flex; align-items: flex-end; gap: 12px;
   background: linear-gradient(180deg, transparent, color-mix(in oklch, var(--gryt-surface) 82%, transparent) 55%, var(--gryt-surface)); }
 .gmc .gmc-over > div { display: flex; flex-direction: column; min-width: 0; }
 .gmc .gmc-over .gmc-nm { font-size: 21px; line-height: 1.1; display: flex; align-items: center; gap: 6px; }
@@ -175,10 +176,14 @@
   background-image: var(--pat-img, linear-gradient(transparent, transparent)), var(--base); background-size: var(--pat-size, auto), cover;
   -webkit-mask-image: var(--fade); mask-image: var(--fade); }
 .gmc[data-fc] .gmc-banner.img::before { background-image: var(--img); background-size: cover; }
+.gmc[data-fc] .gmc-banner.video::before { background: none; }
+.gmc[data-fc] .gmc-banner.video .gmc-banner-media { -webkit-mask-image: var(--fade); mask-image: var(--fade); }
 /* "Pattern sits in front": the pattern is drawn over the banner's picture, on either kind of card. */
 .gmc[data-player="front"]:not([data-fc]) .gmc-banner.img { background-image: var(--pat-img, linear-gradient(transparent, transparent)), var(--img) !important; background-size: var(--pat-size, auto), cover !important; }
 .gmc[data-fc][data-player="front"] .gmc-banner.img::before { background-image: var(--pat-img, linear-gradient(transparent, transparent)), var(--img); background-size: var(--pat-size, auto), cover; }
-.gmc[data-fc][data-cover="card"] .gmc-banner:not(.img)::before { display: none; }
+.gmc[data-player="front"] .gmc-banner.video::after { content: ""; position: absolute; inset: 0; background-image: var(--pat-img); background-size: var(--pat-size, auto); pointer-events: none; }
+.gmc[data-fc][data-player="front"] .gmc-banner.video::after { -webkit-mask-image: var(--fade); mask-image: var(--fade); }
+.gmc[data-fc][data-cover="card"] .gmc-banner:not(.img, .video)::before { display: none; }
 .gmc[data-fc] .gmc-over { background: none !important; }
 .gmc[data-fc] .gmc-over :is(.gmc-nm, .gmc-st) { text-shadow: 0 1px 3px color-mix(in oklch, var(--fc-mid) 75%, transparent); }
 .gmc[data-fc] .gmc-band { background: color-mix(in oklch, var(--gryt-text) 7%, transparent); border-color: transparent; }
