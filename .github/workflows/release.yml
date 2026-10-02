@@ -3,6 +3,12 @@ name: Release
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      ui_beta_version:
+        description: "UI patch beta version (for example 0.39.2-beta.1)"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -13,6 +19,7 @@ permissions:
 
 jobs:
   release:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,4 +47,27 @@ jobs:
           publish: bun run release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  ui-beta:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.2.0
+      - run: bun install --frozen-lockfile
+      - run: node scripts/prepare-ui-beta.mjs "$UI_BETA_VERSION"
+        env:
+          UI_BETA_VERSION: ${{ inputs.ui_beta_version }}
+      - run: node --test scripts/prepare-ui-beta.test.mjs
+      - run: bun run typecheck && bun run test && bun run build:lib
+      - run: node scripts/check-installable.mjs packages/ui
+      - run: npm publish --tag beta
+        working-directory: packages/ui
+        env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
