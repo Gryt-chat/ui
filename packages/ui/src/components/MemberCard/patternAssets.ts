@@ -12,6 +12,7 @@ import type { PatternMark } from "../../memberCard/patternSvg";
 /** The icon a card with the icon pattern and no pick of its own strews. */
 export const DEFAULT_ICON = "star";
 export const DEFAULT_EMOJI = "unicode:✨";
+const EMPTY_EMOJI_GROUPS: readonly EmojiPickerGroup[] = [];
 
 let tiles: Promise<Map<string, Tile>> | null = null;
 
@@ -78,13 +79,15 @@ export interface PatternAssets {
 export function usePatternAssets(
   style: CardStyle,
   owl: { nickname: string; worn?: string | null },
-  emojiGroups: readonly EmojiPickerGroup[] = [],
+  emojiGroups: readonly EmojiPickerGroup[] = EMPTY_EMOJI_GROUPS,
 ): PatternAssets {
   const pattern = cardPattern(style.pattern);
   const [assets, setAssets] = useState<PatternAssets>({});
   const icon = style.pIcon ?? DEFAULT_ICON;
   const emojiId = style.pEmoji ?? DEFAULT_EMOJI;
   const emoji = useMemo(() => pickedEmoji(emojiId, emojiGroups), [emojiGroups, emojiId]);
+  const emojiText = emoji?.emoji;
+  const emojiUrl = emoji?.imageUrl;
 
   useEffect(() => {
     let live = true;
@@ -96,17 +99,17 @@ export function usePatternAssets(
       void (cardIcons() ?? Promise.reject(new Error("no icon loader")))
         .then((m) => m.loadIconMark(icon).then((mark) => mark ?? m.loadIconMark(DEFAULT_ICON)))
         .then((mark) => set({ mark: mark ?? undefined }));
-    } else if (pattern.id === "emoji" && emoji?.emoji) {
-      set({ mark: unicodeEmojiMark(emoji.emoji) });
-    } else if (pattern.id === "emoji" && emoji?.imageUrl) {
-      void imageEmojiMark(emoji.imageUrl)
+    } else if (pattern.id === "emoji" && emojiText) {
+      set({ mark: unicodeEmojiMark(emojiText) });
+    } else if (pattern.id === "emoji" && emojiUrl) {
+      void imageEmojiMark(emojiUrl)
         .then((mark) => set({ mark: mark ?? undefined }))
         .catch(() => set({}));
     } else set({});
     return () => {
       live = false;
     };
-  }, [pattern.id, pattern.kind, icon, emoji, owl.nickname, owl.worn]);
+  }, [pattern.id, pattern.kind, icon, emojiText, emojiUrl, owl.nickname, owl.worn]);
 
   return assets;
 }
