@@ -64,6 +64,7 @@ jobs:
       - run: node scripts/prepare-ui-beta.mjs "$UI_BETA_VERSION"
         env:
           UI_BETA_VERSION: ${{ inputs.ui_beta_version }}
+      - run: node --test scripts/prepare-ui-beta.test.mjs
       - run: bun run typecheck && bun run test && bun run build:lib
       - run: node scripts/check-installable.mjs packages/ui
       - run: npm publish --tag beta

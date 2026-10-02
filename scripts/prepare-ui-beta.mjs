@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from "node:fs";
+import { URL } from "node:url";
 
 export function assertPatchBeta(version, current) {
   if (!/^\d+\.\d+\.\d+-beta\.\d+$/.test(version)) throw new Error("Only beta versions are allowed");
