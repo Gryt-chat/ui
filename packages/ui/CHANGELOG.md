@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.39.1
+
+### Patch Changes
+
+- 62bb4bf: Render silent looping video banners in member cards.
+
 ## 0.39.0
 
 ### Minor Changes
