@@ -46,6 +46,8 @@ export interface MemberCardViewProps {
   /** The owl's colour, the card's colour until they pick one. */
   owlHex: string;
   bannerUrl?: string | null;
+  /** Videos autoplay silently and loop; images keep the existing background path. */
+  bannerType?: "image" | "video";
   game?: RichActivity | null;
   chips?: CardChip[];
   appearance: "light" | "dark";
@@ -76,6 +78,7 @@ export function MemberCardView({
   profile,
   owlHex,
   bannerUrl,
+  bannerType = "image",
   game,
   chips = [],
   appearance,
@@ -96,7 +99,7 @@ export function MemberCardView({
   const hasBand = playing || !!line;
 
   const style = { ...vars } as CSSProperties & Record<string, string>;
-  if (bannerUrl) style["--img"] = `url("${bannerUrl.replace(/["\\]/g, "")}")`;
+  if (bannerUrl && bannerType === "image") style["--img"] = `url("${bannerUrl.replace(/["\\]/g, "")}")`;
 
   return (
     <div
@@ -110,7 +113,10 @@ export function MemberCardView({
         data-gryt="member-card"
         {...attrs}
       >
-      <div className={["gmc-banner", bannerUrl ? "img" : "", !bannerUrl && !hasPattern(profile.cardStyle) ? "short" : ""].filter(Boolean).join(" ")}>
+      <div className={["gmc-banner", bannerUrl ? (bannerType === "video" ? "video" : "img") : "", !bannerUrl && !hasPattern(profile.cardStyle) ? "short" : ""].filter(Boolean).join(" ")}>
+        {bannerUrl && bannerType === "video" && (
+          <video className="gmc-banner-media" src={bannerUrl} autoPlay loop muted playsInline preload="metadata" aria-hidden="true" />
+        )}
         <div className="gmc-over">
           {onAvatarClick && avatarSrc ? (
             <button

@@ -7,6 +7,10 @@ const css = readFileSync(
   join(dirname(fileURLToPath(import.meta.url)), "memberCard.css"),
   "utf8"
 );
+const component = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), "MemberCardView.tsx"),
+  "utf8"
+);
 
 describe("MemberCard banner corners", () => {
   it("clips the banner inside a thick outline", () => {
@@ -24,5 +28,11 @@ describe("MemberCard banner corners", () => {
       /background-image:\s*linear-gradient\(var\(--fc-edge\), var\(--fc-edge\)\), var\(--fc-bg\)/
     );
     expect(css).toMatch(/\.gmc\[data-fc\]\s*\{[^}]*box-shadow:\s*inset 0 0 0 1px var\(--fc-glint\)/);
+  });
+
+  it("clips video banners and fades them with full-card colours", () => {
+    expect(css).toMatch(/\.gmc-banner-media\s*\{[^}]*object-fit:\s*cover/);
+    expect(css).toMatch(/\.gmc\[data-fc\] \.gmc-banner\.video \.gmc-banner-media\s*\{[^}]*mask-image:\s*var\(--fade\)/);
+    expect(component).toMatch(/<video[^>]*autoPlay[^>]*loop[^>]*muted[^>]*playsInline/);
   });
 });
