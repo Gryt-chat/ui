@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.39.3
+
+### Patch Changes
+
+- 90bbd40: A card coloured all over draws its text in its own ink again. Since the outline frame was added, the colours were set on the frame and the card's own defaults won underneath, so "Playing" and other small text could be nearly invisible on a light card.
+
 ## 0.39.2
 
 ### Patch Changes
