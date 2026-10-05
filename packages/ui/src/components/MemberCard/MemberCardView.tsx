@@ -115,7 +115,8 @@ export function MemberCardView({
   const presence = STATUS[status] ?? STATUS.online;
   const playing = !!game && status !== "offline";
   const line = !playing && profile.statusLine ? profile.statusLine : null;
-  const hasBand = playing || !!line;
+  // Only a game gets the coloured band; a status line sits on the card as it is.
+  const hasBand = playing;
 
   const style = { ...vars } as CSSProperties & Record<string, string>;
   if (bannerUrl && bannerType === "image") style["--img"] = `url("${bannerUrl.replace(/["\\]/g, "")}")`;
@@ -178,7 +179,7 @@ export function MemberCardView({
       {playing && game ? (
         <GameBand card={game} />
       ) : line ? (
-        <section className="gmc-band">
+        <section className="gmc-band plain">
           <span className="gmc-band-verb">Status</span>
           <div className="gmc-line">{line}</div>
         </section>
