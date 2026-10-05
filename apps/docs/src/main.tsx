@@ -21,6 +21,7 @@ import { HomePage } from "./pages/HomePage";
 import { InstallationPage } from "./pages/InstallationPage";
 import { DrawingPage } from "./pages/DrawingPage";
 import { CardBuilderPage } from "./pages/CardBuilderPage";
+import { CardOgPage } from "./pages/CardOgPage";
 import { EggsPage } from "./pages/EggsPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { ThemeGeneratorPage } from "./pages/ThemeGeneratorPage";
@@ -57,7 +58,9 @@ const router = createBrowserRouter([
   },
   // Outside the shell on purpose: these are whole screens, and a sidebar next
   // to a sign-in page is not the thing being shown.
-  { path: "/examples/:example/full", element: <ExampleFullPage /> }
+  { path: "/examples/:example/full", element: <ExampleFullPage /> },
+  // A shared card alone at 1200 by 630, which the og service screenshots for its link preview.
+  { path: "/card/og", element: <CardOgPage /> }
 ]);
 
 /**

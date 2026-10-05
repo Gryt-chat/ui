@@ -103,6 +103,13 @@ function stubFor(route: string): { title: string; description: string } {
     };
   }
 
+  if (route === "card/og") {
+    return {
+      title: "Card preview — Gryt UI",
+      description: "A shared card on its own, drawn for its link preview."
+    };
+  }
+
   const full = /^examples\/(.+)\/full$/.exec(route);
   const doc = full ? exampleDocs.find((entry) => entry.slug === full[1]) : undefined;
 
