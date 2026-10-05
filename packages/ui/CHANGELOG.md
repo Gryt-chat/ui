@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.39.2
+
+### Patch Changes
+
+- bd65000: Fix a render loop when opening card emoji controls or rendering patterns without custom emoji groups.
+
 ## 0.39.1
 
 ### Patch Changes
