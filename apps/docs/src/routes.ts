@@ -34,6 +34,7 @@ export const staticRoutes = [
   "avatars/drawing",
   "eggs",
   "card",
+  "card/og",
   "components",
   "examples"
 ];
