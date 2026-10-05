@@ -2,7 +2,7 @@
 
 import "./memberCard.css";
 
-import { type CSSProperties, type ReactNode, useEffect, useMemo, useState } from "react";
+import { type CSSProperties, type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 
 import type { RichActivity } from "../../memberCard/richActivity";
 import { buttonLink, cardHeading, elapsed, gameIconUrl } from "../../memberCard/gameCard";
@@ -48,6 +48,9 @@ export interface MemberCardViewProps {
   bannerUrl?: string | null;
   /** Videos autoplay silently and loop; images keep the existing background path. */
   bannerType?: "image" | "video";
+  /** "video" plays `avatarSrc` muted and looped, with `avatarPoster` showing until it starts. */
+  avatarType?: "image" | "video";
+  avatarPoster?: string | null;
   game?: RichActivity | null;
   chips?: CardChip[];
   appearance: "light" | "dark";
@@ -68,6 +71,20 @@ function hasPattern(style: MemberCardViewProps["profile"]["cardStyle"]): boolean
   return !!style?.pattern && style.pattern !== "none";
 }
 
+
+/** Muted, looping and playing. React sets `muted` as a property, not the attribute autoplay
+    is judged by, so the browser left these paused; the ref sets it before load and plays. */
+function CardVideo({ src, poster, className }: { src: string; poster?: string | null; className?: string }) {
+  const ref = useCallback((video: HTMLVideoElement | null) => {
+    if (!video) return;
+    video.muted = true;
+    video.setAttribute("muted", "");
+    void video.play().catch(() => {});
+  }, []);
+  return (
+    <video ref={ref} className={className} src={src} poster={poster ?? undefined} autoPlay loop muted playsInline preload="metadata" aria-hidden="true" />
+  );
+}
 export function MemberCardView({
   name,
   avatarSrc,
@@ -79,6 +96,8 @@ export function MemberCardView({
   owlHex,
   bannerUrl,
   bannerType = "image",
+  avatarType = "image",
+  avatarPoster = null,
   game,
   chips = [],
   appearance,
@@ -117,7 +136,7 @@ export function MemberCardView({
       >
       <div className={["gmc-banner", bannerUrl ? (bannerType === "video" ? "video" : "img") : "", !bannerUrl && !hasPattern(profile.cardStyle) ? "short" : ""].filter(Boolean).join(" ")}>
         {bannerUrl && bannerType === "video" && (
-          <video className="gmc-banner-media" src={bannerUrl} autoPlay loop muted playsInline preload="metadata" aria-hidden="true" />
+          <CardVideo className="gmc-banner-media" src={bannerUrl} />
         )}
         <div className="gmc-over">
           {onAvatarClick && avatarSrc ? (
@@ -128,11 +147,17 @@ export function MemberCardView({
               onClick={onAvatarClick}
               style={{ "--s": "64px", "--ring": presence.ring } as CSSProperties}
             >
-              <img alt="" src={avatarSrc} />
+              {avatarType === "video" && avatarSrc ? (
+                <CardVideo src={avatarSrc} poster={avatarPoster} />
+              ) : (
+                <img alt="" src={avatarSrc} />
+              )}
             </button>
           ) : (
             <span className="gmc-av" style={{ "--s": "64px", "--ring": presence.ring } as CSSProperties}>
-              {avatarSrc ? <img alt="" src={avatarSrc} /> : <img alt="" />}
+              {avatarSrc ? (avatarType === "video" ? (
+                <CardVideo src={avatarSrc} poster={avatarPoster} />
+              ) : <img alt="" src={avatarSrc} />) : <img alt="" />}
             </span>
           )}
           <div>
