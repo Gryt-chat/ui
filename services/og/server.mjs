@@ -3,6 +3,8 @@
 // and that JPEG is /card/og?… screenshotted in the Chromium this container runs.
 // No npm dependencies: Chromium is driven over its DevTools socket with Node's own WebSocket.
 
+/* global process, fetch, setTimeout, WebSocket, Buffer, console, URL */
+
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdir, readdir, readFile, stat, unlink, writeFile } from "node:fs/promises";
