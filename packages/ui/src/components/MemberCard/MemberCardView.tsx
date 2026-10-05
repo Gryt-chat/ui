@@ -112,6 +112,8 @@ export function MemberCardView({
         data-appearance={appearance}
         data-gryt="member-card"
         {...attrs}
+        // Here as well as on the frame: .gmc sets its own defaults for some of these, which would win over inherited ones.
+        style={style}
       >
       <div className={["gmc-banner", bannerUrl ? (bannerType === "video" ? "video" : "img") : "", !bannerUrl && !hasPattern(profile.cardStyle) ? "short" : ""].filter(Boolean).join(" ")}>
         {bannerUrl && bannerType === "video" && (
