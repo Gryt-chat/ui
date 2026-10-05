@@ -51,6 +51,8 @@ async function devtools() {
     "--no-sandbox",
     "--disable-gpu",
     "--hide-scrollbars",
+    // Docker gives /dev/shm 64 MB; /tmp is a tmpfs on the Pi, so this stays off the SD card too.
+    "--disable-dev-shm-usage",
     `--remote-debugging-port=${DEBUG_PORT}`,
     "--user-data-dir=/tmp/og-chromium",
     "about:blank",
