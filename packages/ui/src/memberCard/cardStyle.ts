@@ -40,6 +40,8 @@ export interface CardStyle {
   pLayer?: "front";
   /** The card's outline in pixels. Absent is the usual one. */
   edge?: number;
+  /** "short" draws the banner low. Absent is tall, or short anyway when there's nothing to show in it. */
+  bannerSize?: "short";
 }
 
 export const PATTERN_FADES = ["none", "top", "bottom", "left", "right", "radial"] as const;
@@ -134,6 +136,7 @@ function readTuning(r: Record<string, unknown>, out: CardStyle): void {
   if (r.pLayer === "front") out.pLayer = "front";
   const edge = intIn(r.edge, TUNING.edge.min, TUNING.edge.max);
   if (edge !== undefined && edge !== TUNING.edge.default) out.edge = edge;
+  if (r.bannerSize === "short") out.bannerSize = "short";
 }
 
 /** The style as the server stores it: defaults left out, so the default card is null. */
@@ -163,6 +166,7 @@ export function cardStyleForWire(style: CardStyle): Partial<CardStyle> | null {
   if (s.pStroke !== undefined) out.pStroke = s.pStroke;
   if (s.pLayer) out.pLayer = s.pLayer;
   if (s.edge !== undefined) out.edge = s.edge;
+  if (s.bannerSize) out.bannerSize = s.bannerSize;
   return Object.keys(out).length ? out : null;
 }
 
@@ -241,6 +245,7 @@ export function encodeCardStyle(style: CardStyle): string {
   if (st.pStroke !== undefined) q.set("pStroke", String(st.pStroke));
   if (st.pLayer) q.set("pLayer", st.pLayer);
   if (st.edge !== undefined) q.set("edge", String(st.edge));
+  if (st.bannerSize) q.set("bannerSize", st.bannerSize);
   return q.toString();
 }
 

@@ -134,7 +134,7 @@ export function MemberCardView({
         // Here as well as on the frame: .gmc sets its own defaults for some of these, which would win over inherited ones.
         style={style}
       >
-      <div className={["gmc-banner", bannerUrl ? (bannerType === "video" ? "video" : "img") : "", !bannerUrl && !hasPattern(profile.cardStyle) ? "short" : ""].filter(Boolean).join(" ")}>
+      <div className={["gmc-banner", bannerUrl ? (bannerType === "video" ? "video" : "img") : "", profile.cardStyle.bannerSize === "short" || (!bannerUrl && !hasPattern(profile.cardStyle)) ? "short" : ""].filter(Boolean).join(" ")}>
         {bannerUrl && bannerType === "video" && (
           <CardVideo className="gmc-banner-media" src={bannerUrl} />
         )}

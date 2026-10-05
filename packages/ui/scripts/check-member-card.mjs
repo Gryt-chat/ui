@@ -125,6 +125,14 @@ check("line weight, outline and the pattern's layer are kept in range and surviv
   assert.equal(cardVars(style, "#7c5cff", { appearance: "dark", seed: 1 }).vars["--gmc-edge"], "3px");
 });
 
+check("a short banner is kept, leaves out the tall default, and survives the wire and a link", () => {
+  const style = normalizeCardStyle({ pattern: "dots", bannerSize: "short" });
+  assert.equal(style.bannerSize, "short");
+  assert.deepEqual(cardStyleForWire(style), { pattern: "dots", bannerSize: "short" });
+  assert.deepEqual(decodeCardStyle(encodeCardStyle(style)), style);
+  for (const other of ["tall", true, "SHORT"]) assert.equal(normalizeCardStyle({ bannerSize: other }).bannerSize, undefined);
+});
+
 check("a banner's colours: the bottom edge, whether it is flat, and what fills the picture", () => {
   const w = 8, h = 20;
   const px = new Uint8ClampedArray(w * h * 4);
