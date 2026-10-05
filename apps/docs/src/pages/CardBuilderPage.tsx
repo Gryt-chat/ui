@@ -66,10 +66,15 @@ export function CardBuilderPage() {
   const [ownBanner, setOwnBanner] = useState<string | null>(null);
   useEffect(() => () => { if (ownAvatar) URL.revokeObjectURL(ownAvatar); }, [ownAvatar]);
   useEffect(() => () => { if (ownBanner) URL.revokeObjectURL(ownBanner); }, [ownBanner]);
-  const pick = (set: (url: string | null) => void) => (e: ChangeEvent<HTMLInputElement>) => {
+  const [avatarIsVideo, setAvatarIsVideo] = useState(false);
+  const [bannerIsVideo, setBannerIsVideo] = useState(false);
+  // Pictures and short videos, as Gryt takes them; a video plays muted on the card.
+  const pick = (set: (url: string | null) => void, setVideo: (video: boolean) => void) => (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = "";
-    if (file && file.type.startsWith("image/")) set(URL.createObjectURL(file));
+    if (!file || !(file.type.startsWith("image/") || file.type.startsWith("video/"))) return;
+    setVideo(file.type.startsWith("video/"));
+    set(URL.createObjectURL(file));
   };
   const avatarInput = useRef<HTMLInputElement>(null);
   const bannerInput = useRef<HTMLInputElement>(null);
@@ -156,15 +161,17 @@ export function CardBuilderPage() {
                 Remove banner
               </Button>
             )}
-            <input ref={avatarInput} type="file" accept="image/*" className="hidden" onChange={pick(setOwnAvatar)} />
-            <input ref={bannerInput} type="file" accept="image/*" className="hidden" onChange={pick(setOwnBanner)} />
+            <input ref={avatarInput} type="file" accept="image/*,video/mp4,video/webm" className="hidden" onChange={pick(setOwnAvatar, setAvatarIsVideo)} />
+            <input ref={bannerInput} type="file" accept="image/*,video/mp4,video/webm" className="hidden" onChange={pick(setOwnBanner, setBannerIsVideo)} />
           </div>
-          <span className="text-xs text-gryt-muted">Pictures you pick stay in your browser. Nothing is uploaded.</span>
+          <span className="text-xs text-gryt-muted">Pictures and videos you pick stay in your browser. Nothing is uploaded.</span>
           <div style={{ width: 340, maxWidth: "100%" }}>
             <MemberCard
               appearance={appearance}
               avatarSrc={ownAvatar ?? avatar}
+              avatarType={ownAvatar && avatarIsVideo ? "video" : "image"}
               bannerUrl={ownBanner}
+              bannerType={ownBanner && bannerIsVideo ? "video" : "image"}
               game={playing ? sampleGame(gameId) : null}
               name={name || "Gryt"}
               owlHex={owlHex}
