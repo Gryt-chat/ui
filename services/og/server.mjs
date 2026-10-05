@@ -1,6 +1,6 @@
 // Link previews that show the shared card (GRYT-1673). Two routes, both for links that carry
-// a card in their query: /card?… answers the page with og:image pointing at /og/card.png?…,
-// and that PNG is /card/og?… screenshotted in the Chromium this container runs.
+// a card in their query: /card?… answers the page with og:image pointing at /og/card.jpg?…,
+// and that JPEG is /card/og?… screenshotted in the Chromium this container runs.
 // No npm dependencies: Chromium is driven over its DevTools socket with Node's own WebSocket.
 
 import { spawn } from "node:child_process";
@@ -14,7 +14,8 @@ const PORT = Number(process.env.PORT ?? 8080);
 const UI_ORIGIN = (process.env.UI_ORIGIN ?? "http://proxy:8084").replace(/\/$/, "");
 const PUBLIC_ORIGIN = (process.env.PUBLIC_ORIGIN ?? "https://ui.gryt.chat").replace(/\/$/, "");
 const CACHE_DIR = process.env.CACHE_DIR ?? "/cache";
-const CACHE_MAX = Number(process.env.CACHE_MAX ?? 2000);
+// Bytes. The cache is meant to sit on a tmpfs, so this is RAM, and the Pi's SD card sees no writes.
+const CACHE_MAX_BYTES = Number(process.env.CACHE_MAX_BYTES ?? 64 * 1024 * 1024);
 const CHROMIUM = process.env.CHROMIUM ?? "/usr/bin/chromium";
 const DEBUG_PORT = Number(process.env.DEBUG_PORT ?? 9222);
 const WIDTH = 1200;
@@ -29,12 +30,13 @@ export function cardQuery(search) {
 
 /** The prerendered /card page with its image swapped for this card's. */
 export function withCardImage(html, query) {
-  const image = `${PUBLIC_ORIGIN}/og/card.png?${query}`.replace(/&/g, "&amp;");
+  const image = `${PUBLIC_ORIGIN}/og/card.jpg?${query}`.replace(/&/g, "&amp;");
   const page = `${PUBLIC_ORIGIN}/card?${query}`.replace(/&/g, "&amp;");
   return html
     .replace(/(<meta property="og:image" content=")[^"]*(")/, `$1${image}$2`)
     .replace(/(<meta name="twitter:image" content=")[^"]*(")/, `$1${image}$2`)
     .replace(/(<meta property="og:url" content=")[^"]*(")/, `$1${page}$2`)
+    .replace(/(<meta property="og:image:type" content=")[^"]*(")/, `$1image/jpeg$2`)
     .replace(/(<meta property="og:image:alt" content=")[^"]*(")/, `$1A Gryt member card$2`);
 }
 
@@ -104,7 +106,8 @@ async function screenshot(path) {
       if (Date.now() > deadline) throw new Error("the page never said it was ready");
       await new Promise((resolve) => setTimeout(resolve, 150));
     }
-    const shot = await send("Page.captureScreenshot", { format: "png", clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT, scale: 1 } }, sessionId);
+    // JPEG: a gradient card is about 250 KB as a PNG and a fraction of that here.
+    const shot = await send("Page.captureScreenshot", { format: "jpeg", quality: 85, clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT, scale: 1 } }, sessionId);
     return Buffer.from(shot.data, "base64");
   } finally {
     await send("Target.closeTarget", { targetId }).catch(() => {});
@@ -128,23 +131,31 @@ function render(path) {
 /* ── Cache ────────────────────────────────────────────────────────────── */
 
 async function cached(key, make) {
-  const file = join(CACHE_DIR, `${createHash("sha256").update(key).digest("hex")}.png`);
+  const file = join(CACHE_DIR, `${createHash("sha256").update(key).digest("hex")}.jpg`);
   try {
     return await readFile(file);
   } catch {
-    const png = await make();
-    await writeFile(file, png);
-    void trim();
-    return png;
+    const jpg = await make();
+    // A cache that can't be written to costs a re-render later, not this answer.
+    await writeFile(file, jpg).then(() => trim(), (err) => console.error(`cache: ${err.message}`));
+    return jpg;
   }
 }
 
+/** Oldest first until the folder is back under its size. */
 async function trim() {
-  const names = (await readdir(CACHE_DIR)).filter((n) => n.endsWith(".png"));
-  if (names.length <= CACHE_MAX) return;
-  const aged = await Promise.all(names.map(async (n) => ({ n, t: (await stat(join(CACHE_DIR, n))).mtimeMs })));
-  aged.sort((a, b) => a.t - b.t);
-  for (const { n } of aged.slice(0, names.length - CACHE_MAX)) await unlink(join(CACHE_DIR, n)).catch(() => {});
+  const names = (await readdir(CACHE_DIR)).filter((n) => n.endsWith(".jpg"));
+  const files = await Promise.all(names.map(async (n) => {
+    const s = await stat(join(CACHE_DIR, n));
+    return { n, t: s.mtimeMs, size: s.size };
+  }));
+  let total = files.reduce((sum, f) => sum + f.size, 0);
+  files.sort((a, b) => a.t - b.t);
+  for (const f of files) {
+    if (total <= CACHE_MAX_BYTES) break;
+    await unlink(join(CACHE_DIR, f.n)).catch(() => {});
+    total -= f.size;
+  }
 }
 
 /* ── HTTP ─────────────────────────────────────────────────────────────── */
@@ -157,9 +168,10 @@ const server = createServer(async (req, res) => {
       return;
     }
     const query = cardQuery(url.search);
-    if (url.pathname === "/og/card.png" && query) {
-      const png = await cached(query, () => render(`/card/og?${query}`));
-      res.writeHead(200, { "content-type": "image/png", "cache-control": "public, max-age=86400" }).end(png);
+    if (url.pathname === "/og/card.jpg" && query) {
+      const jpg = await cached(query, () => render(`/card/og?${query}`));
+      // A link's card never changes, so Cloudflare and the unfurlers can keep it a day.
+      res.writeHead(200, { "content-type": "image/jpeg", "cache-control": "public, max-age=86400" }).end(jpg);
       return;
     }
     if ((url.pathname === "/card" || url.pathname === "/card/") && query) {

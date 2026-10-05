@@ -6,10 +6,11 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends chromium fonts-noto-color-emoji fonts-dejavu-core ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 
-RUN useradd --create-home og && mkdir /cache && chown og /cache
-USER og
+# The image's own node user, uid 1000, which compose.yml gives the tmpfs cache to.
+RUN mkdir /cache && chown node /cache
+USER node
 WORKDIR /srv
-COPY --chown=og server.mjs ./
+COPY --chown=node server.mjs ./
 
 ENV PORT=8080 CACHE_DIR=/cache CHROMIUM=/usr/bin/chromium
 EXPOSE 8080
