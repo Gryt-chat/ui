@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.41.1
+
+### Patch Changes
+
+- 731728f: A card's status line no longer sits in a coloured band. It keeps its "Status" label and its text on the card itself; only a game gets the band.
+
 ## 0.41.0
 
 ### Minor Changes
