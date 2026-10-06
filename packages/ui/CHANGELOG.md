@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.43.2
+
+### Patch Changes
+
+- 62e0e29: `react-dom` is an optional peer now. The `card-core` and `card-tiles` entries never touch it, and the phone app, which imports only those, failed `expo-doctor` for not having it.
+
 ## 0.43.1
 
 ### Patch Changes
