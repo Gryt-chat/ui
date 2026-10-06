@@ -1,17 +1,16 @@
-import { avatarSeed, decodeWorn, owlAvatarSvg, wornToOptions } from "@gryt/owl";
 import { useEffect, useMemo, useState } from "react";
 
 import type { CardStyle } from "../../memberCard/cardStyle";
 import type { EmojiPickerGroup, EmojiPickerItem } from "../EmojiPicker/EmojiPicker";
 import { cardIcons } from "./cardIconSource";
-import { GRYT_MARK } from "../../memberCard/grytMark";
+import { DEFAULT_EMOJI, GRYT_MARK, owlMark, unicodeEmojiMark } from "../../memberCard/marks";
 import { cardPattern } from "../../memberCard/patterns";
 import type { Tile } from "../../memberCard/patterns/tileTypes";
 import type { PatternMark } from "../../memberCard/patternSvg";
 
 /** The icon a card with the icon pattern and no pick of its own strews. */
 export const DEFAULT_ICON = "star";
-export const DEFAULT_EMOJI = "unicode:✨";
+export { DEFAULT_EMOJI };
 const EMPTY_EMOJI_GROUPS: readonly EmojiPickerGroup[] = [];
 
 let tiles: Promise<Map<string, Tile>> | null = null;
@@ -22,29 +21,8 @@ function loadTiles(): Promise<Map<string, Tile>> {
   return tiles;
 }
 
-const CIRCLE = "<circle cx='512' cy='512' r='512'/>";
-
-/** The member's own owl head, cut to a circle like the Gryt mark. */
-function owlMark(nickname: string, worn?: string | null): PatternMark | null {
-  const seed = avatarSeed(nickname);
-  if (!seed) return null;
-  const look = decodeWorn(worn);
-  const svg = owlAvatarSvg(seed, { ...(look ? wornToOptions(look) : {}), background: false });
-  const body = svg.replace(/^<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
-  return { viewBox: "0 0 1024 1024", body, clip: CIRCLE, mono: false };
-}
-
 const xml = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&apos;").replace(/"/g, "&quot;");
-
-function unicodeEmojiMark(emoji: string): PatternMark {
-  return {
-    viewBox: "0 0 100 100",
-    body: `<text x='50' y='78' text-anchor='middle' font-size='78' font-family='Apple Color Emoji,Segoe UI Emoji,Noto Color Emoji,sans-serif'>${xml(emoji)}</text>`,
-    mono: false,
-    tint: false,
-  };
-}
 
 function pickedEmoji(id: string, groups: readonly EmojiPickerGroup[]): EmojiPickerItem | null {
   if (id.startsWith("unicode:")) return { id, name: id.slice(8), emoji: id.slice(8) };
