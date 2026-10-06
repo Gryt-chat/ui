@@ -21,6 +21,8 @@ function loadTiles(): Promise<Map<string, Tile>> {
   return tiles;
 }
 
+const fallbackEmoji = () => unicodeEmojiMark(DEFAULT_EMOJI.slice("unicode:".length));
+
 const xml = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/'/g, "&apos;").replace(/"/g, "&quot;");
 
@@ -81,8 +83,11 @@ export function usePatternAssets(
       set({ mark: unicodeEmojiMark(emojiText) });
     } else if (pattern.id === "emoji" && emojiUrl) {
       void imageEmojiMark(emojiUrl)
-        .then((mark) => set({ mark: mark ?? undefined }))
-        .catch(() => set({}));
+        .then((mark) => set({ mark: mark ?? fallbackEmoji() }))
+        .catch(() => set({ mark: fallbackEmoji() }));
+    } else if (pattern.id === "emoji") {
+      // A server emoji this server doesn't have: the default, not an empty banner (GRYT-1676).
+      set({ mark: fallbackEmoji() });
     } else set({});
     return () => {
       live = false;
