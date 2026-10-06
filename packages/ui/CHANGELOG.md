@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.43.1
+
+### Patch Changes
+
+- 516484d: A card's emoji pattern whose server emoji isn't on this server, or won't load, strews the default ✨ instead of leaving the banner empty.
+
 ## 0.43.0
 
 ### Minor Changes
