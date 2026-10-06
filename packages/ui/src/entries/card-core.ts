@@ -27,6 +27,7 @@ export type { BandColours, CardColourPick, FullCardColours } from "../memberCard
 export { buttonLink, cardHeading, elapsed, gameIconUrl, partyText } from "../memberCard/gameCard";
 export { CARD_PATTERNS, cardPattern, isTunable, PATTERN_GROUPS, patternId } from "../memberCard/patterns";
 export type { CardPattern, PatternKind } from "../memberCard/patterns";
+export { DEFAULT_EMOJI, GRYT_MARK, owlMark, unicodeEmojiMark } from "../memberCard/marks";
 export { MARK_SIZE, patternLayers } from "../memberCard/patternSvg";
 export type { PatternDraw, PatternLayers, PatternMark } from "../memberCard/patternSvg";
 export type { RichActivity } from "../memberCard/richActivity";
