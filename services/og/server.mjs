@@ -1,6 +1,5 @@
-// Link previews that show the shared card (GRYT-1673). Two routes, both for links that carry
-// a card in their query: /card?… answers the page with og:image pointing at /og/card.jpg?…,
-// and that JPEG is /card/og?… screenshotted in the Chromium this container runs.
+// Link previews that show what was shared (GRYT-1673): a card, an owl or an egg. Per kind, /card?…
+// answers the page with og:image at /og/card.jpg?…, a screenshot of /card/og?… in this Chromium.
 // No npm dependencies: Chromium is driven over its DevTools socket with Node's own WebSocket.
 
 /* global process, fetch, setTimeout, WebSocket, Buffer, console, URL */
@@ -30,17 +29,31 @@ export function cardQuery(search) {
   return q;
 }
 
-/** The prerendered /card page with its image swapped for this card's. */
-export function withCardImage(html, query) {
-  const image = `${PUBLIC_ORIGIN}/og/card.jpg?${query}`.replace(/&/g, "&amp;");
-  const page = `${PUBLIC_ORIGIN}/card?${query}`.replace(/&/g, "&amp;");
+/**
+ * What can be shared: the page a link opens, the page drawn for its preview, and that preview's
+ * path. A card keeps its old cache keys; the others are prefixed so the three can't collide.
+ */
+export const KINDS = {
+  card: { page: "/card", og: "/card/og", image: "/og/card.jpg", alt: "A Gryt member card", key: "" },
+  owl: { page: "/avatars", og: "/avatars/og", image: "/og/owl.jpg", alt: "A Gryt owl", key: "owl:" },
+  egg: { page: "/eggs", og: "/eggs/og", image: "/og/egg.jpg", alt: "A Gryt egg", key: "egg:" },
+};
+
+/** The prerendered page with its preview swapped for the one this link describes. */
+export function withImage(html, kind, query) {
+  const k = KINDS[kind];
+  const image = `${PUBLIC_ORIGIN}${k.image}?${query}`.replace(/&/g, "&amp;");
+  const page = `${PUBLIC_ORIGIN}${k.page}?${query}`.replace(/&/g, "&amp;");
   return html
     .replace(/(<meta property="og:image" content=")[^"]*(")/, `$1${image}$2`)
     .replace(/(<meta name="twitter:image" content=")[^"]*(")/, `$1${image}$2`)
     .replace(/(<meta property="og:url" content=")[^"]*(")/, `$1${page}$2`)
     .replace(/(<meta property="og:image:type" content=")[^"]*(")/, `$1image/jpeg$2`)
-    .replace(/(<meta property="og:image:alt" content=")[^"]*(")/, `$1A Gryt member card$2`);
+    .replace(/(<meta property="og:image:alt" content=")[^"]*(")/, `$1${k.alt}$2`);
 }
+
+/** The card's own, kept for anything that imported it before owls and eggs. */
+export const withCardImage = (html, query) => withImage(html, "card", query);
 
 /* ── Chromium ─────────────────────────────────────────────────────────── */
 
@@ -172,18 +185,20 @@ const server = createServer(async (req, res) => {
       return;
     }
     const query = cardQuery(url.search);
-    if (url.pathname === "/og/card.jpg" && query) {
-      const jpg = await cached(query, () => render(`/card/og?${query}`));
-      // A link's card never changes, so Cloudflare and the unfurlers can keep it a day.
-      res.writeHead(200, { "content-type": "image/jpeg", "cache-control": "public, max-age=86400" }).end(jpg);
-      return;
-    }
-    if ((url.pathname === "/card" || url.pathname === "/card/") && query) {
-      const page = await fetch(`${UI_ORIGIN}/card/index.html`);
-      if (!page.ok) throw new Error(`the site answered ${page.status}`);
-      res.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-cache" });
-      res.end(withCardImage(await page.text(), query));
-      return;
+    for (const [kind, k] of Object.entries(KINDS)) {
+      if (url.pathname === k.image && query) {
+        const jpg = await cached(k.key + query, () => render(`${k.og}?${query}`));
+        // A link's picture never changes, so Cloudflare and the unfurlers can keep it a day.
+        res.writeHead(200, { "content-type": "image/jpeg", "cache-control": "public, max-age=86400" }).end(jpg);
+        return;
+      }
+      if ((url.pathname === k.page || url.pathname === `${k.page}/`) && query) {
+        const page = await fetch(`${UI_ORIGIN}${k.page}/index.html`);
+        if (!page.ok) throw new Error(`the site answered ${page.status}`);
+        res.writeHead(200, { "content-type": "text/html; charset=utf-8", "cache-control": "no-cache" });
+        res.end(withImage(await page.text(), kind, query));
+        return;
+      }
     }
     res.writeHead(404, { "content-type": "text/plain" }).end("not found");
   } catch (err) {

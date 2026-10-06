@@ -11,6 +11,7 @@ import {
 } from "@gryt/owl";
 import { useMemo } from "react";
 import { CodeBlock } from "../components/CodeBlock";
+import { SharedOwlHeader } from "../components/SharedLook";
 
 const webCode = `import { Avatar, avatarSeed } from "@gryt/ui";
 
@@ -96,6 +97,7 @@ export function AvatarsPage() {
 
   return (
     <article className="prose prose-invert max-w-[68ch] prose-headings:font-display prose-headings:tracking-[-0.022em] prose-h1:text-[length:var(--text-2xl)] prose-h2:mt-(--space-xl) prose-h2:text-[length:var(--text-lg)] prose-p:text-gryt-muted prose-p:leading-7">
+      <SharedOwlHeader />
       <h1>Avatars</h1>
       <p className="lead text-[length:var(--text-md)]">
         Give <code>@gryt/owl</code> a name and it returns an SVG. One drawn

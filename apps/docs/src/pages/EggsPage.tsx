@@ -10,6 +10,7 @@ import {
 import { Avatar } from "@gryt/ui";
 import { useMemo } from "react";
 import { CodeBlock } from "../components/CodeBlock";
+import { SharedEggHeader } from "../components/SharedLook";
 
 const uiCode = `import { Avatar } from "@gryt/ui";
 
@@ -117,6 +118,7 @@ export function EggsPage() {
 
   return (
     <article className="prose prose-invert max-w-[68ch] prose-headings:font-display prose-headings:tracking-[-0.022em] prose-h1:text-[length:var(--text-2xl)] prose-h2:mt-(--space-xl) prose-h2:text-[length:var(--text-lg)] prose-p:text-gryt-muted prose-p:leading-7">
+      <SharedEggHeader />
       <h1>Eggs</h1>
       <p className="lead text-[length:var(--text-md)]">
         Give <code>@gryt/owl</code> a string and it returns an SVG of eggs. They

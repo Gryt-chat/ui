@@ -409,6 +409,23 @@ export function AvatarChoiceDialog({
   );
 }
 
+/** Copies the owl's link and says so on the button for a moment, like Copy link on cards. */
+function CopyOwlLink({ link }: { link: string }) {
+  const [note, setNote] = useState<string | null>(null);
+  const copy = () => {
+    void navigator.clipboard?.writeText(link).then(
+      () => setNote("Copied"),
+      () => setNote("Couldn't copy"),
+    );
+    window.setTimeout(() => setNote(null), 1600);
+  };
+  return (
+    <Button onClick={copy} size="small" tone="neutral">
+      {note ?? "Copy link"}
+    </Button>
+  );
+}
+
 /* --- the editor ---------------------------------------------------------- */
 
 /**
@@ -424,6 +441,7 @@ export function OwlDesigner({
   followSeed = false,
   initialWorn,
   onUseInApp,
+  shareLink,
 }: {
   nickname: string;
   saving: boolean;
@@ -440,6 +458,8 @@ export function OwlDesigner({
   initialWorn?: string;
   /** Adds "Open in Gryt", for a page outside the app that can hand the look over to it. */
   onUseInApp?: (worn: string) => void;
+  /** Adds "Copy link": the address that shows this owl, whose preview is the owl (GRYT-1673). */
+  shareLink?: (worn: string) => string;
 }) {
   const seed = avatarSeed(nickname) ?? "";
   const [look, setLookState] = useState<WornLook>(() =>
@@ -827,6 +847,7 @@ export function OwlDesigner({
                 Open in Gryt
               </Button>
             )}
+            {shareLink && <CopyOwlLink link={shareLink(worn)} />}
             <SaveAs look={look} nickname={nickname} seed={seed} />
             {onCancel && (
               <Button disabled={saving} onClick={onCancel} size="small" tone="neutral">
@@ -851,12 +872,15 @@ export function OwlDesignerDialog({
   onOpenChange,
   onSave,
   initialWorn,
+  shareLink,
 }: {
   open: boolean;
   nickname: string;
   saving: boolean;
   /** A shared look to open on. */
   initialWorn?: string;
+  /** Adds "Copy link" for the owl as it stands. */
+  shareLink?: (worn: string) => string;
   onOpenChange: (open: boolean) => void;
   onSave: (png: Blob, worn: string) => void;
 }) {
@@ -873,6 +897,7 @@ export function OwlDesignerDialog({
             onCancel={() => onOpenChange(false)}
             onSave={onSave}
             saving={saving}
+            shareLink={shareLink}
           />
         </Dialog.Popup>
       </Dialog.Portal>
