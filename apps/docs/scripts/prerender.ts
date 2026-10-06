@@ -103,6 +103,20 @@ function stubFor(route: string): { title: string; description: string } {
     };
   }
 
+  if (route === "avatars/og") {
+    return {
+      title: "Owl preview — Gryt UI",
+      description: "A shared owl on its own, drawn for its link preview."
+    };
+  }
+
+  if (route === "eggs/og") {
+    return {
+      title: "Egg preview — Gryt UI",
+      description: "A shared egg on its own, drawn for its link preview."
+    };
+  }
+
   if (route === "card/og") {
     return {
       title: "Card preview — Gryt UI",
