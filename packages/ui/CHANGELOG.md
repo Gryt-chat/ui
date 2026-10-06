@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.43.0
+
+### Minor Changes
+
+- 18a3ad1: card-core exports the scatter marks (`GRYT_MARK`, `owlMark`, `unicodeEmojiMark`, `DEFAULT_EMOJI`), and the new `card-tiles` entry exports every tile pattern's paths, so the phone can draw the same patterns.
+
 ## 0.42.0
 
 ### Minor Changes
