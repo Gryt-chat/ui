@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.44.0
+
+### Minor Changes
+
+- 6eb7bd1: `OwlDesigner` and `OwlDesignerDialog` take an optional `shareLink`, which adds a Copy link button for the owl as it stands (GRYT-1673).
+
 ## 0.43.2
 
 ### Patch Changes
