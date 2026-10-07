@@ -151,9 +151,9 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
                 aria-label={i === 0 ? "Match the bottom edge of the banner" : `Use ${hex} from the banner`}
                 // A flat bottom edge needs only the short fade; a busy one is faded all the way down.
                 onClick={() => apply({ ...style, fill: "solid", c1: hex, c2: hex, colours: "card", fade: i === 0 && fromBanner.flat ? "bottom" : "banner" })}
-                className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-gryt-border bg-gryt-surface-raised py-1 pr-2.5 pl-1 text-[12.5px] font-bold text-gryt-text hover:bg-gryt-surface-hover"
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-(--gryt-radius-control) border border-gryt-border bg-gryt-surface-raised py-1 pr-2.5 pl-1 text-[12.5px] font-bold text-gryt-text hover:bg-gryt-surface-hover"
               >
-                <i className="h-[18px] w-[18px] rounded-full border border-gryt-border" style={{ background: hex }} />
+                <i className="h-[18px] w-[18px] rounded-(--gryt-radius-full) border border-gryt-border" style={{ background: hex }} />
                 {i === 0 ? "Bottom edge" : hex}
               </button>
             ))}
