@@ -178,6 +178,10 @@ function paths(svg: string): Shape[] {
 export const ROLES = [
   "background", "body", "face", "accent", "wing",
   "trimLight", "trim", "trimDeep", "trimSoft", "gold", "goldDeep",
+  "steelLight", "steel", "steelDeep", "woodLight", "wood", "woodDeep",
+  "redLight", "red", "redDeep", "blueLight", "blue", "blueDeep",
+  "yellowLight", "yellow", "yellowDeep", "blackLight", "black", "blackDeep",
+  "whiteLight", "white", "whiteDeep",
 ] as const satisfies readonly owl.PaletteSlot[];
 const sentinels: Partial<owl.OwlPalette> = Object.fromEntries(
   ROLES.map((role, i) => [role, `#${(i + 1).toString(16).padStart(6, "0")}`]),
