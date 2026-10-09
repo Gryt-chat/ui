@@ -79,10 +79,6 @@ function farHue(h: number): number {
   return apart(h, 34) >= apart(h, 202) ? 34 : 202;
 }
 
-/**
- * The three ways an owl sits against its background, all off the painted references. The
- * face runs warm in every scheme, and `trim` stays inside the palette's own hue.
- */
 /** The same in every palette and scheme, by design: a red shirt is red on a teal owl. */
 export const MATERIALS = {
   steelLight: "#dfe4e8",
@@ -108,6 +104,10 @@ export const MATERIALS = {
   whiteDeep: "#c6ccd3",
 } as const;
 
+/**
+ * The three ways an owl sits against its background, all off the painted references. The
+ * face runs warm in every scheme, and `trim` stays inside the palette's own hue.
+ */
 export function owlPalette(name: PaletteName, scheme: PaletteScheme): OwlPalette {
   const h = HUE_BY_NAME[name];
   /*
