@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { ACCESSORIES, ACCESSORY_SLOTS, accessoriesIn } from "./accessories";
 import {
   EMPTY_FIELD,
+  FIRST_SLOTS,
   WORN_LENGTH,
   decodeWorn,
   encodeWorn,
@@ -58,7 +59,7 @@ describe("a string from another build", () => {
   it("refuses one too short to carry the slots", () => {
     expect(decodeWorn("")).toBeNull();
     expect(decodeWorn("aa")).toBeNull();
-    expect(decodeWorn("aa".repeat(ACCESSORY_SLOTS.length - 1))).toBeNull();
+    expect(decodeWorn("aa".repeat(FIRST_SLOTS.length - 1))).toBeNull();
   });
 
   it("refuses half a field", () => {
@@ -81,7 +82,7 @@ describe("a string from another build", () => {
   });
 
   it("reads a shorter string from an older build and leaves the rest unset", () => {
-    const slotsOnly = encodeWorn(look).slice(0, ACCESSORY_SLOTS.length * 2);
+    const slotsOnly = encodeWorn(look).slice(0, FIRST_SLOTS.length * 2);
     const back = decodeWorn(slotsOnly);
     expect(back).not.toBeNull();
     expect(back!.wearing.head).toBe("hat-winter");
@@ -107,7 +108,7 @@ describe("a string from another build", () => {
 
   it("ignores a palette it does not have rather than failing", () => {
     const encoded = encodeWorn(look);
-    const paletteAt = ACCESSORY_SLOTS.length * 2;
+    const paletteAt = FIRST_SLOTS.length * 2;
     const odd = encoded.slice(0, paletteAt) + "zz" + encoded.slice(paletteAt + 2);
 
     const back = decodeWorn(odd);
@@ -166,10 +167,18 @@ describe("a colour per slot", () => {
     expect(decodeWorn(encodeWorn(look))?.tint).toBeUndefined();
   });
 
+  it("puts later slots on the end, so an older build still finds the palette", () => {
+    // An older client reads palette, scheme and ears straight after the first five slots.
+    const encoded = encodeWorn(look);
+    expect(encoded).toHaveLength(WORN_LENGTH);
+    expect(decodeWorn(encoded.slice(0, (FIRST_SLOTS.length * 2 + 3) * 2))?.palette).toBe("violet");
+    expect(ACCESSORY_SLOTS.slice(0, FIRST_SLOTS.length)).toEqual(FIRST_SLOTS);
+  });
+
   it("reads a string written before tints existed", () => {
     // The one that matters. Every look saved before this field was added is this shape;
     // if it stopped decoding, every wardrobe would empty at once.
-    const old = encodeWorn(look).slice(0, (ACCESSORY_SLOTS.length + 3) * 2);
+    const old = encodeWorn(look).slice(0, (FIRST_SLOTS.length + 3) * 2);
     expect(old).toHaveLength(16);
 
     const back = decodeWorn(old);

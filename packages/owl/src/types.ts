@@ -33,7 +33,7 @@ export type OwlPart =
  * Where an accessory is worn. One per slot, drawn independently, so a hat, glasses and a
  * scarf are three rolls. `expression` is a slot like the others.
  */
-export type AccessorySlot = "expression" | "eyewear" | "head" | "neck" | "body";
+export type AccessorySlot = "expression" | "eyewear" | "head" | "neck" | "body" | "held" | "back";
 
 /**
  * Where an accessory sits in the stack: `overEyes` for a painted lens, `overFace` for a
@@ -63,6 +63,31 @@ export interface OwlPalette {
   trimSoft: string;
   gold: string;
   goldDeep: string;
+  /*
+   * Materials: fixed colours that don't follow the owl's hue, for things that have one
+   * colour in life. A steel blade, a wooden handle, a red football shirt (GRYT-1711).
+   */
+  steelLight: string;
+  steel: string;
+  steelDeep: string;
+  woodLight: string;
+  wood: string;
+  woodDeep: string;
+  redLight: string;
+  red: string;
+  redDeep: string;
+  blueLight: string;
+  blue: string;
+  blueDeep: string;
+  yellowLight: string;
+  yellow: string;
+  yellowDeep: string;
+  blackLight: string;
+  black: string;
+  blackDeep: string;
+  whiteLight: string;
+  white: string;
+  whiteDeep: string;
 }
 
 /** A colour role an accessory's paths can ask for. */

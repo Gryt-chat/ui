@@ -14,6 +14,8 @@ export const RARITY_SHARE = {
   uncommon: 0.6,
   rare: 0.35,
   scarce: 0.2,
+  // In the picker only, never drawn for a seed, so adding one moves nobody's owl.
+  chosen: 0,
 } as const;
 
 export type Rarity = keyof typeof RARITY_SHARE;
@@ -23,6 +25,33 @@ export type Rarity = keyof typeof RARITY_SHARE;
  * draw rather than a rule: a new noun is one line, and until then the file is refused.
  */
 export const KEYWORDS: Record<string, AccessorySlot> = {
+  // held — in the owl's arms or hands
+  holding: "held",
+  held: "held",
+  sword: "held",
+  racket: "held",
+  bat: "held",
+  stick: "held",
+  hammer: "held",
+  guitar: "held",
+  ukulele: "held",
+  flute: "held",
+  saxophone: "held",
+  bagpipes: "held",
+  brush: "held",
+  ball: "held",
+  shield: "held",
+  longbow: "held",
+  skis: "held",
+  surfboard: "held",
+  snowboard: "held",
+
+  // back — worn behind the bird
+  back: "back",
+  quiver: "back",
+  cloak: "back",
+  backpack: "back",
+
   // expression — the face itself, not something worn on it
   eyes: "expression",
   expression: "expression",
@@ -103,6 +132,9 @@ export const DEFAULT_LAYER: Record<AccessorySlot, string> = {
   // A garment goes on top of everything, collar included. It is drawn over the
   // bird rather than tucked behind it, which is what a coat does.
   body: "overAll",
+  // In the arms, so over the body and whatever it wears.
+  held: "overAll",
+  back: "behind",
 };
 
 const LAYERS: Record<string, string> = {
@@ -271,14 +303,19 @@ export function weightsFor<
 
   const slots = new Set(items.map((i) => i.slot));
   for (const slot of slots) {
-    const inSlot = items.filter((i) => i.slot === slot);
+    const all = items.filter((i) => i.slot === slot);
+    // Chosen-only drawings, and every drawing in a slot that is never filled at random.
+    for (const item of all) weights.set(item.name, 0);
+    if (presence[slot] === 0) continue;
+    const inSlot = all.filter((i) => i.rarity !== "chosen");
+    if (inSlot.length === 0) continue;
 
     /*
      * Families compete for the slot; variants split what their family wins. Otherwise six
      * colourways of round glasses are 5.9x as likely to turn up as a pair drawn once.
      */
     const families = [...new Set(inSlot.map((i) => i.family))].sort();
-    const shares = families.map((family) => {
+    const shares: number[] = families.map((family) => {
       const rarities = new Set(inSlot.filter((i) => i.family === family).map((i) => i.rarity));
       // Checked in placementFor's caller; taking the first is safe here.
       return RARITY_SHARE[[...rarities][0]];

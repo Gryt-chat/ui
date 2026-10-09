@@ -88,12 +88,21 @@ colour and its tile's colour are the same colour rather than neighbours.
 An accessory names a colour role instead of carrying a hex, so a teal owl and a
 pink owl wear the same hat in their own colours.
 
+Some things only come in one colour, though. A steel blade or a red football shirt
+shouldn't turn teal on a teal owl. For those there are materials: steel, wood, red,
+blue, yellow, black and white, three shades each, the same on every owl. Draw in the
+exact hexes in `MATERIALS` in `src/palette.ts` and they stay put.
+
 ## Accessories are drawings
 
 Five slots — `expression`, `eyewear`, `head`, `neck`, `body` — one accessory
 each, rolled independently, so a hat and glasses and a scarf can all turn up at
 once. A slot can also come up empty. An owl with no expression still has eyes:
 the ones the bird is drawn with.
+
+Two more, `held` (something in its arms) and `back` (worn behind it), are never
+rolled. They only fill when somebody picks something, because they came after
+everyone's owl was settled and rolling them would change those owls.
 
 Adding one does not involve writing any path data, or a manifest. Export the
 bird, draw on it, save the result into `artwork/` under a name that says what it
@@ -132,6 +141,7 @@ optional dot-tags cover the rest:
 | `Round_Glasses.over-face.svg` | drawn as holes, so the eyes show through |
 | `Hollow_Eyes.over-eyes.svg` | drawn on the eyes rather than instead of them |
 | `Headset.behind.svg` | worn behind the bird, whatever the export's order says |
+| `Chef_Hat.chosen.svg` | only in the picker, never rolled, so it changes nobody's owl |
 | `_Old_Hat.svg` | kept in the folder, left out of the registry |
 
 A word the script does not know stops the run and says so, rather than putting

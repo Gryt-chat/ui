@@ -6,6 +6,13 @@
 import { ACCESSORY_SLOTS, accessoryByName, accessoriesIn } from "./accessories";
 import type { AccessorySlot, EarStyle, OwlOptions, PaletteName, PaletteScheme } from "./types";
 
+/*
+ * The layout: the first five slots, palette, scheme, ears, their five tints, then every
+ * later slot and its tint. Later slots go on the end so older strings still read right.
+ */
+export const FIRST_SLOTS: readonly AccessorySlot[] = ["expression", "eyewear", "head", "neck", "body"];
+const LATER_SLOTS: readonly AccessorySlot[] = ACCESSORY_SLOTS.filter((s) => !FIRST_SLOTS.includes(s));
+
 /** Two characters, no key. A slot somebody chose to leave empty. */
 export const EMPTY_FIELD = "--";
 
@@ -71,19 +78,21 @@ function accessoryKey(name: string | null | undefined): string {
  * than throwing: one unknown hat should cost that hat, not the whole owl.
  */
 export function encodeWorn(look: WornLook): string {
-  const slots = ACCESSORY_SLOTS.map((slot) => accessoryKey(look.wearing[slot]));
+  const slots = FIRST_SLOTS.map((slot) => accessoryKey(look.wearing[slot]));
   // Appended after the three settings, never inserted among them. The decoder reads
   // positionally, so an older client reads the first eight fields as it always did.
-  const tints = ACCESSORY_SLOTS.map((slot) => {
+  const tintOf = (slot: AccessorySlot) => {
     const name = look.tint?.[slot];
     return name ? PALETTE_KEYS[name] : EMPTY_FIELD;
-  });
+  };
   return [
     ...slots,
     look.palette ? PALETTE_KEYS[look.palette] : EMPTY_FIELD,
     look.scheme ? SCHEME_KEYS[look.scheme] : EMPTY_FIELD,
     look.ears ? EAR_KEYS[look.ears] : EMPTY_FIELD,
-    ...tints,
+    ...FIRST_SLOTS.map(tintOf),
+    ...LATER_SLOTS.map((slot) => accessoryKey(look.wearing[slot])),
+    ...LATER_SLOTS.map(tintOf),
   ].join("");
 }
 
@@ -92,6 +101,9 @@ export function encodeWorn(look: WornLook): string {
  * wardrobe, which is why `decodeWorn` reads positionally instead of checking it.
  */
 export const WORN_LENGTH = (ACCESSORY_SLOTS.length * 2 + 3) * FIELD;
+
+/** Where each later slot's field sits: after the first slots, the settings and their tints. */
+const LATER_AT = FIRST_SLOTS.length * 2 + 3;
 
 /**
  * The look a string describes, or null. Forgiving about content and length, strict about
@@ -103,14 +115,15 @@ export function decodeWorn(value: string | null | undefined): WornLook | null {
   const trimmed = value.trim().toLowerCase();
   if (trimmed.length === 0 || trimmed.length % FIELD !== 0) return null;
   if (!/^(?:[a-z]{2}|--)+$/.test(trimmed)) return null;
-  if (trimmed.length < ACCESSORY_SLOTS.length * FIELD) return null;
+  if (trimmed.length < FIRST_SLOTS.length * FIELD) return null;
 
   const fields: string[] = [];
   for (let i = 0; i < trimmed.length; i += FIELD) fields.push(trimmed.slice(i, i + FIELD));
 
   const wearing: Partial<Record<AccessorySlot, string | null>> = {};
-  ACCESSORY_SLOTS.forEach((slot, i) => {
-    const key = fields[i];
+  const readSlot = (slot: AccessorySlot, key: string | undefined) => {
+    // Absent is a string from before this slot existed: leave it to the seed.
+    if (key === undefined) return;
     if (key === EMPTY_FIELD) {
       wearing[slot] = null;
       return;
@@ -119,10 +132,16 @@ export function decodeWorn(value: string | null | undefined): WornLook | null {
     // Unknown key: treat as empty rather than as "wear nothing deliberately",
     // so a newer accessory on an older client just does not draw.
     wearing[slot] = match ? match.name : null;
+  };
+  FIRST_SLOTS.forEach((slot, i) => readSlot(slot, fields[i]));
+  // A later slot is never filled at random, so empty and absent mean the same: unset.
+  LATER_SLOTS.forEach((slot, i) => {
+    const key = fields[LATER_AT + i];
+    if (key !== EMPTY_FIELD) readSlot(slot, key);
   });
 
   const look: WornLook = { wearing };
-  const at = (i: number) => fields[ACCESSORY_SLOTS.length + i] ?? EMPTY_FIELD;
+  const at = (i: number) => fields[FIRST_SLOTS.length + i] ?? EMPTY_FIELD;
   const palette = PALETTE_BY_KEY[at(0)];
   const scheme = SCHEME_BY_KEY[at(1)];
   const ears = EAR_BY_KEY[at(2)];
@@ -133,8 +152,12 @@ export function decodeWorn(value: string | null | undefined): WornLook | null {
   // A string written before tints existed stops here, and `at` hands back EMPTY_FIELD for
   // every one. Nothing is set, and the accessories follow the owl as they did.
   const tint: Partial<Record<AccessorySlot, PaletteName>> = {};
-  ACCESSORY_SLOTS.forEach((slot, i) => {
+  FIRST_SLOTS.forEach((slot, i) => {
     const name = PALETTE_BY_KEY[at(3 + i)];
+    if (name) tint[slot] = name as PaletteName;
+  });
+  LATER_SLOTS.forEach((slot, i) => {
+    const name = PALETTE_BY_KEY[fields[LATER_AT + LATER_SLOTS.length + i] ?? EMPTY_FIELD];
     if (name) tint[slot] = name as PaletteName;
   });
   if (Object.keys(tint).length > 0) look.tint = tint;
