@@ -79,6 +79,31 @@ function farHue(h: number): number {
   return apart(h, 34) >= apart(h, 202) ? 34 : 202;
 }
 
+/** The same in every palette and scheme, by design: a red shirt is red on a teal owl. */
+export const MATERIALS = {
+  steelLight: "#dfe4e8",
+  steel: "#aab3bc",
+  steelDeep: "#77818b",
+  woodLight: "#dba46c",
+  wood: "#a8703f",
+  woodDeep: "#71472a",
+  redLight: "#f2756c",
+  red: "#d63a31",
+  redDeep: "#97241f",
+  blueLight: "#6a98d8",
+  blue: "#2f5ea8",
+  blueDeep: "#1c3a6c",
+  yellowLight: "#ffd966",
+  yellow: "#f2b632",
+  yellowDeep: "#c3870f",
+  blackLight: "#4d5058",
+  black: "#2b2d32",
+  blackDeep: "#17181b",
+  whiteLight: "#ffffff",
+  white: "#eceff2",
+  whiteDeep: "#c6ccd3",
+} as const;
+
 /**
  * The three ways an owl sits against its background, all off the painted references. The
  * face runs warm in every scheme, and `trim` stays inside the palette's own hue.
@@ -111,6 +136,7 @@ export function owlPalette(name: PaletteName, scheme: PaletteScheme): OwlPalette
       trimSoft: hsl(h + 18, 44, 91),
       gold,
       goldDeep,
+      ...MATERIALS,
     };
   }
 
@@ -127,6 +153,7 @@ export function owlPalette(name: PaletteName, scheme: PaletteScheme): OwlPalette
       trimSoft: hsl(h + 18, 40, 88),
       gold,
       goldDeep,
+      ...MATERIALS,
     };
   }
 
@@ -142,6 +169,7 @@ export function owlPalette(name: PaletteName, scheme: PaletteScheme): OwlPalette
     trimSoft: hsl(h + 20, 48, 93),
     gold,
     goldDeep,
+    ...MATERIALS,
   };
 }
 

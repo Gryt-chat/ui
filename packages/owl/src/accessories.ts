@@ -79,6 +79,8 @@ export const OWL_BASE = {
     head: null,
     neck: null,
     body: null,
+    held: null,
+    back: null,
   },
 } as const satisfies OwlOptions;
 
@@ -94,6 +96,10 @@ export const SLOT_PRESENCE: Record<AccessorySlot, number> = {
   head: 0.3,
   neck: 0.35,
   body: 0.18,
+  // Never drawn for a seed: they came after everyone's owl was settled, so only a picker
+  // fills them and no existing owl moves.
+  held: 0,
+  back: 0,
 };
 
 /**
@@ -106,7 +112,7 @@ export const SLOT_PRESENCE: Record<AccessorySlot, number> = {
  * and everyone owning two things that exclude each other swaps one for the other.
  */
 export const ACCESSORY_SLOTS: AccessorySlot[] = [
-  "expression", "eyewear", "head", "neck", "body",
+  "expression", "eyewear", "head", "neck", "body", "held", "back",
 ];
 
 export const EMPTY_WEIGHT: Record<AccessorySlot, number> = {
@@ -115,6 +121,8 @@ export const EMPTY_WEIGHT: Record<AccessorySlot, number> = {
   head: 1000,
   neck: 1000,
   body: 1000,
+  held: 1000,
+  back: 1000,
 };
 
 /**
