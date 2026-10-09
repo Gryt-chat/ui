@@ -49,7 +49,18 @@
     "hat-tophat": "bu",
     "hat-tophat-huge": "bv",
     "hat-tophat-small": "bw",
-    "hat-winter-oversize": "bx"
+    "hat-winter-oversize": "bx",
+    "glasses-hexagon": "by",
+    "glasses-military-skigoggles": "bz",
+    "glasses-pilotshades": "ca",
+    "glasses-pilotshades-v2": "cb",
+    "glasses-squirkle": "cc",
+    "hat-hardhat": "cd",
+    "hat-hardhat-small": "ce",
+    "hat-military-cap": "cf",
+    "hat-military-fish": "cg",
+    "hat-military-helmet": "ch",
+    "shirt-wrapped": "ci"
   },
   "retired": []
 }

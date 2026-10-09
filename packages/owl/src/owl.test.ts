@@ -51,11 +51,11 @@ describe("the same name draws the same owl", () => {
   });
 
   /*
-   * The pins. Generated once, and regenerated once on 2026-08-25 when GRYT-589 moved
-   * weights onto the filenames. Ask whether the change was meant, not whether to update.
+   * The pins. Regenerated 2026-08-25 (GRYT-589 weights) and 2026-10-09 (eleven new drawings,
+   * 32% of owls moved, accepted by Sivert). Ask whether a change was meant, not whether to update.
    */
   it.each([
-    ["sivert", "8e6200915eb65797"],
+    ["sivert", "a6d4126963c9dbc5"],
     ["ingy", "ae9902b72ddb5d51"],
     ["gryt", "ddd680cd5c4e30a9"],
   ])("%s is unchanged", (seed, expected) => {

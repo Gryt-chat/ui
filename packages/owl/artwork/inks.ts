@@ -69,6 +69,32 @@ export const INKS: Record<string, PaletteSlot> = {
   "#282d33": "accent",
   "#0f4a53": "accent",       // hat_cap
 
+  // The 2026-10 batch, each colour on its nearest role.
+  "#a5dcd8": "trimLight",       // glasses_military_skigoggles
+  "#8bcac4": "trimLight",       // glasses_military_skigoggles
+  "#47837d": "trimDeep",        // glasses_military_skigoggles
+  "#264a45": "accent",          // glasses_military_skigoggles
+  "#bae6e4": "trimSoft",        // glasses_pilotshades_v2
+  "#7ec9c1": "trimLight",       // glasses_pilotshades_v2
+  "#489189": "trimDeep",        // glasses_pilotshades_v2
+  "#254c45": "accent",          // glasses_pilotshades_v2
+  "#92cdca": "trimLight",       // hat_military_cap
+  "#63aea9": "trim",            // hat_military_cap
+  "#47928f": "trimDeep",        // hat_military_cap
+  "#3d827f": "trimDeep",        // hat_military_cap
+  "#9bd4d0": "trimLight",       // hat_military_fish
+  "#68b2aa": "trim",            // hat_military_fish
+  "#478a84": "trimDeep",        // hat_military_fish
+  "#366a62": "accent",          // hat_military_fish
+  "#2d5951": "accent",          // hat_military_fish
+  "#b6e2e2": "trimSoft",        // hat_military_helmet
+  "#6ab4ac": "trim",            // hat_military_helmet
+  "#488c85": "trimDeep",        // hat_military_helmet
+  "#346861": "accent",          // hat_military_helmet
+  "#6db3ac": "trim",            // shirt_wrapped
+  "#4d8d86": "trimDeep",        // shirt_wrapped
+  "#295851": "accent",          // shirt_wrapped
+
   /*
    * The canonical swatch: one colour per role, and the only one new work uses.
    *
