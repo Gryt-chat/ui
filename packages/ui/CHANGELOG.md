@@ -1,5 +1,14 @@
 # @gryt/ui
 
+## 0.44.1
+
+### Patch Changes
+
+- 3d88e6a: The member card follows the theme's corners all the way through. The avatar, chips, game icon, party pips, tooltip and menu rows had their own fixed radii, so on Square or Crisp the card kept round avatars and pill chips. On the default theme nothing changes.
+- Updated dependencies [b5b3b09]
+- Updated dependencies [112c29b]
+  - @gryt/owl@0.7.0
+
 ## 0.44.0
 
 ### Minor Changes
