@@ -1,18 +1,22 @@
+import { AirplaneTilt, Flag, ForkKnife, HandWaving, Heart, type Icon, Lightbulb, PawPrint, Smiley, SoccerBall } from "@phosphor-icons/react";
+import { createElement } from "react";
 import { gemoji } from "gemoji";
 
 import type { EmojiPickerGroup } from "./EmojiPicker";
 
-const CATEGORY_ICONS: Record<string, string> = {
-  "Smileys & Emotion": "😀",
-  "People & Body": "👋",
-  "Animals & Nature": "🐾",
-  "Food & Drink": "🍕",
-  "Travel & Places": "✈️",
-  Activities: "⚽",
-  Objects: "💡",
-  Symbols: "💜",
-  Flags: "🏁"
+/* Phosphor, bold, for the category rail (GRYT-1725). Emoji glyphs here read as clutter. */
+const CATEGORY_ICONS: Record<string, Icon> = {
+  "Smileys & Emotion": Smiley,
+  "People & Body": HandWaving,
+  "Animals & Nature": PawPrint,
+  "Food & Drink": ForkKnife,
+  "Travel & Places": AirplaneTilt,
+  Activities: SoccerBall,
+  Objects: Lightbulb,
+  Symbols: Heart,
+  Flags: Flag
 };
+const LABELS: Record<string, string> = { "Smileys & Emotion": "Smileys", "People & Body": "People" };
 
 let groups: EmojiPickerGroup[] | null = null;
 
@@ -29,8 +33,8 @@ export function standardEmojiGroups(): EmojiPickerGroup[] {
     if (!group) {
       group = {
         id: entry.category.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-        label: entry.category,
-        icon: CATEGORY_ICONS[entry.category] ?? "•",
+        label: LABELS[entry.category] ?? entry.category,
+        icon: createElement(CATEGORY_ICONS[entry.category] ?? Smiley, { size: 20, weight: "bold" }),
         items: []
       };
       byCategory.set(entry.category, group);

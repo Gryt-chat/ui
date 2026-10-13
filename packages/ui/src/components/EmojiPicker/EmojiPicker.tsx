@@ -1,6 +1,6 @@
 "use client";
 
-import { MagnifyingGlass } from "@phosphor-icons/react";
+import { MagnifyingGlass, Smiley } from "@phosphor-icons/react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import type { HTMLAttributes, KeyboardEvent, ReactNode } from "react";
@@ -43,12 +43,14 @@ function EmojiCell({
   item,
   selected,
   onSelect,
-  onKeyDown
+  onKeyDown,
+  onPoint
 }: {
   item: EmojiPickerItem;
   selected: boolean;
   onSelect: (item: EmojiPickerItem) => void;
   onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
+  onPoint: (item: EmojiPickerItem) => void;
 }) {
   return (
     <button
@@ -60,9 +62,11 @@ function EmojiCell({
       title={`:${item.name}:`}
       onClick={() => onSelect(item)}
       onKeyDown={onKeyDown}
+      onMouseEnter={() => onPoint(item)}
+      onFocus={() => onPoint(item)}
       className={cn(
-        "gryt-emoji-picker-cell aspect-square min-w-0 rounded-(--gryt-radius-control) border-0 p-0",
-        "inline-flex items-center justify-center bg-transparent text-[1.35rem] leading-none",
+        "gryt-emoji-picker-cell h-11 w-11 min-w-0 rounded-(--gryt-radius-control) border-0 p-0",
+        "inline-flex items-center justify-center bg-transparent text-[1.75rem] leading-none",
         "transition-[scale,background-color,color] duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none",
         "hover:not-disabled:bg-gryt-surface-hover active:not-disabled:scale-90",
         "disabled:cursor-not-allowed disabled:opacity-40",
@@ -76,14 +80,14 @@ function EmojiCell({
         <img
           src={item.imageUrl}
           alt=""
-          className="h-[1.35rem] w-[1.35rem] object-contain"
+          className="h-7 w-7 object-contain"
         />
       ) : null}
     </button>
   );
 }
 
-const COLUMNS = 7;
+const COLUMNS = 8;
 
 type EmojiRow =
   | { kind: "heading"; key: string; group: EmojiPickerGroup }
@@ -127,6 +131,7 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
     const firstGroup = groups.find((group) => group.items.length > 0)?.id ?? "";
     const [activeGroup, setActiveGroup] = useState(firstGroup);
     const [query, setQuery] = useState("");
+    const [pointed, setPointed] = useState<EmojiPickerItem | null>(null);
     const searchRef = useRef<HTMLInputElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
     const availableGroups = useMemo(
@@ -165,10 +170,10 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
     const virtualizer = useVirtualizer({
       count: rows.length,
       getScrollElement: () => scrollRef.current,
-      estimateSize: (index) => (rows[index]?.kind === "heading" ? 34 : 44),
+      estimateSize: (index) => (rows[index]?.kind === "heading" ? 32 : 44),
       getItemKey: (index) => rows[index]?.key ?? index,
       overscan: 8,
-      initialRect: { width: 336, height: 300 }
+      initialRect: { width: 380, height: 400 }
     });
 
     useEffect(() => {
@@ -209,8 +214,8 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
       );
       const index = buttons.indexOf(event.currentTarget);
       let next = index;
-      if (event.key === "ArrowLeft") next = index - 1;
-      else if (event.key === "ArrowRight") next = index + 1;
+      if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = index - 1;
+      else if (event.key === "ArrowRight" || event.key === "ArrowDown") next = index + 1;
       else if (event.key === "Home") next = 0;
       else if (event.key === "End") next = buttons.length - 1;
       else return;
@@ -232,37 +237,47 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
         ref={ref}
         aria-label="Emoji picker"
         className={cn(
-          "gryt-emoji-picker flex h-[min(25rem,calc(100dvh-2rem))] w-full max-w-[21rem] flex-col overflow-hidden",
+          "gryt-emoji-picker flex h-[min(32.5rem,calc(100dvh-2rem))] w-full max-w-[27.5rem] flex-col overflow-hidden",
           popupSurface,
           className
         )}
         {...props}
       >
-        <label className="relative m-2 mb-1 block">
+        <label className="relative block shrink-0 border-b border-gryt-border p-3">
           <span className="sr-only">{searchPlaceholder}</span>
           <MagnifyingGlass
             aria-hidden
             size={17}
-            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gryt-muted"
+            className="pointer-events-none absolute left-6 top-1/2 -translate-y-1/2 text-gryt-muted"
           />
           <input
             ref={searchRef}
             type="search"
             value={query}
             placeholder={searchPlaceholder}
-            onChange={(event) => setQuery(event.currentTarget.value)}
+            onChange={(event) => { setQuery(event.currentTarget.value); setPointed(null); }}
+            onKeyDown={(event) => {
+              // Enter takes the first match, so a search can be typed and sent.
+              if (event.key === "Enter" && query.trim() && results[0]) {
+                event.preventDefault();
+                onSelect(results[0]);
+              }
+            }}
             className={cn(
               fieldControl,
-              "h-10 py-2 pl-9 pr-3 text-sm border-gryt-border"
+              "h-10 py-2 pl-9 pr-3 text-[15px] border-gryt-border"
             )}
           />
         </label>
 
-        {!query.trim() ? (
+        <div className="flex min-h-0 flex-1">
           <div
             role="navigation"
             aria-label="Emoji categories"
-            className="flex shrink-0 gap-1 overflow-x-auto border-b border-gryt-border px-2 py-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className={cn(
+              "flex shrink-0 flex-col gap-0.5 overflow-y-auto border-r border-gryt-border px-1.5 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+              query.trim() && "opacity-45"
+            )}
           >
             {availableGroups.map((group) => {
               const active = group.id === activeGroup;
@@ -272,29 +287,28 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
                   type="button"
                   data-emoji-category
                   aria-label={group.label}
-                  aria-current={active ? "true" : undefined}
+                  aria-current={active && !query.trim() ? "true" : undefined}
                   title={group.label}
                   onClick={() => jumpToGroup(group.id)}
                   onKeyDown={onCategoryKeyDown}
                   className={cn(
-                    "h-9 w-9 shrink-0 rounded-(--gryt-radius-control) border-0 bg-transparent p-0 text-base",
+                    "inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-(--gryt-radius-control) border-0 bg-transparent p-0 text-base text-gryt-muted",
                     "transition-[scale,background-color,color] duration-(--gryt-dur-spring) ease-spring motion-reduce:transition-none",
                     "hover:bg-gryt-surface-hover active:scale-90",
                     "aria-current:bg-gryt-accent-3 aria-current:text-gryt-accent-11",
                     focusRing
                   )}
                 >
-                  <span aria-hidden>{group.icon ?? "•"}</span>
+                  <span aria-hidden className="inline-flex">{group.icon ?? <Smiley size={20} weight="bold" />}</span>
                 </button>
               );
             })}
           </div>
-        ) : null}
 
         <div
           ref={scrollRef}
           data-emoji-scroll
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2"
           onScroll={(event) => {
             if (query.trim()) return;
             const top = event.currentTarget.scrollTop + 1;
@@ -303,7 +317,7 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
             for (const row of rows) {
               if (offset > top) break;
               if (row.kind === "heading") currentGroup = row.group.id;
-              offset += row.kind === "heading" ? 34 : 44;
+              offset += row.kind === "heading" ? 32 : 44;
             }
             setActiveGroup(currentGroup);
           }}
@@ -339,8 +353,7 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
                     style={{ transform: `translateY(${virtualRow.start}px)` }}
                   >
                     {row.kind === "heading" ? (
-                      <div className="flex h-[34px] items-center gap-2 px-3 pt-2 text-xs font-medium text-gryt-muted">
-                        <span aria-hidden>{row.group.icon}</span>
+                      <div className="flex h-8 items-end px-1 pb-1.5 text-xs font-bold uppercase tracking-[0.06em] text-gryt-muted">
                         <span>{row.group.label}</span>
                       </div>
                     ) : (
@@ -351,7 +364,7 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
                             (group) => group.id === row.groupId
                           )?.label
                         }
-                        className="grid h-11 grid-cols-7 gap-1 px-2"
+                        className="grid h-11 grid-cols-[repeat(8,2.75rem)]"
                       >
                         {row.items.map((item) => (
                           <EmojiCell
@@ -360,6 +373,7 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
                             selected={selectedId === item.id}
                             onSelect={onSelect}
                             onKeyDown={onGridKeyDown}
+                            onPoint={setPointed}
                           />
                         ))}
                       </div>
@@ -378,10 +392,24 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
           )}
         </div>
 
-        <div className="shrink-0 border-t border-gryt-border px-3 py-2 text-xs text-gryt-muted">
-          {query.trim()
-            ? `${results.length} result${results.length === 1 ? "" : "s"}`
-            : `${availableGroups.reduce((total, group) => total + group.items.length, 0)} emoji`}
+        </div>
+
+        {/* Names whatever you point at, or counts what is there. */}
+        <div className="flex h-14 shrink-0 items-center gap-3 border-t border-gryt-border px-3.5">
+          {pointed ? (
+            <>
+              <span aria-hidden className="inline-flex w-9 justify-center text-[2rem] leading-none">
+                {pointed.emoji ?? (pointed.imageUrl ? <img src={pointed.imageUrl} alt="" className="h-8 w-8 object-contain" /> : null)}
+              </span>
+              <span className="truncate text-[15px] font-bold text-gryt-text">:{pointed.name}:</span>
+            </>
+          ) : (
+            <span className="text-xs text-gryt-muted">
+              {query.trim()
+                ? `${results.length} result${results.length === 1 ? "" : "s"}`
+                : `${availableGroups.reduce((total, group) => total + group.items.length, 0)} emoji`}
+            </span>
+          )}
         </div>
       </div>
     );
