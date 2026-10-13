@@ -4,13 +4,8 @@ import { Dialog as BaseDialog } from "@base-ui/react/dialog";
 import type { CSSProperties, ReactNode } from "react";
 import { cn } from "../utils/cn";
 
-/**
- * The Thumb: a tab on the right edge of a phone screen, in the lower half where a thumb
- * already is, that opens a drawer with its links at the bottom. Named by Sivert (GRYT-1719).
- *
- * It opens on a tap, never a swipe: a swipe from the screen edge is the phone's own back
- * or forward. The same tab sits on the drawer's edge, so the way out is where the way in was.
- */
+/** The Thumb: an edge tab low on the right that opens a drawer, links at the bottom (GRYT-1719).
+ *  Tap only, since an edge swipe is the phone's back gesture; the same tab closes it. */
 export interface ThumbProps {
   children?: ReactNode;
   open?: boolean;
