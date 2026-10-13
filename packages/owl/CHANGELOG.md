@@ -1,5 +1,12 @@
 # @gryt/owl
 
+## 0.7.0
+
+### Minor Changes
+
+- b5b3b09: Eleven new things for owls to wear: squirkle, hexagon and two pilot sunglasses, ski goggles, two hard hats, a military cap, a fishing hat, a military helmet and a wrapped scarf. About a third of existing owls change what they wear as a result.
+- 112c29b: Two new slots, `held` and `back`, and fixed material colours (steel, wood, red, blue, yellow, black, white) that stay the same on every owl. The new slots are only filled when somebody picks something, so no existing owl changes. A `.chosen` filename tag does the same for a drawing in any slot. The first held item is a hammer, with overalls.
+
 ## 0.6.0
 
 ### Minor Changes

@@ -1,5 +1,19 @@
 # @gryt/ui
 
+## 0.45.0
+
+### Minor Changes
+
+- a10c415: The emoji picker is bigger and easier to read. It's 440 by 520, with eight columns of larger emoji, the categories as icons in a rail down the left, and a bar along the bottom naming the emoji you point at. Enter in the search picks the first match. The member card's pattern picker uses it too, so its categories show icons now instead of dots.
+- 2c1e268: New: `Thumb`, the tab on the right edge of a phone screen that opens a drawer with its links at the bottom. It sits in the lower half, where your thumb already is, and opens on a tap because a swipe from the edge is the phone's own back gesture. gryt.chat has used it since GRYT-1708. Hide it on wide screens with `tabClassName`.
+
+### Patch Changes
+
+- 3d88e6a: The member card follows the theme's corners all the way through. The avatar, chips, game icon, party pips, tooltip and menu rows had their own fixed radii, so on Square or Crisp the card kept round avatars and pill chips. On the default theme nothing changes.
+- Updated dependencies [b5b3b09]
+- Updated dependencies [112c29b]
+  - @gryt/owl@0.7.0
+
 ## 0.44.0
 
 ### Minor Changes
