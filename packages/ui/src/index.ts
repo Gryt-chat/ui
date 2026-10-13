@@ -167,6 +167,8 @@ export type {
   DialogTitleProps
 } from "./components/Dialog/Dialog";
 export { Drawer } from "./components/Drawer/Drawer";
+export { Thumb } from "./components/Thumb/Thumb";
+export type { ThumbProps } from "./components/Thumb/Thumb";
 export type {
   DrawerPopupProps,
   DrawerRootProps,
