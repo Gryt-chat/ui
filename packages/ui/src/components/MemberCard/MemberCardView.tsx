@@ -17,11 +17,12 @@ import type { EmojiPickerGroup } from "../EmojiPicker/EmojiPicker";
 /** Presence, as the app knows it. */
 export type MemberCardStatus = "online" | "idle" | "dnd" | "offline" | "in_voice" | "invisible";
 
-const STATUS: Record<string, { label: string; ring: string }> = {
-  in_voice: { label: "In Voice", ring: "var(--gryt-accent)" },
-  online: { label: "Online", ring: "var(--gryt-success)" },
-  afk: { label: "AFK", ring: "var(--gryt-warning)" },
-  offline: { label: "Offline", ring: "transparent" },
+// Presence is a dot, as in every other place; a ring around a face means that person is speaking.
+const STATUS: Record<string, { label: string; colour: string | null }> = {
+  in_voice: { label: "In Voice", colour: "var(--gryt-accent)" },
+  online: { label: "Online", colour: "var(--gryt-success)" },
+  afk: { label: "AFK", colour: "var(--gryt-warning)" },
+  offline: { label: "Offline", colour: null },
 };
 
 /** More seats than this and the pips would be a ruler, so only the words show. */
@@ -140,13 +141,14 @@ export function MemberCardView({
           <CardVideo className="gmc-banner-media" src={bannerUrl} />
         )}
         <div className="gmc-over">
+          <span className="gmc-av-wrap">
           {onAvatarClick && avatarSrc ? (
             <button
               type="button"
               className="gmc-av gmc-av-btn"
               aria-label={`Open ${name}'s picture`}
               onClick={onAvatarClick}
-              style={{ "--s": "64px", "--ring": presence.ring } as CSSProperties}
+              style={{ "--s": "64px" } as CSSProperties}
             >
               {avatarType === "video" && avatarSrc ? (
                 <CardVideo src={avatarSrc} poster={avatarPoster} />
@@ -155,19 +157,23 @@ export function MemberCardView({
               )}
             </button>
           ) : (
-            <span className="gmc-av" style={{ "--s": "64px", "--ring": presence.ring } as CSSProperties}>
+            <span className="gmc-av" style={{ "--s": "64px" } as CSSProperties}>
               {avatarSrc ? (avatarType === "video" ? (
                 <CardVideo src={avatarSrc} poster={avatarPoster} />
               ) : <img alt="" src={avatarSrc} />) : <img alt="" />}
             </span>
           )}
+          {presence.colour && (
+            <span className="gmc-dot" aria-hidden="true" style={{ background: presence.colour }} />
+          )}
+          </span>
           <div>
             <div className="gmc-nm">
               {name}
               {badge}
             </div>
             <div>
-              <span className="gmc-st" style={{ color: status === "offline" ? "var(--gryt-muted)" : presence.ring }}>
+              <span className="gmc-st" style={{ color: presence.colour ?? "var(--gryt-muted)" }}>
                 {presence.label}
               </span>
               {status === "in_voice" && channelName && <span className="gmc-st gmc-mut"> · {channelName}</span>}
