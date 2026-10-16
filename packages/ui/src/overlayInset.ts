@@ -1,7 +1,4 @@
-"use client";
-
 import { createContext, useContext } from "react";
-import type { ReactNode } from "react";
 import { popupCollisionPadding } from "./components/utils/styles";
 
 /**
@@ -18,8 +15,3 @@ export function usePopupCollisionPadding(base: number = popupCollisionPadding): 
   return top > 0 ? { top: base + top, right: base, bottom: base, left: base } : base;
 }
 
-/** Sets the inset for popups below it without a whole `GrytProvider`, for an app that
-    themes itself and only needs this (GRYT-1784). */
-export function OverlayInsetProvider({ top, children }: { top: number; children: ReactNode }) {
-  return <OverlayInsetContext.Provider value={top}>{children}</OverlayInsetContext.Provider>;
-}
