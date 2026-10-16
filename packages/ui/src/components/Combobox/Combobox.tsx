@@ -8,10 +8,10 @@ import {
   fieldControl,
   fieldSizes,
   focusRing,
-  popupCollisionPadding,
   popupMotion,
   popupSurface
 } from "../utils/styles";
+import { usePopupCollisionPadding } from "../../overlayInset";
 
 /**
  * Shared with Autocomplete, which is the same list wearing different semantics. Exported
@@ -61,16 +61,17 @@ const Positioner = forwardRef<
 >(function ComboboxPositioner(
   {
     className,
-    collisionPadding = popupCollisionPadding,
+    collisionPadding,
     sideOffset = 6,
     ...props
   },
   ref
 ) {
+    const padding = usePopupCollisionPadding();
   return (
     <BaseCombobox.Positioner
       ref={ref}
-      collisionPadding={collisionPadding}
+      collisionPadding={collisionPadding ?? padding}
       sideOffset={sideOffset}
       className={cn("gryt-combobox-positioner outline-none", className)}
       {...props}

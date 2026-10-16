@@ -6,10 +6,10 @@ import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
 import {
-  popupCollisionPadding,
   popupMotion,
   popupSurfaceColors
 } from "../utils/styles";
+import { usePopupCollisionPadding } from "../../overlayInset";
 
 export type MenuPopupProps = ComponentPropsWithoutRef<typeof BaseMenu.Popup>;
 export type MenuItemProps = ComponentPropsWithoutRef<typeof BaseMenu.Item>;
@@ -50,16 +50,17 @@ const Positioner = forwardRef<HTMLDivElement, MenuPositionerProps>(
   function MenuPositioner(
     {
       className,
-      collisionPadding = popupCollisionPadding,
+      collisionPadding,
       sideOffset = 8,
       ...props
     },
     ref
   ) {
+    const padding = usePopupCollisionPadding();
     return (
       <BaseMenu.Positioner
         ref={ref}
-        collisionPadding={collisionPadding}
+        collisionPadding={collisionPadding ?? padding}
         sideOffset={sideOffset}
         className={cn("gryt-menu-positioner outline-none", className)}
         {...props}

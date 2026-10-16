@@ -5,6 +5,7 @@ import { useRef } from "react";
 import type { CSSProperties, ReactNode } from "react";
 import { createGrytTheme } from "@gryt/theme";
 import type { GrytThemeOptions } from "@gryt/theme";
+import { OverlayInsetContext } from "./overlayInset";
 import { PortalContainerContext } from "./portalContainer";
 
 export interface GrytProviderProps {
@@ -19,6 +20,11 @@ export interface GrytProviderProps {
    * default; turn it on when this provider is one theme inside another page (GRYT-242).
    */
   containOverlays?: boolean;
+  /**
+   * Pixels at the top of the window that popups keep out of, such as a title bar the app
+   * draws itself. They flip below their trigger rather than cover it (GRYT-1784).
+   */
+  overlayInsetTop?: number;
 }
 
 function isCssVariables(value: object): value is CSSProperties {
@@ -32,7 +38,8 @@ export function GrytProvider({
   className,
   theme,
   tooltipDelay = 400,
-  containOverlays = false
+  containOverlays = false,
+  overlayInsetTop = 0
 }: GrytProviderProps) {
   // A ref rather than state: Base UI's `container` accepts one, so the element need not
   // exist on the first render and nothing has to re-render when it does.
@@ -53,7 +60,9 @@ export function GrytProvider({
       <PortalContainerContext.Provider
         value={containOverlays ? containerRef : undefined}
       >
-        <Tooltip.Provider delay={tooltipDelay}>{children}</Tooltip.Provider>
+        <OverlayInsetContext.Provider value={overlayInsetTop}>
+          <Tooltip.Provider delay={tooltipDelay}>{children}</Tooltip.Provider>
+        </OverlayInsetContext.Provider>
       </PortalContainerContext.Provider>
     </div>
   );

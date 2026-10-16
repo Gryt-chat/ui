@@ -2,6 +2,7 @@
 
 import { Tooltip as BaseTooltip } from "@base-ui/react/tooltip";
 import type { ReactElement, ReactNode } from "react";
+import { usePopupCollisionPadding } from "../../overlayInset";
 import { usePortalContainer } from "../../portalContainer";
 import { cn } from "../utils/cn";
 import { popupMotion } from "../utils/styles";
@@ -26,12 +27,14 @@ export function Tooltip({
   title
 }: TooltipProps) {
   const portalContainer = usePortalContainer();
+  const collisionPadding = usePopupCollisionPadding(5);
 
   return (
     <BaseTooltip.Root>
       <BaseTooltip.Trigger render={children} />
       <BaseTooltip.Portal container={portalContainer}>
         <BaseTooltip.Positioner
+          collisionPadding={collisionPadding}
           side={side}
           sideOffset={sideOffset}
           className="gryt-tooltip-positioner"
