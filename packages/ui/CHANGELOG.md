@@ -1,5 +1,12 @@
 # @gryt/ui
 
+## 0.45.1
+
+### Patch Changes
+
+- f2229ec: `GrytProvider` takes `overlayInsetTop`, the height of anything the app draws across the top of the window, like a desktop title bar. Tooltips, menus, popovers, selects, comboboxes and context menus keep that far from the top, and flip below their trigger rather than covering it. An app that doesn't use `GrytProvider` can wrap itself in `OverlayInsetProvider` instead.
+- bd9f83f: The member card shows presence as a dot at the bottom right of the picture, not as a ring around it. A ring around a face means that person is talking, everywhere else in Gryt, so the card was the odd one out.
+
 ## 0.45.0
 
 ### Minor Changes
