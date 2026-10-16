@@ -7,10 +7,10 @@ import { usePortalContainer } from "../../portalContainer";
 import { cn } from "../utils/cn";
 import {
   focusRing,
-  popupCollisionPadding,
   popupMotion,
   popupSurface
 } from "../utils/styles";
+import { usePopupCollisionPadding } from "../../overlayInset";
 
 export interface SelectOption {
   label: ReactNode;
@@ -84,6 +84,7 @@ export function Select({
   ...props
 }: SelectProps) {
   const portalContainer = usePortalContainer();
+  const collisionPadding = usePopupCollisionPadding();
   // Base UI reads `items` to turn the value back into a label for the trigger,
   // so it wants every option, not the groups they sit in.
   const flat = options.flatMap((entry) => (isGroup(entry) ? entry.options : entry));
@@ -121,7 +122,7 @@ export function Select({
           // Base UI's default lays the popup over the trigger and sizes it to the window itself.
           // A max-height there leaves the popup nowhere near the trigger, so it's off.
           alignItemWithTrigger={false}
-          collisionPadding={popupCollisionPadding}
+          collisionPadding={collisionPadding}
           sideOffset={6}
           className="gryt-select-positioner outline-none"
         >

@@ -5,6 +5,7 @@ import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
 import { popupMotion, popupSurface } from "../utils/styles";
+import { usePopupCollisionPadding } from "../../overlayInset";
 
 export type PopoverPopupProps = ComponentPropsWithoutRef<
   typeof BasePopover.Popup
@@ -15,8 +16,10 @@ export type PopoverPositionerProps = ComponentPropsWithoutRef<
 
 const Positioner = forwardRef<HTMLDivElement, PopoverPositionerProps>(
   function PopoverPositioner({ className, sideOffset = 8, ...props }, ref) {
+    const padding = usePopupCollisionPadding(5);
     return (
       <BasePopover.Positioner
+        collisionPadding={padding}
         ref={ref}
         sideOffset={sideOffset}
         className={cn("gryt-popover-positioner outline-none", className)}

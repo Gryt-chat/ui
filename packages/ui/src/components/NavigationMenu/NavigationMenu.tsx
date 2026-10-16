@@ -6,6 +6,7 @@ import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
 import { focusRing, popupMotion, popupSurface } from "../utils/styles";
+import { usePopupCollisionPadding } from "../../overlayInset";
 
 /**
  * A bar of menus that behave as one. Once any is open, moving along the bar opens the
@@ -77,8 +78,10 @@ const Positioner = forwardRef<
   HTMLDivElement,
   ComponentPropsWithoutRef<typeof BaseNavigationMenu.Positioner>
 >(function NavigationMenuPositioner({ className, ...props }, ref) {
+    const padding = usePopupCollisionPadding(5);
   return (
     <BaseNavigationMenu.Positioner
+        collisionPadding={padding}
       ref={ref}
       className={cn("gryt-navigation-menu-positioner outline-none", className)}
       {...props}

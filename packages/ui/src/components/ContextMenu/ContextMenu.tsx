@@ -5,7 +5,7 @@ import { forwardRef } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
 import { Menu } from "../Menu/Menu";
-import { popupCollisionPadding } from "../utils/styles";
+import { usePopupCollisionPadding } from "../../overlayInset";
 
 export type ContextMenuPositionerProps = ComponentPropsWithoutRef<
   typeof BaseContextMenu.Positioner
@@ -19,16 +19,17 @@ const Positioner = forwardRef<HTMLDivElement, ContextMenuPositionerProps>(
   function ContextMenuPositioner(
     {
       className,
-      collisionPadding = popupCollisionPadding,
+      collisionPadding,
       sideOffset = 2,
       ...props
     },
     ref
   ) {
+    const padding = usePopupCollisionPadding();
     return (
       <BaseContextMenu.Positioner
         ref={ref}
-        collisionPadding={collisionPadding}
+        collisionPadding={collisionPadding ?? padding}
         // Smaller than Menu's 8. This anchors to the pointer rather than to a
         // trigger element, and 8px from the cursor reads as a menu that missed.
         sideOffset={sideOffset}

@@ -6,10 +6,10 @@ import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "../utils/cn";
 import { listboxInputClass, listboxItemClass } from "../Combobox/Combobox";
 import {
-  popupCollisionPadding,
   popupMotion,
   popupSurface
 } from "../utils/styles";
+import { usePopupCollisionPadding } from "../../overlayInset";
 
 /**
  * A text input that suggests as you type. The typed text is the answer and the list is a
@@ -35,16 +35,17 @@ const Positioner = forwardRef<
 >(function AutocompletePositioner(
   {
     className,
-    collisionPadding = popupCollisionPadding,
+    collisionPadding,
     sideOffset = 6,
     ...props
   },
   ref
 ) {
+    const padding = usePopupCollisionPadding();
   return (
     <BaseAutocomplete.Positioner
       ref={ref}
-      collisionPadding={collisionPadding}
+      collisionPadding={collisionPadding ?? padding}
       sideOffset={sideOffset}
       className={cn("gryt-autocomplete-positioner outline-none", className)}
       {...props}
