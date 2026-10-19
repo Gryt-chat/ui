@@ -1,16 +1,16 @@
 import { copyFile, readdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
-const distDir = resolve(import.meta.dir, "../dist");
+const distDir = resolve(import.meta.dirname, "../dist");
 const indexDtsPath = resolve(distDir, "index.d.ts");
 const indexDCtsPath = resolve(distDir, "index.d.cts");
 // The ./theme subpath has its own declaration for the same reason the root does: the
 // require condition points at a .d.cts and vite-plugin-dts only emits .d.ts (GRYT-351).
 const themeDtsPath = resolve(distDir, "theme.d.ts");
 const themeDCtsPath = resolve(distDir, "theme.d.cts");
-const themeSourcePath = resolve(import.meta.dir, "../src/styles/theme.css");
+const themeSourcePath = resolve(import.meta.dirname, "../src/styles/theme.css");
 const themeDistPath = resolve(distDir, "theme.css");
-const componentsSourcePath = resolve(import.meta.dir, "../src/styles/components.css");
+const componentsSourcePath = resolve(import.meta.dirname, "../src/styles/components.css");
 const componentsDistPath = resolve(distDir, "components.css");
 
 async function declarationFiles(directory: string): Promise<string[]> {
@@ -77,6 +77,6 @@ await copyFile(componentsSourcePath, componentsDistPath);
 // The member card's own sheet, for an app that uses components.css rather than styles.css:
 // styles.css has it through the component's import, components.css doesn't.
 await copyFile(
-  resolve(import.meta.dir, "../src/components/MemberCard/memberCard.css"),
+  resolve(import.meta.dirname, "../src/components/MemberCard/memberCard.css"),
   resolve(distDir, "member-card.css")
 );

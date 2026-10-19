@@ -14,6 +14,7 @@ import {
   cardProfileOf,
   cardStyleForWire,
   cardText,
+  type CardStyle,
   decodeCardStyle,
   DEFAULT_CARD_STYLE,
   encodeCardStyle,
@@ -22,31 +23,41 @@ import {
   STATUS_LINE_MAX,
 } from "../src/memberCard/cardStyle.ts";
 import { cardVars } from "../src/memberCard/cardVars.ts";
-import { bandColours, blend, contrast, fullColours, lum, lumOf, oklch, okToRgb, owlGradient } from "../src/memberCard/colour.ts";
+import { type CardColourPick, bandColours, blend, contrast, fullColours, lum, lumOf, oklch, okToRgb, owlGradient } from "../src/memberCard/colour.ts";
 import { CARD_PATTERNS, patternId } from "../src/memberCard/patterns.ts";
 import { TILES } from "../src/memberCard/patterns/tiles.generated.ts";
 import { analyseBanner } from "../src/memberCard/bannerColours.ts";
-import { patternLayers } from "../src/memberCard/patternSvg.ts";
+import { type PatternDraw, patternLayers } from "../src/memberCard/patternSvg.ts";
 import { scatter, seedFromId } from "../src/memberCard/scatter.ts";
 
+/** Patterns that don't read the theme draw the same whatever these are. */
+const NO_CSS = { owl: "", accent: "", surface: "" };
+
+/** A decode the test expects to succeed. */
+function decoded(input: string): CardStyle {
+  const style = decodeCardStyle(input);
+  assert.ok(style, `${input} didn't decode`);
+  return style;
+}
+
 let failures = 0;
-function check(name, run) {
+function check(name: string, run: () => void) {
   try {
     run();
     console.log(`  ok  ${name}`);
   } catch (err) {
     failures += 1;
-    console.error(`  FAIL  ${name}\n        ${err.message}`);
+    console.error(`  FAIL  ${name}\n        ${err instanceof Error ? err.message : String(err)}`);
   }
 }
 
 const AA = 4.5;
-const linear = (hex) =>
+const linear = (hex: string) =>
   [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
-const y = (hex) => lum(linear(hex));
+const y = (hex: string) => lum(linear(hex));
 /** `a` laid over `b` at `alpha`, blended in sRGB as a browser composites it. */
-const over = (a, b, alpha) => {
-  const g = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+const over = (a: string, b: string, alpha: number) => {
+  const g = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
   return g(b)
     .map((v, i) => v * (1 - alpha) + g(a)[i] * alpha)
     .map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
@@ -58,8 +69,14 @@ const SWEEP = STEPS.flatMap((r) => STEPS.flatMap((g) => STEPS.map((b) => `#${r}$
 const EXTREMES = ["#000000", "#ffffff", "#ffff00", "#00ffff", "#ff00ff", "#0000ff", "#00ff00", "#ff0000", "#0b0b0f", "#777777", "#7f7f7f", "#808080", "#8a8a8a", "#fefefe", "#010101"];
 const PARTNERS = ["#000000", "#ffffff", "#ffff00", "#0000ff", "#808080", "#0b0b0f"];
 
+/** The colours a style puts on the card, as cardVars picks them. */
+function pickOf(style: CardStyle): CardColourPick {
+  if (style.fill !== "owl" && style.c1) return { mode: style.fill, c1: style.c1, c2: style.c2 ?? style.c1, angle: style.angle };
+  return owlGradient("#7c5cff");
+}
+
 /** The worst text contrast on a whole-card pick: ink and muted, on both ends, the middle and the band. */
-function worstOnCard(pick) {
+function worstOnCard(pick: CardColourPick) {
   const f = fullColours(pick);
   let worst = Infinity;
   for (const end of [...f.ends, f.mid]) {
@@ -70,8 +87,8 @@ function worstOnCard(pick) {
   return { worst, f };
 }
 
-function everyPick() {
-  const picks = [];
+function everyPick(): CardColourPick[] {
+  const picks: CardColourPick[] = [];
   for (const c1 of [...SWEEP, ...EXTREMES]) {
     picks.push({ mode: "solid", c1, c2: c1, angle: 135 });
     for (const c2 of PARTNERS) picks.push({ mode: "gradient", c1, c2, angle: 135 });
@@ -81,7 +98,7 @@ function everyPick() {
 }
 
 check("whole-card colours keep small text at 4.5:1 or better, for every pick swept", () => {
-  let worst = { worst: Infinity };
+  let worst: { worst: number; pick?: CardColourPick } = { worst: Infinity };
   for (const pick of everyPick()) {
     const r = worstOnCard(pick);
     if (r.worst < worst.worst) worst = { ...r, pick };
@@ -93,16 +110,16 @@ check("whole-card colours keep small text at 4.5:1 or better, for every pick swe
 check("Surprise me always gives a readable card, and rolls every field", () => {
   let seed = 7;
   const random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
-  const seen = {};
+  const seen: Record<string, Set<CardStyle[keyof CardStyle]>> = {};
   for (let i = 0; i < 500; i++) {
     const style = randomCardStyle(random);
-    const pick = style.fill === "owl" ? owlGradient("#7c5cff") : { mode: style.fill, c1: style.c1, c2: style.c2 ?? style.c1, angle: style.angle };
+    const pick = pickOf(style);
     const { worst } = worstOnCard(pick);
     assert.ok(worst >= AA, `${JSON.stringify(style)} gives ${worst.toFixed(2)}:1`);
     assert.equal(style.pattern === "icon", Boolean(style.pIcon), "the icon pattern comes with an icon, and only it does");
     const code = encodeCardStyle(style);
-    assert.equal(encodeCardStyle(decodeCardStyle(code)), code, "a rolled style survives a share link");
-    for (const key of ["fill", "pattern", "colours", "cover", "fade", "pFade", "pOpacity", "pInk", "pStroke", "edge", "pLayer"]) (seen[key] ??= new Set()).add(style[key]);
+    assert.equal(encodeCardStyle(decoded(code)), code, "a rolled style survives a share link");
+    for (const key of ["fill", "pattern", "colours", "cover", "fade", "pFade", "pOpacity", "pInk", "pStroke", "edge", "pLayer"] as const) (seen[key] ??= new Set()).add(style[key]);
   }
   for (const [key, values] of Object.entries(seen)) assert.ok(values.size > 1, `${key} never changed`);
   assert.equal(seen.fill.size, 3);
@@ -119,7 +136,7 @@ check("line weight, outline and the pattern's layer are kept in range and surviv
   for (const bad of [{ pStroke: 39 }, { pStroke: 301 }, { edge: -1 }, { edge: 7 }, { pLayer: "top" }]) {
     assert.deepEqual(cardStyleForWire(normalizeCardStyle(bad)), null, JSON.stringify(bad));
   }
-  const at = (stroke) => patternLayers("waves-1", { ink: "#000000", alpha: 0.2, scale: 1, rotate: 0, fade: "none", seed: 1, stroke, tile: TILES.find((t) => t.id === "waves-1") }, {}).image;
+  const at = (stroke: number) => patternLayers("waves-1", { ink: "#000000", alpha: 0.2, scale: 1, rotate: 0, fade: "none", seed: 1, stroke, tile: TILES.find((t) => t.id === "waves-1") }, NO_CSS).image;
   assert.notEqual(at(1), at(2), "a heavier line draws differently");
   assert.equal(cardVars(style, "#7c5cff", { appearance: "dark", seed: 1 }).attrs["data-player"], "front");
   assert.equal(cardVars(style, "#7c5cff", { appearance: "dark", seed: 1 }).vars["--gmc-edge"], "3px");
@@ -136,8 +153,8 @@ check("a short banner is kept, leaves out the tall default, and survives the wir
 check("a banner's colours: the bottom edge, whether it is flat, and what fills the picture", () => {
   const w = 8, h = 20;
   const px = new Uint8ClampedArray(w * h * 4);
-  const paint = (y, [r, g, b]) => { for (let x = 0; x < w; x++) px.set([r, g, b, 255], (y * w + x) * 4); };
-  const band = (y) => {
+  const paint = (y: number, [r, g, b]: number[]) => { for (let x = 0; x < w; x++) px.set([r, g, b, 255], (y * w + x) * 4); };
+  const band = (y: number) => {
     if (y < 12) return [200, 30, 30];
     return y < 17 ? [20, 160, 60] : [16, 32, 96];
   };
@@ -153,7 +170,7 @@ check("a banner's colours: the bottom edge, whether it is flat, and what fills t
 
 check("every built-in style keeps small text at 4.5:1 or better", () => {
   for (const { id, style } of BUILTIN_CARD_STYLES) {
-    const pick = style.fill === "owl" ? owlGradient("#7c5cff") : { mode: style.fill, c1: style.c1, c2: style.c2 ?? style.c1, angle: style.angle };
+    const pick = pickOf(style);
     const { worst } = worstOnCard(pick);
     assert.ok(worst >= AA, `${id} gives ${worst.toFixed(2)}:1`);
   }
@@ -163,7 +180,7 @@ check("the card's contrast figure is the muted text's, and never under the targe
   for (const hex of EXTREMES) {
     const { attrs, contrast: figure } = cardVars({ ...DEFAULT_CARD_STYLE, fill: "solid", c1: hex, c2: hex }, "#d06274", { appearance: "dark", seed: 1 });
     assert.equal(attrs["data-fc"], "1");
-    assert.ok(figure >= 5, `${hex}: ${figure}`);
+    assert.ok((figure ?? 0) >= 5, `${hex}: ${figure}`);
   }
 });
 
@@ -173,6 +190,7 @@ check("colour on the banner only keeps the band's ink at 4.5:1 or better", () =>
   for (const pick of everyPick()) {
     const k = bandColours(pick);
     const m = /oklch\(([\d.]+)% ([\d.]+) ([\d.]+)\)/.exec(k.ink);
+    assert.ok(m, k.ink);
     const ink = lum(okToRgb(Number(m[1]) / 100, Number(m[2]), Number(m[3])));
     [pick.c1, pick.c2].forEach((hex, i) => {
       const o = oklch(hex);
@@ -184,8 +202,8 @@ check("colour on the banner only keeps the band's ink at 4.5:1 or better", () =>
 });
 
 check("banner-only colours keep the chosen banner fade", () => {
-  for (const [fade, attr] of [["bottom", "bottom"], ["banner", "full"], ["none", "none"]]) {
-    const style = { ...DEFAULT_CARD_STYLE, fill: "solid", c1: "#663399", c2: "#663399", colours: "banner", fade };
+  for (const [fade, attr] of [["bottom", "bottom"], ["banner", "full"], ["none", "none"]] as const) {
+    const style: CardStyle = { ...DEFAULT_CARD_STYLE, fill: "solid", c1: "#663399", c2: "#663399", colours: "banner", fade };
     assert.equal(cardVars(style, "#d06274", { appearance: "dark", seed: 1 }).attrs["data-fade"], attr);
   }
 });
@@ -213,17 +231,17 @@ check("a code carries only what differs, in the mockup's format", () => {
 
 check("every built-in style survives a trip through a code", () => {
   for (const { id, style } of BUILTIN_CARD_STYLES) {
-    const back = decodeCardStyle(encodeCardStyle(style));
+    const back = decoded(encodeCardStyle(style));
     assert.deepEqual(cardStyleForWire(back), cardStyleForWire(style), id);
   }
 });
 
 check("a code copied from the mockup's playground reads", () => {
   assert.deepEqual(decodeCardStyle("card=b4c&colour=solid&c1=ffd400"), { ...DEFAULT_CARD_STYLE, fill: "solid", c1: "#ffd400", c2: "#ffd400" });
-  const night = decodeCardStyle("card=b4b&colour=gradient&c1=0b0b12&c2=5b2a86&angle=160&pattern=weave&fade=full");
+  const night = decoded("card=b4b&colour=gradient&c1=0b0b12&c2=5b2a86&angle=160&pattern=weave&fade=full");
   assert.equal(night.angle, 160);
   assert.equal(night.fade, "banner");
-  assert.equal(decodeCardStyle("card=b4b&fill=banner").colours, "banner");
+  assert.equal(decoded("card=b4b&fill=banner").colours, "banner");
 });
 
 check("a link, a bare query and the JSON form all read", () => {
@@ -239,7 +257,7 @@ check("nothing, garbage and half a colour are not a style", () => {
 });
 
 check("an unknown pattern in a code reads as none", () => {
-  assert.equal(decodeCardStyle("card=b4b&pattern=stars").pattern, "none");
+  assert.equal(decoded("card=b4b&pattern=stars").pattern, "none");
   assert.equal(decodeCardStyle("pattern=stars"), null);
 });
 
@@ -282,9 +300,9 @@ check("text is one line, cut to its limit, with nothing that reorders it", () =>
   assert.equal(cardText("‮evil", PRONOUNS_MAX), "evil");
   assert.equal(cardText("   ", STATUS_LINE_MAX), null);
   assert.equal(cardText(42, STATUS_LINE_MAX), null);
-  assert.equal(cardText("x".repeat(500), BIO_MAX).length, BIO_MAX);
+  assert.equal(cardText("x".repeat(500), BIO_MAX)?.length, BIO_MAX);
   // Cut by characters, so an emoji at the edge is kept whole or dropped, never halved.
-  assert.equal(Array.from(cardText("🦉".repeat(50), PRONOUNS_MAX)).length, PRONOUNS_MAX);
+  assert.equal(Array.from(cardText("🦉".repeat(50), PRONOUNS_MAX) ?? "").length, PRONOUNS_MAX);
 });
 
 check("a member from before cards has the default card and no words", () => {
@@ -308,11 +326,11 @@ check("every egg pattern in @gryt/owl is a card pattern under the same id", () =
 });
 
 check("every tile draws, and a drawing is plain SVG with the ink in it", () => {
-  const draw = { ink: "#123456", alpha: 0.2, scale: 1, rotate: 0, fade: "none", seed: 7 };
+  const draw: PatternDraw = { ink: "#123456", alpha: 0.2, scale: 1, rotate: 0, fade: "none", seed: 7 };
   for (const t of TILES) {
     const { image } = patternLayers(t.id, { ...draw, tile: t }, { owl: "red", accent: "blue", surface: "white" });
     assert.ok(image?.startsWith('url("data:image/svg+xml,'), t.id);
-    const svg = decodeURIComponent(image.slice(26, -2));
+    const svg = decodeURIComponent((image ?? "").slice(26, -2));
     assert.ok(svg.includes("#123456"), `${t.id} lost its ink`);
     assert.ok(!/<script|on[a-z]+=|href='http/i.test(svg), `${t.id} carries something that is not a drawing`);
   }
@@ -333,8 +351,8 @@ check("a scatter is the same for the same seed and spreads its marks out", () =>
 check("a pattern colour and strength never take small text under 4.5:1", () => {
   for (const hex of ["#ffff00", "#0b0b0f", "#808080", "#d06274", "#ffffff"]) {
     for (const pInk of ["#000000", "#ffffff", "#ff0000"]) {
-      for (const cover of ["banner", "card"]) {
-        const style = { ...DEFAULT_CARD_STYLE, fill: "solid", c1: hex, c2: hex, pattern: "dots", pOpacity: 40, pInk, cover };
+      for (const cover of ["banner", "card"] as const) {
+        const style: CardStyle = { ...DEFAULT_CARD_STYLE, fill: "solid", c1: hex, c2: hex, pattern: "dots", pOpacity: 40, pInk, cover };
         const v = cardVars(style, "#d06274", { appearance: "light", seed: 1 });
         const f = fullColours({ mode: "solid", c1: hex, c2: hex, angle: 135 });
         for (const end of [...f.ends, f.mid]) {
@@ -366,8 +384,8 @@ check("a coloured emoji pattern keeps the mark's own colours", () => {
   const image = patternLayers("emoji", {
     ink: "#ff0000", alpha: 0.4, scale: 1, rotate: 0, fade: "none", seed: 1,
     mark: { viewBox: "0 0 10 10", body: "<circle fill='#00ff00' r='5'/>", mono: false, tint: false },
-  }, {}).image;
-  const svg = decodeURIComponent(image.slice(5, -2));
+  }, NO_CSS).image;
+  const svg = decodeURIComponent((image ?? "").slice(5, -2));
   assert.match(svg, /#00ff00/);
   assert.doesNotMatch(svg, /feColorMatrix|filter=/);
 });
