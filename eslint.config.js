@@ -34,5 +34,150 @@ export default tseslint.config(
         { allowConstantExport: true }
       ]
     }
-  }
+  },
+  // Our own values get real types; existing debt is listed below, the goal is to empty it (GRYT-1792).
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-restricted-types": ["error", { types: { unknown: "Type it. If it's outside input being checked, list the file in the config with the reason." } }],
+      "no-restricted-syntax": ["error", {
+        selector: "TSAsExpression > TSAsExpression.expression[typeAnnotation.type='TSUnknownKeyword']",
+        message: "Don't cast through unknown. Fix the types, or disable this line with the reason.",
+      }],
+      "no-nested-ternary": "error",
+      eqeqeq: ["error", "smart"],
+      "no-else-return": "error",
+      "prefer-const": "error",
+      "no-param-reassign": "error",
+      "@typescript-eslint/no-non-null-assertion": "error",
+      "@typescript-eslint/consistent-type-imports": ["error", { fixStyle: "inline-type-imports", disallowTypeAnnotations: false }],
+    },
+  },
+  // unknown: not typed yet.
+  {
+    files: [
+      "apps/docs/scripts/og-drawings.ts",
+      "apps/docs/src/lib/cardIcons.ts",
+      "apps/docs/src/pages/DrawingPage.tsx",
+      "packages/ui-native/src/components/Drawer/Drawer.tsx",
+      "packages/ui/src/components/ThemeEditor/draft.ts",
+      "packages/ui/src/memberCard/patterns.ts",
+    ],
+    rules: { "@typescript-eslint/no-restricted-types": "off" },
+  },
+  // unknown: caught errors are unknown until checked.
+  {
+    files: [
+      "apps/docs/src/components/CosmeticChecker.tsx",
+    ],
+    rules: { "@typescript-eslint/no-restricted-types": "off" },
+  },
+  // unknown: stored and parsed data arrives unchecked and is validated there.
+  {
+    files: [
+      "apps/docs/src/lib/theme/siteTheme.ts",
+      "packages/ui/src/components/OwlDesigner/owlSeen.ts",
+      "packages/ui/src/components/OwlDesigner/owlWardrobe.ts",
+      "packages/ui/src/memberCard/cardStyle.ts",
+    ],
+    rules: { "@typescript-eslint/no-restricted-types": "off" },
+  },
+  // unknown: socket payloads arrive unchecked and are validated there.
+  {
+    files: [
+      "packages/theme/src/theme.ts",
+    ],
+    rules: { "@typescript-eslint/no-restricted-types": "off" },
+  },
+  // unknown: tests build loose values on purpose.
+  {
+    files: [
+      "packages/ui/src/entries.test.ts",
+      "packages/ui/src/overlayInset.test.tsx",
+    ],
+    rules: { "@typescript-eslint/no-restricted-types": "off" },
+  },
+  // Casts through unknown where the types don't line up yet.
+  {
+    files: [
+      "apps/docs/src/components/CosmeticChecker.tsx",
+      "apps/docs/src/lib/theme/siteTheme.ts",
+      "packages/ui/src/components/ThemeEditor/draft.ts",
+    ],
+    rules: { "no-restricted-syntax": "off" },
+  },
+  // Nested ternaries from before the rule.
+  {
+    files: [
+      "apps/docs/src/components/CosmeticChecker.tsx",
+      "packages/owl/src/eggs/index.ts",
+      "packages/owl/src/index.ts",
+      "packages/owl/src/owl.test.ts",
+      "packages/owl/src/palette.ts",
+      "packages/ui-native/src/components/Accordion/Accordion.tsx",
+      "packages/ui-native/src/components/Alert/Alert.tsx",
+      "packages/ui-native/src/components/Button/Button.tsx",
+      "packages/ui-native/src/components/Chip/Chip.tsx",
+      "packages/ui-native/src/components/Drawer/Drawer.tsx",
+      "packages/ui-native/src/components/Meter/Meter.tsx",
+      "packages/ui-native/src/components/Skeleton/Skeleton.tsx",
+      "packages/ui-native/src/components/Surface/Surface.tsx",
+      "packages/ui-native/src/components/TextField/TextField.tsx",
+      "packages/ui-native/src/components/WebhookCard/WebhookCard.tsx",
+      "packages/ui-native/src/components/internal/ControlRow.tsx",
+      "packages/ui-native/src/overlay/placePopup.ts",
+      "packages/ui/src/GrytProvider.tsx",
+      "packages/ui/src/components/EmojiPicker/EmojiPicker.tsx",
+      "packages/ui/src/components/MemberCard/MemberCardView.tsx",
+      "packages/ui/src/components/MemberCard/cardPatternPicker.tsx",
+      "packages/ui/src/components/ThemeEditor/MotionField.tsx",
+      "packages/ui/src/components/VideoPlayer/VideoPlayer.tsx",
+      "packages/ui/src/components/VideoPlayer/useVideoPlayer.ts",
+      "packages/ui/src/components/WebhookCard/WebhookCard.tsx",
+      "packages/ui/src/memberCard/cardVars.ts",
+      "packages/ui/src/memberCard/patternSvg.ts",
+    ],
+    rules: { "no-nested-ternary": "off" },
+  },
+  // Non-null assertions from before the rule.
+  {
+    files: [
+      "apps/docs/src/main.tsx",
+      "apps/docs/src/pages/AvatarsPage.tsx",
+      "apps/docs/src/pages/DrawingPage.tsx",
+      "packages/owl/scripts/egg-base.ts",
+      "packages/owl/scripts/owl-accessory.ts",
+      "packages/owl/src/eggs/eggs.test.ts",
+      "packages/owl/src/eggs/index.ts",
+      "packages/owl/src/eggs/palette.test.ts",
+      "packages/owl/src/geometry.ts",
+      "packages/owl/src/index.ts",
+      "packages/owl/src/lib/filename.test.ts",
+      "packages/owl/src/lib/filename.ts",
+      "packages/owl/src/owl.test.ts",
+      "packages/owl/src/rng.test.ts",
+      "packages/owl/src/rng.ts",
+      "packages/owl/src/wearing.test.ts",
+      "packages/theme/src/motion.test.ts",
+      "packages/theme/src/motion.ts",
+      "packages/theme/src/presets.test.ts",
+      "packages/ui-native/src/motion/easing.ts",
+      "packages/ui/src/components/Avatar/Avatar.test.tsx",
+      "packages/ui/src/components/Slider/Slider.test.tsx",
+      "packages/ui/src/components/VideoPlayer/VideoPlayer.test.tsx",
+      "packages/ui/src/components/WebhookCard/WebhookCard.test.tsx",
+      "packages/ui/src/theme/bleedTokens.test.ts",
+      "packages/ui/src/theme/motionTokens.test.ts",
+    ],
+    rules: { "@typescript-eslint/no-non-null-assertion": "off" },
+  },
+  // Type-only imports not marked yet; a mechanical PR of its own fixes them.
+  {
+    files: [
+      "packages/ui-native/src/components/Popover/Popover.tsx",
+      "packages/ui-native/src/components/Tooltip/Tooltip.tsx",
+    ],
+    rules: { "@typescript-eslint/consistent-type-imports": "off" },
+  },
 );
