@@ -195,7 +195,7 @@ export function WebhookCard({
         style,
       ]}
     >
-      {hasHeader ? (
+      {hasHeader && (
         <View style={{ gap: theme.space(1) }}>
           <View style={{ flexDirection: "row", gap: theme.space(3) }}>
             {card.thumbnailUrl ? (
@@ -249,9 +249,8 @@ export function WebhookCard({
           </View>
           {card.description ? markdown(card.description, "description") : null}
         </View>
-      ) : card.description ? (
-        markdown(card.description, "description")
-      ) : null}
+      )}
+      {!hasHeader && card.description ? markdown(card.description, "description") : null}
 
       {fields ? (
         <View style={{ flexDirection: "row", flexWrap: "wrap", gap: theme.space(1.5) }}>

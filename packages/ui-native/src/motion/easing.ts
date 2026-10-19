@@ -16,13 +16,13 @@ export function easingFromSamples(samples: readonly number[]): Easing {
     "worklet";
     const count = points.length;
     if (count === 0) return t;
-    if (t <= 0) return points[0]!;
-    if (t >= 1) return points[count - 1]!;
+    if (t <= 0) return points[0] ?? t;
+    if (t >= 1) return points[count - 1] ?? t;
 
     const span = (count - 1) * t;
     const index = Math.floor(span);
     const rest = span - index;
-    const from = points[index]!;
+    const from = points[index] ?? t;
     const to = points[index + 1] ?? from;
 
     return from + (to - from) * rest;

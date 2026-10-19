@@ -49,9 +49,10 @@ export function placePopup(
     resolved = "bottom";
   }
 
+  const sideSpace = resolved === "top" ? spaceAbove : spaceBelow;
   const maxHeight = Math.max(
     0,
-    resolved === "top" ? spaceAbove : resolved === "bottom" ? spaceBelow : screen.height - screenPadding * 2,
+    resolved === "top" || resolved === "bottom" ? sideSpace : screen.height - screenPadding * 2,
   );
 
   let top: number;

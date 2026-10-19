@@ -53,11 +53,8 @@ function Root({
 
   const toggle = (item: ItemValue) => {
     const isOpen = open.includes(item);
-    const next = isOpen
-      ? open.filter((v) => v !== item)
-      : type === "single"
-        ? [item]
-        : [...open, item];
+    const opened = type === "single" ? [item] : [...open, item];
+    const next = isOpen ? open.filter((v) => v !== item) : opened;
     if (controlled === undefined) setUncontrolled(next);
     onValueChange?.(next);
   };

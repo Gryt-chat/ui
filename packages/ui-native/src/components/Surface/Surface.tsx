@@ -26,12 +26,7 @@ export function Surface({
 }: SurfaceProps) {
   const theme = useTheme();
 
-  const background =
-    level === "bg"
-      ? theme.color.bg
-      : level === "raised"
-        ? theme.color.surfaceRaised
-        : theme.color.surface;
+  const background = { bg: theme.color.bg, raised: theme.color.surfaceRaised, surface: theme.color.surface }[level];
 
   return (
     <View

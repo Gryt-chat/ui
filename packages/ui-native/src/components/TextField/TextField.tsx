@@ -46,11 +46,8 @@ export function TextField({
 
   // The web shows focus with an outline, which sits outside the box. React Native has no
   // outline, so the border changes colour rather than a second ring shifting the layout.
-  const borderColor = error
-    ? theme.color.danger
-    : focused
-      ? theme.color.accent
-      : theme.color.border;
+  const resting = focused ? theme.color.accent : theme.color.border;
+  const borderColor = error ? theme.color.danger : resting;
 
   return (
     <View style={[{ gap: theme.space(1.5) }, style]}>

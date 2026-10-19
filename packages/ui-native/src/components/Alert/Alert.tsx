@@ -45,13 +45,11 @@ export function Alert({ severity = "info", title, children, style }: AlertProps)
         style,
       ]}
     >
-      {title ? (
-        typeof title === "string" ? (
-          <Text style={{ color: ramp[11], fontSize: 14, fontWeight: "600" }}>{title}</Text>
-        ) : (
-          title
-        )
-      ) : null}
+      {title && typeof title === "string" ? (
+        <Text style={{ color: ramp[11], fontSize: 14, fontWeight: "600" }}>{title}</Text>
+      ) : (
+        title || null
+      )}
       {typeof children === "string" ? (
         <Text style={{ color: ramp[10], fontSize: 13, lineHeight: 18 }}>{children}</Text>
       ) : (

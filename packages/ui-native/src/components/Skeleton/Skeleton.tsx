@@ -32,12 +32,7 @@ export function Skeleton({
           width,
           height: resolved,
           backgroundColor: theme.scales.neutral[3],
-          borderRadius:
-            shape === "circle"
-              ? resolved / 2
-              : shape === "text"
-                ? theme.radius.sm
-                : theme.radius.md,
+          borderRadius: shape === "circle" ? resolved / 2 : { text: theme.radius.sm, rect: theme.radius.md }[shape],
         },
         style,
       ]}
