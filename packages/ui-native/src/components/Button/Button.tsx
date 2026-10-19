@@ -61,27 +61,21 @@ export function Button({
   const animate = !reducedMotion && !hasPopup && !disabled;
   const press = usePressScale(PRESSED_SCALE, !animate);
 
-  const fill =
-    tone === "primary"
-      ? theme.color.accent
-      : tone === "secondary"
-        ? theme.color.secondary
-        : tone === "neutral"
-          ? theme.color.surfaceRaised
-          : tone === "danger"
-            ? theme.color.danger
-            : "transparent";
+  const fill = {
+    primary: theme.color.accent,
+    secondary: theme.color.secondary,
+    neutral: theme.color.surfaceRaised,
+    danger: theme.color.danger,
+    ghost: "transparent",
+  }[tone];
 
-  const label =
-    tone === "primary"
-      ? theme.color.onAccent
-      : tone === "secondary"
-        ? theme.color.onSecondary
-        : tone === "danger"
-          ? theme.color.onDanger
-          : tone === "ghost"
-            ? theme.color.muted
-            : theme.color.text;
+  const label = {
+    primary: theme.color.onAccent,
+    secondary: theme.color.onSecondary,
+    neutral: theme.color.text,
+    danger: theme.color.onDanger,
+    ghost: theme.color.muted,
+  }[tone];
 
   /**
    * Disabled drops the fill rather than fading it: the accent at half opacity is still a

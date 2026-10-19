@@ -72,23 +72,20 @@ export function ControlRow({
       ]}
     >
       {control}
-      {label != null ? (
-        typeof label === "string" ? (
-          <Text
-            style={{
-              color: disabled ? theme.color.muted : theme.color.text,
-              fontSize: 14,
-              // The row centres on the control, so the text has to sit on the
-              // same optical line rather than on its own baseline.
-              lineHeight: 20,
-            }}
-          >
-            {label}
-          </Text>
-        ) : (
-          <View>{label}</View>
-        )
-      ) : null}
+      {typeof label === "string" && (
+        <Text
+          style={{
+            color: disabled ? theme.color.muted : theme.color.text,
+            fontSize: 14,
+            // The row centres on the control, so the text has to sit on the
+            // same optical line rather than on its own baseline.
+            lineHeight: 20,
+          }}
+        >
+          {label}
+        </Text>
+      )}
+      {label != null && typeof label !== "string" && <View>{label}</View>}
     </Pressable>
   );
 }

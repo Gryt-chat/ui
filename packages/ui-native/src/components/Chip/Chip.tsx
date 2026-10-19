@@ -26,19 +26,14 @@ export function Chip({
   const theme = useTheme();
   const ramp = theme.scales[tone];
 
-  const background =
-    variant === "solid" ? ramp[8] : variant === "soft" ? ramp[2] : "transparent";
+  const background = { solid: ramp[8], soft: ramp[2], outline: "transparent" }[variant];
 
-  const foreground =
-    variant === "solid"
-      ? tone === "accent"
-        ? theme.color.onAccent
-        : tone === "secondary"
-          ? theme.color.onSecondary
-          : tone === "danger"
-            ? theme.color.onDanger
-            : theme.color.bg
-      : ramp[10];
+  const onSolid: Partial<Record<ChipTone, string>> = {
+    accent: theme.color.onAccent,
+    secondary: theme.color.onSecondary,
+    danger: theme.color.onDanger,
+  };
+  const foreground = variant === "solid" ? onSolid[tone] ?? theme.color.bg : ramp[10];
 
   return (
     <View

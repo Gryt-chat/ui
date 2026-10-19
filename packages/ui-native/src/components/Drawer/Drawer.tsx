@@ -145,16 +145,13 @@ function Popup({
    * settles from both directions, and an undershoot would show a seam. Never a local number.
    */
   const bleed = grytDrawerBleed;
+  const leftEdge = side === "left" ? -bleed : 0;
+  const rightEdge = side === "right" ? -bleed : 0;
   const panelExtent = extent + bleed;
 
   // Measured against the bleed panel, so the panel's *visible* edge lands
   // exactly off-screen rather than the overhang doing it.
-  const hidden =
-    side === "right"
-      ? panelExtent
-      : side === "left"
-        ? -panelExtent
-        : panelExtent;
+  const hidden = side === "left" ? -panelExtent : panelExtent;
 
   /**
    * 700ms on the tight curve, and @gryt/ui's Drawer matches. A 12% overshoot is texture on
@@ -341,10 +338,8 @@ function Popup({
                 // direction that helps: added to the width, the panel grew inwards instead.
                 top: side === "bottom" ? undefined : 0,
                 bottom: vertical ? -bleed : 0,
-                left:
-                  side === "right" ? undefined : side === "left" ? -bleed : 0,
-                right:
-                  side === "left" ? undefined : side === "right" ? -bleed : 0,
+                left: side === "right" ? undefined : leftEdge,
+                right: side === "left" ? undefined : rightEdge,
                 width: vertical ? "100%" : panelExtent,
                 height: vertical ? panelExtent : "100%",
                 // Puts the content back where it would have been without the

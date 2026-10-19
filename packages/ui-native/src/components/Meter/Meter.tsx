@@ -33,12 +33,8 @@ export function Meter({
 
   // Green until it is worth noticing, amber, then red. The thresholds match the
   // web's: two thirds and nine tenths.
-  const ramp =
-    ratio >= 0.9
-      ? theme.scales.danger
-      : ratio >= 0.66
-        ? theme.scales.warning
-        : theme.scales.success;
+  const nearlyFull = ratio >= 0.66 ? theme.scales.warning : theme.scales.success;
+  const ramp = ratio >= 0.9 ? theme.scales.danger : nearlyFull;
 
   return (
     <View style={[{ gap: theme.space(1.5) }, style]}>
