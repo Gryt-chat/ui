@@ -95,10 +95,8 @@ describe("the colour a tile is tinted from", () => {
     const max = Math.max(r, g, b);
     const delta = max - Math.min(r, g, b);
     if (delta === 0) return null;
-    const h =
-      max === r ? ((g - b) / delta) % 6
-      : max === g ? (b - r) / delta + 2
-      : (r - g) / delta + 4;
+    const fromBlue = max === g ? (b - r) / delta + 2 : (r - g) / delta + 4;
+    const h = max === r ? ((g - b) / delta) % 6 : fromBlue;
     return (h * 60 + 360) % 360;
   }
 
