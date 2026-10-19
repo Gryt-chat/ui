@@ -4,7 +4,7 @@
 
 /* global process, fetch, setTimeout, WebSocket, Buffer, console, URL */
 
-import { spawn } from "node:child_process";
+import { type ChildProcess, spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdir, readdir, readFile, stat, unlink, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
@@ -23,7 +23,7 @@ const WIDTH = 1200;
 const HEIGHT = 630;
 
 /** A card's code is short and URL-safe; anything else isn't one, and isn't rendered. */
-export function cardQuery(search) {
+export function cardQuery(search: string): string | null {
   const q = search.startsWith("?") ? search.slice(1) : search;
   if (!q || q.length > 1024 || !/^[A-Za-z0-9=&_.%+-]+$/.test(q)) return null;
   return q;
@@ -40,7 +40,9 @@ export const KINDS = {
 };
 
 /** The prerendered page with its preview swapped for the one this link describes. */
-export function withImage(html, kind, query) {
+export type Kind = keyof typeof KINDS;
+
+export function withImage(html: string, kind: Kind, query: string): string {
   const k = KINDS[kind];
   const image = `${PUBLIC_ORIGIN}${k.image}?${query}`.replace(/&/g, "&amp;");
   const page = `${PUBLIC_ORIGIN}${k.page}?${query}`.replace(/&/g, "&amp;");
@@ -53,11 +55,11 @@ export function withImage(html, kind, query) {
 }
 
 /** The card's own, kept for anything that imported it before owls and eggs. */
-export const withCardImage = (html, query) => withImage(html, "card", query);
+export const withCardImage = (html: string, query: string) => withImage(html, "card", query);
 
 /* ── Chromium ─────────────────────────────────────────────────────────── */
 
-let browser = null;
+let browser: { child: ChildProcess; url: string } | null = null;
 
 async function devtools() {
   if (browser) return browser;
@@ -75,7 +77,7 @@ async function devtools() {
   child.on("exit", () => { browser = null; });
   for (let i = 0; i < 50; i++) {
     try {
-      const version = await (await fetch(`http://127.0.0.1:${DEBUG_PORT}/json/version`)).json();
+      const version = (await (await fetch(`http://127.0.0.1:${DEBUG_PORT}/json/version`)).json()) as { webSocketDebuggerUrl: string };
       browser = { child, url: version.webSocketDebuggerUrl };
       return browser;
     } catch {
@@ -86,7 +88,10 @@ async function devtools() {
   throw new Error("chromium did not start");
 }
 
-async function screenshot(path) {
+/** A DevTools protocol reply. Only the fields this reads. */
+interface CdpReply { id?: number; error?: { message: string }; result?: object }
+
+async function screenshot(path: string): Promise<Buffer> {
   const { url } = await devtools();
   const ws = new WebSocket(url);
   await new Promise((resolve, reject) => {
@@ -94,37 +99,38 @@ async function screenshot(path) {
     ws.addEventListener("error", reject, { once: true });
   });
   let id = 0;
-  const pending = new Map();
+  const pending = new Map<number, (m: CdpReply) => void>();
   ws.addEventListener("message", (e) => {
-    const m = JSON.parse(e.data);
-    if (m.id && pending.has(m.id)) {
-      pending.get(m.id)(m);
+    const m = JSON.parse(String(e.data)) as CdpReply;
+    const reply = m.id ? pending.get(m.id) : undefined;
+    if (m.id && reply) {
+      reply(m);
       pending.delete(m.id);
     }
   });
-  const send = (method, params = {}, sessionId) =>
-    new Promise((resolve, reject) => {
+  const send = <T,>(method: string, params: object = {}, sessionId?: string) =>
+    new Promise<T>((resolve, reject) => {
       const n = ++id;
-      pending.set(n, (m) => (m.error ? reject(new Error(m.error.message)) : resolve(m.result)));
+      pending.set(n, (m) => (m.error ? reject(new Error(m.error.message)) : resolve(m.result as T)));
       ws.send(JSON.stringify({ id: n, method, params, sessionId }));
     });
 
-  const { targetId } = await send("Target.createTarget", { url: "about:blank" });
+  const { targetId } = await send<{ targetId: string }>("Target.createTarget", { url: "about:blank" });
   try {
-    const { sessionId } = await send("Target.attachToTarget", { targetId, flatten: true });
+    const { sessionId } = await send<{ sessionId: string }>("Target.attachToTarget", { targetId, flatten: true });
     await send("Emulation.setDeviceMetricsOverride", { width: WIDTH, height: HEIGHT, deviceScaleFactor: 1, mobile: false }, sessionId);
     await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-color-scheme", value: "dark" }] }, sessionId);
     await send("Page.enable", {}, sessionId);
     await send("Page.navigate", { url: `${UI_ORIGIN}${path}` }, sessionId);
     const deadline = Date.now() + 15_000;
     for (;;) {
-      const r = await send("Runtime.evaluate", { expression: "document.body?.dataset.ogReady === '1'", returnByValue: true }, sessionId);
+      const r = await send<{ result?: { value?: boolean } }>("Runtime.evaluate", { expression: "document.body?.dataset.ogReady === '1'", returnByValue: true }, sessionId);
       if (r.result?.value === true) break;
       if (Date.now() > deadline) throw new Error("the page never said it was ready");
       await new Promise((resolve) => setTimeout(resolve, 150));
     }
     // JPEG: a gradient card is about 250 KB as a PNG and a fraction of that here.
-    const shot = await send("Page.captureScreenshot", { format: "jpeg", quality: 85, clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT, scale: 1 } }, sessionId);
+    const shot = await send<{ data: string }>("Page.captureScreenshot", { format: "jpeg", quality: 85, clip: { x: 0, y: 0, width: WIDTH, height: HEIGHT, scale: 1 } }, sessionId);
     return Buffer.from(shot.data, "base64");
   } finally {
     await send("Target.closeTarget", { targetId }).catch(() => {});
@@ -136,8 +142,8 @@ async function screenshot(path) {
    and every new query is a render, so a flood of made-up ones is turned away here. */
 const QUEUE_MAX = 8;
 let waiting = 0;
-let queue = Promise.resolve();
-function render(path) {
+let queue: Promise<void | Buffer> = Promise.resolve();
+function render(path: string): Promise<Buffer> {
   if (waiting >= QUEUE_MAX) return Promise.reject(Object.assign(new Error("busy"), { busy: true }));
   waiting++;
   const next = queue.then(() => screenshot(path)).finally(() => { waiting--; });
@@ -147,20 +153,20 @@ function render(path) {
 
 /* ── Cache ────────────────────────────────────────────────────────────── */
 
-async function cached(key, make) {
+async function cached(key: string, make: () => Promise<Buffer>): Promise<Buffer> {
   const file = join(CACHE_DIR, `${createHash("sha256").update(key).digest("hex")}.jpg`);
   try {
     return await readFile(file);
   } catch {
     const jpg = await make();
     // A cache that can't be written to costs a re-render later, not this answer.
-    await writeFile(file, jpg).then(() => trim(), (err) => console.error(`cache: ${err.message}`));
+    await writeFile(file, jpg).then(() => trim(), (err: Error) => console.error(`cache: ${err.message}`));
     return jpg;
   }
 }
 
 /** Oldest first until the folder is back under its size. */
-async function trim() {
+async function trim(): Promise<void> {
   const names = (await readdir(CACHE_DIR)).filter((n) => n.endsWith(".jpg"));
   const files = await Promise.all(names.map(async (n) => {
     const s = await stat(join(CACHE_DIR, n));
@@ -185,7 +191,7 @@ const server = createServer(async (req, res) => {
       return;
     }
     const query = cardQuery(url.search);
-    for (const [kind, k] of Object.entries(KINDS)) {
+    for (const [kind, k] of Object.entries(KINDS) as [Kind, (typeof KINDS)[Kind]][]) {
       if (url.pathname === k.image && query) {
         const jpg = await cached(k.key + query, () => render(`${k.og}?${query}`));
         // A link's picture never changes, so Cloudflare and the unfurlers can keep it a day.
@@ -202,7 +208,7 @@ const server = createServer(async (req, res) => {
     }
     res.writeHead(404, { "content-type": "text/plain" }).end("not found");
   } catch (err) {
-    if (err?.busy) {
+    if ((err as { busy?: boolean } | null)?.busy) {
       res.writeHead(503, { "content-type": "text/plain", "retry-after": "10" }).end("busy");
       return;
     }
