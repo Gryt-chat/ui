@@ -185,7 +185,10 @@ export const grytAlphaScalesLight = {
   accent: alphaScale(grytScalesLight.accent, grytLightTokens.bg)
 } as const;
 
-export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
+/** CSS custom properties, `--gryt-*` and Tailwind's `--color-gryt-*`, ready for a style prop. */
+export type GrytThemeVars = CSSProperties & Record<`--${string}`, string>;
+
+export function createGrytTheme(options: GrytThemeOptions = {}): GrytThemeVars {
   const light = options.appearance === "light";
   const defaults = light
     ? {
@@ -344,5 +347,5 @@ export function createGrytTheme(options: GrytThemeOptions = {}): CSSProperties {
     "--gryt-radius-control": `${controlRadius(radius)}px`,
     "--gryt-radius-surface": `${surfaceRadius(radius)}px`,
     "--gryt-radius-popup": `${popupRadius(radius)}px`
-  } as CSSProperties;
+  };
 }

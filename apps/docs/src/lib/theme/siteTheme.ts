@@ -116,7 +116,7 @@ export function useApplySiteTheme() {
     const root = document.documentElement;
     const variables = createGrytTheme(
       grytThemeToOptions(theme, site.appearance)
-    ) as unknown as Record<string, string>;
+    );
 
     for (const [name, value] of Object.entries(variables)) {
       root.style.setProperty(name, value);

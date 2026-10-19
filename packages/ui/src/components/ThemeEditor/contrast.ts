@@ -2,7 +2,7 @@
  * to the colour that caused them. Thresholds are WCAG AA, not the library's own 7:1. */
 
 import { contrast } from "@gryt/theme";
-import type { CSSProperties } from "react";
+import type { GrytThemeVars } from "@gryt/theme";
 import type { Appearance, DraftPath, ThemeDraft } from "./draft";
 import { hueSlot, huesFor, scaleFrom } from "./draft";
 
@@ -63,7 +63,7 @@ function check(
 
 export function contrastChecks(
   draft: ThemeDraft,
-  theme: CSSProperties,
+  theme: GrytThemeVars,
   appearance: Appearance
 ): ContrastCheck[] {
   const neutral = scaleFrom(theme, "neutral");

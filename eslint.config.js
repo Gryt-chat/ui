@@ -98,14 +98,6 @@ export default tseslint.config(
     ],
     rules: { "@typescript-eslint/no-restricted-types": "off" },
   },
-  // Casts through unknown where the types don't line up yet.
-  {
-    files: [
-      "apps/docs/src/lib/theme/siteTheme.ts",
-      "packages/ui/src/components/ThemeEditor/draft.ts",
-    ],
-    rules: { "no-restricted-syntax": "off" },
-  },
   // Nested ternaries from before the rule.
   {
     files: [
