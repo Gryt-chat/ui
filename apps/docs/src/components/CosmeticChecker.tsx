@@ -129,7 +129,7 @@ function Preview({
       palette as Parameters<typeof owlPalette>[0],
       scheme as Parameters<typeof owlPalette>[1]
     );
-    return inner + report.draw(colours as unknown as Record<string, string>);
+    return inner + report.draw(Object.fromEntries(Object.entries(colours)));
   }, [report, seed, palette, scheme]);
 
   return (
