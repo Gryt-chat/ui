@@ -38,7 +38,7 @@ type Report =
       hides: string[];
       recolours: string[];
       /* Rebuilt path elements, one string per preview palette. */
-      draw: (palette: Record<string, string>) => string;
+      draw: (palette: ReturnType<typeof owlPalette>) => string;
     };
 
 function readDrawing(filename: string, svg: string): Report {
@@ -95,7 +95,7 @@ function readDrawing(filename: string, svg: string): Report {
       draw: (palette) =>
         built.kept
           .map((p) =>
-            built.paint(p, (hex) => palette[built.roles.get(hex) ?? "trim"] ?? "#888")
+            built.paint(p, (hex) => palette[(built.roles.get(hex) ?? "trim") as keyof typeof palette] ?? "#888")
           )
           .join("")
     };
@@ -129,7 +129,7 @@ function Preview({
       palette as Parameters<typeof owlPalette>[0],
       scheme as Parameters<typeof owlPalette>[1]
     );
-    return inner + report.draw(Object.fromEntries(Object.entries(colours)));
+    return inner + report.draw(colours);
   }, [report, seed, palette, scheme]);
 
   return (
