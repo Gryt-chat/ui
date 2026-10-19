@@ -1,4 +1,4 @@
-# Link previews that show the shared card (GRYT-1673): server.mjs plus the Chromium it drives.
+# Link previews that show the shared card (GRYT-1673): server.mts plus the Chromium it drives.
 # Debian for Chromium's arm64 package; nothing from npm, so there's no lockfile to keep in step.
 FROM node:22-bookworm-slim
 
@@ -10,7 +10,7 @@ RUN apt-get update \
 RUN mkdir /cache && chown node /cache
 USER node
 WORKDIR /srv
-COPY --chown=node server.mjs ./
+COPY --chown=node server.mts ./
 
 ENV PORT=8080 CACHE_DIR=/cache CHROMIUM=/usr/bin/chromium
 EXPOSE 8080
@@ -18,4 +18,4 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD node -e "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"
 
-CMD ["node", "server.mjs"]
+CMD ["node", "server.mts"]

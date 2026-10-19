@@ -12,5 +12,5 @@
     "noUnusedLocals": true,
     "skipLibCheck": true
   },
-  "include": [".", "../packages/ui-native/scripts", "../eslint.config.ts"]
+  "include": [".", "../packages/ui-native/scripts", "../eslint.config.ts", "../services/og"]
 }
