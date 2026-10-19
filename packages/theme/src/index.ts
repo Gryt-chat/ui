@@ -12,7 +12,7 @@ export {
   grytScalesLight,
   grytTokens
 } from "./createGrytTheme";
-export type { GrytThemeOptions, GrytTokens } from "./createGrytTheme";
+export type { GrytThemeOptions, GrytThemeVars, GrytTokens } from "./createGrytTheme";
 export { contrast, hexToOklch, oklchToHex } from "./oklch";
 // The ramp builders, not just the colour conversions. React Native cannot use custom
 // properties, so exporting these is what stops the OKLab maths being copied (GRYT-342).

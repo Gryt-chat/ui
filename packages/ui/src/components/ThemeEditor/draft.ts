@@ -19,9 +19,9 @@ import type {
   GrytNeutralKey,
   GrytNeutrals,
   GrytRadiusKey,
-  GrytTheme
+  GrytTheme,
+  GrytThemeVars
 } from "@gryt/theme";
-import type { CSSProperties } from "react";
 
 export type Appearance = GrytAppearance;
 export type HueKey = GrytHueKey;
@@ -77,13 +77,12 @@ export function colorsFor(
 export function themeStyle(
   draft: ThemeDraft,
   appearance: Appearance
-): CSSProperties {
+): GrytThemeVars {
   return createGrytTheme(grytThemeToOptions(draft, appearance));
 }
 
 /** A generated scale, read back off the built theme rather than regenerated. */
-export function scaleFrom(theme: CSSProperties, family: string): string[] {
-  const vars = theme as unknown as Record<string, string>;
+export function scaleFrom(vars: GrytThemeVars, family: string): string[] {
   return Array.from(
     { length: 12 },
     (_, index) => vars[`--gryt-${family}-${index + 1}`]
