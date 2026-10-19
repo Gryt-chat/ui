@@ -122,6 +122,8 @@ export function MemberCardView({
   const style = { ...vars } as CSSProperties & Record<string, string>;
   if (bannerUrl && bannerType === "image") style["--img"] = `url("${bannerUrl.replace(/["\\]/g, "")}")`;
 
+  const bannerKind = bannerType === "video" ? "video" : "img";
+
   return (
     <div
       className={["gmc-frame", menuOpen ? "menu-open" : ""].filter(Boolean).join(" ")}
@@ -136,7 +138,7 @@ export function MemberCardView({
         // Here as well as on the frame: .gmc sets its own defaults for some of these, which would win over inherited ones.
         style={style}
       >
-      <div className={["gmc-banner", bannerUrl ? (bannerType === "video" ? "video" : "img") : "", profile.cardStyle.bannerSize === "short" || (!bannerUrl && !hasPattern(profile.cardStyle)) ? "short" : ""].filter(Boolean).join(" ")}>
+      <div className={["gmc-banner", bannerUrl && bannerKind, profile.cardStyle.bannerSize === "short" || (!bannerUrl && !hasPattern(profile.cardStyle)) ? "short" : ""].filter(Boolean).join(" ")}>
         {bannerUrl && bannerType === "video" && (
           <CardVideo className="gmc-banner-media" src={bannerUrl} />
         )}
@@ -158,9 +160,9 @@ export function MemberCardView({
             </button>
           ) : (
             <span className="gmc-av" style={{ "--s": "64px" } as CSSProperties}>
-              {avatarSrc ? (avatarType === "video" ? (
+              {avatarSrc && avatarType === "video" ? (
                 <CardVideo src={avatarSrc} poster={avatarPoster} />
-              ) : <img alt="" src={avatarSrc} />) : <img alt="" />}
+              ) : <img alt="" src={avatarSrc || undefined} />}
             </span>
           )}
           {presence.colour && (
@@ -182,14 +184,13 @@ export function MemberCardView({
         </div>
       </div>
 
-      {playing && game ? (
-        <GameBand card={game} />
-      ) : line ? (
+      {playing && game && <GameBand card={game} />}
+      {!(playing && game) && line && (
         <section className="gmc-band plain">
           <span className="gmc-band-verb">Status</span>
           <div className="gmc-line">{line}</div>
         </section>
-      ) : null}
+      )}
 
         <div className="gmc-body">
         {profile.pronouns && (

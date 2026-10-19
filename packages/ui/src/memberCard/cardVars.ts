@@ -9,6 +9,9 @@ import type { Tile } from "./patterns/tileTypes";
 import type { PatternMark } from "./patternSvg";
 import { patternLayers } from "./patternSvg";
 
+const FADE_ATTR: Partial<Record<string, string>> = { banner: "full", none: "none" };
+const PATTERN_ALPHA = { dark: { card: 0.09, banner: 0.2 }, light: { card: 0.1, banner: 0.22 } };
+
 export interface CardVars {
   attrs: Record<string, string>;
   vars: Record<string, string>;
@@ -86,13 +89,13 @@ function colourVars(style: CardStyle, owlHex: string, opts: CardVarsOptions): Ca
     const onCard = style.cover === "card";
     const ownInk = f.dark ? hexAt(0.2, 0.02, f.hue) : hexAt(0.99, 0.005, f.hue);
     const ink = style.pInk ?? ownInk;
-    const alpha = readablePatternAlpha([...f.ends, f.mid], ink, f.mutedHex, wantedAlpha(f.dark ? (onCard ? 0.09 : 0.2) : onCard ? 0.1 : 0.22));
+    const alpha = readablePatternAlpha([...f.ends, f.mid], ink, f.mutedHex, wantedAlpha(PATTERN_ALPHA[f.dark ? "dark" : "light"][onCard ? "card" : "banner"]));
     const tint = (pct: number) => `color-mix(in oklch, ${f.ink} ${pct}%, transparent)`;
     return {
       attrs: {
         "data-fc": "1",
         "data-cover": style.cover,
-        "data-fade": style.fade === "banner" ? "full" : style.fade === "none" ? "none" : "bottom",
+        "data-fade": FADE_ATTR[style.fade] ?? "bottom",
         "data-contrast": f.worst.toFixed(1),
       },
       vars: {
@@ -132,7 +135,7 @@ function colourVars(style: CardStyle, owlHex: string, opts: CardVarsOptions): Ca
     return {
       attrs: {
         "data-cc": "1",
-        "data-fade": style.fade === "banner" ? "full" : style.fade === "none" ? "none" : "bottom",
+        "data-fade": FADE_ATTR[style.fade] ?? "bottom",
       },
       vars: {
         ...draw(ink, alpha),

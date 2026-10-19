@@ -137,7 +137,11 @@ check("a banner's colours: the bottom edge, whether it is flat, and what fills t
   const w = 8, h = 20;
   const px = new Uint8ClampedArray(w * h * 4);
   const paint = (y, [r, g, b]) => { for (let x = 0; x < w; x++) px.set([r, g, b, 255], (y * w + x) * 4); };
-  for (let y = 0; y < h; y++) paint(y, y < 12 ? [200, 30, 30] : y < 17 ? [20, 160, 60] : [16, 32, 96]);
+  const band = (y) => {
+    if (y < 12) return [200, 30, 30];
+    return y < 17 ? [20, 160, 60] : [16, 32, 96];
+  };
+  for (let y = 0; y < h; y++) paint(y, band(y));
   const flat = analyseBanner(px, w, h);
   assert.equal(flat.bottom, "#102060");
   assert.equal(flat.flat, true);

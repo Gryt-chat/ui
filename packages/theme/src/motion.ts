@@ -71,13 +71,13 @@ export const grytDrawerBleed = 64;
  */
 export function sampleCurve(samples: readonly number[], t: number): number {
   if (samples.length === 0) return t;
-  if (t <= 0) return samples[0]!;
-  if (t >= 1) return samples[samples.length - 1]!;
+  if (t <= 0) return samples[0] ?? t;
+  if (t >= 1) return samples[samples.length - 1] ?? t;
 
   const span = (samples.length - 1) * t;
   const index = Math.floor(span);
   const rest = span - index;
-  const from = samples[index]!;
+  const from = samples[index] ?? t;
   const to = samples[index + 1] ?? from;
 
   return from + (to - from) * rest;

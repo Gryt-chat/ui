@@ -8,6 +8,10 @@ import type { GrytThemeOptions } from "@gryt/theme";
 import { OverlayInsetContext } from "./overlayInset";
 import { PortalContainerContext } from "./portalContainer";
 
+function themeStyle(theme: NonNullable<GrytProviderProps["theme"]>) {
+  return isCssVariables(theme) ? theme : createGrytTheme(theme);
+}
+
 export interface GrytProviderProps {
   children: ReactNode;
   // Either the object from createGrytTheme, or the options to build one from.
@@ -48,12 +52,7 @@ export function GrytProvider({
    * No theme, no variables. The stylesheet declares them on `:root`, and a wrapper
    * re-stating the defaults sits below the root and overrides an app's own theming.
    */
-  const style =
-    theme === undefined
-      ? undefined
-      : isCssVariables(theme)
-        ? theme
-        : createGrytTheme(theme);
+  const style = theme === undefined ? undefined : themeStyle(theme);
 
   return (
     <div className={className} style={style} ref={containerRef}>

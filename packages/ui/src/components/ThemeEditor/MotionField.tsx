@@ -28,6 +28,8 @@ interface MotionFieldProps {
   onChange: (next: GrytMotion) => void;
 }
 
+const CURVE_SAMPLES: Partial<Record<string, readonly number[]>> = { smooth: springTightSamples, linear: [0, 1] };
+
 export function MotionField({ motion, onChange }: MotionFieldProps) {
   const current = motion ?? grytMotion;
   /* The narrowed value rather than a boolean: `isBezier(x) ? … : …` on a separate line
@@ -114,13 +116,7 @@ export function MotionField({ motion, onChange }: MotionFieldProps) {
       ) : (
         <CurveEditor
           onChange={setCurve}
-          samples={
-            current.curve === "smooth"
-              ? springTightSamples
-              : current.curve === "linear"
-                ? [0, 1]
-                : springSamples
-          }
+          samples={(typeof current.curve === "string" && CURVE_SAMPLES[current.curve]) || springSamples}
           value={lastBezier}
         />
       )}

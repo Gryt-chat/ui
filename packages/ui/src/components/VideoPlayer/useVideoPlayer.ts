@@ -5,6 +5,14 @@ import type {
   SyntheticEvent
 } from "react";
 
+function playerState(s: { failed: boolean; loaded: boolean; ended: boolean; loading: boolean; playing: boolean }): VideoPlayerState {
+  if (s.failed) return "error";
+  if (!s.loaded) return "idle";
+  if (s.ended) return "ended";
+  if (s.loading) return "loading";
+  return s.playing ? "playing" : "paused";
+}
+
 export type VideoPlayerState =
   | "idle"
   | "loading"
@@ -244,17 +252,7 @@ export function useVideoPlayer({
     void video.play()?.catch(() => setLoading(false));
   }, [failure, src]);
 
-  const state: VideoPlayerState = failed
-    ? "error"
-    : !loaded
-      ? "idle"
-      : ended
-        ? "ended"
-        : loading
-          ? "loading"
-          : playing
-            ? "playing"
-            : "paused";
+  const state = playerState({ failed, loaded, ended, loading, playing });
 
   const controlsShown =
     loaded && !failed && (!playing || awake || pinned || scrub !== null);
