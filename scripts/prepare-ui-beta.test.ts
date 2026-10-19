@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { assertPatchBeta } from "./prepare-ui-beta.mjs";
+import { assertPatchBeta } from "./prepare-ui-beta.ts";
 
 test("UI beta publishing allows only the next patch beta", () => {
   assertPatchBeta("0.39.2-beta.1", "0.39.1");

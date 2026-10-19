@@ -13,10 +13,10 @@ if (!pkg) {
 }
 
 const dir = resolve(pkg);
-const run = (cmd, args, cwd) =>
+const run = (cmd: string, args: string[], cwd: string) =>
   execFileSync(cmd, args, { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "inherit"] });
 
-function packInto(packageDir) {
+function packInto(packageDir: string) {
   run("npm", ["pack", "--silent"], packageDir);
   const produced = readdirSync(packageDir).find((f) => f.endsWith(".tgz"));
   if (!produced) {
@@ -29,9 +29,9 @@ function packInto(packageDir) {
 // Workspace siblings resolve from local tarballs, not the registry: a brand new sibling
 // is not published yet, and its own run covers its installability.
 const workspaceRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const manifest = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
-const overrides = {};
-const siblingTarballs = [];
+const manifest: { name: string; dependencies?: Record<string, string> } = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
+const overrides: Record<string, string> = {};
+const siblingTarballs: string[] = [];
 
 // The spec is checked before anything is overridden: an override resolves whatever the
 // spec says, which is how a `workspace:*` put back on a sibling went green.

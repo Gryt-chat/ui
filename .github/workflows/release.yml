@@ -38,10 +38,10 @@ jobs:
 
       # Before the publish, because a version cannot be replaced once it is on npm.
       # @gryt/ui-native 0.1.0 went out unresolvable and the version had to be burned.
-      - run: node scripts/check-installable.mjs packages/theme
-      - run: node scripts/check-installable.mjs packages/owl
-      - run: node scripts/check-installable.mjs packages/ui
-      - run: node scripts/check-installable.mjs packages/ui-native
+      - run: node scripts/check-installable.ts packages/theme
+      - run: node scripts/check-installable.ts packages/owl
+      - run: node scripts/check-installable.ts packages/ui
+      - run: node scripts/check-installable.ts packages/ui-native
       - uses: changesets/action@v1
         with:
           publish: bun run release
@@ -61,12 +61,12 @@ jobs:
         with:
           bun-version: 1.2.0
       - run: bun install --frozen-lockfile
-      - run: node scripts/prepare-ui-beta.mjs "$UI_BETA_VERSION"
+      - run: node scripts/prepare-ui-beta.ts "$UI_BETA_VERSION"
         env:
           UI_BETA_VERSION: ${{ inputs.ui_beta_version }}
-      - run: node --test scripts/prepare-ui-beta.test.mjs
+      - run: node --test scripts/prepare-ui-beta.test.ts
       - run: bun run typecheck && bun run test && bun run build:lib
-      - run: node scripts/check-installable.mjs packages/ui
+      - run: node scripts/check-installable.ts packages/ui
       - run: npm publish --tag beta
         working-directory: packages/ui
         env:
