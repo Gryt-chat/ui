@@ -105,10 +105,10 @@ jobs:
 
       # Packs and installs each tarball into an empty directory — the only check that
       # resolves the manifest as a consumer does. `workspace:*` passed everything else.
-      - run: node scripts/check-installable.mjs packages/theme
-      - run: node scripts/check-installable.mjs packages/owl
-      - run: node scripts/check-installable.mjs packages/ui
-      - run: node scripts/check-installable.mjs packages/ui-native
+      - run: node scripts/check-installable.ts packages/theme
+      - run: node scripts/check-installable.ts packages/owl
+      - run: node scripts/check-installable.ts packages/ui
+      - run: node scripts/check-installable.ts packages/ui-native
 
   # ui.gryt.chat is this Dockerfile and nothing above builds it. Its manifests are listed
   # one at a time, so a new workspace member breaks the image with CI still green.
