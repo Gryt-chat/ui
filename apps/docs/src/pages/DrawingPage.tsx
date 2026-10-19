@@ -35,8 +35,9 @@ const FIGMA_TEMPLATE: string = "https://www.figma.com/community/file/16743792631
 const TYPES_BY_SLOT = (() => {
   const bySlot = new Map<string, string[]>();
   for (const [word, slot] of Object.entries(KEYWORDS)) {
-    if (!bySlot.has(slot)) bySlot.set(slot, []);
-    bySlot.get(slot)!.push(word);
+    const words = bySlot.get(slot) ?? [];
+    words.push(word);
+    bySlot.set(slot, words);
   }
   return [...bySlot];
 })();

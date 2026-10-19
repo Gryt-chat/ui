@@ -85,7 +85,7 @@ export function AvatarsPage() {
       const { wearing } = resolveOwl(seed);
       for (const slot of ACCESSORY_SLOTS) {
         const worn = wearing[slot];
-        if (!worn) empty.set(slot, empty.get(slot)! + 1);
+        if (!worn) empty.set(slot, (empty.get(slot) ?? 0) + 1);
         else counts.set(worn, (counts.get(worn) ?? 0) + 1);
       }
     }

@@ -7,6 +7,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync, mkdirSync } from 
 import path from "node:path";
 
 import { extract, realPalette, ROLES } from "../src/lib/extract";
+import { must } from "../src/lib/values";
 import { owlBaseSvg } from "../src/lib/owl-group";
 import { readLedger, updateLedger, writeLedger } from "./lib/keys";
 import {
@@ -123,7 +124,7 @@ function reportSlots(
     const items = placements.filter((p) => p.slot === slot);
     if (!items.length) continue;
 
-    const total = items.reduce((sum, i) => sum + weights.get(i.name)!, 0);
+    const total = items.reduce((sum, i) => sum + must(weights.get(i.name), "weight"), 0);
     const empty = owl.EMPTY_WEIGHT[slot];
     const fill = (100 * total) / (total + empty);
     const want = 100 * owl.SLOT_PRESENCE[slot];
@@ -205,9 +206,9 @@ if (has("all")) {
   const rarityByFamily = new Map<string, Map<string, string[]>>();
   for (const p of placements) {
     if (!rarityByFamily.has(p.family)) rarityByFamily.set(p.family, new Map());
-    const seen = rarityByFamily.get(p.family)!;
+    const seen = must(rarityByFamily.get(p.family), "family");
     if (!seen.has(p.rarity)) seen.set(p.rarity, []);
-    seen.get(p.rarity)!.push(p.file);
+    must(seen.get(p.rarity), "rarity").push(p.file);
   }
   const split = [...rarityByFamily].filter(([, seen]) => seen.size > 1);
   if (split.length) {
@@ -234,10 +235,10 @@ if (has("all")) {
   for (const entry of placements) {
     const built = extract(readFileSync(path.join(dir, entry.file), "utf8"), entry.file, {
       name: entry.name,
-      key: ledger.keys[entry.name]!,
+      key: must(ledger.keys[entry.name], "ledger key"),
       slot: entry.slot,
       layer: entry.layer,
-      weight: weights.get(entry.name)!,
+      weight: must(weights.get(entry.name), "weight"),
       excludes: entry.excludes,
       places: Number(flag("places", "1")),
       tolerance: Number(flag("tolerance", "0.4")),
@@ -247,7 +248,7 @@ if (has("all")) {
     console.log(built.summary);
     for (const hex of built.guessed) {
       if (!unknownInks.has(hex)) unknownInks.set(hex, []);
-      unknownInks.get(hex)!.push(entry.name);
+      must(unknownInks.get(hex), "ink").push(entry.name);
     }
   }
 
@@ -383,7 +384,7 @@ if (has("preview")) {
   const bird = owl.owlAvatarSvg("preview", { ...BASE, size: 320 });
   const inner = bird.slice(bird.indexOf(">") + 1, bird.lastIndexOf("</svg>"));
   const recoloured = built.kept
-    .map((p) => built.paint(p, (hex) => realPalette[built.roles.get(hex)!]))
+    .map((p) => built.paint(p, (hex) => realPalette[must(built.roles.get(hex), "role")]))
     .join("");
   writeFileSync(
     path.join(outDir, `${name}.preview.html`),

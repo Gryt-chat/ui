@@ -18,6 +18,13 @@ import type {
   ResolvedEgg,
   ResolvedEggs
 } from "./types";
+import { backgroundFor, must } from "../lib/values";
+
+/** null asks for none, a name for that pattern, and undefined leaves it to the seed. The draw only happens then. */
+function patternFor(asked: string | null | undefined, choose: () => EggPattern | null): EggPattern | null {
+  if (asked === null) return null;
+  return asked === undefined ? choose() : eggPatternByName(asked) ?? null;
+}
 
 export * from "./types";
 export { eggPalette, allEggPalettes } from "./palette";
@@ -161,11 +168,14 @@ export function resolveEggs(
   const count: EggCount =
     options.count && EGG_COUNTS.includes(options.count)
       ? options.count
-      : pickWeightedByName(
-          s,
-          "egg:count",
-          COUNT_WEIGHTS.map(([c, w]) => [c, String(c), w] as const)
-        )!;
+      : must(
+          pickWeightedByName(
+            s,
+            "egg:count",
+            COUNT_WEIGHTS.map(([c, w]) => [c, String(c), w] as const)
+          ),
+          "egg count"
+        );
 
   // A palette per egg, cached, because eggPalette is not free and a three-egg
   // icon asks for the same one twice more often than not.
@@ -179,17 +189,12 @@ export function resolveEggs(
     return found;
   };
 
-  const shapes = EGG_BASES[count - 1]!;
+  const shapes = must(EGG_BASES[count - 1], "egg shapes");
   const eggs: ResolvedEgg[] = shapes.map((d, i) => {
     // Keyed on the egg's place in the stack rather than on the arrangement, so the back
     // egg of a pair and of a trio are the same draw.
     const asked = options.patterns?.[i];
-    const pattern =
-      asked === null
-        ? null
-        : asked !== undefined
-          ? (eggPatternByName(asked) ?? null)
-          : choosePattern(s, `egg:pattern:${i}`, BARE_WEIGHT);
+    const pattern = patternFor(asked, () => choosePattern(s, `egg:pattern:${i}`, BARE_WEIGHT));
 
     const hue = chooseHue(s, i, paletteName, options.hues?.[i]);
     const from = rungPalette(hue);
@@ -197,9 +202,9 @@ export function resolveEggs(
     return {
       d,
       hue,
-      shell: from.shells[i]!,
-      ink: from.inks[i]!,
-      inkSoft: from.inkSofts[i]!,
+      shell: must(from.shells[i], "egg shell"),
+      ink: must(from.inks[i], "egg ink"),
+      inkSoft: must(from.inkSofts[i], "egg soft ink"),
       pattern,
       angle: pattern ? chooseAngle(s, `egg:angle:${i}`) : 0,
       tile: pattern ? chooseTile(s, `egg:tile:${i}`, pattern) : 0
@@ -207,19 +212,9 @@ export function resolveEggs(
   });
 
   const fieldAsked = options.fieldPattern;
-  const fieldPattern =
-    fieldAsked === null
-      ? null
-      : fieldAsked !== undefined
-        ? (eggPatternByName(fieldAsked) ?? null)
-        : choosePattern(s, "egg:field:pattern", FIELD_BARE_WEIGHT);
+  const fieldPattern = patternFor(fieldAsked, () => choosePattern(s, "egg:field:pattern", FIELD_BARE_WEIGHT));
 
-  const background =
-    options.background === false
-      ? null
-      : typeof options.background === "string"
-        ? options.background
-        : palette.field;
+  const background = backgroundFor(options.background, palette.field);
 
   const resolved: ResolvedEggs = {
     seed: s,
@@ -268,7 +263,7 @@ function renderTile(
   for (const [i, layer] of pattern.layers.entries()) {
     // Cycled rather than clamped, so a tile whose two layers are a figure and
     // its shadow keeps them apart however many layers it has.
-    const colour = inks[i % inks.length]!;
+    const colour = must(inks[i % inks.length], "pattern ink");
     const paint =
       pattern.mode === "fill"
         ? `fill="${colour}" stroke="none"`

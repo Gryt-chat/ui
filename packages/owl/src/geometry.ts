@@ -1,3 +1,4 @@
+import { must } from "./lib/values";
 /**
  * The drawing primitives every part is built out of. Parts are authored as a right half
  * and mirrored here, which is the only way the two halves cannot drift.
@@ -62,17 +63,17 @@ export function symmetric(half: Half, ax: number, top: number, hw: number, h: nu
   const px = (p: Point) => ax + p[0] * hw;
   const py = (p: Point) => top + p[1] * h;
 
-  const first = points[0]!;
+  const first = must(points[0], "curve point");
   let out = `M${fmt(px(first))} ${fmt(py(first))}`;
 
   for (let i = 1; i + 2 < points.length; i += 3) {
-    const c1 = points[i]!;
-    const c2 = points[i + 1]!;
-    const end = points[i + 2]!;
+    const c1 = must(points[i], "curve point");
+    const c2 = must(points[i + 1], "curve point");
+    const end = must(points[i + 2], "curve point");
     out += `C${fmt(px(c1))} ${fmt(py(c1))} ${fmt(px(c2))} ${fmt(py(c2))} ${fmt(px(end))} ${fmt(py(end))}`;
   }
 
-  const last = points[points.length - 1]!;
+  const last = must(points[points.length - 1], "curve point");
   const flip = (p: Point): Point => [-p[0], p[1]];
 
   // The tip. A cap of 0 degenerates to a straight line across, which is what a
@@ -81,9 +82,9 @@ export function symmetric(half: Half, ax: number, top: number, hw: number, h: nu
   out += `C${fmt(px(bulge))} ${fmt(py(bulge))} ${fmt(px(flip(bulge)))} ${fmt(py(flip(bulge)))} ${fmt(px(flip(last)))} ${fmt(py(flip(last)))}`;
 
   for (let i = points.length - 2; i >= 2; i -= 3) {
-    const c2 = points[i]!;
-    const c1 = points[i - 1]!;
-    const end = points[i - 2]!;
+    const c2 = must(points[i], "curve point");
+    const c1 = must(points[i - 1], "curve point");
+    const end = must(points[i - 2], "curve point");
     out += `C${fmt(px(flip(c2)))} ${fmt(py(flip(c2)))} ${fmt(px(flip(c1)))} ${fmt(py(flip(c1)))} ${fmt(px(flip(end)))} ${fmt(py(flip(end)))}`;
   }
 
@@ -107,12 +108,12 @@ export function symmetricPath(
  * parts that are not symmetric and are drawn twice — a wing, an ear, half a pair.
  */
 export function closedPath(points: readonly Point[]): string {
-  const first = points[0]!;
+  const first = must(points[0], "curve point");
   let out = `M${fmt(first[0])} ${fmt(first[1])}`;
   for (let i = 1; i + 2 < points.length; i += 3) {
-    const c1 = points[i]!;
-    const c2 = points[i + 1]!;
-    const end = points[i + 2]!;
+    const c1 = must(points[i], "curve point");
+    const c2 = must(points[i + 1], "curve point");
+    const end = must(points[i + 2], "curve point");
     out += `C${fmt(c1[0])} ${fmt(c1[1])} ${fmt(c2[0])} ${fmt(c2[1])} ${fmt(end[0])} ${fmt(end[1])}`;
   }
   return out + "Z";

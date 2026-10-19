@@ -86,7 +86,9 @@ function Docs() {
   );
 }
 
-createRoot(document.getElementById("root")!).render(
+const rootEl = document.getElementById("root");
+if (!rootEl) throw new Error("index.html has no #root");
+createRoot(rootEl).render(
   <StrictMode>
     <Docs />
   </StrictMode>

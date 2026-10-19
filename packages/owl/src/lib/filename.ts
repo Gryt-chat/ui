@@ -4,6 +4,7 @@
  */
 
 import type { AccessorySlot } from "../types";
+import { must } from "./values";
 
 /**
  * How likely an accessory is against the others in its slot, not against the owl as a
@@ -256,7 +257,7 @@ export function placementFor(filename: string, slots: readonly AccessorySlot[]):
       const bySlot = new Map<AccessorySlot, string[]>();
       for (const [word, slot] of Object.entries(KEYWORDS)) {
         if (!bySlot.has(slot)) bySlot.set(slot, []);
-        bySlot.get(slot)!.push(word);
+        must(bySlot.get(slot), "slot words").push(word);
       }
       const vocabulary = [...bySlot]
         .map(([slot, words]) => `\n    ${slot.padEnd(11)} ${words.join(", ")}`)
