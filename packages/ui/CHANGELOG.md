@@ -1,5 +1,13 @@
 # @gryt/ui
 
+## 0.45.2
+
+### Patch Changes
+
+- 2b54914: `createGrytTheme()` returns `GrytThemeVars` now, which is `CSSProperties` plus every `--gryt-*` and `--color-gryt-*` variable as a string. It still goes straight into a `style` prop. Code that reads the variables back no longer has to cast through `unknown` to do it. `GrytThemeVars` is exported from `@gryt/theme`.
+- Updated dependencies [2b54914]
+  - @gryt/theme@0.13.0
+
 ## 0.45.1
 
 ### Patch Changes

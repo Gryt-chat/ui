@@ -1,5 +1,12 @@
 # @gryt/ui-native
 
+## 0.17.4
+
+### Patch Changes
+
+- Updated dependencies [2b54914]
+  - @gryt/theme@0.13.0
+
 ## 0.17.3
 
 ### Patch Changes
