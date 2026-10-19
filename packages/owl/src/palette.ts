@@ -55,13 +55,9 @@ export function hsl(h: number, s: number, l: number): string {
   const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
   const m = light - c / 2;
 
-  const [r, g, b] =
-    hue < 60 ? [c, x, 0]
-    : hue < 120 ? [x, c, 0]
-    : hue < 180 ? [0, c, x]
-    : hue < 240 ? [0, x, c]
-    : hue < 300 ? [x, 0, c]
-    : [c, 0, x];
+  // Which 60° sector of the colour wheel the hue sits in. Past 300°, and NaN, is the last.
+  const sectors = [[c, x, 0], [x, c, 0], [0, c, x], [0, x, c], [x, 0, c], [c, 0, x]] as const;
+  const [r, g, b] = sectors[hue < 60 ? 0 : Math.min(5, Math.floor(hue / 60))] ?? sectors[5];
 
   return "#" + hex(r + m) + hex(g + m) + hex(b + m);
 }

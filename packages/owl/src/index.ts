@@ -31,6 +31,7 @@ import type {
   ResolvedOwl,
   Seed,
 } from "./types";
+import { backgroundFor, must } from "./lib/values";
 
 export * from "./types";
 // The normalisation rule ships with the generator. Every consumer draws from a nickname,
@@ -112,7 +113,7 @@ function chooseAccessories(
     const available = accessoriesIn(slot).filter(
       (a) =>
         !taken.some((t) => a.excludes?.includes(t)) &&
-        !taken.some((t) => accessoryByName(worn[t]!)?.excludes?.includes(slot)),
+        !taken.some((t) => accessoryByName(must(worn[t], "worn accessory"))?.excludes?.includes(slot)),
     );
     if (available.length === 0) continue;
 
@@ -154,10 +155,7 @@ export function resolveOwl(seed: Seed, options: OwlOptions = {}): ResolvedOwl {
       ? { ...base, ...options.palette }
       : base;
 
-  const background =
-    options.background === false ? null
-    : typeof options.background === "string" ? options.background
-    : palette.background;
+  const background = backgroundFor(options.background, palette.background);
 
   const resolved: ResolvedOwl = {
     seed: s,
@@ -321,7 +319,7 @@ export function owlPartPaths(options: OwlOptions = {}): { part: OwlPart; d: stri
   const p = c.palette;
 
   const shapes = (part: OwlPart, markup: string) =>
-    [...markup.matchAll(/\bd="([^"]*)"/g)].map((match) => ({ part, d: match[1]! }));
+    [...markup.matchAll(/\bd="([^"]*)"/g)].map((match) => ({ part, d: must(match[1], "path data") }));
 
   return [
     ...shapes("earTufts", renderEars(m, c.ears, p.body)),

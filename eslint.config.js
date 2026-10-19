@@ -98,36 +98,9 @@ export default tseslint.config(
     ],
     rules: { "@typescript-eslint/no-restricted-types": "off" },
   },
-  // Nested ternaries from before the rule.
-  {
-    files: [
-      "apps/docs/src/components/CosmeticChecker.tsx",
-      "packages/owl/src/eggs/index.ts",
-      "packages/owl/src/index.ts",
-      "packages/owl/src/owl.test.ts",
-      "packages/owl/src/palette.ts",
-    ],
-    rules: { "no-nested-ternary": "off" },
-  },
   // Tests may assert non-null: a wrong guess fails the test, which is the point.
   {
     files: ["**/*.test.ts", "**/*.test.tsx"],
-    rules: { "@typescript-eslint/no-non-null-assertion": "off" },
-  },
-  // Non-null assertions from before the rule.
-  {
-    files: [
-      "apps/docs/src/main.tsx",
-      "apps/docs/src/pages/AvatarsPage.tsx",
-      "apps/docs/src/pages/DrawingPage.tsx",
-      "packages/owl/scripts/egg-base.ts",
-      "packages/owl/scripts/owl-accessory.ts",
-      "packages/owl/src/eggs/index.ts",
-      "packages/owl/src/geometry.ts",
-      "packages/owl/src/index.ts",
-      "packages/owl/src/lib/filename.ts",
-      "packages/owl/src/rng.ts",
-    ],
     rules: { "@typescript-eslint/no-non-null-assertion": "off" },
   },
 );

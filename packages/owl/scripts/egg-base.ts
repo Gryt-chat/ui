@@ -5,6 +5,7 @@
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { must } from "../src/lib/values";
 
 const here = new URL("..", import.meta.url).pathname;
 const out = resolve(here, "src/eggs/bases.generated.ts");
@@ -16,7 +17,7 @@ function eggsIn(file: string): string[] {
   const svg = readFileSync(resolve(here, "artwork/eggs", file), "utf8");
 
   const found = new Map<number, string>();
-  for (const match of svg.matchAll(EGG)) found.set(Number(match[1]), match[2]!);
+  for (const match of svg.matchAll(EGG)) found.set(Number(match[1]), must(match[2], "egg path"));
 
   if (found.size === 0) {
     throw new Error(

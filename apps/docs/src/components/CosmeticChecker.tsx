@@ -191,7 +191,7 @@ export function CosmeticChecker() {
         </p>
       </Surface>
 
-      {report === null ? null : report.ok ? (
+      {report?.ok && (
         <Surface className="flex flex-col gap-(--space-md)">
           <div className="grid grid-cols-1 gap-(--space-md) sm:grid-cols-3">
             {PREVIEWS.map((p) => (
@@ -267,7 +267,8 @@ export function CosmeticChecker() {
             </p>
           )}
         </Surface>
-      ) : (
+      )}
+      {report && !report.ok && (
         <Surface className="border-gryt-danger">
           <p className="m-0 mb-2 text-sm font-semibold text-gryt-text">
             {report.where === "name"

@@ -1,3 +1,4 @@
+import { must } from "./lib/values";
 /**
  * Turning a seed into choices. Every draw is `hash(seed + channel)` rather than a running
  * stream, so adding a `scarf` channel does not change every existing user's beak.
@@ -86,5 +87,5 @@ export function pickWeighted<T>(
     roll -= weight;
     if (roll < 0) return value;
   }
-  return entries[entries.length - 1]![0];
+  return must(entries[entries.length - 1], "weighted entry")[0];
 }
