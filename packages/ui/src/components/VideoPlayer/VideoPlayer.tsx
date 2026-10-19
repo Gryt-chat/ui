@@ -201,7 +201,8 @@ export function VideoPlayer({
 }
 
 function VolumeIcon({ player: p }: { player: VideoPlayerController }) {
-  const Icon = p.silent ? SpeakerX : p.level < 50 ? SpeakerLow : SpeakerHigh;
+  const Loud = p.level < 50 ? SpeakerLow : SpeakerHigh;
+  const Icon = p.silent ? SpeakerX : Loud;
   return <Icon size={18} weight="fill" />;
 }
 

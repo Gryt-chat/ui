@@ -154,7 +154,8 @@ function CardImage({ src, className, small, onPress }: CardImageProps) {
           <ImageBroken size={small ? 16 : 20} aria-hidden="true" />
           {small ? null : <span>Image unavailable</span>}
         </div>
-      ) : onPress ? (
+      ) : null}
+      {status !== "error" && onPress && (
         <button
           type="button"
           aria-label="Open image"
@@ -163,9 +164,8 @@ function CardImage({ src, className, small, onPress }: CardImageProps) {
         >
           {image}
         </button>
-      ) : (
-        image
       )}
+      {status !== "error" && !onPress && image}
     </div>
   );
 }

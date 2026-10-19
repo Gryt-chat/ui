@@ -38,6 +38,11 @@ interface PickerProps {
   onPick: (over: Partial<CardStyle>) => void;
 }
 
+function emojiLabel(picked: string | undefined): string {
+  if (picked?.startsWith("unicode:")) return picked.slice(8);
+  return picked ? "server emoji" : DEFAULT_EMOJI.slice(8);
+}
+
 /**
  * Every pattern as a swatch in your card's own colours, under its heading. The tiles
  * load in one go the first time this opens; scatter swatches use the mark they strew.
@@ -208,7 +213,7 @@ export function PatternTuning({
       {pattern.id === "emoji" && (
         <Popover.Root open={emojiOpen} onOpenChange={setEmojiOpen}>
           <Popover.Trigger render={<Button size="small" tone="neutral" />}>
-            Choose emoji · {style.pEmoji?.startsWith("unicode:") ? style.pEmoji.slice(8) : style.pEmoji ? "server emoji" : DEFAULT_EMOJI.slice(8)}
+            Choose emoji · {emojiLabel(style.pEmoji)}
           </Popover.Trigger>
           <Popover.Portal>
             <Popover.Positioner align="start">

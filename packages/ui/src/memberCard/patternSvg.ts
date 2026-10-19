@@ -140,7 +140,8 @@ function strew(mark: PatternMark, d: PatternDraw): string {
         `transform='translate(${n(m.x - m.size / 2)} ${n(m.y - m.size / 2)}) rotate(${n(m.turn)} ${n(m.size / 2)} ${n(m.size / 2)})'/>`,
     )
     .join("");
-  const paint = mark.mono ? ` fill='${d.ink}'` : mark.tint === false ? "" : " filter='url(#t)'";
+  const tinted = mark.tint === false ? "" : " filter='url(#t)'";
+  const paint = mark.mono ? ` fill='${d.ink}'` : tinted;
   return wrap(`${tone}${clip}${symbol}`, `<g opacity='${n(d.alpha)}'${paint}>${uses}</g>`, d.fade);
 }
 

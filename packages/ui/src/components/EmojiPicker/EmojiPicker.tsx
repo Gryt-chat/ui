@@ -74,15 +74,14 @@ function EmojiCell({
         focusRing
       )}
     >
-      {item.emoji ? (
-        <span aria-hidden>{item.emoji}</span>
-      ) : item.imageUrl ? (
+      {item.emoji && <span aria-hidden>{item.emoji}</span>}
+      {!item.emoji && item.imageUrl && (
         <img
           src={item.imageUrl}
           alt=""
           className="h-7 w-7 object-contain"
         />
-      ) : null}
+      )}
     </button>
   );
 }
@@ -322,21 +321,23 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
             setActiveGroup(currentGroup);
           }}
         >
-          {loading ? (
+          {loading && (
             <div
               role="status"
               className="grid h-full place-items-center p-6 text-sm text-gryt-muted"
             >
               Loading emoji…
             </div>
-          ) : error ? (
+          )}
+          {!loading && error && (
             <div
               role="alert"
               className="grid h-full place-items-center p-6 text-center text-sm text-gryt-danger-11"
             >
               {error}
             </div>
-          ) : rows.length > 0 && visibleGroups[0]?.items.length ? (
+          )}
+          {!loading && !error && rows.length > 0 && !!visibleGroups[0]?.items.length && (
             <div
               className="relative w-full"
               style={{ height: `${virtualizer.getTotalSize()}px` }}
@@ -382,7 +383,8 @@ export const EmojiPicker = forwardRef<HTMLDivElement, EmojiPickerProps>(
                 );
               })}
             </div>
-          ) : (
+          )}
+          {!loading && !error && !(rows.length > 0 && visibleGroups[0]?.items.length) && (
             <div
               role="status"
               className="grid h-full place-items-center p-6 text-sm text-gryt-muted"
