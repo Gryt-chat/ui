@@ -101,7 +101,6 @@ export default tseslint.config(
   // Casts through unknown where the types don't line up yet.
   {
     files: [
-      "apps/docs/src/components/CosmeticChecker.tsx",
       "apps/docs/src/lib/theme/siteTheme.ts",
       "packages/ui/src/components/ThemeEditor/draft.ts",
     ],
@@ -171,13 +170,5 @@ export default tseslint.config(
       "packages/ui/src/theme/motionTokens.test.ts",
     ],
     rules: { "@typescript-eslint/no-non-null-assertion": "off" },
-  },
-  // Type-only imports not marked yet; a mechanical PR of its own fixes them.
-  {
-    files: [
-      "packages/ui-native/src/components/Popover/Popover.tsx",
-      "packages/ui-native/src/components/Tooltip/Tooltip.tsx",
-    ],
-    rules: { "@typescript-eslint/consistent-type-imports": "off" },
   },
 );
