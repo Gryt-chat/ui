@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   createGrytTheme,
   grytLightTokens,
+  grytLightUnread,
   grytTokens
 } from "./createGrytTheme";
 import { contrast } from "./oklch";
@@ -10,25 +11,25 @@ import { contrast } from "./oklch";
 type Vars = Record<string, string>;
 
 /**
- * Unread is one literal shared by both appearances rather than a step of a family,
- * so its contrast is checked here rather than per preset.
+ * Unread is a literal per appearance rather than a step of a family, so its contrast
+ * is checked here rather than per preset.
  */
 describe("the unread colour", () => {
   const unread = grytTokens.color.unread;
 
   // A filled shape carrying a count, not text: 3:1 is what WCAG asks of it.
   it.each([
-    ["dark page", grytTokens.color.bg],
-    ["dark surface", grytTokens.color.surface],
-    ["light page", grytLightTokens.bg],
-    ["light surface", grytLightTokens.surface]
-  ])("clears 3:1 on the %s", (_where, background) => {
-    expect(contrast(unread, background)).toBeGreaterThanOrEqual(3);
+    ["dark page", unread, grytTokens.color.bg],
+    ["dark surface", unread, grytTokens.color.surface],
+    ["light page", grytLightUnread, grytLightTokens.bg],
+    ["light surface", grytLightUnread, grytLightTokens.surface]
+  ])("clears 3:1 on the %s", (_where, fill, background) => {
+    expect(contrast(fill, background)).toBeGreaterThanOrEqual(3);
   });
 
   // The count sits on the fill, and it is a digit or two at 600 weight.
-  it("carries its own ink at 4.5:1", () => {
-    expect(contrast(grytTokens.color.onUnread, unread)).toBeGreaterThanOrEqual(4.5);
+  it.each([unread, grytLightUnread])("carries its own ink at 4.5:1 on %s", (fill) => {
+    expect(contrast(grytTokens.color.onUnread, fill)).toBeGreaterThanOrEqual(4.5);
   });
 
   /* The whole point of it being its own colour: a mention and an unread channel
@@ -52,10 +53,9 @@ describe("the unread colour", () => {
     expect(vars["--color-gryt-unread"]).toBe("#00ff88");
   });
 
-  // Light borrows the hues, so one value covers both and there is nothing to sync.
-  it("is the same colour in both appearances", () => {
+  it("uses the darker coral under light", () => {
     const light = createGrytTheme({ appearance: "light" }) as Vars;
-    const dark = createGrytTheme({ appearance: "dark" }) as Vars;
-    expect(light["--gryt-unread"]).toBe(dark["--gryt-unread"]);
+    expect(light["--gryt-unread"]).toBe(grytLightUnread);
+    expect((createGrytTheme({ appearance: "light", color: { unread: "#00ff88" } }) as Vars)["--gryt-unread"]).toBe("#00ff88");
   });
 });
