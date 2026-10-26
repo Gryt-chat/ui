@@ -8,6 +8,7 @@ export {
   grytAlphaScales,
   grytAlphaScalesLight,
   grytLightTokens,
+  grytLightUnread,
   grytScales,
   grytScalesLight,
   grytTokens

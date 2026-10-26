@@ -35,10 +35,10 @@ export const grytTokens = {
     onAccent: "#0c0a20",
     onSecondary: "#02121a",
     onDanger: "#1f0405",
-    // Its own colour, not a step of a family, and the same under light: danger was
-    // doing this and measured 2.56:1 on the light surface, under the 3:1 a fill wants.
-    unread: "#ff3b30",
-    onUnread: "#1f0405"
+    // Its own colour, not a step of a family. Coral at the accent's lightness (oklch 0.70),
+    // so it stands apart from the theme without shouting; light has a darker one below.
+    unread: "#ed756e",
+    onUnread: "#2a0c0a"
   },
   radius: {
     sm: 8,
@@ -140,6 +140,9 @@ export const grytLightTokens = {
  */
 export const grytLightAccentLight = "#4e42ff";
 
+/** Unread on a light page: the dark coral is under 3:1 there. Same hue, oklch 0.62. */
+export const grytLightUnread = "#d15c56";
+
 export const grytScales = {
   neutral: neutralScale({
     bg: grytTokens.color.bg,
@@ -195,7 +198,8 @@ export function createGrytTheme(options: GrytThemeOptions = {}): GrytThemeVars {
         ...grytTokens.color,
         ...grytLightTokens,
         surfaceHover: grytLightSurfaceHover,
-        accentLight: grytLightAccentLight
+        accentLight: grytLightAccentLight,
+        unread: grytLightUnread
       }
     : grytTokens.color;
   const color = { ...defaults, ...options.color };
