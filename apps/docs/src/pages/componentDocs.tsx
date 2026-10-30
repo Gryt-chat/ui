@@ -5,6 +5,7 @@ import {
   Autocomplete,
   Avatar,
   Badge,
+  BUILTIN_CARD_STYLES,
   Button,
   Card,
   CheckboxGroup,
@@ -32,6 +33,7 @@ import {
   EmojiPicker,
   IconButton,
   Menu,
+  MemberCard,
   MessageBubble,
   Meter,
   Popover,
@@ -47,6 +49,7 @@ import {
   Switch,
   Tabs,
   TextField,
+  Thumb,
   Toast,
   Toggle,
   ToggleGroup,
@@ -56,7 +59,7 @@ import {
   standardEmojiGroups,
   useToastManager
 } from "@gryt/ui";
-import { avatarSeed } from "@gryt/owl";
+import { avatarSeed, owlAvatarDataUri } from "@gryt/owl";
 import { Bell, DotsThree, PaperPlaneTilt } from "@phosphor-icons/react";
 import type {
   BadgePlacement,
@@ -74,6 +77,7 @@ import { Preview } from "../components/Preview";
 import type { ComponentDoc } from "../componentMeta";
 import { componentDocs } from "../componentMeta";
 import { NestedDialogs } from "../examples/NestedDialogs";
+import { useSiteTheme } from "../lib/theme/siteTheme";
 
 const emojiPickerGroups = [
   {
@@ -527,6 +531,15 @@ export function ComponentPreview({
       return <VideoPlayerExample />;
     case "webhook-card":
       return <WebhookCardExample />;
+    case "member-card":
+      return <MemberCardExample />;
+    case "thumb":
+      return (
+        <Thumb>
+          <a href="/components/button">Button</a>
+          <a href="/components/drawer">Drawer</a>
+        </Thumb>
+      );
     case "divider":
       return (
         <div className="w-full">
@@ -1322,6 +1335,43 @@ function MessageRow({ children }: { children: ReactNode }) {
 }
 
 // What a webhook really sends: the notifier's three cards, everything at once, the least, and a wall of fields.
+function MemberCardExample() {
+  const { appearance } = useSiteTheme();
+  const card = (id: string, status: string) => ({
+    name: "Kari",
+    status,
+    owlHex: "#7c5cff",
+    avatarSrc: owlAvatarDataUri(avatarSeed(id) ?? id),
+    appearance,
+    seedKey: id,
+    profile: {
+      cardStyle: BUILTIN_CARD_STYLES.find((s) => s.id === id)?.style ?? BUILTIN_CARD_STYLES[0].style,
+      bio: "Mostly here for the voice channels.",
+      pronouns: "they/them",
+      statusLine: null
+    }
+  });
+  return (
+    <div className="grid w-full gap-5">
+      <ExampleSection title="Compact">
+        <div className="grid w-full max-w-[320px] gap-3">
+          {BUILTIN_CARD_STYLES.map(({ id, name }) => (
+            <MemberCard key={id} {...card(id, "online")} name={name} compact>
+              <a className="shrink-0 text-xs underline" href="#member-card">Full card</a>
+            </MemberCard>
+          ))}
+        </div>
+      </ExampleSection>
+      <ExampleSection title="Full">
+        <div className="flex flex-wrap gap-4">
+          <MemberCard {...card("harbour", "online")} />
+          <MemberCard {...card("signal", "offline")} />
+        </div>
+      </ExampleSection>
+    </div>
+  );
+}
+
 function WebhookCardExample() {
   return (
     <div className="grid w-full gap-6 md:grid-cols-2">

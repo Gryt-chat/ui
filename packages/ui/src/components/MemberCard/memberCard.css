@@ -132,6 +132,13 @@
 .gmc .gmc-over { position: absolute; z-index: 2; inset: auto 0 0 0; padding: 36px 14px 12px; display: flex; align-items: flex-end; gap: 12px;
   background: linear-gradient(180deg, transparent, color-mix(in oklch, var(--gryt-surface) 82%, transparent) 55%, var(--gryt-surface)); }
 .gmc .gmc-over > div { display: flex; flex-direction: column; min-width: 0; }
+.gmc-frame.compact { width: 100%; }
+.gmc.compact .gmc-banner { height: auto; }
+.gmc.compact .gmc-over { position: relative; inset: auto; padding: 10px 14px 10px 10px; align-items: center; }
+.gmc.compact .gmc-over > div { flex: 1; }
+.gmc.compact .gmc-over .gmc-nm { font-size: 17px; }
+.gmc.compact .gmc-nm, .gmc.compact .gmc-st { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gmc.compact .gmc-dot { width: 13px; height: 13px; border-width: 2px; right: 0; bottom: 0; }
 .gmc .gmc-over .gmc-nm { font-size: 21px; line-height: 1.1; display: flex; align-items: center; gap: 6px; }
 
 /* ---------- The game band ---------- */

@@ -64,7 +64,9 @@ export interface ComponentDoc {
     | "preview-card"
     | "toolbar"
     | "video-player"
-    | "webhook-card";
+    | "webhook-card"
+    | "member-card"
+    | "thumb";
   code: string;
 }
 
@@ -116,7 +118,8 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "Tooltip", slug: "tooltip" },
       { name: "Divider", slug: "divider" },
       { name: "VideoPlayer", slug: "video-player" },
-      { name: "WebhookCard", slug: "webhook-card" }
+      { name: "WebhookCard", slug: "webhook-card" },
+      { name: "MemberCard", slug: "member-card" }
     ]
   },
   {
@@ -142,7 +145,8 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "PreviewCard", slug: "preview-card" },
       { name: "Tabs", slug: "tabs" },
       { name: "Accordion", slug: "accordion" },
-      { name: "Collapsible", slug: "collapsible" }
+      { name: "Collapsible", slug: "collapsible" },
+      { name: "Thumb", slug: "thumb" }
     ]
   },
   {
@@ -503,6 +507,63 @@ function Upload({ fileId }: { fileId: string }) {
 
 // Space or K plays and pauses, the arrow keys skip 5 seconds,
 // M mutes and F goes fullscreen.`
+  },
+  {
+    slug: "member-card",
+    name: "MemberCard",
+    description:
+      "Somebody's card in the colours they picked, with their picture, presence and bio. A picture or banner can be a video, and it plays muted on a loop. Add compact for one row of it.",
+    importName: "MemberCard",
+    preview: "member-card",
+    code: `import { BUILTIN_CARD_STYLES, MemberCard } from "@gryt/ui";
+
+const profile = {
+  cardStyle: BUILTIN_CARD_STYLES[1].style,
+  bio: "Mostly here for the voice channels.",
+  pronouns: "they/them",
+  statusLine: "Back at nine"
+};
+
+<MemberCard
+  name="Kari"
+  avatarSrc={avatarUrl}
+  status="online"
+  profile={profile}
+  owlHex="#7c5cff"
+  appearance="dark"
+  seedKey={member.id}
+/>
+
+// One row. Children go at the end of the row, and statusText replaces "Online".
+<MemberCard
+  compact
+  name="Kari"
+  avatarSrc={avatarUrl}
+  avatarType="video"
+  avatarPoster={posterUrl}
+  status="online"
+  statusText="Online · In a call"
+  profile={profile}
+  owlHex="#7c5cff"
+  appearance="dark"
+  seedKey={member.id}
+>
+  <a href="/members/kari">Full card</a>
+</MemberCard>`
+  },
+  {
+    slug: "thumb",
+    name: "Thumb",
+    description:
+      "A tab low on the right edge of a phone screen that opens a drawer with links at the bottom. It opens on a tap, because an edge swipe is the phone's back gesture. Look at the right edge of this page to try it.",
+    importName: "Thumb",
+    preview: "thumb",
+    code: `import { Thumb } from "@gryt/ui";
+
+<Thumb tabClassName="md:hidden">
+  <a href="/features">Features</a>
+  <a href="/download">Download</a>
+</Thumb>`
   },
   {
     slug: "webhook-card",
