@@ -428,6 +428,11 @@ export function ComponentPreview({
               <Avatar size="large" src={LOGO} alt="Gryt" fallback="G" />
             </Badge>
           </ExampleSection>
+          <ExampleSection title="Unread">
+            <Badge badgeContent={4} tone="unread">
+              <Avatar src={LOGO} alt="Gryt" fallback="G" />
+            </Badge>
+          </ExampleSection>
           <ExampleSection title="Dot">
             <Badge badgeContent="">
               <Avatar size="small">G</Avatar>
@@ -549,7 +554,14 @@ export function ComponentPreview({
     case "spinner":
       return <Spinner size={28} />;
     case "skeleton":
-      return <Skeleton variant="rounded" width={220} height={42} />;
+      return (
+        <div className="flex flex-wrap items-center gap-4">
+          <Skeleton variant="text" width={160} />
+          <Skeleton variant="rounded" width={160} height={42} />
+          <Skeleton variant="circular" width={42} height={42} />
+          <Skeleton variant="rectangular" width={160} height={42} />
+        </div>
+      );
     case "menu":
       return (
         <div>
