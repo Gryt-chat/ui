@@ -50,6 +50,8 @@ export interface MemberCardEditorProps {
   panes?: MemberCardPane[];
   /** The member's banner picture, if they have one. Its colours are offered for the card. */
   bannerUrl?: string | null;
+  /** The member's picture or video. Its colours are offered for the card too. */
+  avatarUrl?: string | null;
   /** Custom emoji from the active server. Unicode is appended after these groups. */
   emojiGroups?: readonly EmojiPickerGroup[];
 }
@@ -63,7 +65,7 @@ const TAB_PRESS =
  * Everything about how a member card looks, in tabs with one pane at a time, so
  * nothing needs a long scroll.
  */
-export function MemberCardEditor({ value: style, onChange, owlHex, nickname = "", worn = null, seed, appearance, panes = [], bannerUrl = null, emojiGroups = [] }: MemberCardEditorProps) {
+export function MemberCardEditor({ value: style, onChange, owlHex, nickname = "", worn = null, seed, appearance, panes = [], bannerUrl = null, avatarUrl = null, emojiGroups = [] }: MemberCardEditorProps) {
   const [pane, setPane] = useState("colour");
   const [picks, setPicks] = useState(() => ({
     c1: style.c1 ?? START.c1,
@@ -89,6 +91,21 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
     };
   }, [bannerUrl]);
   const fromBanner = bannerUrl && banner?.url === bannerUrl ? banner.colours : null;
+
+  const [avatarRead, setAvatarRead] = useState<{ url: string; colours: BannerColours | null } | null>(null);
+  useEffect(() => {
+    if (!avatarUrl) return;
+    let live = true;
+    void readBannerColours(avatarUrl).then((colours) => {
+      if (live) setAvatarRead({ url: avatarUrl, colours });
+    });
+    return () => {
+      live = false;
+    };
+  }, [avatarUrl]);
+  const fromAvatar = avatarUrl && avatarRead?.url === avatarUrl ? avatarRead.colours : null;
+  const avatarPalette = fromAvatar?.palette ?? [];
+  const avatarSwatches = avatarPalette.length || !fromAvatar ? avatarPalette : [fromAvatar.bottom];
 
   const drawn = useMemo(() => cardVars(style, owlHex, { appearance, seed }), [style, owlHex, appearance, seed]);
   const change = (over: Partial<CardStyle>) => onChange({ ...style, ...over });
@@ -155,6 +172,24 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
               >
                 <i className="h-[18px] w-[18px] rounded-(--gryt-radius-full) border border-gryt-border" style={{ background: hex }} />
                 {i === 0 ? "Bottom edge" : hex}
+              </button>
+            ))}
+          </div>
+        </Group>
+      )}
+      {avatarSwatches.length > 0 && (
+        <Group title="From your avatar" description="Colour the card to match your picture.">
+          <div className="flex flex-wrap gap-1.5">
+            {avatarSwatches.map((hex) => (
+              <button
+                key={hex}
+                type="button"
+                aria-label={`Use ${hex} from your avatar`}
+                onClick={() => apply({ ...style, fill: "solid", c1: hex, c2: hex, colours: "card" })}
+                className="inline-flex cursor-pointer items-center gap-1.5 rounded-(--gryt-radius-control) border border-gryt-border bg-gryt-surface-raised py-1 pr-2.5 pl-1 text-[12.5px] font-bold text-gryt-text hover:bg-gryt-surface-hover"
+              >
+                <i className="h-[18px] w-[18px] rounded-(--gryt-radius-full) border border-gryt-border" style={{ background: hex }} />
+                {hex}
               </button>
             ))}
           </div>

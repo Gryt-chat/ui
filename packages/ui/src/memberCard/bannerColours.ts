@@ -58,28 +58,48 @@ export function analyseBanner(data: ArrayLike<number>, width: number, height: nu
   return { bottom: hex(mean[0], mean[1], mean[2]), flat, palette: picked.map((c) => hex(c[0], c[1], c[2])) };
 }
 
-/** Reads a picture the page may read: an object URL, or one served with CORS. Null when it can't. */
+function sample(source: CanvasImageSource, sourceWidth: number, sourceHeight: number): BannerColours | null {
+  try {
+    const width = 64;
+    const height = Math.max(8, Math.round((sourceHeight / Math.max(1, sourceWidth)) * width));
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return null;
+    ctx.drawImage(source, 0, 0, width, height);
+    return analyseBanner(ctx.getImageData(0, 0, width, height).data, width, height);
+  } catch {
+    // A file from another origin without CORS taints the canvas; the swatches just don't show.
+    return null;
+  }
+}
+
+function readVideoFrame(url: string): Promise<BannerColours | null> {
+  return new Promise((resolve) => {
+    const video = document.createElement("video");
+    video.crossOrigin = "anonymous";
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.onerror = () => resolve(null);
+    // The first frame of a clip is often black, so read one a little way in.
+    video.onloadedmetadata = () => {
+      video.currentTime = Math.min(1, (video.duration || 0) / 2);
+    };
+    video.onseeked = () => resolve(sample(video, video.videoWidth, video.videoHeight));
+    video.src = url;
+  });
+}
+
+/** Reads a picture or video the page may read: an object URL, or one served with CORS. Null when it can't. */
 export function readBannerColours(url: string): Promise<BannerColours | null> {
   return new Promise((resolve) => {
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.onerror = () => resolve(null);
-    img.onload = () => {
-      try {
-        const width = 64;
-        const height = Math.max(8, Math.round((img.naturalHeight / Math.max(1, img.naturalWidth)) * width));
-        const canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d", { willReadFrequently: true });
-        if (!ctx) return resolve(null);
-        ctx.drawImage(img, 0, 0, width, height);
-        resolve(analyseBanner(ctx.getImageData(0, 0, width, height).data, width, height));
-      } catch {
-        // A picture from another origin without CORS taints the canvas; the swatches just don't show.
-        resolve(null);
-      }
-    };
+    // A video doesn't load as an image, and the URL doesn't say which it is.
+    img.onerror = () => void readVideoFrame(url).then(resolve);
+    img.onload = () => resolve(sample(img, img.naturalWidth, img.naturalHeight));
     img.src = url;
   });
 }
