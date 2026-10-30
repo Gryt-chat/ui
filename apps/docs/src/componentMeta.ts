@@ -64,8 +64,16 @@ export interface ComponentDoc {
     | "preview-card"
     | "toolbar"
     | "video-player"
-    | "webhook-card";
+    | "webhook-card"
+    | "member-card"
+    | "member-card-compact"
+    | "member-card-video"
+    | "member-card-picture"
+    | "member-card-avatar"
+    | "thumb";
   code: string;
+  /** Smaller examples under the main one, each with its own source. */
+  examples?: Array<{ title: string; note: string; preview: ComponentDoc["preview"]; code: string }>;
 }
 
 export interface ComponentNavSection {
@@ -116,7 +124,8 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "Tooltip", slug: "tooltip" },
       { name: "Divider", slug: "divider" },
       { name: "VideoPlayer", slug: "video-player" },
-      { name: "WebhookCard", slug: "webhook-card" }
+      { name: "WebhookCard", slug: "webhook-card" },
+      { name: "MemberCard", slug: "member-card" }
     ]
   },
   {
@@ -142,7 +151,8 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "PreviewCard", slug: "preview-card" },
       { name: "Tabs", slug: "tabs" },
       { name: "Accordion", slug: "accordion" },
-      { name: "Collapsible", slug: "collapsible" }
+      { name: "Collapsible", slug: "collapsible" },
+      { name: "Thumb", slug: "thumb" }
     ]
   },
   {
@@ -503,6 +513,77 @@ function Upload({ fileId }: { fileId: string }) {
 
 // Space or K plays and pauses, the arrow keys skip 5 seconds,
 // M mutes and F goes fullscreen.`
+  },
+  {
+    slug: "member-card",
+    name: "MemberCard",
+    description:
+      "Somebody's card in the colours they picked, with their picture, presence and bio.",
+    importName: "MemberCard",
+    preview: "member-card",
+    code: `import { MemberCard } from "@gryt/ui";
+
+<MemberCard
+  name="Kari"
+  avatarSrc={avatarUrl}
+  status="online"
+  profile={{ cardStyle, bio: "Mostly here for the voice channels.", pronouns: "she/her", statusLine: null }}
+  owlHex="#7c5cff"
+  appearance="dark"
+  seedKey={member.id}
+/>`,
+    examples: [
+      {
+        title: "Compact",
+        note: "One row of the same card, for a side panel. Children go at the end of the row, and statusText replaces the presence label.",
+        preview: "member-card-compact",
+        code: `<MemberCard {...card} compact statusText="Online · In a call">
+  <a href="/members/kari">Full card</a>
+</MemberCard>`
+      },
+      {
+        title: "Video banner",
+        note: "An mp4 plays muted on a loop. Colour the card from the video so the banner runs into it.",
+        preview: "member-card-video",
+        code: `<MemberCard {...card} bannerType="video" bannerUrl="/banner.mp4" />`
+      },
+      {
+        title: "Picture banner",
+        note: "readBannerColours gives you colours from a picture to offer as the card's own.",
+        preview: "member-card-picture",
+        code: `import { readBannerColours } from "@gryt/ui";
+
+const colours = await readBannerColours("/banner.jpg");
+// colours.bottom is where the banner meets the card.
+
+<MemberCard {...card} bannerUrl="/banner.jpg" />`
+      },
+      {
+        title: "Video avatar",
+        note: "The poster shows until the video starts.",
+        preview: "member-card-avatar",
+        code: `<MemberCard
+  {...card}
+  avatarType="video"
+  avatarSrc="/avatar.mp4"
+  avatarPoster="/avatar.jpg"
+/>`
+      }
+    ]
+  },
+  {
+    slug: "thumb",
+    name: "Thumb",
+    description:
+      "A tab low on the right edge of a phone screen that opens a drawer with links at the bottom. It opens on a tap, because an edge swipe is the phone's back gesture. Look at the right edge of this page to try it.",
+    importName: "Thumb",
+    preview: "thumb",
+    code: `import { Thumb } from "@gryt/ui";
+
+<Thumb tabClassName="md:hidden">
+  <a href="/features">Features</a>
+  <a href="/download">Download</a>
+</Thumb>`
   },
   {
     slug: "webhook-card",

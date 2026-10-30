@@ -97,7 +97,9 @@ const drawingBySlug: Record<string, DrawingKind> = {
   form: "form",
   fieldset: "fieldset",
   "video-player": "video-player",
-  "webhook-card": "webhook-card"
+  "webhook-card": "webhook-card",
+  "member-card": "card",
+  thumb: "drawer"
 };
 
 /** First sentence, so a long description does not run past the canvas. */

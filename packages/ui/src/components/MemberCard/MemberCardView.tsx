@@ -63,6 +63,10 @@ export interface MemberCardViewProps {
   emojiGroups?: readonly EmojiPickerGroup[];
   /** Lets a menu hang out of the card instead of being cut off at its edge. */
   menuOpen?: boolean;
+  /** One row in their colours: picture, name and status, with `children` at the end of the row. */
+  compact?: boolean;
+  /** Replaces the presence label, for a row that also says what they're doing. */
+  statusText?: string;
   /** The actions row, the moderation row and the drawer. */
   children?: ReactNode;
 }
@@ -106,6 +110,8 @@ export function MemberCardView({
   worn,
   emojiGroups = [],
   menuOpen,
+  compact,
+  statusText,
   children,
 }: MemberCardViewProps) {
   const assets = usePatternAssets(profile.cardStyle, { nickname: name, worn }, emojiGroups);
@@ -114,8 +120,8 @@ export function MemberCardView({
     [profile.cardStyle, owlHex, appearance, seedKey, assets],
   );
   const presence = STATUS[status] ?? STATUS.online;
-  const playing = !!game && status !== "offline";
-  const line = !playing && profile.statusLine ? profile.statusLine : null;
+  const playing = !compact && !!game && status !== "offline";
+  const line = !compact && !playing && profile.statusLine ? profile.statusLine : null;
   // Only a game gets the coloured band; a status line sits on the card as it is.
   const hasBand = playing;
 
@@ -126,12 +132,12 @@ export function MemberCardView({
 
   return (
     <div
-      className={["gmc-frame", menuOpen ? "menu-open" : ""].filter(Boolean).join(" ")}
+      className={["gmc-frame", compact ? "compact" : "", menuOpen ? "menu-open" : ""].filter(Boolean).join(" ")}
       data-fc={attrs["data-fc"]}
       style={style}
     >
       <article
-        className={["gmc", playing ? "playing" : "", hasBand ? "has-band" : "", menuOpen ? "menu-open" : ""].filter(Boolean).join(" ")}
+        className={["gmc", compact ? "compact" : "", playing ? "playing" : "", hasBand ? "has-band" : "", menuOpen ? "menu-open" : ""].filter(Boolean).join(" ")}
         data-appearance={appearance}
         data-gryt="member-card"
         {...attrs}
@@ -150,7 +156,7 @@ export function MemberCardView({
               className="gmc-av gmc-av-btn"
               aria-label={`Open ${name}'s picture`}
               onClick={onAvatarClick}
-              style={{ "--s": "64px" } as CSSProperties}
+              style={{ "--s": compact ? "48px" : "64px" } as CSSProperties}
             >
               {avatarType === "video" && avatarSrc ? (
                 <CardVideo src={avatarSrc} poster={avatarPoster} />
@@ -159,7 +165,7 @@ export function MemberCardView({
               )}
             </button>
           ) : (
-            <span className="gmc-av" style={{ "--s": "64px" } as CSSProperties}>
+            <span className="gmc-av" style={{ "--s": compact ? "48px" : "64px" } as CSSProperties}>
               {avatarSrc && avatarType === "video" ? (
                 <CardVideo src={avatarSrc} poster={avatarPoster} />
               ) : <img alt="" src={avatarSrc || undefined} />}
@@ -176,11 +182,12 @@ export function MemberCardView({
             </div>
             <div>
               <span className="gmc-st" style={{ color: presence.colour ?? "var(--gryt-muted)" }}>
-                {presence.label}
+                {statusText ?? presence.label}
               </span>
               {status === "in_voice" && channelName && <span className="gmc-st gmc-mut"> · {channelName}</span>}
             </div>
           </div>
+          {compact && children}
         </div>
       </div>
 
@@ -192,7 +199,7 @@ export function MemberCardView({
         </section>
       )}
 
-        <div className="gmc-body">
+        {!compact && <div className="gmc-body">
         {profile.pronouns && (
           <div>
             <span className="gmc-pro">{profile.pronouns}</span>
@@ -209,7 +216,7 @@ export function MemberCardView({
           </div>
         )}
         {children}
-        </div>
+        </div>}
       </article>
     </div>
   );
