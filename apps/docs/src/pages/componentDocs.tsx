@@ -1368,6 +1368,14 @@ function MemberCardExample() {
           <MemberCard {...card("signal", "offline")} />
         </div>
       </ExampleSection>
+      <ExampleSection title="Video banner">
+        <div className="flex flex-wrap items-start gap-4">
+          <MemberCard {...card("night-shift", "online")} bannerType="video" bannerUrl="/video-demo.mp4" />
+          <div className="w-full max-w-[320px]">
+            <MemberCard {...card("night-shift", "online")} bannerType="video" bannerUrl="/video-demo.mp4" compact />
+          </div>
+        </div>
+      </ExampleSection>
     </div>
   );
 }
