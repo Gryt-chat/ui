@@ -1,5 +1,12 @@
 # @gryt/ui
 
+## 0.46.0
+
+### Minor Changes
+
+- 4ebd6b9: The card's icons are Phosphor now, in the same weights as the client's voice controls. The editor offers colours from a video banner and from the avatar with the new `avatarUrl` prop. The pattern picker names each tile, and repaints its tiles in batches so changing a colour doesn't lag the page.
+- 3c3a0fb: `MemberCard` takes `compact`, one row in the member's own colours with their moving picture, and `statusText` for what the row says under the name.
+
 ## 0.45.2
 
 ### Patch Changes
