@@ -104,7 +104,8 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
     };
   }, [avatarUrl]);
   const fromAvatar = avatarUrl && avatarRead?.url === avatarUrl ? avatarRead.colours : null;
-  const avatarSwatches = fromAvatar ? (fromAvatar.palette.length ? fromAvatar.palette : [fromAvatar.bottom]) : [];
+  const avatarPalette = fromAvatar?.palette ?? [];
+  const avatarSwatches = avatarPalette.length || !fromAvatar ? avatarPalette : [fromAvatar.bottom];
 
   const drawn = useMemo(() => cardVars(style, owlHex, { appearance, seed }), [style, owlHex, appearance, seed]);
   const change = (over: Partial<CardStyle>) => onChange({ ...style, ...over });
