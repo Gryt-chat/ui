@@ -66,8 +66,14 @@ export interface ComponentDoc {
     | "video-player"
     | "webhook-card"
     | "member-card"
+    | "member-card-compact"
+    | "member-card-video"
+    | "member-card-picture"
+    | "member-card-avatar"
     | "thumb";
   code: string;
+  /** Smaller examples under the main one, each with its own source. */
+  examples?: Array<{ title: string; note: string; preview: ComponentDoc["preview"]; code: string }>;
 }
 
 export interface ComponentNavSection {
@@ -512,46 +518,58 @@ function Upload({ fileId }: { fileId: string }) {
     slug: "member-card",
     name: "MemberCard",
     description:
-      "Somebody's card in the colours they picked, with their picture, presence and bio. A picture or banner can be a video, and it plays muted on a loop. Add compact for one row of it.",
+      "Somebody's card in the colours they picked, with their picture, presence and bio.",
     importName: "MemberCard",
     preview: "member-card",
-    code: `import { BUILTIN_CARD_STYLES, MemberCard } from "@gryt/ui";
-
-const profile = {
-  cardStyle: BUILTIN_CARD_STYLES[1].style,
-  bio: "Mostly here for the voice channels.",
-  pronouns: "they/them",
-  statusLine: "Back at nine"
-};
+    code: `import { MemberCard } from "@gryt/ui";
 
 <MemberCard
   name="Kari"
   avatarSrc={avatarUrl}
   status="online"
-  profile={profile}
+  profile={{ cardStyle, bio: "Mostly here for the voice channels.", pronouns: "she/her", statusLine: null }}
   owlHex="#7c5cff"
   appearance="dark"
   seedKey={member.id}
-/>
-
-// One row. Children go at the end of the row, and statusText replaces "Online".
-<MemberCard
-  compact
-  name="Kari"
-  avatarSrc={avatarUrl}
-  avatarType="video"
-  avatarPoster={posterUrl}
-  bannerType="video"
-  bannerUrl={bannerUrl}
-  status="online"
-  statusText="Online · In a call"
-  profile={profile}
-  owlHex="#7c5cff"
-  appearance="dark"
-  seedKey={member.id}
->
+/>`,
+    examples: [
+      {
+        title: "Compact",
+        note: "One row of the same card, for a side panel. Children go at the end of the row, and statusText replaces the presence label.",
+        preview: "member-card-compact",
+        code: `<MemberCard {...card} compact statusText="Online · In a call">
   <a href="/members/kari">Full card</a>
 </MemberCard>`
+      },
+      {
+        title: "Video banner",
+        note: "An mp4 plays muted on a loop. Colour the card from the video so the banner runs into it.",
+        preview: "member-card-video",
+        code: `<MemberCard {...card} bannerType="video" bannerUrl="/banner.mp4" />`
+      },
+      {
+        title: "Picture banner",
+        note: "readBannerColours gives you colours from a picture to offer as the card's own.",
+        preview: "member-card-picture",
+        code: `import { readBannerColours } from "@gryt/ui";
+
+const colours = await readBannerColours("/banner.jpg");
+// colours.bottom is where the banner meets the card.
+
+<MemberCard {...card} bannerUrl="/banner.jpg" />`
+      },
+      {
+        title: "Video avatar",
+        note: "The poster shows until the video starts.",
+        preview: "member-card-avatar",
+        code: `<MemberCard
+  {...card}
+  avatarType="video"
+  avatarSrc="/avatar.mp4"
+  avatarPoster="/avatar.jpg"
+/>`
+      }
+    ]
   },
   {
     slug: "thumb",

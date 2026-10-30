@@ -137,6 +137,19 @@ export function ComponentDocPage() {
       </Preview>
       <CodeBlock code={doc.code} language="tsx" title={`${doc.name}.tsx`} />
 
+      {doc.examples?.map((example) => (
+        <section key={example.title} className="mt-(--space-lg)">
+          <h2 className="m-0 font-display text-[length:var(--text-lg)] font-semibold tracking-[-0.015em] text-gryt-text">
+            {example.title}
+          </h2>
+          <p className="mt-1 max-w-[62ch] text-sm leading-6 text-gryt-muted">{example.note}</p>
+          <Preview>
+            <ComponentPreview preview={example.preview} />
+          </Preview>
+          <CodeBlock code={example.code} language="tsx" title={`${example.title}.tsx`} />
+        </section>
+      ))}
+
       <nav
         aria-label="Component pagination"
         className="mt-(--space-lg) flex flex-col gap-2 border-t border-gryt-border pt-(--space-md) sm:flex-row sm:justify-between"
@@ -532,7 +545,15 @@ export function ComponentPreview({
     case "webhook-card":
       return <WebhookCardExample />;
     case "member-card":
-      return <MemberCardExample />;
+      return <MemberCardExample people={["Kari", "Jonas", "Mina"]} />;
+    case "member-card-compact":
+      return <MemberCardExample people={["Emil", "Mina", "Kari", "Sofie"]} compact />;
+    case "member-card-video":
+      return <MemberCardExample people={["Mina", "Kari"]} media="video" />;
+    case "member-card-picture":
+      return <MemberCardExample people={["Sofie", "Jonas"]} media="picture" />;
+    case "member-card-avatar":
+      return <MemberCardExample people={["Jonas", "Emil"]} media="avatar" />;
     case "thumb":
       return (
         <Thumb>
@@ -1335,47 +1356,51 @@ function MessageRow({ children }: { children: ReactNode }) {
 }
 
 // What a webhook really sends: the notifier's three cards, everything at once, the least, and a wall of fields.
-function MemberCardExample() {
+type DemoMedia = "video" | "picture" | "avatar";
+
+// c1 is sampled from where each banner meets the card, so the two run together.
+const MEMBER_CARD_PEOPLE: Record<string, { status: string; pronouns: string | null; bio: string | null; c1: string; c2: string; banner: string; avatar: string }> = {
+  Kari: { status: "online", pronouns: "she/her", bio: "Mostly here for the voice channels.", c1: "#2d4b7c", c2: "#141f38", banner: "/video-demo.mp4", avatar: "" },
+  Jonas: { status: "offline", pronouns: "he/him", bio: "Back on Monday.", c1: "#2c3a55", c2: "#141c2c", banner: "/webhook-cards/sample-image.jpg", avatar: "/video-demo.mp4" },
+  Mina: { status: "in_voice", pronouns: "they/them", bio: "Up late fixing the server again.", c1: "#2d4b7c", c2: "#191a3f", banner: "/video-demo.mp4", avatar: "" },
+  Emil: { status: "online", pronouns: null, bio: "Ask me about keyboards.", c1: "#324978", c2: "#121a2e", banner: "/video-demo.mp4", avatar: "/video-demo.mp4" },
+  Sofie: { status: "online", pronouns: "she/her", bio: null, c1: "#2c3a55", c2: "#1a2233", banner: "/webhook-cards/sample-image.jpg", avatar: "" }
+};
+
+function MemberCardExample({ people, compact, media }: { people: string[]; compact?: boolean; media?: DemoMedia }) {
   const { appearance } = useSiteTheme();
-  const card = (id: string, status: string) => ({
-    name: "Kari",
-    status,
-    owlHex: "#7c5cff",
-    avatarSrc: owlAvatarDataUri(avatarSeed(id) ?? id),
-    appearance,
-    seedKey: id,
-    profile: {
-      cardStyle: BUILTIN_CARD_STYLES.find((s) => s.id === id)?.style ?? BUILTIN_CARD_STYLES[0].style,
-      bio: "Mostly here for the voice channels.",
-      pronouns: "they/them",
-      statusLine: null
-    }
-  });
   return (
-    <div className="grid w-full gap-5">
-      <ExampleSection title="Compact">
-        <div className="grid w-full max-w-[320px] gap-3">
-          {BUILTIN_CARD_STYLES.map(({ id, name }) => (
-            <MemberCard key={id} {...card(id, "online")} name={name} compact>
-              <a className="shrink-0 text-xs underline" href="#member-card">Full card</a>
-            </MemberCard>
-          ))}
-        </div>
-      </ExampleSection>
-      <ExampleSection title="Full">
-        <div className="flex flex-wrap gap-4">
-          <MemberCard {...card("harbour", "online")} />
-          <MemberCard {...card("signal", "offline")} />
-        </div>
-      </ExampleSection>
-      <ExampleSection title="Video banner">
-        <div className="flex flex-wrap items-start gap-4">
-          <MemberCard {...card("night-shift", "online")} bannerType="video" bannerUrl="/video-demo.mp4" />
-          <div className="w-full max-w-[320px]">
-            <MemberCard {...card("night-shift", "online")} bannerType="video" bannerUrl="/video-demo.mp4" compact />
-          </div>
-        </div>
-      </ExampleSection>
+    <div className={compact ? "grid w-full max-w-[320px] gap-3" : "grid w-full grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] items-start gap-4"}>
+      {people.map((name) => {
+        const person = MEMBER_CARD_PEOPLE[name];
+        const isVideo = person.banner.endsWith(".mp4");
+        const showBanner = media === undefined ? true : media !== "avatar";
+        const videoAvatar = person.avatar.endsWith(".mp4");
+        return (
+          <MemberCard
+            key={name}
+            name={name}
+            status={person.status}
+            channelName={person.status === "in_voice" ? "Lounge" : undefined}
+            owlHex={person.c1}
+            avatarSrc={person.avatar || owlAvatarDataUri(avatarSeed(name) ?? name)}
+            avatarType={videoAvatar ? "video" : "image"}
+            bannerType={isVideo ? "video" : "image"}
+            bannerUrl={showBanner ? person.banner : null}
+            appearance={appearance}
+            seedKey={name}
+            compact={compact}
+            profile={{
+              cardStyle: { ...BUILTIN_CARD_STYLES[0].style, fill: "gradient", c1: person.c1, c2: person.c2, angle: 180 },
+              bio: person.bio,
+              pronouns: person.pronouns,
+              statusLine: null
+            }}
+          >
+            {compact && <a className="shrink-0 text-xs underline" href="#compact">Full card</a>}
+          </MemberCard>
+        );
+      })}
     </div>
   );
 }
