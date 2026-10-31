@@ -8,9 +8,8 @@ export interface OverlayInsets {
 const OverlayInsetsContext = createContext<OverlayInsets>({ left: 0, right: 0 });
 
 /**
- * Where sheets, bottom drawers and toasts may sit across the screen, for a window with
- * something they should keep off: a fold, or iPhone Duo's side strip.
- * Put it above `SheetProvider`, because a sheet reads it before it portals away.
+ * Keeps sheets, bottom drawers and toasts off a fold or iPhone Duo's side strip.
+ * Goes above `SheetProvider`, because a sheet reads it before it portals away.
  */
 export const OverlayInsetsProvider = OverlayInsetsContext.Provider;
 
