@@ -1,5 +1,11 @@
 # @gryt/ui-native
 
+## 0.18.1
+
+### Patch Changes
+
+- 27ada5f: Fade the background behind `Sheet` and `Drawer` in and out, rather than snapping it.
+
 ## 0.18.0
 
 ### Minor Changes
