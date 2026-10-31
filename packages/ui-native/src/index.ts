@@ -119,6 +119,7 @@ export {
 } from "./components/Toolbar/Toolbar";
 export { WebhookCard, type WebhookCardAuthor, type WebhookCardData, type WebhookCardField, type WebhookCardMarkdownSlot, type WebhookCardProps } from "./components/WebhookCard/WebhookCard";
 export { AnchoredPopup, type AnchoredPopupProps } from "./overlay/AnchoredPopup";
+export { OverlayInsetsProvider, useOverlayInsets, type OverlayInsets } from "./overlay/OverlayInsets";
 export {
   placePopup,
   type Align,

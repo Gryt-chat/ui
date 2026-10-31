@@ -25,6 +25,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { grytDrawerBleed } from "@gryt/theme";
 import { durations, easeSpringTight } from "../../motion";
 import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
+import { useOverlayInsets } from "../../overlay/OverlayInsets";
 import { useTheme } from "../../theme";
 import { nextPresentation } from "./presentation";
 
@@ -131,6 +132,7 @@ function useSheetModal() {
    * `topInset`; at the other the home indicator clips a control row.
    */
   const insets = useSafeAreaInsets();
+  const overlay = useOverlayInsets();
   const state = useContext(SheetRefContext);
   // Read here, in the normal tree, and handed back down below — see the note
   // on the provider inside the modal.
@@ -215,6 +217,7 @@ function useSheetModal() {
     modalProps: {
       ref,
       snapPoints,
+      style: { marginLeft: overlay.left, marginRight: overlay.right },
       // So a sheet at 100% stops below the Dynamic Island rather than running
       // its content under it.
       topInset: insets.top,

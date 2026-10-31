@@ -7,6 +7,7 @@ import Animated, { useAnimatedStyle, useSharedValue } from "react-native-reanima
 import { grytScaleSteps } from "@gryt/theme";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { fade, usePressScale } from "../../motion";
+import { useOverlayInsets } from "../../overlay/OverlayInsets";
 import { useTheme } from "../../theme";
 
 export type ToastSeverity = "info" | "success" | "warning" | "error";
@@ -78,6 +79,7 @@ function Viewport({
 }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const overlay = useOverlayInsets();
   if (toasts.length === 0) return null;
 
   return (
@@ -86,8 +88,8 @@ function Viewport({
       pointerEvents="box-none"
       style={{
         position: "absolute",
-        left: 0,
-        right: 0,
+        left: overlay.left,
+        right: overlay.right,
         /* The top, which on a phone is the only edge reliably free: the bottom holds the
          * tab bar, the home indicator and every sheet. Below the status bar, not over it. */
         top: insets.top + theme.space(2),
