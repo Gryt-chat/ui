@@ -16,6 +16,7 @@ import {
   BottomSheetScrollView,
   BottomSheetView,
   useBottomSheetTimingConfigs,
+  BottomSheetBackdrop,
   type BottomSheetBackdropProps,
   type BottomSheetBackgroundProps,
 } from "@gorhom/bottom-sheet";
@@ -197,11 +198,12 @@ function useSheetModal() {
   });
 
   const renderBackdrop = useCallback(
-    ({ style }: BottomSheetBackdropProps) => (
-      <Pressable
-        style={[style, { backgroundColor: "rgba(0,0,0,0.6)" }]}
-        accessibilityRole="button"
-        accessibilityLabel="Close sheet"
+    (props: BottomSheetBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        opacity={0.6}
         onPress={sheet.close}
       />
     ),
