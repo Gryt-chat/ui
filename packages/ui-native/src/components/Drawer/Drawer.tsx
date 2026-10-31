@@ -15,6 +15,7 @@ import {
   Modal,
   Pressable,
   type StyleProp,
+  StyleSheet,
   type ViewStyle
 } from "react-native";
 import {
@@ -211,6 +212,8 @@ function Popup({
 
   /* Read shared values right here. Reanimated subscribes only to ones in this closure, and a
      helper that read them for it left the panel frozen off-screen (GRYT-1623). */
+  const scrimStyle = useAnimatedStyle(() => ({ opacity: progress.value }));
+
   const panelStyle = useAnimatedStyle(() => {
     const travel = hidden + (0 - hidden) * progress.value + drag.value;
     return {
@@ -328,8 +331,12 @@ function Popup({
     >
       <Pressable
         onPress={dismissible ? () => setOpen(false) : undefined}
-        style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)" }}
+        style={{ flex: 1 }}
       >
+        <Animated.View
+          pointerEvents="none"
+          style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(0,0,0,0.6)" }, scrimStyle]}
+        />
         <GestureDetector gesture={pan}>
           <Animated.View
             accessibilityViewIsModal
