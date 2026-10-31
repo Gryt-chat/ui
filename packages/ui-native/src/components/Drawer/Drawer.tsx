@@ -35,6 +35,7 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { grytDrawerBleed } from "@gryt/theme";
 import { durations, travel as travelTo } from "../../motion";
 import { useOpenState, type OpenStateProps } from "../../overlay/useOpenState";
+import { useOverlayInsets } from "../../overlay/OverlayInsets";
 import { useTheme } from "../../theme";
 
 export type DrawerSide = "left" | "right" | "bottom";
@@ -136,6 +137,7 @@ function Popup({
   const reducedMotion = useReducedMotion();
   const screen = Dimensions.get("window");
   const vertical = side === "bottom";
+  const overlay = useOverlayInsets();
   const extent = vertical ? screen.height * size : screen.width * size;
 
   const progress = useSharedValue(0);
@@ -338,9 +340,9 @@ function Popup({
                 // direction that helps: added to the width, the panel grew inwards instead.
                 top: side === "bottom" ? undefined : 0,
                 bottom: vertical ? -bleed : 0,
-                left: side === "right" ? undefined : leftEdge,
-                right: side === "left" ? undefined : rightEdge,
-                width: vertical ? "100%" : panelExtent,
+                left: side === "right" ? undefined : leftEdge + (vertical ? overlay.left : 0),
+                right: side === "left" ? undefined : rightEdge + (vertical ? overlay.right : 0),
+                width: vertical ? undefined : panelExtent,
                 height: vertical ? panelExtent : "100%",
                 // Puts the content back where it would have been without the
                 // overhang, so `size` still means what it says.
