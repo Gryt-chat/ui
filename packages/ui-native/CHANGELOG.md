@@ -1,5 +1,11 @@
 # @gryt/ui-native
 
+## 0.18.0
+
+### Minor Changes
+
+- 0942856: Add `OverlayInsetsProvider`, which keeps `Sheet`, bottom `Drawer` and `Toast` inside part of the screen.
+
 ## 0.17.4
 
 ### Patch Changes
