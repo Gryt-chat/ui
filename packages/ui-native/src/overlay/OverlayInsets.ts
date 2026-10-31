@@ -1,4 +1,4 @@
-import { createContext, useContext, type ReactNode } from "react";
+import { createContext, useContext } from "react";
 
 export interface OverlayInsets {
   left: number;
@@ -12,9 +12,7 @@ const OverlayInsetsContext = createContext<OverlayInsets>({ left: 0, right: 0 })
  * something they should keep off: a fold, or iPhone Duo's side strip.
  * Put it above `SheetProvider`, because a sheet reads it before it portals away.
  */
-export function OverlayInsetsProvider({ value, children }: { value: OverlayInsets; children?: ReactNode }) {
-  return <OverlayInsetsContext.Provider value={value}>{children}</OverlayInsetsContext.Provider>;
-}
+export const OverlayInsetsProvider = OverlayInsetsContext.Provider;
 
 export function useOverlayInsets(): OverlayInsets {
   return useContext(OverlayInsetsContext);
