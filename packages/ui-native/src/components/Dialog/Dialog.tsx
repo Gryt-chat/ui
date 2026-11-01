@@ -88,6 +88,7 @@ function Popup({
       // iOS hides everything behind a modal from VoiceOver with this; Android
       // gets the same effect from Modal itself.
       accessibilityViewIsModal
+      onAccessibilityEscape={dismissible ? () => setOpen(false) : undefined}
       style={[
         {
           width: "100%",
@@ -129,7 +130,9 @@ function Popup({
       // AlertDialog turns it off for the same reason it turns off the scrim.
       onRequestClose={dismissible ? () => setOpen(false) : undefined}
     >
+      {/* Not `accessible`: a Pressable is by default, and that hides everything inside it from VoiceOver. */}
       <Pressable
+        accessible={false}
         // The scrim doubles as the outside-press target, which is how Base UI
         // dismisses too.
         onPress={dismissible ? () => setOpen(false) : undefined}
