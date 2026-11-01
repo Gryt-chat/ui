@@ -329,7 +329,9 @@ function Popup({
       animationType="none"
       onRequestClose={dismissible ? () => setOpen(false) : undefined}
     >
+      {/* Not `accessible`: a Pressable is by default, and that hides everything inside it from VoiceOver. */}
       <Pressable
+        accessible={false}
         onPress={dismissible ? () => setOpen(false) : undefined}
         style={{ flex: 1 }}
       >
@@ -340,6 +342,7 @@ function Popup({
         <GestureDetector gesture={pan}>
           <Animated.View
             accessibilityViewIsModal
+            onAccessibilityEscape={dismissible ? () => setOpen(false) : undefined}
             style={[
               {
                 position: "absolute",
@@ -368,6 +371,7 @@ function Popup({
             ]}
           >
             <Pressable
+              accessible={false}
               onPress={() => {}}
               style={[
                 {
