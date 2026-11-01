@@ -1,5 +1,11 @@
 # @gryt/ui-native
 
+## 0.18.2
+
+### Patch Changes
+
+- 1fa7296: Dialog and Drawer no longer hide their contents from VoiceOver. A VoiceOver user can also close them with the escape gesture now.
+
 ## 0.18.1
 
 ### Patch Changes
