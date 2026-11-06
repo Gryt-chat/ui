@@ -123,6 +123,12 @@ export interface OwlOptions {
 
   /** Adds <title> and an accessible name for inline SVG. */
   title?: string;
+
+  /**
+   * Animates inside the SVG itself, so an `<img>` plays it with no script: `true` blinks and
+   * looks around, `"greet"` also smiles and waves once. Off draws the exact static owl.
+   */
+  alive?: boolean | "greet";
 }
 
 export interface ResolvedOwl {
