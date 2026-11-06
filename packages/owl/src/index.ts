@@ -4,7 +4,7 @@
  */
 
 import { escapeXml, fmt, VIEWBOX } from "./geometry";
-import { OWL } from "./metrics";
+import { OWL, type OwlMetrics } from "./metrics";
 import { owlPalette, PALETTE_NAMES, PALETTE_SCHEMES } from "./palette";
 import { renderBody, renderEars, renderWing } from "./parts/body";
 import { renderEye } from "./parts/eyes";
@@ -269,20 +269,31 @@ export function owlAvatarSvg(seed: Seed, options: OwlOptions = {}): string {
   const draw = (part: OwlPart, markup: string, pair?: OwlPart) =>
     gone(part, pair) ? "" : markup;
 
+  const alive = options.alive;
+  // Off, the groups are empty strings, so a static owl stays byte for byte what it was.
+  const g = (cls: string, markup: string) =>
+    alive && markup ? `<g class="owl-${cls}" style="animation-delay:-${delayFor(c.seed, cls)}s">${markup}</g>` : markup;
+  const eyes = draw("eyeLeft", renderEye(m, p, -1), "eyes") + draw("eyeRight", renderEye(m, p, 1), "eyes");
+  const greet = alive === "greet";
+  const wingRight = draw("wingRight", renderWing(m, p.wing, 1), "wings");
+  // A held item brings its own paws, and a raised wing would leave one of them behind.
+  const wave = greet && wingRight !== "" && !c.wearing.held;
+
   const parts =
     renderAccessories(worn, paletteFor, "behind") +
     draw("earTufts", renderEars(m, c.ears, p.body)) +
     draw("body", renderBody(m, p.body)) +
     draw("wingLeft", renderWing(m, p.wing, -1), "wings") +
-    draw("wingRight", renderWing(m, p.wing, 1), "wings") +
+    (wave ? `<g class="owl-rest">${wingRight}</g>` : wingRight) +
     renderAccessories(worn, paletteFor, "underFace") +
-    draw("face", renderFace(m, p.face)) +
-    renderAccessories(worn, paletteFor, "overFace") +
-    draw("eyeLeft", renderEye(m, p, -1), "eyes") +
-    draw("eyeRight", renderEye(m, p, 1), "eyes") +
-    draw("beak", renderBeak(m, p.accent)) +
-    renderAccessories(worn, paletteFor, "overEyes") +
+    g("face", draw("face", renderFace(m, p.face)) + renderAccessories(worn, paletteFor, "overFace")) +
+    g("look",
+      (greet && eyes ? `<g class="owl-open">${g("blink", eyes)}</g>${happyEyes(m, p.accent)}` : g("blink", eyes)) +
+      draw("beak", renderBeak(m, p.accent)) +
+      renderAccessories(worn, paletteFor, "overEyes")) +
     renderAccessories(worn, paletteFor, "overAll");
+  // Drawn after the clip, over everything: raised, the wing crosses the face and the edge.
+  const outside = (wave ? `<g class="owl-wave">${wingRight}</g>` : "") + (alive ? ALIVE_STYLE : "");
 
   const title = c.title ? `<title>${escapeXml(c.title)}</title>` : "";
   const label = c.title
@@ -296,13 +307,17 @@ export function owlAvatarSvg(seed: Seed, options: OwlOptions = {}): string {
     ? `<rect width="${VIEWBOX}" height="${VIEWBOX}"${radius > 0 ? ` rx="${fmt(radius)}"` : ""} fill="${c.background}"/>`
     : "";
 
-  const open = `<svg xmlns="http://www.w3.org/2000/svg" width="${c.size}" height="${c.size}" viewBox="0 0 ${VIEWBOX} ${VIEWBOX}" fill="none"${label}>${title}`;
+  // Alive, the canvas bleeds past the tile on every side so the wave can leave it.
+  const bleed = alive ? OWL_ALIVE_BLEED : 0;
+  const box = VIEWBOX * (1 + 2 * bleed);
+  const px = fmt(c.size * (1 + 2 * bleed));
+  const open = `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="${fmt(-VIEWBOX * bleed)} ${fmt(-VIEWBOX * bleed)} ${fmt(box)} ${fmt(box)}" fill="none"${label}>${title}`;
 
-  if (radius > 0) {
+  if (radius > 0 || alive) {
     const id = `owl${hash32(c.seed).toString(36)}`;
     return (
       `${open}<defs><clipPath id="${id}"><rect width="${VIEWBOX}" height="${VIEWBOX}" rx="${fmt(radius)}"/></clipPath></defs>` +
-      `<g clip-path="url(#${id})">${field}${parts}</g></svg>`
+      `<g clip-path="url(#${id})">${field}${parts}</g>${outside}</svg>`
     );
   }
 
@@ -332,6 +347,47 @@ export function owlPartPaths(options: OwlOptions = {}): { part: OwlPart; d: stri
     ...shapes("beak", renderBeak(m, p.accent)),
   ];
 }
+
+/** How far an alive owl's canvas reaches past its tile, per side, as a fraction of it. */
+export const OWL_ALIVE_BLEED = 0.15;
+
+/*
+ * Keyed on the seed so a member list does not blink in unison. The keyframes are the same
+ * on every owl, so fifty inline copies on one page agree with each other.
+ */
+function delayFor(seed: string, channel: string): string {
+  return fmt((hash32(`${seed}:alive:${channel}`) % 13000) / 1000);
+}
+
+function happyEyes(m: OwlMetrics, colour: string): string {
+  let out = "";
+  for (const side of [-1, 1]) {
+    const x = m.cx + side * (m.eyeGap / 2);
+    out += `<path d="M${fmt(x - 52)} ${fmt(m.eyeY + 18)}Q${fmt(x)} ${fmt(m.eyeY - 46)} ${fmt(x + 52)} ${fmt(m.eyeY + 18)}" stroke="${colour}" stroke-width="30" stroke-linecap="round"/>`;
+  }
+  return `<g class="owl-happy">${out}</g>`;
+}
+
+// Pivots are artboard units (transform-box: view-box): the eye line, and the right shoulder.
+const ALIVE_STYLE =
+  "<style>" +
+  ".owl-face,.owl-look,.owl-blink,.owl-wave{transform-box:view-box}" +
+  ".owl-face{animation:owl-face 13s ease-in-out infinite}" +
+  ".owl-look{animation:owl-look 13s ease-in-out infinite}" +
+  `.owl-blink{transform-origin:512px ${OWL.eyeY}px;animation:owl-blink 6.5s infinite}` +
+  `.owl-wave{transform-origin:${OWL.cx + OWL.half}px ${OWL.shoulder}px;animation:owl-wave 2.6s ease-in-out .35s both}` +
+  ".owl-rest{animation:owl-rest 2.6s .35s both}" +
+  ".owl-happy{opacity:0;animation:owl-happy 3s .25s}" +
+  ".owl-open{animation:owl-open 3s .25s}" +
+  "@keyframes owl-face{0%,100%{transform:none}25%{transform:translate(15px,4px)}55%{transform:translate(-14px,-5px)}80%{transform:translate(4px,6px)}}" +
+  "@keyframes owl-look{0%,100%{transform:none}25%{transform:translate(30px,8px)}55%{transform:translate(-28px,-10px)}80%{transform:translate(8px,12px)}}" +
+  "@keyframes owl-blink{0%,95%,100%{transform:none}97%{transform:scaleY(.1)}}" +
+  "@keyframes owl-wave{0%,99%{transform:none;opacity:1}15%,35%,55%{transform:rotate(-160deg)}25%,45%,65%{transform:rotate(-178deg)}80%{transform:rotate(-165deg)}100%{opacity:0}}" +
+  "@keyframes owl-rest{0%,99%{opacity:0}100%{opacity:1}}" +
+  "@keyframes owl-happy{0%,100%{opacity:0}8%,90%{opacity:1}}" +
+  "@keyframes owl-open{0%,100%{opacity:1}8%,90%{opacity:0}}" +
+  "@media (prefers-reduced-motion:reduce){*{animation:none!important}.owl-happy,.owl-wave{opacity:0}}" +
+  "</style>";
 
 /** The same owl as a data URI, for an `<img src>`. */
 export function owlAvatarDataUri(seed: Seed, options: OwlOptions = {}): string {
