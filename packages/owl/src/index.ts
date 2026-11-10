@@ -368,20 +368,21 @@ function happyEyes(m: OwlMetrics, colour: string): string {
   return `<g class="owl-happy">${out}</g>`;
 }
 
+// The guide owl's blink: 140ms every 4.3s, every third one double.
 // Pivots are artboard units (transform-box: view-box): the eye line, and the right shoulder.
 const ALIVE_STYLE =
   "<style>" +
   ".owl-face,.owl-look,.owl-blink,.owl-wave{transform-box:view-box}" +
   ".owl-face{animation:owl-face 13s ease-in-out infinite}" +
   ".owl-look{animation:owl-look 13s ease-in-out infinite}" +
-  `.owl-blink{transform-origin:512px ${OWL.eyeY}px;animation:owl-blink 6.5s infinite}` +
+  `.owl-blink{transform-origin:512px ${OWL.eyeY}px;animation:owl-blink 12.9s ease-in-out infinite}` +
   `.owl-wave{transform-origin:${OWL.cx + OWL.half}px ${OWL.shoulder}px;animation:owl-wave 2.6s ease-in-out .35s both}` +
   ".owl-rest{animation:owl-rest 2.6s .35s both}" +
   ".owl-happy{opacity:0;animation:owl-happy 3s .25s}" +
   ".owl-open{animation:owl-open 3s .25s}" +
   "@keyframes owl-face{0%,100%{transform:none}25%{transform:translate(15px,4px)}55%{transform:translate(-14px,-5px)}80%{transform:translate(4px,6px)}}" +
   "@keyframes owl-look{0%,100%{transform:none}25%{transform:translate(30px,8px)}55%{transform:translate(-28px,-10px)}80%{transform:translate(8px,12px)}}" +
-  "@keyframes owl-blink{0%,95%,100%{transform:none}97%{transform:scaleY(.1)}}" +
+  "@keyframes owl-blink{0%,29.3%,30.39%,31.01%,32.09%,64.34%,65.43%,97.67%,98.76%,100%{transform:none}29.84%,31.55%,64.88%,98.22%{transform:scaleY(.1)}}" +
   "@keyframes owl-wave{0%,99%{transform:none;opacity:1}15%,35%,55%{transform:rotate(-160deg)}25%,45%,65%{transform:rotate(-178deg)}80%{transform:rotate(-165deg)}100%{opacity:0}}" +
   "@keyframes owl-rest{0%,99%{opacity:0}100%{opacity:1}}" +
   "@keyframes owl-happy{0%,100%{opacity:0}8%,90%{opacity:1}}" +
