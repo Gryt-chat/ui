@@ -44,6 +44,7 @@ export interface ComponentDoc {
     | "composer"
     | "conversation-item"
     | "member-item"
+    | "channel-item"
     | "context-menu"
     | "popover"
     | "toast"
@@ -173,7 +174,8 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "MessageBubble", slug: "message-bubble" },
       { name: "Composer", slug: "composer" },
       { name: "ConversationItem", slug: "conversation-item" },
-      { name: "MemberItem", slug: "member-item" }
+      { name: "MemberItem", slug: "member-item" },
+      { name: "ChannelItem", slug: "channel-item" }
     ]
   }
 ];
@@ -880,6 +882,18 @@ function VerticalTabsExample() {
     code: `import { Avatar, avatarSeed, MemberItem } from "@gryt/ui";
 
 <MemberItem name="Wren" avatar={<Avatar size="small" seed={avatarSeed("Wren")} />} status="In Voice" statusColor="var(--gryt-accent-9)" />`
+  },
+  {
+    slug: "channel-item",
+    name: "ChannelItem",
+    description:
+      "One channel in the sidebar: its icon, the accent pill on the one you're reading, bold when something's waiting, and a lock on a voice channel you can't join.",
+    importName: "ChannelItem",
+    preview: "channel-item",
+    code: `import { ChannelItem } from "@gryt/ui";
+
+<ChannelItem kind="text" name="general" selected />
+<ChannelItem kind="voice" name="Game night" unread />`
   },
   {
     slug: "toggle",

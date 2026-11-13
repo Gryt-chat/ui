@@ -26,6 +26,7 @@ import {
   Chip,
   Composer,
   ContextMenu,
+  ChannelItem,
   ConversationItem,
   Dialog,
   Divider,
@@ -766,6 +767,16 @@ export function ComponentPreview({
           <MemberItem name="Wren" nameColor="var(--gryt-accent-11)" avatar={<Avatar size="small" seed={avatarSeed("Wren")} alt="" />} status="In Voice" statusColor="var(--gryt-accent-9)" />
           <MemberItem name="Pepper" avatar={<Avatar size="small" seed={avatarSeed("Pepper")} alt="" />} activity="Playing co-op" />
           <MemberItem name="Basil" offline avatar={<Avatar size="small" seed={avatarSeed("Basil")} alt="" />} />
+        </Surface>
+      );
+    case "channel-item":
+      return (
+        <Surface className="grid w-full max-w-[240px] gap-0.5 p-2">
+          <ChannelItem kind="text" name="general" selected />
+          <ChannelItem kind="text" name="clips" unread />
+          <ChannelItem kind="forum" name="suggestions" />
+          <ChannelItem kind="voice" name="Game night" inCall />
+          <ChannelItem kind="voice" name="Staff" locked />
         </Surface>
       );
     case "toggle":

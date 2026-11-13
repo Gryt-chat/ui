@@ -130,6 +130,8 @@ export { PresenceDot } from "./components/PresenceDot/PresenceDot";
 export type { PresenceStatus } from "./components/PresenceDot/PresenceDot";
 export { MemberItem } from "./components/MemberItem/MemberItem";
 export type { MemberItemCardKind, MemberItemProps } from "./components/MemberItem/MemberItem";
+export { ChannelGlyph, ChannelItem } from "./components/ChannelItem/ChannelItem";
+export type { ChannelItemProps, ChannelKind } from "./components/ChannelItem/ChannelItem";
 export { Avatar } from "./components/Avatar/Avatar";
 export type { AvatarProps } from "./components/Avatar/Avatar";
 // The seed rule, re-exported rather than left to be looked up: Avatar's `seed` wants a
