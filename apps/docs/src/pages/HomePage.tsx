@@ -21,6 +21,7 @@ import { Bell, DotsThree } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { CodeBlock } from "../components/CodeBlock";
+import { HomeShowcase } from "../components/HomeShowcase";
 import { componentDocs, componentNavSections } from "./componentDocs";
 import { exampleDocs } from "../exampleMeta";
 
@@ -143,6 +144,8 @@ export function HomePage() {
           <CodeBlock code="bun add @gryt/ui" language="sh" />
         </div>
       </header>
+
+      <HomeShowcase />
 
       {/* Ahead of the component grid: the examples are the fastest way to see
           whether this library builds the kind of thing you are building. */}
