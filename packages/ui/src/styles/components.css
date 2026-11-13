@@ -101,9 +101,11 @@
         transition: background 0.15s;
     }
     .gryt-message-bubble[data-from="assistant"] { background: var(--gryt-neutral-4); }
-    .gryt-message-bubble[data-from="assistant"]:hover { background: var(--gryt-neutral-5); }
+    .gryt-message-bubble[data-from="assistant"]:hover,
+    .gryt-message-bubble[data-from="assistant"][data-highlighted] { background: var(--gryt-neutral-5); }
     .gryt-message-bubble[data-from="user"] { background: var(--gryt-accent-4); }
-    .gryt-message-bubble[data-from="user"]:hover { background: var(--gryt-accent-5); }
+    .gryt-message-bubble[data-from="user"]:hover,
+    .gryt-message-bubble[data-from="user"][data-highlighted] { background: var(--gryt-accent-5); }
     .gryt-message-bubble[data-from="system"] {
         margin-inline: auto;
         border: 1px dashed var(--gryt-neutral-6);

@@ -8,15 +8,17 @@ export interface MessageBubbleProps extends HTMLAttributes<HTMLDivElement> {
   from?: "user" | "assistant" | "system";
   /** Floats over the bubble's top edge, the way the client's hover bar does. */
   toolbar?: ReactNode;
+  /** Drawn as hovered without the pointer on it, e.g. while its menu or picker is open. */
+  highlighted?: boolean;
 }
 
 /** One message as the client's bubbles look draws it. */
 export const MessageBubble = forwardRef<HTMLDivElement, MessageBubbleProps>(function MessageBubble(
-  { children, className, from = "assistant", toolbar, ...props },
+  { children, className, from = "assistant", toolbar, highlighted = false, ...props },
   ref
 ) {
   return (
-    <div ref={ref} className={cn("gryt-message-bubble", className)} data-from={from} {...props}>
+    <div ref={ref} className={cn("gryt-message-bubble", className)} data-from={from} data-highlighted={highlighted || undefined} {...props}>
       {toolbar && <div className="gryt-message-bubble-toolbar">{toolbar}</div>}
       {children}
     </div>
