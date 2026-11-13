@@ -1,5 +1,12 @@
 # @gryt/ui
 
+## 0.47.0
+
+### Minor Changes
+
+- 3880238: The call bar's buttons from the client: `CallControlButton`, `SplitControl`, `SplitArrow`, `controlState` and their classes, as `@gryt/ui/call-controls` and from the root.
+- 5adae10: The icon set the client draws, each icon fixed at the weight the app uses, is now `@gryt/ui/icons`.
+
 ## 0.46.0
 
 ### Minor Changes
