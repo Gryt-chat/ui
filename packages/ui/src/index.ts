@@ -101,6 +101,9 @@ export {
 } from "./components/CallControls/CallControls";
 export { controlState } from "./components/CallControls/controlState";
 export type { CallControlButtonProps, CallControlState } from "./components/CallControls/CallControls";
+export { EmojiText } from "./components/EmojiText/EmojiText";
+export type { EmojiTextProps } from "./components/EmojiText/EmojiText";
+export { MessageHoverToolbar } from "./components/MessageHoverToolbar/MessageHoverToolbar";
 export { Surface } from "./components/Surface/Surface";
 export type { SurfaceProps } from "./components/Surface/Surface";
 export { MessageBubble } from "./components/MessageBubble/MessageBubble";
