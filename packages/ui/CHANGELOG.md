@@ -1,5 +1,15 @@
 # @gryt/ui
 
+## 0.48.0
+
+### Minor Changes
+
+- dec5081: `Composer` draws the client's message box: a round + (with `onAdd`), a pill field with an emoji button (with `onEmoji`), and a round send button once there's text. Enter sends, Shift+Enter starts a new line. `unencrypted` turns the field's edge red. `submitLabel` is now the send button's accessible name.
+- 92317ca: `ConversationItem` now draws the client's direct-message row: a larger avatar with an optional presence dot, the time and a pin beside the title, the last message under it, and an unread count. New optional props: `meta`, `note`, `unread`, `pinned`, `hidden`, `presence`. `title` and `subtitle` take any node. `PresenceDot` is exported on its own too.
+- a1a7d31: `EmojiText` (turns `:shortcode:` into emoji, with a server's own emoji passed in as `customEmojis`) and the message hover toolbar from the client, as `@gryt/ui/emoji-text`, `@gryt/ui/message-hover-toolbar` and from the root.
+- 32a56e6: `MessageBubble` draws the client's bubbles: neutral for others, the accent for you, a step lighter on hover, and a `toolbar` slot that floats over its top edge. New `MessageGroup` puts a face, name and time over a person's bubbles, with your own on the right and no face.
+- 2810abb: `ReactionPill` (one reaction under a message: the emoji, the count, who in the tooltip, tinted when it's yours) and `AddReactionButton` (the + after them), from the client.
+
 ## 0.47.0
 
 ### Minor Changes
