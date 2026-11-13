@@ -10,6 +10,7 @@ import {
   LEAVE_CLASS,
   MemberCard,
   MessageBubble,
+  MessageGroup,
   MessageHoverToolbar,
   randomCardStyle,
   seedFromId,
@@ -107,26 +108,36 @@ export function HomeShowcase() {
         </SectionTitle>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
           <div className="flex min-w-0 flex-col gap-3 rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-4">
-            <div className="flex items-end gap-2">
-              <Avatar seed={avatarSeed("Moss")} alt="Moss" size="small" />
-              <MessageBubble from="assistant">Anyone up for a round after dinner?</MessageBubble>
-            </div>
-            <div className="flex flex-col items-start gap-1">
-              <MessageHoverToolbar
-                quickReactions={["👍", "❤️", "😂", "😮"]}
-                onQuickReaction={() => {}}
-                onOpenEmojiPicker={() => {}}
-                onReply={() => {}}
-                onMore={() => {}}
-              />
-              <div className="flex items-end gap-2">
-                <Avatar seed={avatarSeed("Wren")} alt="Wren" size="small" />
-                <MessageBubble from="assistant">In. I'll set up the voice channel.</MessageBubble>
-              </div>
-            </div>
-            <div className="flex justify-end">
+            <MessageGroup
+              avatar={<Avatar seed={avatarSeed("Moss")} alt="Moss" size="large" className="h-[51px] w-[51px]" />}
+              name="Moss"
+              time="20:58"
+            >
+              <MessageBubble>Anyone up for a round after dinner?</MessageBubble>
+            </MessageGroup>
+            <MessageGroup
+              avatar={<Avatar seed={avatarSeed("Wren")} alt="Wren" size="large" className="h-[51px] w-[51px]" />}
+              name="Wren"
+              time="21:02"
+              style={{ marginTop: 14 }}
+            >
+              <MessageBubble
+                toolbar={
+                  <MessageHoverToolbar
+                    quickReactions={["👍", "❤️", "😂", "😮"]}
+                    onQuickReaction={() => {}}
+                    onOpenEmojiPicker={() => {}}
+                    onReply={() => {}}
+                    onMore={() => {}}
+                  />
+                }
+              >
+                In. I'll set up the voice channel.
+              </MessageBubble>
+            </MessageGroup>
+            <MessageGroup name="Juniper" time="21:04" own style={{ marginTop: 14 }}>
               <MessageBubble from="user">Bringing snacks</MessageBubble>
-            </div>
+            </MessageGroup>
             <div className="mt-auto">
               <Composer placeholder="Message #general" aria-label="Message #general" onAdd={() => {}} onEmoji={() => {}} />
             </div>

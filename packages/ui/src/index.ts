@@ -108,6 +108,8 @@ export { Surface } from "./components/Surface/Surface";
 export type { SurfaceProps } from "./components/Surface/Surface";
 export { MessageBubble } from "./components/MessageBubble/MessageBubble";
 export type { MessageBubbleProps } from "./components/MessageBubble/MessageBubble";
+export { MessageGroup } from "./components/MessageGroup/MessageGroup";
+export type { MessageGroupProps } from "./components/MessageGroup/MessageGroup";
 export { TextField } from "./components/TextField/TextField";
 export type { TextFieldProps } from "./components/TextField/TextField";
 export { EmojiPicker } from "./components/EmojiPicker/EmojiPicker";
