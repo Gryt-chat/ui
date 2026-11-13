@@ -1,3 +1,5 @@
+"use client";
+
 /*
  * The icons Gryt draws, over @phosphor-icons/react, each fixed at the weight the apps use.
  * Import from "@gryt/ui/icons" so the client, the docs and anything else draw the same ones.
