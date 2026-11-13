@@ -6,6 +6,7 @@ import {
   BAR_BUTTON_STYLE,
   BAR_SOLO_CLASS,
   CallControlButton,
+  ChannelItem,
   Composer,
   ConversationItem,
   LEAVE_CLASS,
@@ -165,6 +166,12 @@ export function HomeShowcase() {
           </div>
 
           <div className="flex min-w-0 flex-col gap-4">
+            <div className="flex flex-col gap-0.5 rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-2">
+              <ChannelItem kind="text" name="general" selected />
+              <ChannelItem kind="text" name="clips" unread />
+              <ChannelItem kind="voice" name="Game night" inCall />
+              <ChannelItem kind="voice" name="Staff" locked />
+            </div>
             <div className="flex flex-col gap-1 rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-2">
               <ConversationItem
                 active
