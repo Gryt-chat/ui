@@ -90,6 +90,17 @@ export { Button } from "./components/Button/Button";
 export type { ButtonProps } from "./components/Button/Button";
 export { IconButton } from "./components/IconButton/IconButton";
 export type { IconButtonProps } from "./components/IconButton/IconButton";
+export {
+  BAR_BUTTON_STYLE,
+  BAR_SOLO_CLASS,
+  CallControlButton,
+  LEAVE_CLASS,
+  SPLIT_BUTTON_CLASS,
+  SplitArrow,
+  SplitControl
+} from "./components/CallControls/CallControls";
+export { controlState } from "./components/CallControls/controlState";
+export type { CallControlButtonProps, CallControlState } from "./components/CallControls/CallControls";
 export { Surface } from "./components/Surface/Surface";
 export type { SurfaceProps } from "./components/Surface/Surface";
 export { MessageBubble } from "./components/MessageBubble/MessageBubble";
