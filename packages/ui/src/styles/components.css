@@ -91,8 +91,31 @@
        rather than a panel, and the softness is the whole look of a chat log —
        moving it to the panel corner makes the log read as a stack of cards. */
     .gryt-message-bubble {
-        max-width: min(42rem, 85%);
-        @apply rounded-(--gryt-radius-xl) px-4 py-3 text-sm leading-6;
+        position: relative;
+        width: fit-content;
+        max-width: min(680px, 85%);
+        padding: 10px;
+        border-radius: calc(var(--gryt-radius-md) + 10px);
+        color: var(--gryt-neutral-12);
+        line-height: 1.5;
+        transition: background 0.15s;
+    }
+    .gryt-message-bubble[data-from="assistant"] { background: var(--gryt-neutral-4); }
+    .gryt-message-bubble[data-from="assistant"]:hover { background: var(--gryt-neutral-5); }
+    .gryt-message-bubble[data-from="user"] { background: var(--gryt-accent-4); }
+    .gryt-message-bubble[data-from="user"]:hover { background: var(--gryt-accent-5); }
+    .gryt-message-bubble[data-from="system"] {
+        margin-inline: auto;
+        border: 1px dashed var(--gryt-neutral-6);
+        color: var(--gryt-neutral-11);
+    }
+    /* The 4px gap is the bar's own padding, so the pointer never crosses a gap to reach it. */
+    .gryt-message-bubble-toolbar {
+        position: absolute;
+        bottom: 100%;
+        right: 0;
+        z-index: 10;
+        padding-bottom: 4px;
     }
 
     /* The box you type into, so it takes the field corner rather than the
