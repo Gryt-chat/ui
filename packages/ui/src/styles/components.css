@@ -105,13 +105,6 @@
         @apply min-h-10 flex-1 resize-none bg-transparent px-2 py-2 text-sm leading-6 text-gryt-text outline-none placeholder:text-gryt-muted;
     }
 
-    /* Also left alone. The row is about 46px tall, so xl clamps to 23 and it
-       renders as a pill — which is what a conversation row is meant to be, and
-       is the one place the clamping works in the design's favour. */
-    .gryt-conversation-item {
-        @apply flex w-full items-center gap-3 rounded-(--gryt-radius-xl) px-3 py-2.5 text-left transition-colors;
-    }
-
     /* A control reacts to its label as if it were the control.
      *
      * Clicking the label already toggled the control — that is what a label is
