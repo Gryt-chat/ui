@@ -10,6 +10,7 @@ import {
   LEAVE_CLASS,
   MemberCard,
   MessageBubble,
+  MessageHoverToolbar,
   randomCardStyle,
   seedFromId,
   Slider,
@@ -110,9 +111,18 @@ export function HomeShowcase() {
               <Avatar seed={avatarSeed("Moss")} alt="Moss" size="small" />
               <MessageBubble from="assistant">Anyone up for a round after dinner?</MessageBubble>
             </div>
-            <div className="flex items-end gap-2">
-              <Avatar seed={avatarSeed("Wren")} alt="Wren" size="small" />
-              <MessageBubble from="assistant">In. I'll set up the voice channel.</MessageBubble>
+            <div className="flex flex-col items-start gap-1">
+              <MessageHoverToolbar
+                quickReactions={["👍", "❤️", "😂", "😮"]}
+                onQuickReaction={() => {}}
+                onOpenEmojiPicker={() => {}}
+                onReply={() => {}}
+                onMore={() => {}}
+              />
+              <div className="flex items-end gap-2">
+                <Avatar seed={avatarSeed("Wren")} alt="Wren" size="small" />
+                <MessageBubble from="assistant">In. I'll set up the voice channel.</MessageBubble>
+              </div>
             </div>
             <div className="flex justify-end">
               <MessageBubble from="user">Bringing snacks</MessageBubble>
