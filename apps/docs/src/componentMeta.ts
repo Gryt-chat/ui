@@ -43,6 +43,7 @@ export interface ComponentDoc {
     | "message-bubble"
     | "composer"
     | "conversation-item"
+    | "member-item"
     | "context-menu"
     | "popover"
     | "toast"
@@ -171,7 +172,8 @@ export const componentNavSections: ComponentNavSection[] = [
     items: [
       { name: "MessageBubble", slug: "message-bubble" },
       { name: "Composer", slug: "composer" },
-      { name: "ConversationItem", slug: "conversation-item" }
+      { name: "ConversationItem", slug: "conversation-item" },
+      { name: "MemberItem", slug: "member-item" }
     ]
   }
 ];
@@ -867,6 +869,17 @@ function VerticalTabsExample() {
     code: `import { ConversationItem } from "@gryt/ui";
 
 <ConversationItem title="Gryt UI" subtitle="Component system" active />`
+  },
+  {
+    slug: "member-item",
+    name: "MemberItem",
+    description:
+      "One person in the member list: role colour, a status line when they're in voice or away, and their card behind the row on hover.",
+    importName: "MemberItem",
+    preview: "member-item",
+    code: `import { Avatar, avatarSeed, MemberItem } from "@gryt/ui";
+
+<MemberItem name="Wren" avatar={<Avatar size="small" seed={avatarSeed("Wren")} />} status="In Voice" statusColor="var(--gryt-accent-9)" />`
   },
   {
     slug: "toggle",

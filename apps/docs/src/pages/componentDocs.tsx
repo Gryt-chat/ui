@@ -34,6 +34,7 @@ import {
   IconButton,
   Menu,
   MemberCard,
+  MemberItem,
   MessageBubble,
   Meter,
   Popover,
@@ -757,6 +758,14 @@ export function ComponentPreview({
             subtitle="Code-theme palette"
           />
           <ConversationItem title="Publishing" subtitle="npm package" />
+        </Surface>
+      );
+    case "member-item":
+      return (
+        <Surface className="grid w-full max-w-[260px] gap-0 p-2">
+          <MemberItem name="Wren" nameColor="var(--gryt-accent-11)" avatar={<Avatar size="small" seed={avatarSeed("Wren")} alt="" />} status="In Voice" statusColor="var(--gryt-accent-9)" />
+          <MemberItem name="Pepper" avatar={<Avatar size="small" seed={avatarSeed("Pepper")} alt="" />} activity="Playing co-op" />
+          <MemberItem name="Basil" offline avatar={<Avatar size="small" seed={avatarSeed("Basil")} alt="" />} />
         </Surface>
       );
     case "toggle":

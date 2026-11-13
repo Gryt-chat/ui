@@ -2,6 +2,7 @@ import {
   AddReactionButton,
   Avatar,
   avatarSeed,
+  cardVars,
   BAR_BUTTON_STYLE,
   BAR_SOLO_CLASS,
   CallControlButton,
@@ -9,6 +10,7 @@ import {
   ConversationItem,
   LEAVE_CLASS,
   MemberCard,
+  MemberItem,
   MessageBubble,
   MessageGroup,
   MessageHoverToolbar,
@@ -20,7 +22,7 @@ import {
 } from "@gryt/ui";
 import { owlAvatarColour, owlAvatarDataUri } from "@gryt/owl";
 import { PiCameraFill, PiMicrophoneFill, PiMonitorArrowUpFill, PiPhoneDisconnectFill, PiSpeakerSlashFill } from "@gryt/ui/icons";
-import { useMemo } from "react";
+import { type CSSProperties, useMemo } from "react";
 import { useSiteTheme } from "../lib/theme/siteTheme";
 
 const OWLS = [
@@ -36,6 +38,11 @@ const CARDS = [
   { name: "Kestrel", status: "afk", statusLine: "Back in ten.", bio: "Mains support. Never the healer." },
   { name: "Saffron", status: "in_voice", statusLine: "Recording, ping if it's on fire.", bio: "Makes the server's emoji." }
 ] as const;
+
+const STATUS_LINE: Partial<Record<string, { label: string; color: string }>> = {
+  in_voice: { label: "In Voice", color: "var(--gryt-accent-9)" },
+  afk: { label: "AFK", color: "var(--gryt-warning-9)" }
+};
 
 /** The same card on every visit, so the page doesn't reshuffle under people. */
 function seeded(name: string): () => number {
@@ -62,8 +69,16 @@ function SectionTitle({ title, children }: { title: string; children: string }) 
 export function HomeShowcase() {
   const appearance = useSiteTheme().appearance;
   const cards = useMemo(
-    () => CARDS.map((c) => ({ ...c, style: randomCardStyle(seeded(c.name)), avatar: owlAvatarDataUri(avatarSeed(c.name) ?? c.name) })),
-    []
+    () =>
+      CARDS.map((c) => {
+        const style = randomCardStyle(seeded(c.name));
+        const owl = owlAvatarColour(avatarSeed(c.name) ?? c.name);
+        const { attrs, vars } = cardVars(style, owl, { appearance, seed: seedFromId(c.name) });
+        let kind: "fc" | "fc-cover" | "banner" = "banner";
+        if (attrs["data-fc"]) kind = attrs["data-cover"] === "card" ? "fc-cover" : "fc";
+        return { ...c, style, avatar: owlAvatarDataUri(avatarSeed(c.name) ?? c.name), card: { kind, style: vars as CSSProperties } };
+      }),
+    [appearance]
   );
 
   return (
@@ -176,6 +191,20 @@ export function HomeShowcase() {
               />
             </div>
 
+            <div className="flex flex-col rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-2">
+              {cards.map((c) => (
+                <MemberItem
+                  key={c.name}
+                  name={c.name}
+                  avatar={<Avatar size="small" src={c.avatar} alt="" />}
+                  status={STATUS_LINE[c.status]?.label}
+                  statusColor={STATUS_LINE[c.status]?.color}
+                  activity={c.status === "online" ? c.statusLine : undefined}
+                  card={c.card}
+                />
+              ))}
+              <MemberItem name="Sable" offline avatar={<Avatar size="small" seed={avatarSeed("Sable")} alt="" />} />
+            </div>
           </div>
         </div>
           <div className="mt-4 flex flex-col gap-3 rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-4">

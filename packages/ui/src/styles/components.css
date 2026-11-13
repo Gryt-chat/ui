@@ -256,4 +256,68 @@
     label:hover .gryt-switch:not([data-disabled]):not([data-checked]) {
         @apply border-gryt-accent-light;
     }
+
+    /* A member-list row. No fill at rest; the hovered or open row is drawn on that person's card. */
+    .gryt-member-item {
+        border-radius: var(--gryt-radius-xl);
+        padding: 8px 12px;
+        cursor: default;
+        transition: background 0.15s ease;
+    }
+    .gryt-member-item-clickable {
+        cursor: pointer;
+    }
+    .gryt-member-item-clickable:hover,
+    .gryt-member-item-clickable:focus-visible,
+    .gryt-member-item[data-card-open] {
+        background: var(--gryt-neutral-4);
+    }
+    .gryt-member-item-clickable:focus-visible {
+        outline: 2px solid var(--gryt-accent-8);
+        outline-offset: -2px;
+    }
+    .gryt-member-item-card {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+    .gryt-member-item-card::before,
+    .gryt-member-item-card::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+    }
+    .gryt-member-item-card::before {
+        background-color: var(--owl);
+        background-image: var(--pat-img, linear-gradient(transparent, transparent)), var(--base, linear-gradient(var(--owl), var(--owl)));
+        background-size: var(--pat-size, auto), cover;
+        background-position: center;
+    }
+    .gryt-member-item-card[data-row-card="img"]::before { background-image: var(--img); background-size: cover; }
+    .gryt-member-item-card[data-row-card="fc"]::before { background-image: var(--fc-bg); }
+    .gryt-member-item-card[data-row-card="fc-cover"]::before {
+        background-image: var(--pat-img, linear-gradient(transparent, transparent)), var(--fc-bg);
+        background-size: var(--pat-size, auto), cover;
+    }
+    .gryt-member-item-card::after {
+        background: linear-gradient(90deg, rgb(14 15 20 / 0.62), rgb(14 15 20 / 0.12) 75%);
+    }
+    .gryt-member-item-card.gryt-member-item-clickable:hover,
+    .gryt-member-item-card.gryt-member-item-clickable:focus-visible,
+    .gryt-member-item-card[data-card-open] {
+        background: none;
+        color: #fff;
+    }
+    .gryt-member-item-card:is(.gryt-member-item-clickable:hover, .gryt-member-item-clickable:focus-visible, [data-card-open])::before,
+    .gryt-member-item-card:is(.gryt-member-item-clickable:hover, .gryt-member-item-clickable:focus-visible, [data-card-open])::after {
+        opacity: 1;
+    }
+    .gryt-member-item-card:is(.gryt-member-item-clickable:hover, .gryt-member-item-clickable:focus-visible, [data-card-open]) .gryt-member-item-text {
+        text-shadow: 0 1px 2px rgb(0 0 0 / 0.6);
+    }
 }
