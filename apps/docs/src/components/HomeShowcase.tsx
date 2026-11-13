@@ -128,7 +128,7 @@ export function HomeShowcase() {
               <MessageBubble from="user">Bringing snacks</MessageBubble>
             </div>
             <div className="mt-auto">
-              <Composer placeholder="Message #general" aria-label="Message #general" />
+              <Composer placeholder="Message #general" aria-label="Message #general" onAdd={() => {}} onEmoji={() => {}} />
             </div>
           </div>
 
