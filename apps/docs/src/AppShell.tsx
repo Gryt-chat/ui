@@ -7,7 +7,7 @@
 import { ScrollArea } from "@gryt/ui";
 import { ArrowSquareOut, List, X } from "@phosphor-icons/react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, ScrollRestoration, useLocation } from "react-router-dom";
 import {
   CommandPalette,
   SearchPill,
@@ -190,6 +190,8 @@ export function AppShell() {
             <div className={wide ? "w-full" : "mx-auto w-full max-w-5xl"}>
               <Outlet />
               <DocsFooter />
+              {/* A new page starts at the top; back and forward return to where you were. */}
+              <ScrollRestoration />
             </div>
           </main>
         </div>
