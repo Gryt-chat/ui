@@ -1,5 +1,12 @@
 # @gryt/ui
 
+## 0.50.0
+
+### Minor Changes
+
+- fdea5d6: Add `ChannelItem` and `ChannelGlyph`, the client's channel row: the icon for text, voice, forum and automated channels, the accent pill on the open one, bold when unread, a lock and dimming when you can't join, and the tint on the call you're in. Also at `@gryt/ui/channel-item`.
+- bb7f3bc: Add `MemberItem`, the client's member list row: role colour, a status line, an activity line, and the person's card drawn behind the row on hover. Also at `@gryt/ui/member-item`.
+
 ## 0.49.0
 
 ### Minor Changes
