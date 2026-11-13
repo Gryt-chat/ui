@@ -1,10 +1,13 @@
 import {
   Avatar,
   avatarSeed,
+  BAR_BUTTON_STYLE,
+  BAR_SOLO_CLASS,
+  CallControlButton,
   Chip,
   Composer,
   ConversationItem,
-  IconButton,
+  LEAVE_CLASS,
   MemberCard,
   MessageBubble,
   randomCardStyle,
@@ -13,7 +16,7 @@ import {
   Switch
 } from "@gryt/ui";
 import { owlAvatarColour, owlAvatarDataUri } from "@gryt/owl";
-import { PiMicrophoneFill, PiPhoneDisconnectFill, PiSpeakerHighFill } from "@gryt/ui/icons";
+import { PiMicrophoneFill, PiPhoneDisconnectFill, PiSpeakerSlashFill, PiCameraFill } from "@gryt/ui/icons";
 import { useMemo } from "react";
 import { useSiteTheme } from "../lib/theme/siteTheme";
 
@@ -150,16 +153,19 @@ export function HomeShowcase() {
               </label>
               <Slider defaultValue={70} aria-label="Output volume" />
               <div className="flex items-center gap-2">
-                <IconButton tone="neutral" aria-label="Mute">
-                  <PiMicrophoneFill size={18} />
-                </IconButton>
-                <IconButton tone="neutral" aria-label="Deafen">
-                  <PiSpeakerHighFill size={18} />
-                </IconButton>
+                <CallControlButton state="idle" idleClassName={BAR_SOLO_CLASS} style={BAR_BUTTON_STYLE} aria-label="Mute">
+                  <PiMicrophoneFill size={20} />
+                </CallControlButton>
+                <CallControlButton state="off" style={BAR_BUTTON_STYLE} aria-label="Undeafen">
+                  <PiSpeakerSlashFill size={20} />
+                </CallControlButton>
+                <CallControlButton state="live" style={BAR_BUTTON_STYLE} aria-label="Turn camera off">
+                  <PiCameraFill size={20} />
+                </CallControlButton>
                 <span className="flex-1" />
-                <IconButton tone="danger" aria-label="Leave call">
-                  <PiPhoneDisconnectFill size={18} />
-                </IconButton>
+                <CallControlButton state="idle" className={LEAVE_CLASS} style={BAR_BUTTON_STYLE} aria-label="Leave call">
+                  <PiPhoneDisconnectFill size={20} />
+                </CallControlButton>
               </div>
             </div>
           </div>
