@@ -122,6 +122,8 @@ export { Composer } from "./components/Composer/Composer";
 export type { ComposerProps } from "./components/Composer/Composer";
 export { ConversationItem } from "./components/ConversationItem/ConversationItem";
 export type { ConversationItemProps } from "./components/ConversationItem/ConversationItem";
+export { PresenceDot } from "./components/PresenceDot/PresenceDot";
+export type { PresenceStatus } from "./components/PresenceDot/PresenceDot";
 export { Avatar } from "./components/Avatar/Avatar";
 export type { AvatarProps } from "./components/Avatar/Avatar";
 // The seed rule, re-exported rather than left to be looked up: Avatar's `seed` wants a

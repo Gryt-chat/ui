@@ -137,18 +137,25 @@ export function HomeShowcase() {
               <ConversationItem
                 active
                 title="Game night"
-                subtitle="Wren: In. I'll set up the voice…"
-                avatar={<Avatar seed={avatarSeed("Wren")} alt="" size="small" />}
+                subtitle="Wren: In. I'll set up the voice channel."
+                meta="21:04"
+                avatar={<Avatar seed={avatarSeed("Wren")} alt="" size="medium" />}
               />
               <ConversationItem
                 title="Pepper"
                 subtitle="That clip was unreal"
-                avatar={<Avatar seed={avatarSeed("Pepper")} alt="" size="small" />}
+                meta="20:51"
+                unread={3}
+                presence="online"
+                avatar={<Avatar seed={avatarSeed("Pepper")} alt="" size="medium" />}
               />
               <ConversationItem
-                title="Design sync"
-                subtitle="Basil: new owls are in"
-                avatar={<Avatar seed={avatarSeed("Basil")} alt="" size="small" />}
+                title="Basil"
+                subtitle="New owls are in"
+                meta="Tue"
+                pinned
+                presence="afk"
+                avatar={<Avatar seed={avatarSeed("Basil")} alt="" size="medium" />}
               />
             </div>
 
