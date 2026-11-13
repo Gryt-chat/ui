@@ -1,10 +1,10 @@
 import {
+  AddReactionButton,
   Avatar,
   avatarSeed,
   BAR_BUTTON_STYLE,
   BAR_SOLO_CLASS,
   CallControlButton,
-  Chip,
   Composer,
   ConversationItem,
   LEAVE_CLASS,
@@ -13,12 +13,13 @@ import {
   MessageGroup,
   MessageHoverToolbar,
   randomCardStyle,
+  ReactionPill,
   seedFromId,
-  Slider,
-  Switch
+  SPLIT_BUTTON_CLASS,
+  SplitControl
 } from "@gryt/ui";
 import { owlAvatarColour, owlAvatarDataUri } from "@gryt/owl";
-import { PiMicrophoneFill, PiPhoneDisconnectFill, PiSpeakerSlashFill, PiCameraFill } from "@gryt/ui/icons";
+import { PiCameraFill, PiMicrophoneFill, PiMonitorArrowUpFill, PiPhoneDisconnectFill, PiSpeakerSlashFill } from "@gryt/ui/icons";
 import { useMemo } from "react";
 import { useSiteTheme } from "../lib/theme/siteTheme";
 
@@ -104,7 +105,7 @@ export function HomeShowcase() {
 
       <section className="border-t border-gryt-border py-(--space-lg)">
         <SectionTitle title="Put together">
-          A chat, a conversation list and a call panel, made only from the components on this page.
+          A chat, a conversation list and the call bar, made only from the components on this page.
         </SectionTitle>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
           <div className="flex min-w-0 flex-col gap-3 rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-4">
@@ -114,6 +115,11 @@ export function HomeShowcase() {
               time="20:58"
             >
               <MessageBubble>Anyone up for a round after dinner?</MessageBubble>
+              <div className="flex flex-wrap items-center gap-1">
+                <ReactionPill emoji="🙋" count={3} mine who="Wren, Pepper and you" onToggle={() => {}} />
+                <ReactionPill emoji="🍕" count={1} who="Basil" onToggle={() => {}} />
+                <AddReactionButton />
+              </div>
             </MessageGroup>
             <MessageGroup
               avatar={<Avatar seed={avatarSeed("Wren")} alt="Wren" size="large" className="h-[51px] w-[51px]" />}
@@ -170,34 +176,34 @@ export function HomeShowcase() {
               />
             </div>
 
-            <div className="flex flex-col gap-3 rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-4">
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-sm font-semibold text-gryt-text">Voice chat</span>
-                <Chip label="Connected" tone="success" />
-              </div>
-              <label className="flex items-center justify-between gap-3 text-sm text-gryt-text">
-                Noise suppression
-                <Switch defaultChecked />
-              </label>
-              <Slider defaultValue={70} aria-label="Output volume" />
-              <div className="flex items-center gap-2">
-                <CallControlButton state="idle" idleClassName={BAR_SOLO_CLASS} style={BAR_BUTTON_STYLE} aria-label="Mute">
-                  <PiMicrophoneFill size={20} />
-                </CallControlButton>
-                <CallControlButton state="off" style={BAR_BUTTON_STYLE} aria-label="Undeafen">
-                  <PiSpeakerSlashFill size={20} />
-                </CallControlButton>
-                <CallControlButton state="live" style={BAR_BUTTON_STYLE} aria-label="Turn camera off">
-                  <PiCameraFill size={20} />
-                </CallControlButton>
-                <span className="flex-1" />
-                <CallControlButton state="idle" className={LEAVE_CLASS} style={BAR_BUTTON_STYLE} aria-label="Leave call">
-                  <PiPhoneDisconnectFill size={20} />
-                </CallControlButton>
-              </div>
-            </div>
           </div>
         </div>
+          <div className="mt-4 flex flex-col gap-3 rounded-(--gryt-radius-lg) border border-gryt-border bg-gryt-surface p-4">
+            <span className="text-sm font-semibold text-gryt-text">The call bar</span>
+            <div className="flex flex-wrap items-center justify-center gap-1.5">
+              <SplitControl state="idle" arrowLabel="Microphone options">
+                <CallControlButton size="large" style={BAR_BUTTON_STYLE} state="idle" idleClassName={SPLIT_BUTTON_CLASS} aria-label="Mute microphone">
+                  <PiMicrophoneFill size={20} />
+                </CallControlButton>
+              </SplitControl>
+              <SplitControl state="off" arrowLabel="Sound options">
+                <CallControlButton size="large" style={BAR_BUTTON_STYLE} state="off" idleClassName={SPLIT_BUTTON_CLASS} aria-label="Undeafen">
+                  <PiSpeakerSlashFill size={20} />
+                </CallControlButton>
+              </SplitControl>
+              <SplitControl state="live" arrowLabel="Camera options">
+                <CallControlButton size="large" style={BAR_BUTTON_STYLE} state="live" idleClassName={SPLIT_BUTTON_CLASS} aria-label="Turn camera off">
+                  <PiCameraFill size={20} />
+                </CallControlButton>
+              </SplitControl>
+              <CallControlButton size="large" style={BAR_BUTTON_STYLE} state="idle" idleClassName={BAR_SOLO_CLASS} aria-label="Share your screen">
+                <PiMonitorArrowUpFill size={20} />
+              </CallControlButton>
+              <CallControlButton size="large" style={BAR_BUTTON_STYLE} state="idle" className={LEAVE_CLASS} aria-label="Hang up">
+                <PiPhoneDisconnectFill size={20} />
+              </CallControlButton>
+            </div>
+          </div>
       </section>
     </>
   );
