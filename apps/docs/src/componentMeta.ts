@@ -845,12 +845,17 @@ function VerticalTabsExample() {
   {
     slug: "composer",
     name: "Composer",
-    description: "Autosizing chat input with a built-in submit action.",
+    description: "The message box: a round +, a pill field with an emoji button, and send once there's text. Enter sends.",
     importName: "Composer",
     preview: "composer",
     code: `import { Composer } from "@gryt/ui";
 
-<Composer submitLabel="Send" />`
+<Composer
+  placeholder="Message #general"
+  onAdd={openAttachMenu}
+  onEmoji={openEmojiPicker}
+  onSubmit={send}
+/>`
   },
   {
     slug: "conversation-item",

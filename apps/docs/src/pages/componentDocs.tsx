@@ -743,7 +743,7 @@ export function ComponentPreview({
         </div>
       );
     case "composer":
-      return <Composer submitLabel="Send" />;
+      return <Composer placeholder="Message #general" onAdd={() => {}} onEmoji={() => {}} />;
     case "conversation-item":
       return (
         <Surface className="max-w-sm space-y-1 p-3" elevated>
