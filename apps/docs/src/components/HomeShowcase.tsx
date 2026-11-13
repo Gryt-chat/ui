@@ -13,7 +13,7 @@ import {
   Switch
 } from "@gryt/ui";
 import { owlAvatarColour, owlAvatarDataUri } from "@gryt/owl";
-import { Headphones, Microphone, PhoneDisconnect } from "@phosphor-icons/react";
+import { PiMicrophoneFill, PiPhoneDisconnectFill, PiSpeakerHighFill } from "@gryt/ui/icons";
 import { useMemo } from "react";
 import { useSiteTheme } from "../lib/theme/siteTheme";
 
@@ -151,14 +151,14 @@ export function HomeShowcase() {
               <Slider defaultValue={70} aria-label="Output volume" />
               <div className="flex items-center gap-2">
                 <IconButton tone="neutral" aria-label="Mute">
-                  <Microphone size={18} />
+                  <PiMicrophoneFill size={18} />
                 </IconButton>
                 <IconButton tone="neutral" aria-label="Deafen">
-                  <Headphones size={18} />
+                  <PiSpeakerHighFill size={18} />
                 </IconButton>
                 <span className="flex-1" />
                 <IconButton tone="danger" aria-label="Leave call">
-                  <PhoneDisconnect size={18} />
+                  <PiPhoneDisconnectFill size={18} />
                 </IconButton>
               </div>
             </div>

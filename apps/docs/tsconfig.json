@@ -6,7 +6,8 @@
       "@gryt/owl": ["../../packages/owl/src/index.ts"],
       "@gryt/owl/authoring": ["../../packages/owl/scripts/authoring.ts"],
       "@gryt/theme": ["../../packages/theme/src/index.ts"],
-      "@gryt/ui": ["../../packages/ui/src/index.ts"]
+      "@gryt/ui": ["../../packages/ui/src/index.ts"],
+      "@gryt/ui/icons": ["../../packages/ui/src/icons/icons.tsx"]
     }
   },
   "include": ["src", "vite.config.ts"]
