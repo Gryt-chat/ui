@@ -92,6 +92,18 @@ describe("VideoPlayer", () => {
     expect(root).toHaveAttribute("data-state", "playing");
   });
 
+  it("keeps the poster in place until the first frame is decoded", () => {
+    const { container, video } = renderPlayer({ poster: "/poster.png" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Play video" }));
+    expect(container.querySelector("img")).toHaveAttribute("src", "/poster.png");
+    expect(video).toHaveClass("absolute", "opacity-0");
+
+    fireEvent.loadedData(video);
+    expect(container.querySelector("img")).not.toBeInTheDocument();
+    expect(video).not.toHaveClass("opacity-0");
+  });
+
   it("attaches the source straight away with autoLoad", () => {
     const { video, root } = renderPlayer({ autoLoad: true });
 
