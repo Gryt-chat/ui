@@ -68,6 +68,8 @@ export function VideoPlayer({
   const chrome = p.loaded && p.state !== "error";
   const hidden = !p.controlsShown || undefined;
   const atStart = p.state === "idle" || (p.state === "paused" && p.currentTime === 0);
+  // The poster or placeholder holds the box until the first frame, so pressing play neither blacks it out nor shrinks it.
+  const covered = !p.loaded || !p.framed;
 
   return (
     <div
@@ -85,9 +87,12 @@ export function VideoPlayer({
       <video
         {...p.videoProps}
         poster={poster}
-        className="block w-full in-data-fullscreen:h-full in-data-fullscreen:object-contain"
+        className={cn(
+          "block w-full in-data-fullscreen:h-full in-data-fullscreen:object-contain",
+          covered && p.loaded && "absolute inset-0 h-full opacity-0"
+        )}
       />
-      {!p.loaded &&
+      {covered &&
         (poster ? (
           <img
             src={poster}

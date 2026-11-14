@@ -81,6 +81,9 @@ export function useVideoPlayer({
   const emptied = useRef(false);
 
   const [loaded, setLoaded] = useState(autoLoad);
+  /* The first frame is decoded. Until then the video has no size of its own and paints black. */
+  const [framedSrc, setFramedSrc] = useState<string | null>(null);
+  const framed = framedSrc === src;
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [ended, setEnded] = useState(false);
@@ -369,7 +372,8 @@ export function useVideoPlayer({
       setBuffered(bufferedEnd(event.currentTarget));
     },
     onProgress: (event: SyntheticEvent<HTMLVideoElement>) =>
-      setBuffered(bufferedEnd(event.currentTarget))
+      setBuffered(bufferedEnd(event.currentTarget)),
+    onLoadedData: () => setFramedSrc(src)
   } as const;
 
   const surfaceProps = {
@@ -391,6 +395,7 @@ export function useVideoPlayer({
   return {
     state,
     loaded,
+    framed,
     playing,
     currentTime: scrub ?? currentTime,
     duration,
