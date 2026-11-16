@@ -140,7 +140,8 @@ export function CodeBlock({
           block on a dark surface is exactly where a default macOS scrollbar
           looks pasted on, and both axes scroll here. */}
       <ScrollArea.Root style={{ maxHeight }}>
-        <ScrollArea.Viewport style={{ maxHeight }}>
+        {/* overscroll-auto: the viewport contains overscroll for chat lists, which here stopped the page scrolling under the pointer. */}
+        <ScrollArea.Viewport className="overscroll-auto" style={{ maxHeight }}>
           <ScrollArea.Content>
             {highlightedHtml ? (
               <div dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
