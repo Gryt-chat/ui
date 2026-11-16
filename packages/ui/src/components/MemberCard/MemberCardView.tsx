@@ -114,10 +114,16 @@ export function MemberCardView({
   statusText,
   children,
 }: MemberCardViewProps) {
-  const assets = usePatternAssets(profile.cardStyle, { nickname: name, worn }, emojiGroups);
+  const whole = !!bannerUrl && !compact && profile.cardStyle.bannerSize === "card";
+  // Behind a whole-card picture only the card colour counts: fills, fades and patterns would fight the picture.
+  const cardStyle = useMemo(
+    () => (whole ? { ...profile.cardStyle, colours: "card" as const, fade: "bottom" as const, pattern: "none", pLayer: undefined } : profile.cardStyle),
+    [whole, profile.cardStyle],
+  );
+  const assets = usePatternAssets(cardStyle, { nickname: name, worn }, emojiGroups);
   const { attrs, vars } = useMemo(
-    () => cardVars(profile.cardStyle, owlHex, { appearance, seed: seedFromId(seedKey), ...assets }),
-    [profile.cardStyle, owlHex, appearance, seedKey, assets],
+    () => cardVars(cardStyle, owlHex, { appearance, seed: seedFromId(seedKey), ...assets }),
+    [cardStyle, owlHex, appearance, seedKey, assets],
   );
   const presence = STATUS[status] ?? STATUS.online;
   const playing = !compact && !!game && status !== "offline";
@@ -129,7 +135,6 @@ export function MemberCardView({
   if (bannerUrl && bannerType === "image") style["--img"] = `url("${bannerUrl.replace(/["\\]/g, "")}")`;
 
   const bannerKind = bannerType === "video" ? "video" : "img";
-  const whole = !!bannerUrl && !compact && profile.cardStyle.bannerSize === "card";
 
   return (
     <div
@@ -145,7 +150,7 @@ export function MemberCardView({
         // Here as well as on the frame: .gmc sets its own defaults for some of these, which would win over inherited ones.
         style={style}
       >
-      <div className={["gmc-banner", bannerUrl && bannerKind, whole ? "whole" : "", profile.cardStyle.bannerSize === "short" || (!bannerUrl && !hasPattern(profile.cardStyle)) ? "short" : ""].filter(Boolean).join(" ")}>
+      <div className={["gmc-banner", bannerUrl && bannerKind, whole ? "whole" : "", profile.cardStyle.bannerSize === "short" || (!bannerUrl && !hasPattern(cardStyle)) ? "short" : ""].filter(Boolean).join(" ")}>
         {bannerUrl && bannerType === "video" && (
           <CardVideo className="gmc-banner-media" src={bannerUrl} />
         )}
