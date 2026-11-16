@@ -213,14 +213,16 @@
 
 /* ---------- Banner behind the whole card ---------- */
 /* The banner goes static so its layers size to the card; z-index -1 keeps them under the in-flow text. */
-.gmc:has(> .gmc-banner.whole) { isolation: isolate; --whole-ink: var(--fc-mid, var(--gryt-surface));
-  --scrim: linear-gradient(180deg, transparent 0 96px, color-mix(in oklch, var(--whole-ink) 80%, transparent) 190px, color-mix(in oklch, var(--whole-ink) 90%, transparent) 100%); }
+.gmc:has(> .gmc-banner.whole) { isolation: isolate; --whole-ink: var(--fc-mid, var(--gryt-surface)); }
 .gmc .gmc-banner.whole { position: static; display: flex; flex-direction: column; justify-content: flex-end; background: none !important; overflow: visible; }
-.gmc .gmc-banner.whole::before, .gmc .gmc-banner.whole::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 0; -webkit-mask-image: none; mask-image: none; pointer-events: none; }
-.gmc .gmc-banner.whole.img::before { background: var(--scrim), var(--img) center / cover; }
+.gmc .gmc-banner.whole::before, .gmc .gmc-banner.whole::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 0; pointer-events: none; }
+.gmc .gmc-banner.whole.img::before { background: var(--img) center / cover !important; -webkit-mask-image: none !important; mask-image: none !important; }
 .gmc .gmc-banner.whole.video::before { display: none; }
-.gmc .gmc-banner.whole.video::after { background: var(--scrim); }
 .gmc .gmc-banner.whole .gmc-banner-media { z-index: -1; -webkit-mask-image: none; mask-image: none; }
+/* Text takes its ink from the card colour, not the picture, so this layer turns any picture into that colour under the text. */
+.gmc .gmc-banner.whole::after { -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  background: linear-gradient(180deg, color-mix(in oklch, var(--whole-ink) 50%, transparent), color-mix(in oklch, var(--whole-ink) 86%, transparent) 132px, color-mix(in oklch, var(--whole-ink) 94%, transparent) 200px) !important;
+  -webkit-mask-image: linear-gradient(transparent 40px, #000 124px) !important; mask-image: linear-gradient(transparent 40px, #000 124px) !important; }
 .gmc .gmc-banner.whole .gmc-over { position: relative; inset: auto; background: none !important; }
 .gmc .gmc-banner.whole .gmc-over :is(.gmc-nm, .gmc-st) { text-shadow: 0 1px 3px color-mix(in oklch, var(--whole-ink) 75%, transparent); }
 .gmc:has(> .gmc-banner.whole) .gmc-band.plain { background: none; }
