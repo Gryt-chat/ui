@@ -219,12 +219,11 @@
 .gmc .gmc-banner.whole.img::before { background: var(--img) center / cover !important; -webkit-mask-image: none !important; mask-image: none !important; }
 .gmc .gmc-banner.whole.video::before { display: none; }
 .gmc .gmc-banner.whole .gmc-banner-media { z-index: -1; -webkit-mask-image: none; mask-image: none; }
-/* Text takes its ink from the card colour, not the picture, so this layer turns any picture into that colour under the text. */
-.gmc .gmc-banner.whole::after { -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
-  background: linear-gradient(180deg, color-mix(in oklch, var(--whole-ink) 50%, transparent), color-mix(in oklch, var(--whole-ink) 86%, transparent) 132px, color-mix(in oklch, var(--whole-ink) 94%, transparent) 200px) !important;
-  -webkit-mask-image: linear-gradient(transparent 40px, #000 124px) !important; mask-image: linear-gradient(transparent 40px, #000 124px) !important; }
+/* Text takes its ink from the card colour, not the picture, so the fade turns any picture into that colour under the text. */
+.gmc .gmc-banner.whole::after { background: linear-gradient(180deg, transparent 60px, color-mix(in oklch, var(--whole-ink) 45%, transparent) 120px, color-mix(in oklch, var(--whole-ink) 84%, transparent) 180px, color-mix(in oklch, var(--whole-ink) 88%, transparent)) !important;
+  -webkit-mask-image: none !important; mask-image: none !important; }
 .gmc .gmc-banner.whole .gmc-over { position: relative; inset: auto; background: none !important; }
-.gmc .gmc-banner.whole .gmc-over :is(.gmc-nm, .gmc-st) { text-shadow: 0 1px 3px color-mix(in oklch, var(--whole-ink) 75%, transparent); }
+.gmc .gmc-banner.whole .gmc-over :is(.gmc-nm, .gmc-st) { text-shadow: 0 0 2px var(--whole-ink), 0 0 12px var(--whole-ink), 0 0 24px color-mix(in oklch, var(--whole-ink) 70%, transparent); }
 .gmc:has(> .gmc-banner.whole) .gmc-band.plain { background: none; }
 
 /* The key drawer and fingerprint, kept from the card this replaces. */
