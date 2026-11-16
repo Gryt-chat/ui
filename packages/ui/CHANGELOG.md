@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.51.0
+
+### Minor Changes
+
+- 4d8c789: Member card: a Whole card banner height, which puts the banner picture or video behind the whole card.
+
 ## 0.50.1
 
 ### Patch Changes
