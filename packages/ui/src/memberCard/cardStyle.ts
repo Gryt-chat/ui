@@ -40,8 +40,8 @@ export interface CardStyle {
   pLayer?: "front";
   /** The card's outline in pixels. Absent is the usual one. */
   edge?: number;
-  /** "short" draws the banner low. Absent is tall, or short anyway when there's nothing to show in it. */
-  bannerSize?: "short";
+  /** "short" draws the banner low, "card" runs it behind the whole card. Absent is tall, or short anyway when there's nothing to show in it. */
+  bannerSize?: "short" | "card";
 }
 
 export const PATTERN_FADES = ["none", "top", "bottom", "left", "right", "radial"] as const;
@@ -136,7 +136,7 @@ function readTuning(r: Record<string, unknown>, out: CardStyle): void {
   if (r.pLayer === "front") out.pLayer = "front";
   const edge = intIn(r.edge, TUNING.edge.min, TUNING.edge.max);
   if (edge !== undefined && edge !== TUNING.edge.default) out.edge = edge;
-  if (r.bannerSize === "short") out.bannerSize = "short";
+  if (r.bannerSize === "short" || r.bannerSize === "card") out.bannerSize = r.bannerSize;
 }
 
 /** The style as the server stores it: defaults left out, so the default card is null. */

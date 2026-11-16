@@ -150,6 +150,12 @@ check("a short banner is kept, leaves out the tall default, and survives the wir
   for (const other of ["tall", true, "SHORT"]) assert.equal(normalizeCardStyle({ bannerSize: other }).bannerSize, undefined);
 });
 
+check("a whole-card banner survives the wire and a link", () => {
+  const style = normalizeCardStyle({ bannerSize: "card" });
+  assert.deepEqual(cardStyleForWire(style), { bannerSize: "card" });
+  assert.deepEqual(decodeCardStyle(encodeCardStyle(style)), style);
+});
+
 check("a banner's colours: the bottom edge, whether it is flat, and what fills the picture", () => {
   const w = 8, h = 20;
   const px = new Uint8ClampedArray(w * h * 4);

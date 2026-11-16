@@ -90,6 +90,7 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
       live = false;
     };
   }, [bannerUrl]);
+  const whole = !!bannerUrl && style.bannerSize === "card";
   const fromBanner = bannerUrl && banner?.url === bannerUrl ? banner.colours : null;
 
   const [avatarRead, setAvatarRead] = useState<{ url: string; colours: BannerColours | null } | null>(null);
@@ -195,37 +196,42 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
           </div>
         </Group>
       )}
-      <Group title="Colour fills" description="The whole card, or only the banner.">
-        <Select
-          value={style.colours}
-          onValueChange={(v) => {
-            const colours = v === "banner" ? "banner" : "card";
-            change({ colours, ...(colours === "banner" && style.pattern !== "none" ? { pLayer: "front" as const } : {}) });
-          }}
-          options={[
-            { value: "card", label: "The whole card" },
-            { value: "banner", label: "The banner" },
-          ]}
-        />
-      </Group>
-      <Group title="Banner fade" description="Fade the bottom of the banner into the card, all of it, or not at all.">
-        <Select
-          value={style.fade}
-          onValueChange={(v) => change({ fade: v === "banner" || v === "none" ? v : "bottom" })}
-          options={[
-            { value: "bottom", label: "Bottom" },
-            { value: "banner", label: "Whole banner" },
-            { value: "none", label: "No fade" },
-          ]}
-        />
-      </Group>
-      <Group title="Banner height" description="Tall shows more of your picture or pattern. With neither, the banner is short anyway.">
+      {!whole && (
+        <>
+        <Group title="Colour fills" description="The whole card, or only the banner.">
+          <Select
+            value={style.colours}
+            onValueChange={(v) => {
+              const colours = v === "banner" ? "banner" : "card";
+              change({ colours, ...(colours === "banner" && style.pattern !== "none" ? { pLayer: "front" as const } : {}) });
+            }}
+            options={[
+              { value: "card", label: "The whole card" },
+              { value: "banner", label: "The banner" },
+            ]}
+          />
+        </Group>
+        <Group title="Banner fade" description="Fade the bottom of the banner into the card, all of it, or not at all.">
+          <Select
+            value={style.fade}
+            onValueChange={(v) => change({ fade: v === "banner" || v === "none" ? v : "bottom" })}
+            options={[
+              { value: "bottom", label: "Bottom" },
+              { value: "banner", label: "Whole banner" },
+              { value: "none", label: "No fade" },
+            ]}
+          />
+        </Group>
+        </>
+      )}
+      <Group title="Banner height" description="Tall shows more of your picture or pattern. Whole card puts your picture behind everything. With neither, the banner is short anyway.">
         <Select
           value={style.bannerSize ?? "tall"}
-          onValueChange={(v) => change({ bannerSize: v === "short" ? "short" : undefined })}
+          onValueChange={(v) => change({ bannerSize: v === "short" || v === "card" ? v : undefined })}
           options={[
             { value: "tall", label: "Tall" },
             { value: "short", label: "Short" },
+            { value: "card", label: "Whole card" },
           ]}
         />
       </Group>
@@ -242,7 +248,11 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
     </>
   );
 
-  const pattern = (
+  const pattern = whole ? (
+    <Group title="Pattern" description="A whole-card banner covers the pattern, so it isn't drawn.">
+      <Button size="small" tone="neutral" onClick={() => change({ bannerSize: undefined })}>Use a tall banner instead</Button>
+    </Group>
+  ) : (
     <>
       <Group title="Pattern" description="Drawn from the colour, so there's nothing to upload.">
         <PatternPicker style={style} owlHex={owlHex} nickname={nickname} worn={worn} seed={seed} appearance={appearance} emojiGroups={emojiGroups} onPick={change} />
