@@ -219,13 +219,14 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
           ]}
         />
       </Group>
-      <Group title="Banner height" description="Tall shows more of your picture or pattern. With neither, the banner is short anyway.">
+      <Group title="Banner height" description="Tall shows more of your picture or pattern. Whole card puts your picture behind everything. With neither, the banner is short anyway.">
         <Select
           value={style.bannerSize ?? "tall"}
-          onValueChange={(v) => change({ bannerSize: v === "short" ? "short" : undefined })}
+          onValueChange={(v) => change({ bannerSize: v === "short" || v === "card" ? v : undefined })}
           options={[
             { value: "tall", label: "Tall" },
             { value: "short", label: "Short" },
+            { value: "card", label: "Whole card" },
           ]}
         />
       </Group>

@@ -211,6 +211,20 @@
 .gmc[data-fc] .gmc-mod { border-color: color-mix(in oklch, var(--gryt-text) 35%, transparent); }
 .gmc[data-fc] .gmc-menu { background: var(--fc-mid); }
 
+/* ---------- Banner behind the whole card ---------- */
+/* The banner goes static so its layers size to the card; z-index -1 keeps them under the in-flow text. */
+.gmc:has(> .gmc-banner.whole) { isolation: isolate; --whole-ink: var(--fc-mid, var(--gryt-surface));
+  --scrim: linear-gradient(180deg, transparent 0 96px, color-mix(in oklch, var(--whole-ink) 80%, transparent) 190px, color-mix(in oklch, var(--whole-ink) 90%, transparent) 100%); }
+.gmc .gmc-banner.whole { position: static; display: flex; flex-direction: column; justify-content: flex-end; background: none !important; overflow: visible; }
+.gmc .gmc-banner.whole::before, .gmc .gmc-banner.whole::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 0; -webkit-mask-image: none; mask-image: none; pointer-events: none; }
+.gmc .gmc-banner.whole.img::before { background: var(--scrim), var(--img) center / cover; }
+.gmc .gmc-banner.whole.video::before { display: none; }
+.gmc .gmc-banner.whole.video::after { background: var(--scrim); }
+.gmc .gmc-banner.whole .gmc-banner-media { z-index: -1; -webkit-mask-image: none; mask-image: none; }
+.gmc .gmc-banner.whole .gmc-over { position: relative; inset: auto; background: none !important; }
+.gmc .gmc-banner.whole .gmc-over :is(.gmc-nm, .gmc-st) { text-shadow: 0 1px 3px color-mix(in oklch, var(--whole-ink) 75%, transparent); }
+.gmc:has(> .gmc-banner.whole) .gmc-band.plain { background: none; }
+
 /* The key drawer and fingerprint, kept from the card this replaces. */
 .gmc-sub { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; font-size: 12px; }
 .gmc-sub > summary { border-top: 0; padding-top: 0; }

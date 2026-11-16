@@ -129,6 +129,7 @@ export function MemberCardView({
   if (bannerUrl && bannerType === "image") style["--img"] = `url("${bannerUrl.replace(/["\\]/g, "")}")`;
 
   const bannerKind = bannerType === "video" ? "video" : "img";
+  const whole = !!bannerUrl && !compact && profile.cardStyle.bannerSize === "card";
 
   return (
     <div
@@ -144,7 +145,7 @@ export function MemberCardView({
         // Here as well as on the frame: .gmc sets its own defaults for some of these, which would win over inherited ones.
         style={style}
       >
-      <div className={["gmc-banner", bannerUrl && bannerKind, profile.cardStyle.bannerSize === "short" || (!bannerUrl && !hasPattern(profile.cardStyle)) ? "short" : ""].filter(Boolean).join(" ")}>
+      <div className={["gmc-banner", bannerUrl && bannerKind, whole ? "whole" : "", profile.cardStyle.bannerSize === "short" || (!bannerUrl && !hasPattern(profile.cardStyle)) ? "short" : ""].filter(Boolean).join(" ")}>
         {bannerUrl && bannerType === "video" && (
           <CardVideo className="gmc-banner-media" src={bannerUrl} />
         )}
