@@ -37,6 +37,7 @@ export * from "./types";
 // The normalisation rule ships with the generator. Every consumer draws from a nickname,
 // and two disagreeing about "Sivert" and "sivert" is two people with two faces.
 export { avatarSeed } from "./avatarSeed";
+export { GRYT_MARK, grytMarkSvg } from "./mark";
 export {
   encodeWorn,
   decodeWorn,
