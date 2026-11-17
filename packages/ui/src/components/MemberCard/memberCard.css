@@ -216,11 +216,12 @@
 .gmc:has(> .gmc-banner.whole) { isolation: isolate; --whole-ink: var(--fc-mid, var(--gryt-surface)); }
 .gmc .gmc-banner.whole { position: static; display: flex; flex-direction: column; justify-content: flex-end; background: none !important; overflow: visible; }
 .gmc .gmc-banner.whole::before, .gmc .gmc-banner.whole::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 0; pointer-events: none; }
-.gmc .gmc-banner.whole.img::before { background: var(--img) center / cover !important; -webkit-mask-image: none !important; mask-image: none !important; }
+/* Full width from the top, the same scale on every card; a taller card fades into its colour below the picture. */
+.gmc .gmc-banner.whole.img::before { background: var(--img) center top / 100% auto no-repeat !important; -webkit-mask-image: none !important; mask-image: none !important; }
 .gmc .gmc-banner.whole.video::before { display: none; }
-.gmc .gmc-banner.whole .gmc-banner-media { z-index: -1; -webkit-mask-image: none; mask-image: none; }
+.gmc .gmc-banner.whole .gmc-banner-media { z-index: -1; bottom: auto; height: auto; -webkit-mask-image: none; mask-image: none; }
 /* Text takes its ink from the card colour, not the picture, so the fade turns any picture into that colour under the text. */
-.gmc .gmc-banner.whole::after { background: linear-gradient(180deg, transparent 60px, color-mix(in oklch, var(--whole-ink) 45%, transparent) 120px, color-mix(in oklch, var(--whole-ink) 84%, transparent) 180px, color-mix(in oklch, var(--whole-ink) 88%, transparent)) !important;
+.gmc .gmc-banner.whole::after { background: linear-gradient(180deg, transparent 60px, color-mix(in oklch, var(--whole-ink) 45%, transparent) 120px, color-mix(in oklch, var(--whole-ink) 84%, transparent) 180px, var(--whole-ink) 260px) !important;
   -webkit-mask-image: none !important; mask-image: none !important; }
 .gmc .gmc-banner.whole .gmc-over { position: relative; inset: auto; background: none !important; }
 .gmc .gmc-banner.whole .gmc-over :is(.gmc-nm, .gmc-st) { text-shadow: 0 0 2px var(--whole-ink), 0 0 12px var(--whole-ink), 0 0 24px color-mix(in oklch, var(--whole-ink) 70%, transparent); }
