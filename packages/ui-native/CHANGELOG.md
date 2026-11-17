@@ -1,5 +1,17 @@
 # @gryt/ui-native
 
+## 0.19.0
+
+### Minor Changes
+
+- 44154e6: Add `DiscordLogo`, Discord's own mark, to `@gryt/ui/icons` and `@gryt/ui-native`, so the site, the client and the phone draw the same one.
+- 8bbd6b9: Add Gryt's flat mark, face and wings: `GRYT_MARK` and `grytMarkSvg` in `@gryt/owl`, `GrytLogo` in `@gryt/ui/icons` and `@gryt/ui-native`. For linking to Gryt from other sites and apps, the way they use Discord's mark.
+
+### Patch Changes
+
+- Updated dependencies [8bbd6b9]
+  - @gryt/owl@0.8.0
+
 ## 0.18.2
 
 ### Patch Changes
