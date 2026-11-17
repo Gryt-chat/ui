@@ -22,6 +22,7 @@ export { Alert, type AlertProps, type AlertSeverity } from "./components/Alert/A
 export { Avatar, type AvatarProps, type AvatarSize } from "./components/Avatar/Avatar";
 export { Badge, type BadgeProps, type BadgeTone } from "./components/Badge/Badge";
 export { Button, type ButtonProps, type ButtonSize, type ButtonTone } from "./components/Button/Button";
+export { DiscordLogo, type DiscordLogoProps } from "./components/DiscordLogo/DiscordLogo";
 export {
   Card,
   CardActions,
