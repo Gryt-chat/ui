@@ -53,6 +53,7 @@ import {
   CopySimple,
   CornersIn,
   CornersOut,
+  Crosshair,
   Desktop,
   DeviceMobile,
   Devices,
@@ -92,6 +93,7 @@ import {
   Info,
   Key,
   Keyboard,
+  Lightning,
   Link,
   LinkSimple,
   List,
@@ -137,6 +139,7 @@ import {
   SignOut,
   SlidersHorizontal,
   SmileyWink,
+  Sparkle,
   SpeakerHigh,
   SpeakerSimpleHigh,
   SpeakerSimpleSlash,
@@ -224,6 +227,7 @@ export const PiCopySimple: Icon = CopySimple;
 export const PiCopySimpleBold: Icon = weighted(CopySimple, "bold", "PiCopySimpleBold");
 export const PiCornersInFill: Icon = weighted(CornersIn, "fill", "PiCornersInFill");
 export const PiCornersOutFill: Icon = weighted(CornersOut, "fill", "PiCornersOutFill");
+export const PiCrosshairFill: Icon = weighted(Crosshair, "fill", "PiCrosshairFill");
 export const PiDesktopFill: Icon = weighted(Desktop, "fill", "PiDesktopFill");
 export const PiDeviceMobileFill: Icon = weighted(DeviceMobile, "fill", "PiDeviceMobileFill");
 export const PiDevicesFill: Icon = weighted(Devices, "fill", "PiDevicesFill");
@@ -260,6 +264,7 @@ export const PiInfoBold: Icon = weighted(Info, "bold", "PiInfoBold");
 export const PiInfoFill: Icon = weighted(Info, "fill", "PiInfoFill");
 export const PiKey: Icon = Key;
 export const PiKeyboardFill: Icon = weighted(Keyboard, "fill", "PiKeyboardFill");
+export const PiLightningFill: Icon = weighted(Lightning, "fill", "PiLightningFill");
 export const PiLinkFill: Icon = weighted(Link, "fill", "PiLinkFill");
 export const PiLinkSimpleBold: Icon = weighted(LinkSimple, "bold", "PiLinkSimpleBold");
 export const PiList: Icon = List;
@@ -301,6 +306,7 @@ export const PiSignInBold: Icon = weighted(SignIn, "bold", "PiSignInBold");
 export const PiSignInFill: Icon = weighted(SignIn, "fill", "PiSignInFill");
 export const PiSignOutFill: Icon = weighted(SignOut, "fill", "PiSignOutFill");
 export const PiSlidersHorizontalFill: Icon = weighted(SlidersHorizontal, "fill", "PiSlidersHorizontalFill");
+export const PiSparkleFill: Icon = weighted(Sparkle, "fill", "PiSparkleFill");
 export const PiSpeakerHighFill: Icon = weighted(SpeakerHigh, "fill", "PiSpeakerHighFill");
 export const PiSpeakerSimpleHighFill: Icon = weighted(SpeakerSimpleHigh, "fill", "PiSpeakerSimpleHighFill");
 export const PiSpeakerSimpleSlashFill: Icon = weighted(SpeakerSimpleSlash, "fill", "PiSpeakerSimpleSlashFill");
