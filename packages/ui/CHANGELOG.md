@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.51.1
+
+### Patch Changes
+
+- d713f2f: Icons: sparkle, lightning and crosshair, at fill weight.
+
 ## 0.51.0
 
 ### Minor Changes
