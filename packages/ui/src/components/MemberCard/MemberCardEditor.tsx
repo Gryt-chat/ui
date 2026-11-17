@@ -248,13 +248,9 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
     </>
   );
 
-  const pattern = whole ? (
-    <Group title="Pattern" description="A whole-card banner covers the pattern, so it isn't drawn.">
-      <Button size="small" tone="neutral" onClick={() => change({ bannerSize: undefined })}>Use a tall banner instead</Button>
-    </Group>
-  ) : (
+  const pattern = (
     <>
-      <Group title="Pattern" description="Drawn from the colour, so there's nothing to upload.">
+      <Group title="Pattern" description={whole ? "Shows on your row in the member list. On the card itself your picture covers it." : "Drawn from the colour, so there's nothing to upload."}>
         <PatternPicker style={style} owlHex={owlHex} nickname={nickname} worn={worn} seed={seed} appearance={appearance} emojiGroups={emojiGroups} onPick={change} />
       </Group>
       {style.colours === "card" && (
@@ -269,7 +265,7 @@ export function MemberCardEditor({ value: style, onChange, owlHex, nickname = ""
           />
         </Group>
       )}
-      {bannerUrl && style.pattern !== "none" && (
+      {bannerUrl && !whole && style.pattern !== "none" && (
         <Group title="Pattern sits" description="Over your banner picture, or behind it so the picture covers it.">
           <Select
             value={style.pLayer ?? "behind"}
