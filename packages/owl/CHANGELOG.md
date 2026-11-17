@@ -1,5 +1,11 @@
 # @gryt/owl
 
+## 0.8.0
+
+### Minor Changes
+
+- 8bbd6b9: Add Gryt's flat mark, face and wings: `GRYT_MARK` and `grytMarkSvg` in `@gryt/owl`, `GrytLogo` in `@gryt/ui/icons` and `@gryt/ui-native`. For linking to Gryt from other sites and apps, the way they use Discord's mark.
+
 ## 0.7.0
 
 ### Minor Changes
