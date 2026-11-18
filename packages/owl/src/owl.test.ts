@@ -393,3 +393,39 @@ describe("painting one slot a different colour", () => {
     expect(owlAvatarSvg(seed, opts)).toBe(owlAvatarSvg(seed, opts));
   });
 });
+
+describe("alive", () => {
+  const seed = "sivert";
+
+  it("leaves the static owl exactly as it was", () => {
+    expect(owlAvatarSvg(seed, { alive: false })).toBe(owlAvatarSvg(seed));
+  });
+
+  it("draws the same paths, grouped, with its own animation", () => {
+    const paths = (svg: string) => svg.match(/<path [^>]*>/g);
+    const alive = owlAvatarSvg(seed, { alive: true });
+    expect(paths(alive)).toEqual(paths(owlAvatarSvg(seed)));
+    expect(alive).toContain('class="owl-blink"');
+    expect(alive).toContain("prefers-reduced-motion");
+    expect(alive).not.toContain('class="owl-wave"');
+  });
+
+  it("waves and smiles only when greeting", () => {
+    const greet = owlAvatarSvg(seed, { alive: "greet" });
+    expect(greet).toContain('class="owl-wave"');
+    expect(greet).toContain('class="owl-happy"');
+  });
+
+  it("does not wave while holding something", () => {
+    const held = owlAvatarSvg(seed, { alive: "greet", wearing: { held: "holding-hammer" } });
+    expect(held).toContain('class="owl-happy"');
+    expect(held).not.toContain('class="owl-wave"');
+  });
+
+  it("bleeds past the tile so the wave can leave it", () => {
+    const svg = owlAvatarSvg(seed, { alive: true, size: 100 });
+    expect(svg).toContain('width="130"');
+    expect(svg).toContain('viewBox="-153.6 -153.6 1331.2 1331.2"');
+    expect(svg).toContain("clip-path=");
+  });
+});
