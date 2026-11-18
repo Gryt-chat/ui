@@ -35,6 +35,8 @@
   "/components/form": { "date": "2026-08-11", "label": "New" },
   "/components/menubar": { "date": "2026-08-11", "label": "New" },
   "/components/meter": { "date": "2026-08-11", "label": "New" },
+  "/components/list-group": { "date": "2026-11-18", "label": "New" },
+  "/components/steps": { "date": "2026-11-18", "label": "New" },
   "/components/navigation-menu": { "date": "2026-08-11", "label": "New" },
   "/components/number-field": { "date": "2026-08-11", "label": "New" },
   "/components/otp-field": { "date": "2026-08-11", "label": "New" },

@@ -52,6 +52,8 @@ export interface ComponentDoc {
     | "toggle"
     | "toggle-group"
     | "meter"
+    | "list-group"
+    | "steps"
     | "alert-dialog"
     | "autocomplete"
     | "checkbox-group"
@@ -125,6 +127,7 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "Chip", slug: "chip" },
       { name: "Tooltip", slug: "tooltip" },
       { name: "Divider", slug: "divider" },
+      { name: "ListGroup", slug: "list-group" },
       { name: "VideoPlayer", slug: "video-player" },
       { name: "WebhookCard", slug: "webhook-card" },
       { name: "MemberCard", slug: "member-card" }
@@ -137,6 +140,7 @@ export const componentNavSections: ComponentNavSection[] = [
       { name: "Toast", slug: "toast" },
       { name: "Progress", slug: "progress" },
       { name: "Meter", slug: "meter" },
+      { name: "Steps", slug: "steps" },
       { name: "Spinner", slug: "spinner" },
       { name: "Skeleton", slug: "skeleton" }
     ]
@@ -936,6 +940,31 @@ function LayoutPicker() {
     </ToggleGroup>
   );
 }`
+  },
+  {
+    slug: "list-group",
+    name: "ListGroup",
+    description:
+      "Rows in a rounded group, each with an icon tile, a title, its value and a control at the end. Settings and account pages are built from these.",
+    importName: "ListGroup",
+    preview: "list-group",
+    code: `import { Button, ListGroup, ListRow } from "@gryt/ui";
+
+<ListGroup>
+  <ListRow icon={<Globe />} title="Server address" description="lancrew.gryt.host" trailing={<Button tone="neutral">Rename</Button>} />
+  <ListRow href="/domain" icon={<Link />} title="Custom domain" trailing={<CaretRight />} />
+</ListGroup>`
+  },
+  {
+    slug: "steps",
+    name: "Steps",
+    description:
+      "Small bars for step two of four in a checkout or setup flow. Read out as \"Step 2 of 4\".",
+    importName: "Steps",
+    preview: "steps",
+    code: `import { Steps } from "@gryt/ui";
+
+<Steps current={2} total={4} />`
   },
   {
     slug: "meter",

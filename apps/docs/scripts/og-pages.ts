@@ -79,6 +79,8 @@ const drawingBySlug: Record<string, DrawingKind> = {
   toggle: "toggle",
   "toggle-group": "toggle-group",
   meter: "meter",
+  "list-group": "menu",
+  steps: "progress",
   "context-menu": "context-menu",
   popover: "popover",
   toast: "toast",
