@@ -37,7 +37,10 @@ import {
   MemberCard,
   MemberItem,
   MessageBubble,
+  ListGroup,
+  ListRow,
   Meter,
+  Steps,
   Popover,
   Progress,
   Radio,
@@ -62,7 +65,7 @@ import {
   useToastManager
 } from "@gryt/ui";
 import { avatarSeed, owlAvatarDataUri } from "@gryt/owl";
-import { Bell, DotsThree, PaperPlaneTilt } from "@phosphor-icons/react";
+import { Bell, CaretRight, DotsThree, Globe, LinkSimple, PaperPlaneTilt, Warning } from "@phosphor-icons/react";
 import type {
   BadgePlacement,
   DrawerSide,
@@ -824,6 +827,21 @@ export function ComponentPreview({
       );
     case "meter":
       return <MeterExample />;
+    case "list-group":
+      return (
+        <ListGroup className="w-full max-w-md">
+          <ListRow icon={<Globe weight="fill" />} title="Server address" description="lancrew.gryt.host" trailing={<Button tone="neutral" size="small">Rename</Button>} />
+          <ListRow href="#" icon={<LinkSimple weight="fill" />} title="Custom domain" trailing={<CaretRight className="text-gryt-muted" />} />
+          <ListRow icon={<Warning weight="fill" />} iconTone="danger" title="Cancel subscription" />
+        </ListGroup>
+      );
+    case "steps":
+      return (
+        <div className="grid gap-4">
+          <Steps current={1} total={4} />
+          <Steps current={3} total={4} />
+        </div>
+      );
     case "context-menu":
       return <ContextMenuExample />;
     case "popover":
