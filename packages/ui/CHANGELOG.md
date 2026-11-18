@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.53.0
+
+### Minor Changes
+
+- 6c37f88: Add ListGroup and ListRow, rows in a rounded group with an icon tile, a title, a value and a trailing control, and Steps, small bars for "step 2 of 4".
+
 ## 0.52.0
 
 ### Minor Changes
