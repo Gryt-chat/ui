@@ -7,13 +7,9 @@
 
 import type { Icon, IconProps } from "@phosphor-icons/react";
 import {
-  AirplaneTilt,
   Archive,
   ArrowBendUpLeft,
-  ArrowBendUpRight,
   ArrowCircleUp,
-  ArrowClockwise,
-  ArrowCounterClockwise,
   ArrowDown,
   ArrowLineLeft,
   ArrowLineRight,
@@ -24,33 +20,23 @@ import {
   ArrowsOut,
   ArrowsOutSimple,
   ArrowSquareOut,
-  ArrowSquareRight,
   ArrowUp,
   At,
   Bank,
-  Barricade,
   Bell,
-  BellRinging,
   BellSimple,
   Boot,
   Briefcase,
   Broadcast,
-  Browser,
   Bug,
-  Building,
-  Buildings,
-  CalendarBlank,
-  CalendarCheck,
   Camera,
   CameraSlash,
-  Cardholder,
   CaretDown,
   CaretLeft,
   CaretRight,
   CaretUp,
   Certificate,
   ChartBar,
-  ChartPieSlice,
   ChatCircle,
   ChatsTeardrop,
   ChatTeardropDots,
@@ -61,15 +47,12 @@ import {
   Circle,
   Clock,
   ClockClockwise,
-  ClockCountdown,
   ClockCounterClockwise,
   Cloud,
   CloudArrowDown,
   CloudArrowUp,
-  CloudCheck,
   Code,
   CodeBlock,
-  Coins,
   Compass,
   Copy,
   CopySimple,
@@ -77,9 +60,6 @@ import {
   CornersOut,
   CreditCard,
   Crosshair,
-  Crown,
-  Cube,
-  Database,
   Desktop,
   DeviceMobile,
   Devices,
@@ -90,52 +70,37 @@ import {
   DotsThreeVertical,
   DownloadSimple,
   Envelope,
-  Export,
   Eye,
   EyeSlash,
-  Factory,
   FadersHorizontal,
   File,
-  FileArchive,
   FileAudio,
   FilePlus,
   FileText,
   FileVideo,
   FileZip,
   Fingerprint,
-  Fire,
   Flag,
   Flask,
   Folder,
-  Folders,
   GameController,
   Gauge,
   Gear,
   GearSix,
   Gift,
-  Globe,
-  GlobeHemisphereWest,
   GlobeSimple,
-  GlobeStand,
-  HandHeart,
   HandWaving,
-  HardDrive,
   HardDrives,
   Hash,
   Headset,
   Heart,
-  Hourglass,
   HourglassMedium,
   House,
   HouseLine,
-  IdentificationBadge,
-  IdentificationCard,
   Image,
   Info,
-  Invoice,
   Key,
   Keyboard,
-  Lifebuoy,
   Lightning,
   Link,
   LinkBreak,
@@ -151,23 +116,14 @@ import {
   MagnifyingGlassMinus,
   MagnifyingGlassPlus,
   MapPin,
-  MapTrifold,
-  Medal,
   Microphone,
   MicrophoneSlash,
   Minus,
   MinusCircle,
-  Money,
   Monitor,
   MonitorArrowUp,
-  Moon,
-  Mountains,
-  NavigationArrow,
-  Notebook,
-  Package,
   Palette,
   Pause,
-  PauseCircle,
   PencilSimple,
   Phone,
   PhoneCall,
@@ -175,7 +131,6 @@ import {
   PhoneX,
   Planet,
   Play,
-  Plug,
   Plugs,
   Plus,
   Prohibit,
@@ -183,64 +138,45 @@ import {
   PushPin,
   PushPinSlash,
   PuzzlePiece,
-  Question,
   Quotes,
-  Receipt,
   Robot,
-  RocketLaunch,
   ScanSmiley,
   Screencast,
-  Scroll,
-  SealWarning,
-  Shield,
   ShieldCheck,
   ShieldSlash,
   ShieldStar,
   ShieldWarning,
-  Shuffle,
   SidebarSimple,
   SignIn,
   SignOut,
-  Signpost,
   Siren,
   SlidersHorizontal,
-  SmileySad,
   SmileyWink,
-  Snowflake,
   Sparkle,
   SpeakerHigh,
   SpeakerSimpleHigh,
   SpeakerSimpleSlash,
   SpeakerSlash,
   SquaresFour,
-  Stack,
   Stop,
-  Storefront,
-  Tag,
   TextB,
   TextHOne,
   TextHThree,
   TextHTwo,
   TextItalic,
   TextStrikethrough,
-  Timer,
   Trash,
   TrashSimple,
-  Tray,
   Truck,
-  Umbrella,
   UploadSimple,
   User,
   UserPlus,
   Users,
   UsersThree,
-  Vault,
-  Wallet,
   Warning,
   WarningCircle,
   WebhooksLogo,
   WifiSlash,
-  Wrench,
   X,
   XCircle,
 } from "@phosphor-icons/react";
@@ -482,88 +418,18 @@ export const GrytLogo = (({ size = "1em", color = "currentColor", ...rest }: Ico
   );
 }) as Icon;
 
-export const PiAirplaneTiltFill: Icon = weighted(AirplaneTilt, "fill", "PiAirplaneTiltFill");
-export const PiArrowBendUpRightFill: Icon = weighted(ArrowBendUpRight, "fill", "PiArrowBendUpRightFill");
-export const PiArrowClockwiseFill: Icon = weighted(ArrowClockwise, "fill", "PiArrowClockwiseFill");
-export const PiArrowCounterClockwiseFill: Icon = weighted(ArrowCounterClockwise, "fill", "PiArrowCounterClockwiseFill");
-export const PiArrowSquareRightFill: Icon = weighted(ArrowSquareRight, "fill", "PiArrowSquareRightFill");
-export const PiAtFill: Icon = weighted(At, "fill", "PiAtFill");
 export const PiBankFill: Icon = weighted(Bank, "fill", "PiBankFill");
-export const PiBarricadeFill: Icon = weighted(Barricade, "fill", "PiBarricadeFill");
-export const PiBellRingingFill: Icon = weighted(BellRinging, "fill", "PiBellRingingFill");
 export const PiBriefcaseFill: Icon = weighted(Briefcase, "fill", "PiBriefcaseFill");
-export const PiBrowserFill: Icon = weighted(Browser, "fill", "PiBrowserFill");
-export const PiBuildingFill: Icon = weighted(Building, "fill", "PiBuildingFill");
-export const PiBuildingsFill: Icon = weighted(Buildings, "fill", "PiBuildingsFill");
-export const PiCalendarBlankFill: Icon = weighted(CalendarBlank, "fill", "PiCalendarBlankFill");
-export const PiCalendarCheckFill: Icon = weighted(CalendarCheck, "fill", "PiCalendarCheckFill");
-export const PiCardholderFill: Icon = weighted(Cardholder, "fill", "PiCardholderFill");
 export const PiCertificateFill: Icon = weighted(Certificate, "fill", "PiCertificateFill");
-export const PiChartPieSliceFill: Icon = weighted(ChartPieSlice, "fill", "PiChartPieSliceFill");
-export const PiChatCircleFill: Icon = weighted(ChatCircle, "fill", "PiChatCircleFill");
-export const PiClockCountdownFill: Icon = weighted(ClockCountdown, "fill", "PiClockCountdownFill");
 export const PiClockCounterClockwiseFill: Icon = weighted(ClockCounterClockwise, "fill", "PiClockCounterClockwiseFill");
-export const PiCloudCheckFill: Icon = weighted(CloudCheck, "fill", "PiCloudCheckFill");
-export const PiCoinsFill: Icon = weighted(Coins, "fill", "PiCoinsFill");
 export const PiCompassFill: Icon = weighted(Compass, "fill", "PiCompassFill");
 export const PiCreditCardFill: Icon = weighted(CreditCard, "fill", "PiCreditCardFill");
-export const PiCrownFill: Icon = weighted(Crown, "fill", "PiCrownFill");
-export const PiCubeFill: Icon = weighted(Cube, "fill", "PiCubeFill");
-export const PiDatabaseFill: Icon = weighted(Database, "fill", "PiDatabaseFill");
-export const PiExportFill: Icon = weighted(Export, "fill", "PiExportFill");
-export const PiFactoryFill: Icon = weighted(Factory, "fill", "PiFactoryFill");
-export const PiFileArchiveFill: Icon = weighted(FileArchive, "fill", "PiFileArchiveFill");
-export const PiFireFill: Icon = weighted(Fire, "fill", "PiFireFill");
-export const PiFoldersFill: Icon = weighted(Folders, "fill", "PiFoldersFill");
-export const PiGlobeFill: Icon = weighted(Globe, "fill", "PiGlobeFill");
-export const PiGlobeHemisphereWestFill: Icon = weighted(GlobeHemisphereWest, "fill", "PiGlobeHemisphereWestFill");
-export const PiGlobeStandFill: Icon = weighted(GlobeStand, "fill", "PiGlobeStandFill");
-export const PiHandHeartFill: Icon = weighted(HandHeart, "fill", "PiHandHeartFill");
-export const PiHardDriveFill: Icon = weighted(HardDrive, "fill", "PiHardDriveFill");
-export const PiHashFill: Icon = weighted(Hash, "fill", "PiHashFill");
 export const PiHeadsetFill: Icon = weighted(Headset, "fill", "PiHeadsetFill");
-export const PiHourglassFill: Icon = weighted(Hourglass, "fill", "PiHourglassFill");
 export const PiHourglassMediumFill: Icon = weighted(HourglassMedium, "fill", "PiHourglassMediumFill");
-export const PiIdentificationBadgeFill: Icon = weighted(IdentificationBadge, "fill", "PiIdentificationBadgeFill");
-export const PiIdentificationCardFill: Icon = weighted(IdentificationCard, "fill", "PiIdentificationCardFill");
-export const PiInvoiceFill: Icon = weighted(Invoice, "fill", "PiInvoiceFill");
-export const PiLifebuoyFill: Icon = weighted(Lifebuoy, "fill", "PiLifebuoyFill");
 export const PiLinkBreakFill: Icon = weighted(LinkBreak, "fill", "PiLinkBreakFill");
-export const PiLinkSimpleFill: Icon = weighted(LinkSimple, "fill", "PiLinkSimpleFill");
 export const PiMapPinFill: Icon = weighted(MapPin, "fill", "PiMapPinFill");
-export const PiMapTrifoldFill: Icon = weighted(MapTrifold, "fill", "PiMapTrifoldFill");
-export const PiMedalFill: Icon = weighted(Medal, "fill", "PiMedalFill");
-export const PiMoneyFill: Icon = weighted(Money, "fill", "PiMoneyFill");
-export const PiMoonFill: Icon = weighted(Moon, "fill", "PiMoonFill");
-export const PiMountainsFill: Icon = weighted(Mountains, "fill", "PiMountainsFill");
-export const PiNavigationArrowFill: Icon = weighted(NavigationArrow, "fill", "PiNavigationArrowFill");
-export const PiNotebookFill: Icon = weighted(Notebook, "fill", "PiNotebookFill");
-export const PiPackageFill: Icon = weighted(Package, "fill", "PiPackageFill");
-export const PiPauseCircleFill: Icon = weighted(PauseCircle, "fill", "PiPauseCircleFill");
 export const PiPlanetFill: Icon = weighted(Planet, "fill", "PiPlanetFill");
-export const PiPlugFill: Icon = weighted(Plug, "fill", "PiPlugFill");
-export const PiPulseFill: Icon = weighted(Pulse, "fill", "PiPulseFill");
-export const PiQuestionFill: Icon = weighted(Question, "fill", "PiQuestionFill");
-export const PiReceiptFill: Icon = weighted(Receipt, "fill", "PiReceiptFill");
-export const PiRocketLaunchFill: Icon = weighted(RocketLaunch, "fill", "PiRocketLaunchFill");
-export const PiScrollFill: Icon = weighted(Scroll, "fill", "PiScrollFill");
-export const PiSealWarningFill: Icon = weighted(SealWarning, "fill", "PiSealWarningFill");
-export const PiShieldFill: Icon = weighted(Shield, "fill", "PiShieldFill");
 export const PiShieldStarFill: Icon = weighted(ShieldStar, "fill", "PiShieldStarFill");
-export const PiShuffleFill: Icon = weighted(Shuffle, "fill", "PiShuffleFill");
-export const PiSignpostFill: Icon = weighted(Signpost, "fill", "PiSignpostFill");
 export const PiSirenFill: Icon = weighted(Siren, "fill", "PiSirenFill");
-export const PiSmileySadFill: Icon = weighted(SmileySad, "fill", "PiSmileySadFill");
-export const PiSnowflakeFill: Icon = weighted(Snowflake, "fill", "PiSnowflakeFill");
-export const PiStackFill: Icon = weighted(Stack, "fill", "PiStackFill");
-export const PiStorefrontFill: Icon = weighted(Storefront, "fill", "PiStorefrontFill");
-export const PiTagFill: Icon = weighted(Tag, "fill", "PiTagFill");
-export const PiTimerFill: Icon = weighted(Timer, "fill", "PiTimerFill");
 export const PiTrashFill: Icon = weighted(Trash, "fill", "PiTrashFill");
-export const PiTrayFill: Icon = weighted(Tray, "fill", "PiTrayFill");
 export const PiTruckFill: Icon = weighted(Truck, "fill", "PiTruckFill");
-export const PiUmbrellaFill: Icon = weighted(Umbrella, "fill", "PiUmbrellaFill");
-export const PiUsersFill: Icon = weighted(Users, "fill", "PiUsersFill");
-export const PiVaultFill: Icon = weighted(Vault, "fill", "PiVaultFill");
-export const PiWalletFill: Icon = weighted(Wallet, "fill", "PiWalletFill");
-export const PiWrenchFill: Icon = weighted(Wrench, "fill", "PiWrenchFill");
