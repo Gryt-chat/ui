@@ -1,5 +1,19 @@
 # @gryt/ui
 
+## 0.54.0
+
+### Minor Changes
+
+- e7ceaf3: Adds 15 fill icons for the Gryt Cloud console to `@gryt/ui/icons`: Bank, Briefcase, Certificate, ClockCounterClockwise, Compass, CreditCard, Headset, HourglassMedium, LinkBreak, MapPin, Planet, ShieldStar, Siren, Trash, Truck.
+
+### Patch Changes
+
+- 9158628: The dark theme's hover surface is `#363c4a`, step 7 of the neutral ramp, instead of the slate `#334155`. It's just as visible on hovered buttons, menu rows and pressed toggles, and grey like the surfaces around it. The preset themes keep their own hover colours.
+- Updated dependencies [9158628]
+- Updated dependencies [de5af68]
+  - @gryt/theme@0.13.1
+  - @gryt/owl@0.8.1
+
 ## 0.53.0
 
 ### Minor Changes

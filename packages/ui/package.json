@@ -1,6 +1,6 @@
 {
   "name": "@gryt/ui",
-  "version": "0.53.0",
+  "version": "0.54.0",
   "description": "React component library for Gryt, the open-source WebRTC voice chat platform.",
   "type": "module",
   "license": "MIT",
@@ -95,8 +95,8 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
-    "@gryt/owl": "^0.8.0",
-    "@gryt/theme": "^0.13.0",
+    "@gryt/owl": "^0.8.1",
+    "@gryt/theme": "^0.13.1",
     "@phosphor-icons/react": "^2.1.10",
     "@tanstack/react-virtual": "^3.13.12",
     "clsx": "^2.1.1",
