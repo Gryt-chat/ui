@@ -18,7 +18,7 @@ export const grytTokens = {
     bg: "#111318",
     surface: "#1a1d24",
     surfaceRaised: "#1e2028",
-    surfaceHover: "#334155",
+    surfaceHover: "#363c4a",
     border: "#2b303d",
     text: "#e0e0e6",
     muted: "#888888",
