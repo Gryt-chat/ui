@@ -482,7 +482,6 @@ export const GrytLogo = (({ size = "1em", color = "currentColor", ...rest }: Ico
   );
 }) as Icon;
 
-// Added for the Gryt Cloud console (GRYT-2192): candidates for its icon spots.
 export const PiAirplaneTiltFill: Icon = weighted(AirplaneTilt, "fill", "PiAirplaneTiltFill");
 export const PiArrowBendUpRightFill: Icon = weighted(ArrowBendUpRight, "fill", "PiArrowBendUpRightFill");
 export const PiArrowClockwiseFill: Icon = weighted(ArrowClockwise, "fill", "PiArrowClockwiseFill");
