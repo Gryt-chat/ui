@@ -168,7 +168,7 @@
     --color-gryt-accent-a12: rgb(227 228 255 / 100.0%);
     /* END GENERATED */
     /* Surface one step above --color-gryt-surface-raised, for hover states. */
-    --color-gryt-surface-hover: #334155;
+    --color-gryt-surface-hover: #363c4a;
 
     /* Text drawn on top of a filled tone: the fill's own hue with the
        lightness dropped until it clears 7:1 against that fill.
