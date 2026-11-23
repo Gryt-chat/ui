@@ -265,6 +265,10 @@ export { forgetLook, readWardrobe, rememberLook } from "./components/OwlDesigner
 export type { WardrobeEntry } from "./components/OwlDesigner/owlWardrobe";
 export { Toggle, ToggleGroup } from "./components/Toggle/Toggle";
 export type { ToggleGroupProps, ToggleProps } from "./components/Toggle/Toggle";
+export { MediaCropper } from "./components/MediaCropper/MediaCropper";
+export type { MediaCropResult, MediaCropperProps } from "./components/MediaCropper/MediaCropper";
+export { initialBox, isAnimated, moveBox, renderCrop, resizeBox, scaleBox } from "./components/MediaCropper/cropBox";
+export type { CropBox, CropCorner } from "./components/MediaCropper/cropBox";
 export { Meter } from "./components/Meter/Meter";
 export type { MeterProps, MeterTone } from "./components/Meter/Meter";
 export { ListGroup, ListRow } from "./components/ListGroup/ListGroup";
