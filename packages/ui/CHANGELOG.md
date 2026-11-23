@@ -1,5 +1,11 @@
 # @gryt/ui
 
+## 0.55.0
+
+### Minor Changes
+
+- 7d6b5f8: MediaCropper: frame a picture, GIF or video in a square (with a circle for round pictures), with a live preview beside it. Stills come back cropped; GIFs and videos come back with the box to keep.
+
 ## 0.54.0
 
 ### Minor Changes
